@@ -1,0 +1,45 @@
+<html>
+<head>
+	<script src="https://cdn.firebase.com/js/client/2.4.2/firebase.js"></script>	
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.0.0-alpha/css/bootstrap.min.css">	
+	<style>
+		.no{background-color: red;}
+		.one{background-color: #9F9;}
+		.many{background-color: #3F3;}
+	</style>
+</head>
+<body>
+	<div id="container" />
+
+<script>
+	console.log("hi!");
+	var fb = new Firebase("https://testing-challenge.firebaseio.com/");
+	fb.on("value", function(snapshot) {
+		var res = snapshot.val();
+		var html = "<table class='table table-condensed'>";
+		html += "<tr>";
+		["Name", "C", "E", "L", "CR", "E2", "E3", "E4", "L2", "L3", "L4", "O1", "O2", "O3", "O4", "O5", "123", "998", "999", "QWE", "STA"].forEach(
+			v => html += "<th>" + v + "</th>");
+		html += "</tr>";
+		var names = Object.keys(res);
+		names.sort((a,b) => -countNonzero(res[a]) + countNonzero(res[b]));
+		names.forEach(function(name){
+			html += "<tr><td>" + name + "</td>";
+			res[name].forEach(v => html += formatCell(v));
+			html += "</tr>";
+		});
+		html += "</table>";
+		document.getElementById("container").innerHTML = html;
+	});
+	
+	function countNonzero(arr){
+		return arr.filter(v => v > 0).length;
+	}
+
+	function formatCell(v){
+		var clazz = v == 0 ? "no" : (v == 1 ? "one" : "many");
+		return "<td class='" + clazz + "'>" + v + "</td>"; 
+	}
+</script>
+</body>
+</html>
