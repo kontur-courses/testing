@@ -13,7 +13,7 @@
 
 <script>
 	console.log("hi!");
-	var fb = new Firebase("https://testing-challenge.firebaseio.com/");
+	var fb = new Firebase("https://testing-challenge.firebaseio.com/word-statistics");
 	fb.on("value", function(snapshot) {
 		var res = snapshot.val();
 		var html = "<table class='table table-condensed'>";
@@ -25,7 +25,7 @@
 		names.sort((a,b) => -countNonzero(res[a]) + countNonzero(res[b]));
 		names.forEach(function(name){
 			html += "<tr><td>" + name + "</td>";
-			res[name].forEach(v => html += formatCell(v));
+			res[name].implementations.forEach(v => html += formatCell(v));
 			html += "</tr>";
 		});
 		html += "</table>";

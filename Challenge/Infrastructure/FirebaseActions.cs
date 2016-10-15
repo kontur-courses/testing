@@ -14,7 +14,7 @@ namespace Challenge.Infrastructure
         {
             var config = new FirebaseConfig
             {
-                BasePath = "https://testing-challenge.firebaseio.com/"
+                BasePath = "https://testing-challenge.firebaseio.com/word-statistics/"
             };
             using (var client = new FirebaseClient(config))
             {
