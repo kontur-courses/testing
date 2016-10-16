@@ -22,7 +22,7 @@
 			v => html += "<th>" + v + "</th>");
 		html += "</tr>";
 		var names = Object.keys(res);
-		names.sort((a,b) => -countNonzero(res[a]) + countNonzero(res[b]));
+		names.sort((a,b) => -countNonzero(res[a].implementations) + countNonzero(res[b].implementations));
 		names.forEach(function(name){
 			html += "<tr><td>" + name + "</td>";
 			res[name].implementations.forEach(v => html += formatCell(v));
