@@ -373,10 +373,7 @@ namespace Challenge.IncorrectImplementations
 
         public override IEnumerable<Tuple<int, string>> GetStatistics()
         {
-            return result ?? (result = stats.OrderByDescending(kv => kv.Value)
-                .ThenBy(kv => kv.Key)
-                .Select(kv => Tuple.Create(kv.Value, kv.Key))
-                .ToList());
+            return result ?? (result = base.GetStatistics().ToList());
         }
     }
 
