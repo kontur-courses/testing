@@ -366,5 +366,19 @@ namespace Challenge.IncorrectImplementations
         }
     }
 
+    [IncorrectImplementation]
+    public class WordsStatistics_EN2 : WordsStatistics
+	{
+        private List<Tuple<int, string>> result;
+
+        public override IEnumerable<Tuple<int, string>> GetStatistics()
+        {
+            return result ?? (result = stats.OrderByDescending(kv => kv.Value)
+                .ThenBy(kv => kv.Key)
+                .Select(kv => Tuple.Create(kv.Value, kv.Key))
+                .ToList());
+        }
+    }
+
 	#endregion
 }
