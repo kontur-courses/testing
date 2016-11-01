@@ -2,13 +2,13 @@
 {
     public class ImplementationStatus
     {
-        public ImplementationStatus(string name, int failsCount)
+        public ImplementationStatus(string name, string[] fails)
         {
             Name = name;
-            FailsCount = failsCount;
+            Fails = fails;
         }
 
-        public string Name;
-        public int FailsCount;
+        public readonly string Name;
+        public readonly string[] Fails;
     }
 }

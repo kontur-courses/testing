@@ -42,7 +42,7 @@ namespace Challenge.Infrastructure
                 };
                 using (var client = new FirebaseClient(config))
                 {
-                    client.Set(names + "/implementations", statuses.Select(s => s.FailsCount).ToArray());
+                    client.Set(names + "/implementations", statuses.Select(s => s.Fails.Length).ToArray());
                 }
                 Console.WriteLine("");
             }
@@ -87,19 +87,19 @@ namespace Challenge.Infrastructure
                 var failed = GetFailedTests(testRunner,
                         implementation,
                         implTypeToTestsType[implementation])
-                    .ToList();
+                    .ToArray();
                 var name = implementation.Name.PadRight(20, ' ');
-                result.Add(new ImplementationStatus(name, failed.Count));
+                result.Add(new ImplementationStatus(name, failed));
             }
             return result;
         }
 
         private static void WriteImplementationStatusToConsole(ImplementationStatus status)
         {
-            if (status.FailsCount > 0)
+            if (status.Fails.Any())
             {
                 Console.ForegroundColor = ConsoleColor.Green;
-                Console.WriteLine(TrimToConsole(status.Name + "fails on: " + string.Join(", ", status.FailsCount)));
+                Console.WriteLine(TrimToConsole(status.Name + "fails on: " + string.Join(", ", status.Fails)));
                 Console.ForegroundColor = ConsoleColor.Gray;
             }
             else
