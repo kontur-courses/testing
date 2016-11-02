@@ -4,6 +4,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection;
+using System.Threading;
 using System.Xml;
 using FireSharp;
 using FireSharp.Config;
@@ -15,6 +16,11 @@ namespace Challenge.Infrastructure
     {
         private static void Main()
         {
+            if (WordsStatistics_Tests.Authors == "<ВАШИ ФАМИЛИИ>")
+            {
+                Console.WriteLine("Укажите ваши фамилии в классе WordStatistics_Tests в поле Authors!");
+                Thread.Sleep(3000);
+            }
             var testPackage = new TestPackage(Assembly.GetExecutingAssembly().Location);
             using (var engine = new TestEngine())
             using (var testRunner = engine.GetRunner(testPackage))
@@ -22,9 +28,13 @@ namespace Challenge.Infrastructure
                 {
                     var incorrectImplementations = ChallengeHelpers.GetIncorrectImplementationTypes();
                     var statuses = GetIncorrectImplementationsResults(testRunner, incorrectImplementations);
-                    PostResults(statuses);
+                    var res = new List<ImplementationStatus>();
                     foreach (var status in statuses)
+                    {
+                        res.Add(status);
                         WriteImplementationStatusToConsole(status);
+                    }
+                    PostResults(res);
                 }
         }
 
@@ -49,9 +59,9 @@ namespace Challenge.Infrastructure
                 }
                 Console.WriteLine("");
             }
-            catch
+            catch(Exception e)
             {
-                Console.WriteLine("...");
+                Console.WriteLine(e.Message);
             }
         }
 
@@ -64,10 +74,9 @@ namespace Challenge.Infrastructure
             return s;
         }
 
-        private static IList<ImplementationStatus> GetIncorrectImplementationsResults(
+        private static IEnumerable<ImplementationStatus> GetIncorrectImplementationsResults(
             ITestRunner testRunner, IEnumerable<Type> implementations)
         {
-            var result = new List<ImplementationStatus>();
             var implTypeToTestsType = ChallengeHelpers.GetIncorrectImplementationTests()
                 .ToDictionary(t => t.CreateStatistics().GetType(), t => t.GetType());
             foreach (var implementation in implementations)
@@ -76,24 +85,23 @@ namespace Challenge.Infrastructure
                         implementation,
                         implTypeToTestsType[implementation])
                     .ToArray();
-                var name = implementation.Name.PadRight(20, ' ');
-                result.Add(new ImplementationStatus(name, failed));
+                yield return new ImplementationStatus(implementation.Name, failed);
             }
-            return result;
         }
 
         private static void WriteImplementationStatusToConsole(ImplementationStatus status)
         {
+            var paddedName = status.Name.PadRight(20, ' ');
             if (status.Fails.Any())
             {
                 Console.ForegroundColor = ConsoleColor.Green;
-                Console.WriteLine(TrimToConsole(status.Name + "fails on: " + string.Join(", ", status.Fails)));
+                Console.WriteLine(TrimToConsole(paddedName + "fails on: " + string.Join(", ", status.Fails)));
                 Console.ForegroundColor = ConsoleColor.Gray;
             }
             else
             {
                 Console.ForegroundColor = ConsoleColor.Red;
-                Console.WriteLine(status.Name + "write some test to kill it");
+                Console.WriteLine(paddedName + "write some test to kill it");
                 Console.ForegroundColor = ConsoleColor.Gray;
             }
         }
