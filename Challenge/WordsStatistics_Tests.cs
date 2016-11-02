@@ -8,6 +8,8 @@ namespace Challenge
     [TestFixture]
     public class WordsStatistics_Tests
     {
+        public static string Authors = "<ВАШИ ФАМИЛИИ>"; // "Egorov Shagalina"
+
         public virtual IWordsStatistics CreateStatistics()
         {
             // меняется на разные реализации при запуске exe

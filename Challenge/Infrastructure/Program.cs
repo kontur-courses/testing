@@ -4,8 +4,6 @@ using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Reflection;
-using System.Security.Policy;
-using System.Text.RegularExpressions;
 using System.Xml;
 using FireSharp;
 using FireSharp.Config;
@@ -15,10 +13,8 @@ namespace Challenge.Infrastructure
 {
     internal class Program
     {
-        private static string names;
         private static void Main()
         {
-            names = LoadOrRequestName();
             var testPackage = new TestPackage(Assembly.GetExecutingAssembly().Location);
             using (var engine = new TestEngine())
             using (var testRunner = engine.GetRunner(testPackage))
@@ -42,7 +38,14 @@ namespace Challenge.Infrastructure
                 };
                 using (var client = new FirebaseClient(config))
                 {
-                    client.Set(names + "/implementations", statuses.Select(s => s.Fails.Length).ToArray());
+                    string authorsKey = MakeFirebaseSafe(WordsStatistics_Tests.Authors);
+                    var values = statuses.Select(s => s.Fails.Length).ToArray();
+                    //client.Set(authorsKey + "/implementations", values);
+                    client.Set(authorsKey, new
+                    {
+                        implementations = values,
+                        time = DateTime.Now.ToUniversalTime()
+                    });
                 }
                 Console.WriteLine("");
             }
@@ -52,28 +55,13 @@ namespace Challenge.Infrastructure
             }
         }
 
-        private static string LoadOrRequestName()
+        private static string MakeFirebaseSafe(string s)
         {
-            var namesFilename = "names.txt";
-            if (File.Exists(namesFilename))
-            {
-                var name = File.ReadLines(namesFilename).First();
-                if (!string.IsNullOrWhiteSpace(name))
-                {
-                    Console.WriteLine($"Hello {name}! (loaded from {namesFilename})");
-                    Console.WriteLine();
-                    return name;
-                }
-            }
-            var names = "";
-            do
-            {
-                Console.WriteLine("Enter your names, all in one line:");
-                Console.Write("> ");
-                names = Console.ReadLine();
-            } while (string.IsNullOrWhiteSpace(names));
-            File.WriteAllText(namesFilename, names);
-            return names;
+            var badChars = Enumerable.Range(0, 32).Select(code => (char)code)
+                .Concat(".$#[]/" + (char)127);
+            foreach (var badChar in badChars)
+                s = s.Replace(badChar, '_');
+            return s;
         }
 
         private static IList<ImplementationStatus> GetIncorrectImplementationsResults(
