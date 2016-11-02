@@ -340,5 +340,42 @@ namespace Challenge.IncorrectImplementations
 		}
 	}
 
+    [IncorrectImplementation]
+    public class WordsStatistics_EN : IWordsStatistics
+	{
+        private IDictionary<string, int> stats
+            = new Dictionary<string, int>();
+
+        public void AddWord(string word)
+        {
+            if (word == null) throw new ArgumentNullException(nameof(word));
+            if (string.IsNullOrWhiteSpace(word)) return;
+            if (word.Length > 10)
+                word = word.Substring(0, 10);
+            int count;
+            stats[word.ToLower()] = stats.TryGetValue(word.ToLower(), out count) ? count + 1 : 1;
+        }
+
+        public IEnumerable<Tuple<int, string>> GetStatistics()
+        {
+            var temp = stats;
+            stats = new Dictionary<string, int>();
+            return temp.OrderByDescending(kv => kv.Value)
+                .ThenBy(kv => kv.Key)
+                .Select(kv => Tuple.Create(kv.Value, kv.Key));
+        }
+    }
+
+    [IncorrectImplementation]
+    public class WordsStatistics_EN2 : WordsStatistics
+	{
+        private List<Tuple<int, string>> result;
+
+        public override IEnumerable<Tuple<int, string>> GetStatistics()
+        {
+            return result ?? (result = base.GetStatistics().ToList());
+        }
+    }
+
 	#endregion
 }

@@ -55,6 +55,8 @@ namespace Challenge.Infrastructure
     public class WordsStatistics_999_Tests : IncorrectImplementation_TestsBase { }
     public class WordsStatistics_QWE_Tests : IncorrectImplementation_TestsBase { }
     public class WordsStatistics_STA_Tests : IncorrectImplementation_TestsBase { }
+    public class WordsStatistics_EN_Tests : IncorrectImplementation_TestsBase { }
+    public class WordsStatistics_EN2_Tests : IncorrectImplementation_TestsBase { }
 
     #endregion
 }
