@@ -8,3 +8,5 @@ L - Length
 999 - Add Same Performance
 QWE - All chars lower case
 STA - Static
+EN - Clean After GetStatistics
+EN2 - Cache First GetStatistics

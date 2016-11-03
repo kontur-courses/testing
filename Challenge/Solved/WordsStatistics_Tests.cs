@@ -180,5 +180,21 @@ namespace Challenge.Solved
             anotherStatistics.AddWord("bbbbbbbbbb");
             statistics.GetStatistics().Should().HaveCount(1);
         }
+		
+        [Test]
+        public void GetStatistics_ShouldSupportMultipleEnumeration()
+        {
+            statistics.AddWord("aaaaaaaaaa");
+            var stat = statistics.GetStatistics().ToList();
+            statistics.GetStatistics().Should().NotBeEmpty();
+        }
+
+        [Test]
+        public void Statistics_ShouldBeModifiable_AfterEnumeration()
+        {
+            var stat = statistics.GetStatistics().ToList();
+            statistics.AddWord("aaaaaaaaaa");
+            statistics.GetStatistics().Should().NotBeEmpty();
+        }
     }
 }
