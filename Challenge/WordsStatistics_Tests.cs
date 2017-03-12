@@ -4,24 +4,24 @@ using NUnit.Framework;
 
 namespace Challenge
 {
-    [TestFixture]
-    public class WordsStatistics_Tests
-    {
-        public static string Authors = "ВАШИ ФАМИЛИИ ЧЕРЕЗ ПРОБЕЛ"; // "Egorov Shagalina"
+	[TestFixture]
+	public class WordsStatistics_Tests
+	{
+		public static string Authors = "ВАШИ ФАМИЛИИ ЧЕРЕЗ ПРОБЕЛ"; // "Egorov Shagalina"
 
-        public virtual IWordsStatistics CreateStatistics()
-        {
-            // меняется на разные реализации при запуске exe
-            return new WordsStatistics();
-        }
+		public virtual IWordsStatistics CreateStatistics()
+		{
+			// меняется на разные реализации при запуске exe
+			return new WordsStatistics();
+		}
 
-        private IWordsStatistics statistics;
+		private IWordsStatistics statistics;
 
-        [SetUp]
-        public void SetUp()
-        {
-            statistics = CreateStatistics();
-        }
+		[SetUp]
+		public void SetUp()
+		{
+			statistics = CreateStatistics();
+		}
 
 		[Test]
 		public void GetStatistics_IsEmpty_AfterCreation()
