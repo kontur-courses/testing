@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Linq;
 using FluentAssertions;
 using NUnit.Framework;
 
@@ -8,7 +7,7 @@ namespace Challenge
     [TestFixture]
     public class WordsStatistics_Tests
     {
-        public static string Authors = "<ВАШИ ФАМИЛИИ>"; // "Egorov Shagalina"
+        public static string Authors = "ВАШИ ФАМИЛИИ ЧЕРЕЗ ПРОБЕЛ"; // "Egorov Shagalina"
 
         public virtual IWordsStatistics CreateStatistics()
         {
@@ -24,30 +23,28 @@ namespace Challenge
             statistics = CreateStatistics();
         }
 
-        [Test]
-        public void GetStatistics_IsEmpty_AfterCreation()
-        {
-            statistics.GetStatistics().Should().BeEmpty();
-        }
+		[Test]
+		public void GetStatistics_IsEmpty_AfterCreation()
+		{
+			statistics.GetStatistics().Should().BeEmpty();
+		}
 
-        [Test]
-        public void AddWord_CountsOnce_WhenSameWord()
-        {
-            statistics.AddWord("aaaaaaaaaa");
-            statistics.AddWord("aaaaaaaaaa");
-            statistics.GetStatistics().Should().HaveCount(1);
-        }
+		[Test]
+		public void GetStatistics_ContainsItem_AfterAddition()
+		{
+			statistics.AddWord("abc");
+			statistics.GetStatistics().Should().Equal(Tuple.Create(1, "abc"));
+		}
 
-        /* 
-            Коллекции без учёта порядка
-                new[] {1,2,3}.ShouldAllBeEquivalentTo(new [] {3,2,1});
-            Коллекции с учётом порядка
-                new[] {1,2,3}.ShouldAllBeEquivalentTo(new [] {1,2,3}, o => o.WithStrictOrdering());
-            Больше примеров: http://www.fluentassertions.com/
+		[Test]
+		public void GetStatistics_ContainsManyItems_AfterAdditionOfDifferentWords()
+		{
+			statistics.AddWord("abc");
+			statistics.AddWord("def");
+			statistics.GetStatistics().Should().HaveCount(2);
+		}
 
-            Исключения:
-                Assert.Throws<ArgumentNullException>(() => SomeOperation());
-            
-        */
-    }
+
+		// Документация по FluentAssertions с примерами : https://github.com/fluentassertions/fluentassertions/wiki
+	}
 }

@@ -58,6 +58,7 @@
     <Compile Include="Antipatterns\Stack_tests4.cs" />
     <Compile Include="Specifications\DoubleParse_should.cs" />
     <Compile Include="Specifications\Stack_Specification.cs" />
+    <Compile Include="Specifications\Summator.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
@@ -67,7 +68,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="data.txt">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
   <ItemGroup>

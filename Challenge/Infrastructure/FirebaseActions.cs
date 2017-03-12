@@ -19,7 +19,7 @@ namespace Challenge.Infrastructure
             using (var client = new FirebaseClient(config))
             {
                 var response = client.Get("");
-                var jObject = JsonConvert.DeserializeObject(response.Body) as JObject;
+                var jObject = (JObject)JsonConvert.DeserializeObject(response.Body);
                 foreach (var pair in jObject)
                 {
                     client.Delete(pair.Key);

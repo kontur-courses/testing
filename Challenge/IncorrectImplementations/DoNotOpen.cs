@@ -27,7 +27,7 @@ namespace Challenge.IncorrectImplementations
             if (word == null) throw new ArgumentNullException(nameof(word));
             if (string.IsNullOrWhiteSpace(word)) return;
             if (word.Length > 10) word = word.Substring(0, 10);
-            else if (word.Length > 5) word = word.Substring(0, word.Length - 1);
+            else if (word.Length > 5) word = word.Substring(0, word.Length - 2);
             int count;
             stats[word.ToLower()] = stats.TryGetValue(word.ToLower(), out count) ? count + 1 : 1;
 
