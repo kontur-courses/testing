@@ -3,7 +3,7 @@ using NUnit.Framework;
 
 namespace Samples.Specifications
 {
-	[TestFixture, Explicit]
+	[TestFixture]
 	public class DoubleParse_should
 	{
 		[TestCase("123", ExpectedResult = 123, TestName = "integer")]

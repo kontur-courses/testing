@@ -5,10 +5,10 @@ using NUnit.Framework;
 
 namespace Samples.AAA
 {
-	[TestFixture, Explicit]
+	[TestFixture]
 	public class Zip_Tests
 	{
-	    private int Field = 5;
+		private int Field = 5;
 
 		[Test]
 		public void EqualSizeArrays()
@@ -18,7 +18,7 @@ namespace Samples.AAA
 
 			var result = arr1.Zip(arr2, Tuple.Create);
 
-            CollectionAssert.AreEqual(new [] { Tuple.Create(1, 2) }, result);
+			CollectionAssert.AreEqual(new[] { Tuple.Create(1, 2) }, result);
 		}
 
 		[Test]
@@ -29,7 +29,7 @@ namespace Samples.AAA
 
 			var result = arr1.Zip(arr2, Tuple.Create);
 
-            CollectionAssert.IsEmpty(result);
+			CollectionAssert.IsEmpty(result);
 		}
 
 		[Test]
@@ -40,8 +40,8 @@ namespace Samples.AAA
 
 			var result = arr1.Zip(arr2, Tuple.Create);
 
-            CollectionAssert.IsEmpty(result);
-        }
+			CollectionAssert.IsEmpty(result);
+		}
 
 		[Test]
 		public void SecondIsEmpty()
@@ -51,8 +51,8 @@ namespace Samples.AAA
 
 			var result = arr1.Zip(arr2, Tuple.Create);
 
-            CollectionAssert.IsEmpty(result);
-        }
+			CollectionAssert.IsEmpty(result);
+		}
 
 		[Test]
 		public void FirstIsInfinite()
@@ -62,11 +62,11 @@ namespace Samples.AAA
 
 			var result = infiniteArr2.Zip(arr2, Tuple.Create);
 
-		    CollectionAssert.AreEqual(new[]
-		    {
-		        Tuple.Create(42, 1),
-		        Tuple.Create(42, 2)
-		    }, result);
+			CollectionAssert.AreEqual(new[]
+			{
+				Tuple.Create(42, 1),
+				Tuple.Create(42, 2)
+			}, result);
 		}
 
 		[Test]
@@ -76,11 +76,11 @@ namespace Samples.AAA
 
 			var result = arr1.Zip(Infinite(), Tuple.Create);
 
-            CollectionAssert.AreEqual(new[]
-            {
-                Tuple.Create(1, 42),
-                Tuple.Create(2, 42)
-            }, result);
+			CollectionAssert.AreEqual(new[]
+			{
+				Tuple.Create(1, 42),
+				Tuple.Create(2, 42)
+			}, result);
 		}
 
 		private static IEnumerable<int> Infinite()
@@ -88,6 +88,6 @@ namespace Samples.AAA
 			while (true)
 				yield return 42;
 			// ReSharper disable once FunctionNeverReturns
-		}   
+		}
 	}
 }

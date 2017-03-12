@@ -4,7 +4,7 @@ using NUnit.Framework;
 
 namespace Samples.Specifications
 {
-	[TestFixture, Explicit]
+	[TestFixture]
 	public class Stack_Specification
 	{
 		[Test]
