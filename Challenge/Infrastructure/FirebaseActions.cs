@@ -1,6 +1,4 @@
-﻿using FireSharp;
-using FireSharp.Config;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using NUnit.Framework;
 
@@ -12,11 +10,7 @@ namespace Challenge.Infrastructure
         [Test, Explicit]
         public void ClearLeaderboard()
         {
-            var config = new FirebaseConfig
-            {
-                BasePath = "https://testing-challenge.firebaseio.com/word-statistics/"
-            };
-            using (var client = new FirebaseClient(config))
+            using (var client = Firebase.CreateClient())
             {
                 var response = client.Get("");
                 var jObject = (JObject)JsonConvert.DeserializeObject(response.Body);

@@ -42,11 +42,7 @@ namespace Challenge.Infrastructure
         {
             try
             {
-                var config = new FirebaseConfig
-                {
-                    BasePath = "https://testing-challenge.firebaseio.com/word-statistics/"
-                };
-                using (var client = new FirebaseClient(config))
+                using (var client = Firebase.CreateClient())
                 {
                     string authorsKey = MakeFirebaseSafe(WordsStatistics_Tests.Authors);
                     var values = statuses.Select(s => s.Fails.Length).ToArray();

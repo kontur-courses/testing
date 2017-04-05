@@ -12,8 +12,23 @@
 	<div id="container" />
 
 <script>
+	function buildDateKey() {
+		var now = new Date();
+		var day = ("0" + now.getDate()).substr(0, 2);
+		var month = ("0" + (now.getMonth() + 1)).substr(0, 2);
+		var year = now.getFullYear();
+		return year + month + day;
+	}
+
+	function createFirebase() {
+		var url = "https://testing-challenge.firebaseio.com";
+		var realm = "word-statistics";
+		var dateKey = buildDateKey();
+		return new Firebase(`${url}/${realm}/${dateKey}`);
+	}
+
 	console.log("hi!");
-	var fb = new Firebase("https://testing-challenge.firebaseio.com/word-statistics");
+	var fb = createFirebase();
 	fb.on("value", function(snapshot) {
 		var res = snapshot.val();
 		var html = "<table class='table table-condensed'>";

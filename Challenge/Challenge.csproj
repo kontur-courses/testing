@@ -110,6 +110,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Infrastructure\ChallengeHelpers.cs" />
+    <Compile Include="Infrastructure\Firebase.cs" />
     <Compile Include="Infrastructure\FirebaseActions.cs" />
     <Compile Include="Infrastructure\ImplementationStatus.cs" />
     <Compile Include="Infrastructure\IncorrectImplementationAttribute.cs" />
