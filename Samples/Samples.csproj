@@ -57,6 +57,7 @@
     <Compile Include="Antipatterns\Stack_tests3.cs" />
     <Compile Include="Antipatterns\Stack_tests4.cs" />
     <Compile Include="Specifications\DoubleParse_should.cs" />
+    <Compile Include="Specifications\Integer_should.cs" />
     <Compile Include="Specifications\Stack_Specification.cs" />
     <Compile Include="Specifications\Summator.cs" />
     <Compile Include="TestDataBuilder\TestUserBuilder.cs" />
