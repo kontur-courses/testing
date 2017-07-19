@@ -14,8 +14,8 @@
 <script>
 	function buildDateKey() {
 		var now = new Date();
-		var day = ("0" + now.getDate()).substr(0, 2);
-		var month = ("0" + (now.getMonth() + 1)).substr(0, 2);
+		var day = ("0" + now.getDate()).slice(-2);
+		var month = ("0" + (now.getMonth() + 1)).slice(-2);
 		var year = now.getFullYear();
 		return year + month + day;
 	}
