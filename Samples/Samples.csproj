@@ -60,9 +60,10 @@
     <Compile Include="Specifications\Integer_should.cs" />
     <Compile Include="Specifications\Stack_Specification.cs" />
     <Compile Include="Specifications\Summator.cs" />
+    <Compile Include="Specifications\Summator_Should.cs" />
     <Compile Include="TestDataBuilder\TestUserBuilder.cs" />
     <Compile Include="TestDataBuilder\TestUsers.cs" />
-    <Compile Include="TestDataBuilder\TransactionTest.cs" />
+    <Compile Include="TestDataBuilder\Sample_Tests.cs" />
     <Compile Include="TestDataBuilder\User.cs" />
   </ItemGroup>
   <ItemGroup>
