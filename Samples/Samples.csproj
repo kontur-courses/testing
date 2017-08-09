@@ -51,7 +51,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AAA\Zip_Tests.cs" />
+    <Compile Include="AAA\Zip_Should.cs" />
     <Compile Include="Antipatterns\Stack_tests2.cs" />
     <Compile Include="Antipatterns\Stack_tests1.cs" />
     <Compile Include="Antipatterns\Stack_tests3.cs" />
@@ -60,7 +60,6 @@
     <Compile Include="Specifications\Integer_should.cs" />
     <Compile Include="Specifications\Stack_Specification.cs" />
     <Compile Include="Specifications\Summator.cs" />
-    <Compile Include="Specifications\Summator_Should.cs" />
     <Compile Include="TestDataBuilder\TestUserBuilder.cs" />
     <Compile Include="TestDataBuilder\TestUsers.cs" />
     <Compile Include="TestDataBuilder\Sample_Tests.cs" />

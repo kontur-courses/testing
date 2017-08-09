@@ -6,12 +6,10 @@ using NUnit.Framework;
 namespace Samples.AAA
 {
 	[TestFixture]
-	public class Zip_Tests
+	public class Zip_Should
 	{
-		private int Field = 5;
-
 		[Test]
-		public void EqualSizeArrays()
+		public void GiveResultOfSameSize_OnEqualSizeArrays()
 		{
 			var arr1 = new[] { 1 };
 			var arr2 = new[] { 2 };
@@ -22,7 +20,7 @@ namespace Samples.AAA
 		}
 
 		[Test]
-		public void BothEmpty()
+		public void BeEmpty_WhenBothInputAreEmpty()
 		{
 			var arr1 = new int[0];
 			var arr2 = new int[0];
@@ -33,7 +31,7 @@ namespace Samples.AAA
 		}
 
 		[Test]
-		public void FirstIsEmpty()
+		public void BeEmpty_WhenFirstIsEmpty()
 		{
 			var arr1 = new int[0];
 			var arr2 = new[] { 1, 2 };
@@ -44,7 +42,7 @@ namespace Samples.AAA
 		}
 
 		[Test]
-		public void SecondIsEmpty()
+		public void BeEmpty_WhenSecondIsEmpty()
 		{
 			var arr1 = new[] { 1, 2 };
 			var arr2 = new int[0];
@@ -55,7 +53,7 @@ namespace Samples.AAA
 		}
 
 		[Test]
-		public void FirstIsInfinite()
+		public void HaveLengthOfSecond_WhenFirstIsInfinite()
 		{
 			var arr2 = new[] { 1, 2 };
 			var infiniteArr2 = Infinite();
@@ -70,7 +68,7 @@ namespace Samples.AAA
 		}
 
 		[Test]
-		public void SecondIsInfinite()
+		public void HaveLengthOfFirst_WhenSecondIsInfinite()
 		{
 			var arr1 = new[] { 1, 2 };
 
@@ -87,7 +85,7 @@ namespace Samples.AAA
 		{
 			while (true)
 				yield return 42;
-			// ReSharper disable once FunctionNeverReturns
+			// ReSharper disable once IteratorNeverReturns
 		}
 	}
 }
