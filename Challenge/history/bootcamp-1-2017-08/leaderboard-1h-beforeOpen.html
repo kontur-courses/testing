@@ -4,8 +4,8 @@
 	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.0.0-alpha/css/bootstrap.min.css">	
 	<style>
 		.no{background-color: #FCC;}
-		.one{background-color: #DFD;}
-		.many{background-color: #AFA;}
+		.ok{background-color: #DFD;}
+		.over{background-color: #FFA;}
 	</style>
 </head>
 <body>
@@ -75,7 +75,7 @@
 	}
 
 	function formatCell(v){
-		var clazz = v == 0 ? "no" : (v == 1 ? "one" : "many");
+		var clazz = v == 0 ? "no" : (v <= 3 ? "ok" : "over");
 		return "<td class='" + clazz + "'>" + v + "</td>"; 
 	}
 </script>
