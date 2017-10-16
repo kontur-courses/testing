@@ -1,7 +1,6 @@
-﻿using System;
-using NUnit.Framework;
+﻿using NUnit.Framework;
 
-namespace ObjectComparison.cs
+namespace MakeItFluent
 {
 	public class ObjectComparison
 	{
@@ -40,20 +39,16 @@ namespace ObjectComparison.cs
 
 		private bool AreEqualPersons(Person actual, Person expected)
 		{
-			try { 
-				return actual.Name == expected.Name &&
-			       actual.Age == expected.Age &&
-			       actual.Height == expected.Height &&
-			       actual.Weight == expected.Weight &&
-			       AreEqualPersons(actual.Parent, expected.Parent);
-			}
-			catch (NullReferenceException)
-			{
+			if (actual.Parent != null && expected.Parent != null)
 				return actual.Name == expected.Name &&
 				       actual.Age == expected.Age &&
 				       actual.Height == expected.Height &&
-				       actual.Weight == expected.Weight;
-			}
+				       actual.Weight == expected.Weight &&
+				       AreEqualPersons(actual.Parent, expected.Parent);
+			return actual.Name == expected.Name &&
+			       actual.Age == expected.Age &&
+			       actual.Height == expected.Height &&
+			       actual.Weight == expected.Weight;
 		}
 
 		public class Person

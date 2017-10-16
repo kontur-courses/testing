@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2013
 VisualStudioVersion = 12.0.40629.0
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MakeItFluent.cs", "ObjectComparison.cs\MakeItFluent.cs.csproj", "{F6A958C7-6725-436E-9582-E00EBD871F3F}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MakeItFluent", "MakeItFluent\MakeItFluent.csproj", "{4F9FBCCA-43E0-431B-944D-834D16AD18F9}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -11,10 +11,10 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{F6A958C7-6725-436E-9582-E00EBD871F3F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{F6A958C7-6725-436E-9582-E00EBD871F3F}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{F6A958C7-6725-436E-9582-E00EBD871F3F}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{F6A958C7-6725-436E-9582-E00EBD871F3F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4F9FBCCA-43E0-431B-944D-834D16AD18F9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4F9FBCCA-43E0-431B-944D-834D16AD18F9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4F9FBCCA-43E0-431B-944D-834D16AD18F9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4F9FBCCA-43E0-431B-944D-834D16AD18F9}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

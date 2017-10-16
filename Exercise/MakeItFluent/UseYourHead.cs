@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using NUnit.Framework;
 
-namespace ObjectComparison.cs
+namespace MakeItFluent
 {
 	public class UseYourHead
 	{
