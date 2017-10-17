@@ -1,13 +1,12 @@
 ﻿using System;
 using System.Text.RegularExpressions;
+using FluentAssertions;
 using NUnit.Framework;
 
-namespace MakeItFluent
+namespace HomeExercises
 {
-	public class TestRefactoring
+	public class NumberValidatorTests
 	{
-		// Задача - провести рефакторинг данного теста с использованием FluentAssertions,
-		// аттрибутов TestCase/TestCaseSource.
 		[Test]
 		public void Test()
 		{
