@@ -14,17 +14,11 @@ namespace HomeExercises
 
 			var expectedTsar = new Person("Ivan IV The Terrible", 54, 170, 70,
 				new Person("Vasili III of Russia", 28, 170, 60, null));
-
+            
 			// Перепишите код на использование Fluent Assertions.
-			Assert.AreEqual(actualTsar.Name, expectedTsar.Name);
-			Assert.AreEqual(actualTsar.Age, expectedTsar.Age);
-			Assert.AreEqual(actualTsar.Height, expectedTsar.Height);
-			Assert.AreEqual(actualTsar.Weight, expectedTsar.Weight);
-
-			Assert.AreEqual(expectedTsar.Parent.Name, actualTsar.Parent.Name);
-			Assert.AreEqual(expectedTsar.Parent.Age, actualTsar.Parent.Age);
-			Assert.AreEqual(expectedTsar.Parent.Height, actualTsar.Parent.Height);
-			Assert.AreEqual(expectedTsar.Parent.Parent, actualTsar.Parent.Parent);
+		    actualTsar.ShouldBeEquivalentTo(expectedTsar, options => options
+		        .Excluding(x => x.Id)
+                .Excluding(x => x.Parent.Id));
 		}
 
 		[Test]
@@ -35,12 +29,18 @@ namespace HomeExercises
 			var expectedTsar = new Person("Ivan IV The Terrible", 54, 170, 70,
 			new Person("Vasili III of Russia", 28, 170, 60, null));
 
-			// Какие недостатки у такого подхода? 
-			Assert.True(AreEqual(actualTsar, expectedTsar));
+            // Какие недостатки у такого подхода? 
 
-		}
+            // Если тест упадет выведется false - не информативно
+            // Даже если бы было Assert.AreEqual(actualTsar,expectedTsar); то был бы не верный порядок -
+            // перепутаны местами ожидаемое и актуальное значение + вывелся бы тип
+            // Не очевидно по каким критериям идет сравнение
+            // Добавление полей ведет к переписыванию метода AreEqual
 
-		private bool AreEqual(Person actual, Person expected)
+            Assert.True(AreEqual(actualTsar, expectedTsar));
+        }
+
+        private bool AreEqual(Person actual, Person expected)
 		{
 			if (actual == expected) return true;
 			if (actual == null || expected == null) return false;
