@@ -11,6 +11,7 @@ namespace HomeExercises
     {
         private NumberValidator correctPositiveOnlyNumberValidator;
         private NumberValidator correctNumberValidator;
+
         [SetUp]
         public void SetUp()
         {
@@ -51,18 +52,17 @@ namespace HomeExercises
             correctNumberValidator.IsValidNumber("-1.2").Should().BeTrue();
         }
 
-        [TestCase(-1, 2, true,"precision must be a positive number", 
-            TestName = "When precision is negative")]
-        [TestCase(1, -2, true, "scale must be a non-negative number less or equal than precision", 
-            TestName = "When scale is negative")]
-        [TestCase(2, 2, true, "scale must be a non-negative number less or equal than precision", 
-            TestName = "When scale is bigger than precision")]
+        [TestCase(-1, 2, true, "precision must be a positive number",
+             TestName = "When precision is negative")]
+        [TestCase(1, -2, true, "scale must be a non-negative number less or equal than precision",
+             TestName = "When scale is negative")]
+        [TestCase(2, 2, true, "scale must be a non-negative number less or equal than precision",
+             TestName = "When scale is bigger than precision")]
         public void NumberValidator_ThrowArgumentException(int precision, int scale, bool onlyPositive, string message)
         {
-            var exception = Assert.Throws<ArgumentException>(
-                () => new NumberValidator(precision, scale, onlyPositive)
-                );
-            exception.Message.Should().BeEquivalentTo(message);
+            new Action(() => new NumberValidator(precision, scale, onlyPositive))
+                .ShouldThrow<ArgumentException>()
+                .WithMessage(message);
         }
     }
 
