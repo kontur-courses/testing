@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Diagnostics;
 using System.Text.RegularExpressions;
 using FluentAssertions;
 using NUnit.Framework;
@@ -9,49 +8,6 @@ namespace HomeExercises
     [TestFixture]
     public class NumberValidatorTests
     {
-        private NumberValidator correctPositiveOnlyNumberValidator;
-        private NumberValidator correctNumberValidator;
-
-        [SetUp]
-        public void SetUp()
-        {
-            correctNumberValidator = new NumberValidator(3, 2);
-            correctPositiveOnlyNumberValidator = new NumberValidator(3, 2, true);
-        }
-
-        [TestCase("+0.00", TestName = "WhenSignsNumberGreaterThanPrecision")]
-        [TestCase("0.000", TestName = "WhenNumberOfDecimalPlacesGreaterThanScale")]
-        [TestCase("0.0a", TestName = "WhenValueNotANumber")]
-        [TestCase("-", TestName = "WhenValueNotANumber")]
-        [TestCase(null, TestName = "WhenValueIsNull")]
-        public void IsValidNumber_Fails_OnBothValidators(string value)
-        {
-            correctNumberValidator.IsValidNumber(value).Should().BeFalse();
-            correctPositiveOnlyNumberValidator.IsValidNumber(value).Should().BeFalse();
-        }
-
-        [TestCase("0.00", TestName = "WhenZeros")]
-        [TestCase("0", TestName = "WhenZero")]
-        [TestCase("+1", TestName = "WhenPositiveNumber")]
-        [TestCase("111", TestName = "WhenNumberWithoutSign")]
-        public void IsValidNumber_Passes_OnBothValidators(string value)
-        {
-            correctNumberValidator.IsValidNumber(value).Should().BeTrue();
-            correctPositiveOnlyNumberValidator.IsValidNumber(value).Should().BeTrue();
-        }
-
-        [Test]
-        public void IsValidNumber_Fails_WhenNegativeNumberOnPositiveOnlyValidator()
-        {
-            correctPositiveOnlyNumberValidator.IsValidNumber("-1.2").Should().BeFalse();
-        }
-
-        [Test]
-        public void IsValidNumber_Passes_WhenNegativeNumberOnNegativeValidator()
-        {
-            correctNumberValidator.IsValidNumber("-1.2").Should().BeTrue();
-        }
-
         [TestCase(-1, 2, true, "precision must be a positive number",
              TestName = "When precision is negative")]
         [TestCase(1, -2, true, "scale must be a non-negative number less or equal than precision",
@@ -63,6 +19,55 @@ namespace HomeExercises
             new Action(() => new NumberValidator(precision, scale, onlyPositive))
                 .ShouldThrow<ArgumentException>()
                 .WithMessage(message);
+        }
+
+        [TestCase(1, 0, false, "scale can be 0", TestName = "When scale is 0")]
+        [TestCase(1, 0, true, "scale can be 0", TestName = "When scale is 0")]
+        public void NumberValidator_NotThrowArgumentException(int precision, int scale, bool onlyPositive,
+            string message)
+        {
+            new Action(() => new NumberValidator(precision, scale, onlyPositive))
+                .ShouldNotThrow<ArgumentException>();
+        }
+
+        [TestCase(3, 2, true, "-0.0", TestName = "WhenNegativeNumberOnPositiveOnlyValidator")]
+        // precision test
+        [TestCase(3, 2, false, "+0.00", TestName = "WhenLengthOfIntPartWithPlusGreaterThanPrecision")]
+        [TestCase(3, 2, false, "-0.00", TestName = "WhenLengthOfIntPartWithMinusGreaterThanPrecision")]
+        [TestCase(3, 2, false, "00.00", TestName = "WhenSignsNumberGreaterThanPrecision")]
+        [TestCase(3, 2, false, "0000", TestName = "WhenNumberCountGreaterThanPrecision")]
+        // scale test
+        [TestCase(4, 2, false, "0.000", TestName = "WhenNumberOfDecimalPlacesGreaterThanScale")]
+        [TestCase(4, 0, false, "0.0", TestName = "WhenNumberOfDecimalPlacesGreaterThanScale")]
+        // precision and scale test
+        [TestCase(4, 2, false, "10.000", TestName = "WhenBothIntPartAndFractPartDoNotSatisfy")]
+        [TestCase(4, 2, false, "+0.000", TestName = "WhenBothIntPartWithPlusAndFractPartDoNotSatisfy")]
+        [TestCase(4, 2, false, "-0.000", TestName = "WhenBothIntPartWithMinusAndFractPartDoNotSatisfy")]
+        // format test
+        [TestCase(3, 2, false, "0.0a", TestName = "WhenValueNotANumber")]
+        [TestCase(3, 2, false, ".01", TestName = "WhenOnlyFractionalPartExists")]
+        [TestCase(3, 2, false, "1.", TestName = "WhenOnlyIntegerPartExists")]
+        [TestCase(3, 2, false, "-", TestName = "WhenValueNotANumber")]
+        [TestCase(3, 2, false, "", TestName = "WhenValueIsEmptyString")]
+        [TestCase(3, 2, false, null, TestName = "WhenValueIsNull")]
+        public void IsValidNumber_Fails(int precision, int scale, bool positiveOnly, string value)
+        {
+            var validator = new NumberValidator(precision, scale, positiveOnly);
+            validator.IsValidNumber(value).Should().BeFalse();
+        }
+
+        [TestCase(2, 0, false, "-0", TestName = "WhenZeroWithMinus")] //???
+        [TestCase(2, 0, true, "+1", TestName = "WhenPositiveNumber")]
+        [TestCase(2, 0, false, "-1", TestName = "WhenNegativeNumber")]
+        [TestCase(100501, 100500, false, "-1", TestName = "WhenScaleBiggerThanDecimalPlacesNumber")]
+        [TestCase(3, 2, false, "111", TestName = "WhenNumberWithoutSign")]
+        [TestCase(3, 2, false, "0.00", TestName = "WhenIntAndFracParts")]
+        [TestCase(4, 2, true, "+0.00", TestName = "WhenIntAndFracPartsWithPlus")]
+        [TestCase(4, 2, false, "-0.00", TestName = "WhenIntAndFracPartsWithMinus")]
+        public void IsValidNumber_Passes(int precision, int scale, bool positiveOnly, string value)
+        {
+            var validator = new NumberValidator(precision, scale, positiveOnly);
+            validator.IsValidNumber(value).Should().BeTrue();
         }
     }
 
@@ -87,11 +92,11 @@ namespace HomeExercises
 
         public bool IsValidNumber(string value)
         {
-            // Проверяем соответствие входного значения формату N(m,k), в соответствии с правилом, 
-            // описанным в Формате описи документов, направляемых в налоговый орган в электронном виде по телекоммуникационным каналам связи:
-            // Формат числового значения указывается в виде N(m.к), где m – максимальное количество знаков в числе, включая знак (для отрицательного числа), 
-            // целую и дробную часть числа без разделяющей десятичной точки, k – максимальное число знаков дробной части числа. 
-            // Если число знаков дробной части числа равно 0 (т.е. число целое), то формат числового значения имеет вид N(m).
+// Проверяем соответствие входного значения формату N(m,k), в соответствии с правилом, 
+// описанным в Формате описи документов, направляемых в налоговый орган в электронном виде по телекоммуникационным каналам связи:
+// Формат числового значения указывается в виде N(m.к), где m – максимальное количество знаков в числе, включая знак (для отрицательного числа), 
+// целую и дробную часть числа без разделяющей десятичной точки, k – максимальное число знаков дробной части числа. 
+// Если число знаков дробной части числа равно 0 (т.е. число целое), то формат числового значения имеет вид N(m).
 
             if (string.IsNullOrEmpty(value))
                 return false;
@@ -100,9 +105,9 @@ namespace HomeExercises
             if (!match.Success)
                 return false;
 
-            // Знак и целая часть
+// Знак и целая часть
             var intPart = match.Groups[1].Value.Length + match.Groups[2].Value.Length;
-            // Дробная часть
+// Дробная часть
             var fracPart = match.Groups[4].Value.Length;
 
             if (intPart + fracPart > precision || fracPart > scale)

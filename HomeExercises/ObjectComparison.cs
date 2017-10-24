@@ -15,7 +15,7 @@ namespace HomeExercises
             var expectedTsar = new Person("Ivan IV The Terrible", 54, 170, 70,
                 new Person("Vasili III of Russia", 28, 170, 60, null));
 
-            // Перепишите код на использование Fluent Assertions.
+// Перепишите код на использование Fluent Assertions.
             actualTsar.ShouldBeEquivalentTo(expectedTsar, options => options
                 .Excluding(x => x.Id)
                 .Excluding(x => x.Parent.Id));
@@ -29,13 +29,13 @@ namespace HomeExercises
             var expectedTsar = new Person("Ivan IV The Terrible", 54, 170, 70,
                 new Person("Vasili III of Russia", 28, 170, 60, null));
 
-            // Какие недостатки у такого подхода? 
+                // Какие недостатки у такого подхода? 
 
-            // Если тест упадет выведется false - не информативно
-            // Даже если бы было Assert.AreEqual(actualTsar,expectedTsar); то был бы не верный порядок -
-            // перепутаны местами ожидаемое и актуальное значение + вывелся бы тип
-            // Не очевидно по каким критериям идет сравнение
-            // Добавление полей ведет к переписыванию метода AreEqual
+                // Если тест упадет выведется false - не информативно
+                // Даже если бы было Assert.AreEqual(actualTsar,expectedTsar); то был бы не верный порядок -
+                // перепутаны местами ожидаемое и актуальное значение + вывелся бы тип
+                // Не очевидно по каким критериям идет сравнение
+                // Добавление полей ведет к переписыванию метода AreEqual
 
             Assert.True(AreEqual(actualTsar, expectedTsar));
         }
