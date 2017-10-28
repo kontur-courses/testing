@@ -17,10 +17,12 @@ namespace HomeExercises
 
 			Assert.IsTrue(new NumberValidator(17, 2, true).IsValidNumber("0.0"));
 			Assert.IsTrue(new NumberValidator(17, 2, true).IsValidNumber("0"));
-			Assert.IsTrue(new NumberValidator(17, 2, true).IsValidNumber("0.0"));
+			//Assert.IsTrue(new NumberValidator(17, 2, true).IsValidNumber("0.0"));
 			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("00.00"));
 			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("-0.00"));
+
 			Assert.IsTrue(new NumberValidator(17, 2, true).IsValidNumber("0.0"));
+
 			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("+0.00"));
 			Assert.IsTrue(new NumberValidator(4, 2, true).IsValidNumber("+1.23"));
 			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("+1.23"));
@@ -28,7 +30,59 @@ namespace HomeExercises
 			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("-1.23"));
 			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("a.sd"));
 		}
-	}
+
+	    [Test]
+	    public void ThrowArgumentException_OnNegativePrecision()
+	    {
+	        Action act = () => new NumberValidator(-1, 2, true);
+	        act.ShouldThrow<ArgumentException>();
+	    }
+
+	    [Test]
+	    public void ShouldNotThrow()
+	    {
+	        Action act = () => new NumberValidator(1, 0, true);
+	        act.ShouldNotThrow();
+        }
+
+	    [TestCase(10, -1)]
+        [TestCase(10, 15)]
+	    public void ThrowArgumentException_IfScaleMoreThanPrecision_OrLessThanZero(int precision, int scale)
+	    {
+	        Action act = () => new NumberValidator(precision, scale, true);
+	        act.ShouldThrow<ArgumentException>();
+        }
+
+	    [TestCase(null)]
+	    [TestCase("")]
+        public void ShouldBeFalse_IfStringIsEmptyOrNull(string value)
+	    {
+	        var validator = new NumberValidator(17, 2, true);
+	        validator.IsValidNumber(value).Should().BeFalse();
+	    }
+
+	    [TestCase(17, 2, "0.0")]
+	    [TestCase(17, 2, "0")]
+	    [TestCase(4, 2, "+1.23")]
+        public void ShouldBeTrue(int precision, int scale, string value)
+	    {
+	        new NumberValidator(precision, scale, true).IsValidNumber(value)
+                .Should().BeTrue();
+	    }
+
+	    [TestCase(3, 2, "00.00")]
+	    [TestCase(3, 2, "-0.00")]
+	    [TestCase(3, 2, "+0.00")]
+	    [TestCase(3, 2, "+1.23")]
+	    [TestCase(17, 2, "0.000")]
+        [TestCase(3, 2, "-1.23")]
+        [TestCase(3, 2, "a.sd")]
+	    public void ShouldBeFalse(int precision, int scale, string value)
+	    {
+	        new NumberValidator(precision, scale, true).IsValidNumber(value)
+	            .Should().BeFalse();
+	    }
+    }
 
 	public class NumberValidator
 	{
