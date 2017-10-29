@@ -1,4 +1,4 @@
-﻿using FluentAssertions;
+using FluentAssertions;
 using NUnit.Framework;
 
 namespace HomeExercises
@@ -15,16 +15,10 @@ namespace HomeExercises
 			var expectedTsar = new Person("Ivan IV The Terrible", 54, 170, 70,
 				new Person("Vasili III of Russia", 28, 170, 60, null));
 
-			// Перепишите код на использование Fluent Assertions.
-			Assert.AreEqual(actualTsar.Name, expectedTsar.Name);
-			Assert.AreEqual(actualTsar.Age, expectedTsar.Age);
-			Assert.AreEqual(actualTsar.Height, expectedTsar.Height);
-			Assert.AreEqual(actualTsar.Weight, expectedTsar.Weight);
-
-			Assert.AreEqual(expectedTsar.Parent.Name, actualTsar.Parent.Name);
-			Assert.AreEqual(expectedTsar.Parent.Age, actualTsar.Parent.Age);
-			Assert.AreEqual(expectedTsar.Parent.Height, actualTsar.Parent.Height);
-			Assert.AreEqual(expectedTsar.Parent.Parent, actualTsar.Parent.Parent);
+			
+		    actualTsar.ShouldBeEquivalentTo(expectedTsar, options => options
+                .Excluding(o => o.Id)
+                .Excluding(o => o.Parent.Id));
 		}
 
 		[Test]
@@ -33,10 +27,16 @@ namespace HomeExercises
 		{
 			var actualTsar = TsarRegistry.GetCurrentTsar();
 			var expectedTsar = new Person("Ivan IV The Terrible", 54, 170, 70,
-				new Person("Vasili III of Russia", 28, 170, 60, null));
+			new Person("Vasili III of Russia", 28, 170, 60, null));
 
 			// Какие недостатки у такого подхода? 
 			Assert.True(AreEqual(actualTsar, expectedTsar));
+            /* 
+             * 1)При расширении функциональности необходимо явно добавлять проверку равенства новых полей.
+             * 2)Если понадобится производить сравнения полей-объектов разных классов,
+             *   а не одного только Person, понадобится писать дополнительные компараторы.
+             * 3)Чтобы понять логику теста, недостаточно читать код только самого теста.
+             */
 		}
 
 		private bool AreEqual(Person actual, Person expected)
@@ -44,11 +44,11 @@ namespace HomeExercises
 			if (actual == expected) return true;
 			if (actual == null || expected == null) return false;
 			return
-				actual.Name == expected.Name
-				&& actual.Age == expected.Age
-				&& actual.Height == expected.Height
-				&& actual.Weight == expected.Weight
-				&& AreEqual(actual.Parent, expected.Parent);
+			actual.Name == expected.Name
+			&& actual.Age == expected.Age
+			&& actual.Height == expected.Height
+			&& actual.Weight == expected.Weight
+			&& AreEqual(actual.Parent, expected.Parent);
 		}
 	}
 
