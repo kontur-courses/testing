@@ -8,3 +8,4 @@ L - Length
 999 - Add Same Performance
 QWE - All chars lower case
 STA - Static
+EN - To cache or not to cache

@@ -28,7 +28,22 @@ namespace Challenge.Solved
             statistics.GetStatistics().Should().BeEmpty();
         }
 
-        [Test]
+	    [Test]
+	    public void GetStatistics_ContainsItem_AfterAddition()
+	    {
+		    statistics.AddWord("abc");
+		    statistics.GetStatistics().Should().Equal(Tuple.Create(1, "abc"));
+	    }
+
+	    [Test]
+	    public void GetStatistics_ContainsManyItems_AfterAdditionOfDifferentWords()
+	    {
+		    statistics.AddWord("abc");
+		    statistics.AddWord("def");
+		    statistics.GetStatistics().Should().HaveCount(2);
+	    }
+
+		[Test]
         public void AddWord_AllowsShortWords()
         {
             statistics.AddWord("aaa");
@@ -147,7 +162,24 @@ namespace Challenge.Solved
             statistics.GetStatistics().Should().HaveCount(wordCount);
         }
 
-        [Test, Timeout(100)]
+	    [Test]
+	    public void GetStatistics_ReturnsSameResult_OnSecondCall()
+	    {
+		    statistics.AddWord("abc");
+		    statistics.GetStatistics().Should().Equal(Tuple.Create(1, "abc"));
+		    statistics.GetStatistics().Should().Equal(Tuple.Create(1, "abc"));
+	    }
+
+	    [Test]
+	    public void GetStatistics_BuildsResult_OnEveryCall()
+	    {
+		    statistics.AddWord("abc");
+		    statistics.GetStatistics().Should().HaveCount(1);
+		    statistics.AddWord("def");
+		    statistics.GetStatistics().Should().HaveCount(2);
+	    }
+
+		[Test, Timeout(100)]
         public void AddWord_HaveSufficientPerformance_OnAddingDifferentWords()
         {
             for (int i = 0; i < 1000; i++)
