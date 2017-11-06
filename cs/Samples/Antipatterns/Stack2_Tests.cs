@@ -6,7 +6,7 @@ using NUnit.Framework;
 namespace Samples.Antipatterns
 {
     [TestFixture, Explicit]
-    public class Stack_tests2
+    public class Stack2_Tests
 	{
 		[Test]
 		public void TestPushPop()
@@ -18,6 +18,7 @@ namespace Samples.Antipatterns
 			while (stack.Any())
 				Console.WriteLine(stack.Pop());
 		}
+
 		#region Почему это плохо?
 		/*
 		## Антипаттерн Loudmouth

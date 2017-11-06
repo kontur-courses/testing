@@ -8,7 +8,7 @@ namespace Samples.Specifications
 	public class Stack_Specification
 	{
 		[Test]
-		public void defaultConstructor_createsEmptyStack()
+		public void DefaultConstructor_CreatesEmptyStack()
 		{
 			// ReSharper disable once CollectionNeverUpdated.Local
 			var stack = new Stack<int>();
@@ -17,7 +17,7 @@ namespace Samples.Specifications
 		}
 
 		[Test]
-		public void pop_onEmptyStack_fails()
+		public void Pop_OnEmptyStack_Fails()
 		{
 			var stack = new Stack<int>();
 
@@ -25,7 +25,7 @@ namespace Samples.Specifications
 		}
 
 		[Test]
-		public void constructor_pushesItemsToEmptyStack()
+		public void Constructor_PushesItemsToEmptyStack()
 		{
 			var stack = new Stack<int>(new[] { 1, 2, 3 });
 
@@ -37,7 +37,7 @@ namespace Samples.Specifications
 		}
 
 		[Test]
-		public void enumeration_returnsItemsInPopOrder()
+		public void ToArray_ReturnsItemsInPopOrder()
 		{
 			var stack = new Stack<int>(new[] { 1, 2, 3 });
 
@@ -45,17 +45,17 @@ namespace Samples.Specifications
 		}
 
 		[Test]
-		public void push_addItemToStackTop()
+		public void Push_AddsItemToStackTop()
 		{
 			var stack = new Stack<int>(new[] { 1, 2, 3 });
 
 			stack.Push(42);
 
-			CollectionAssert.AreEqual(new[] { 42, 3, 2, 1 }, stack);
+			CollectionAssert.AreEqual(new[] { 42, 3, 2, 1 }, stack.ToArray());
 		}
 
 		[Test]
-		public void pop_returnsLastPushedItem()
+		public void Pop_ReturnsLastPushedItem()
 		{
 			var stack = new Stack<int>(new[] { 1, 2, 3 });
 

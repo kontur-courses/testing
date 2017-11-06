@@ -5,7 +5,7 @@ using NUnit.Framework;
 namespace Samples.Antipatterns
 {
     [TestFixture, Explicit]
-    public class Stack_tests4
+    public class Stack4_Tests
 	{
 		[Test]
 		public void TestPop()

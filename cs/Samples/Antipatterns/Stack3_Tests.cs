@@ -5,16 +5,16 @@ using NUnit.Framework;
 namespace Samples.Antipatterns
 {
     [TestFixture, Explicit]
-    public class Stack_tests3
+    public class Stack3_Tests
 	{
 		[Test]
 		public void Test()
 		{
 			var stack = new Stack<int>();
-			CollectionAssert.IsEmpty(stack);
+			Assert.IsFalse(stack.Any());
 			stack.Push(1);
 			stack.Pop();
-			CollectionAssert.IsEmpty(stack);
+			Assert.IsFalse(stack.Any());
 			stack.Push(1);
 			stack.Push(2);
 			stack.Push(3);
@@ -22,13 +22,13 @@ namespace Samples.Antipatterns
 			stack.Pop();
 			stack.Pop();
 			stack.Pop();
-			CollectionAssert.IsEmpty(stack);
-			foreach (var i in Enumerable.Range(0, 1000))
+			Assert.IsFalse(stack.Any());
+			for (var i = 0; i < 1000; i++)
 				stack.Push(i);
-			foreach (var i in Enumerable.Range(0, 1000).Reverse())
-				Assert.AreEqual(i, stack.Pop());
-
+			for (var i = 1000; i > 0; i--)
+				Assert.AreEqual(i - 1, stack.Pop());
 		}
+
 		#region Почему этот тест плохой?
 		/*
 		## Антипаттерн Freeride

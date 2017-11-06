@@ -15,9 +15,15 @@
 
 ## Самостоятельная подготовка
 
+### C#
 1. Познакомься с NUnit, если ещё не знаком, научись подключать его к проекту через nuget 
 2. Изучи возможности синтаксиса NUnit по этому [примеру](https://github.com/nunit/nunit-csharp-samples/blob/master/syntax/AssertSyntaxTests.cs) или по [документации](https://github.com/nunit/docs/wiki/NUnit-Documentation)
 3. Научись запускать тесты из Visual Studio с помощью Resharper по [инструкции](https://www.jetbrains.com/resharper/features/unit_testing.html)
+
+### JS
+1. Познакомься с Mocha, если ещё не знаком, научись подключать его через npm (yarn) 
+2. Изучи возможности синтаксиса [Mocha](https://mochajs.org/) и BDD-стиль проверок в [Chai](http://chaijs.com/api/bdd/)
+3. Научись запускать тесты в терминале (`npm test` или `yarn test`), из WebStorm по [инструкции](https://www.jetbrains.com/help/webstorm/testing.html) или другой любимой JavaScript IDE 
 
 
 ## Очная встреча

@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using NUnit.Framework;
 
@@ -20,7 +19,7 @@ namespace Samples.AAA
 		}
 
 		[Test]
-		public void BeEmpty_WhenBothInputAreEmpty()
+		public void BeEmpty_WhenBothInputsAreEmpty()
 		{
 			var arr1 = new int[0];
 			var arr2 = new int[0];
@@ -53,39 +52,33 @@ namespace Samples.AAA
 		}
 
 		[Test]
-		public void HaveLengthOfSecond_WhenFirstIsInfinite()
+		public void HaveLengthOfSecond_WhenFirstContainsMoreElements()
 		{
-			var arr2 = new[] { 1, 2 };
-			var infiniteArr2 = Infinite();
+			var arr1 = new[] {1, 3, 5, 7};
+			var arr2 = new[] {2, 4};
 
-			var result = infiniteArr2.Zip(arr2, Tuple.Create);
+			var result = arr1.Zip(arr2, Tuple.Create);
 
 			CollectionAssert.AreEqual(new[]
 			{
-				Tuple.Create(42, 1),
-				Tuple.Create(42, 2)
+				Tuple.Create(1, 2),
+				Tuple.Create(3, 4)
 			}, result);
 		}
 
 		[Test]
-		public void HaveLengthOfFirst_WhenSecondIsInfinite()
+		public void HaveLengthOfFirst_WhenSecondContainsMoreElements()
 		{
-			var arr1 = new[] { 1, 2 };
+			var arr1 = new[] { 1, 3 };
+			var arr2 = new[] { 2, 4, 6, 8 };
 
-			var result = arr1.Zip(Infinite(), Tuple.Create);
+			var result = arr1.Zip(arr2, Tuple.Create);
 
 			CollectionAssert.AreEqual(new[]
 			{
-				Tuple.Create(1, 42),
-				Tuple.Create(2, 42)
+				Tuple.Create(1, 2),
+				Tuple.Create(3, 4)
 			}, result);
-		}
-
-		private static IEnumerable<int> Infinite()
-		{
-			while (true)
-				yield return 42;
-			// ReSharper disable once IteratorNeverReturns
 		}
 	}
 }

@@ -6,24 +6,25 @@ using NUnit.Framework;
 namespace Samples.Antipatterns
 {
     [TestFixture, Explicit]
-	public class Stack_tests1
+	public class Stack1_Tests
 	{
 		[Test]
 		public void Test()
 		{
 			var lines = File.ReadAllLines(@"C:\work\edu\testing-course\Patterns\bin\Debug\data.txt")
 				.Select(line => line.Split(' '))
-				.Select(line => new { push = line[0] == "push", value = line[1] });
+				.Select(line => new { command = line[0], value = line[1] });
 
 			var stack = new Stack<string>();
 			foreach (var line in lines)
 			{
-				if (line.push)
+				if (line.command == "push")
 					stack.Push(line.value);
 				else
 					Assert.AreEqual(line.value, stack.Pop());
 			}
 		}
+
 		#region Почему это плохо?
 		/*
 		## Антипаттерн Local Hero

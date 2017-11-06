@@ -52,14 +52,12 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AAA\Zip_Should.cs" />
-    <Compile Include="Antipatterns\Stack_tests2.cs" />
-    <Compile Include="Antipatterns\Stack_tests1.cs" />
-    <Compile Include="Antipatterns\Stack_tests3.cs" />
-    <Compile Include="Antipatterns\Stack_tests4.cs" />
-    <Compile Include="Specifications\DoubleParse_should.cs" />
-    <Compile Include="Specifications\Integer_should.cs" />
+    <Compile Include="Antipatterns\Stack2_Tests.cs" />
+    <Compile Include="Antipatterns\Stack1_Tests.cs" />
+    <Compile Include="Antipatterns\Stack3_Tests.cs" />
+    <Compile Include="Antipatterns\Stack4_Tests.cs" />
+    <Compile Include="Parametrized\Double_Should.cs" />
     <Compile Include="Specifications\Stack_Specification.cs" />
-    <Compile Include="Specifications\Summator.cs" />
     <Compile Include="TestDataBuilder\TestUserBuilder.cs" />
     <Compile Include="TestDataBuilder\TestUsers.cs" />
     <Compile Include="TestDataBuilder\Sample_Tests.cs" />
