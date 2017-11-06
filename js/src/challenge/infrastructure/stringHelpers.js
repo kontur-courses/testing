@@ -6,6 +6,10 @@ export function isWhitespace(word) {
     return word.match(/^\s*$/) !== null;
 }
 
+export function isEmpty(word) {
+    return word === "";
+}
+
 // http://werxltd.com/wp/2010/05/13/javascript-implementation-of-javas-string-hashcode-method/
 export function calculateHash(word) {
     let hash = 0, i, chr;

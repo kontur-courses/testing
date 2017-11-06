@@ -18,7 +18,7 @@ namespace Challenge.Infrastructure
         {
             if (WordsStatistics_Tests.Authors == "<ВАШИ ФАМИЛИИ>")
             {
-                Console.WriteLine("Укажите ваши фамилии в классе WordStatistics_Tests в поле Authors!");
+                Console.WriteLine("Укажите ваши фамилии в классе WordsStatistics_Tests в поле Authors!");
                 Thread.Sleep(3000);
             }
             var testPackage = new TestPackage(Assembly.GetExecutingAssembly().Location);

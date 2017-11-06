@@ -14,65 +14,65 @@ namespace Challenge.Solved
             return new Challenge.WordsStatistics();
         }
 
-        private IWordsStatistics statistics;
+        private IWordsStatistics wordsStatistics;
 
         [SetUp]
         public void SetUp()
         {
-            statistics = CreateStatistics();
+            wordsStatistics = CreateStatistics();
         }
 
         [Test]
         public void GetStatistics_IsEmpty_AfterCreation()
         {
-            statistics.GetStatistics().Should().BeEmpty();
+            wordsStatistics.GetStatistics().Should().BeEmpty();
         }
 
 	    [Test]
 	    public void GetStatistics_ContainsItem_AfterAddition()
 	    {
-		    statistics.AddWord("abc");
-		    statistics.GetStatistics().Should().Equal(Tuple.Create(1, "abc"));
+		    wordsStatistics.AddWord("abc");
+		    wordsStatistics.GetStatistics().Should().Equal(Tuple.Create(1, "abc"));
 	    }
 
 	    [Test]
 	    public void GetStatistics_ContainsManyItems_AfterAdditionOfDifferentWords()
 	    {
-		    statistics.AddWord("abc");
-		    statistics.AddWord("def");
-		    statistics.GetStatistics().Should().HaveCount(2);
+		    wordsStatistics.AddWord("abc");
+		    wordsStatistics.AddWord("def");
+		    wordsStatistics.GetStatistics().Should().HaveCount(2);
 	    }
 
 		[Test]
         public void AddWord_AllowsShortWords()
         {
-            statistics.AddWord("aaa");
+            wordsStatistics.AddWord("aaa");
         }
 
         [Test]
         public void AddWord_CountsOnce_WhenSameWord()
         {
-            statistics.AddWord("aaaaaaaaaa");
-            statistics.AddWord("aaaaaaaaaa");
-            statistics.GetStatistics().Should().HaveCount(1);
+            wordsStatistics.AddWord("aaaaaaaaaa");
+            wordsStatistics.AddWord("aaaaaaaaaa");
+            wordsStatistics.GetStatistics().Should().HaveCount(1);
         }
 
         [Test]
         public void AddWord_IncrementsCounter_WhenSameWord()
         {
-            statistics.AddWord("aaaaaaaaaa");
-            statistics.AddWord("aaaaaaaaaa");
-            statistics.GetStatistics().Select(t => t.Item1)
+            wordsStatistics.AddWord("aaaaaaaaaa");
+            wordsStatistics.AddWord("aaaaaaaaaa");
+            wordsStatistics.GetStatistics().Select(t => t.Item1)
                 .Should().BeEquivalentTo(2);
         }
 
         [Test]
         public void GetStatistics_SortsWordsByFrequency()
         {
-            statistics.AddWord("aaaaaaaaaa");
-            statistics.AddWord("bbbbbbbbbb");
-            statistics.AddWord("bbbbbbbbbb");
-            statistics.GetStatistics().Select(t => t.Item2)
+            wordsStatistics.AddWord("aaaaaaaaaa");
+            wordsStatistics.AddWord("bbbbbbbbbb");
+            wordsStatistics.AddWord("bbbbbbbbbb");
+            wordsStatistics.GetStatistics().Select(t => t.Item2)
                 .ShouldBeEquivalentTo(new[] { "bbbbbbbbbb", "aaaaaaaaaa" },
                     options => options.WithStrictOrdering());
         }
@@ -80,55 +80,55 @@ namespace Challenge.Solved
         [Test]
         public void GetStatistics_SortsWordsByAbc_WhenFrequenciesAreSame()
         {
-            statistics.AddWord("cccccccccc");
-            statistics.AddWord("aaaaaaaaaa");
-            statistics.AddWord("bbbbbbbbbb");
-            statistics.GetStatistics().Select(t => t.Item2)
+            wordsStatistics.AddWord("cccccccccc");
+            wordsStatistics.AddWord("aaaaaaaaaa");
+            wordsStatistics.AddWord("bbbbbbbbbb");
+            wordsStatistics.GetStatistics().Select(t => t.Item2)
                 .Should().ContainInOrder("aaaaaaaaaa", "bbbbbbbbbb", "cccccccccc");
         }
 
         [Test]
         public void AddWordThrows_WhenWordIsNull()
         {
-            Assert.Throws<ArgumentNullException>(() => statistics.AddWord(null));
+            Assert.Throws<ArgumentNullException>(() => wordsStatistics.AddWord(null));
         }
 
         [Test]
         public void AddWord_Ignores_EmptyWord()
         {
-            statistics.AddWord("");
-            statistics.GetStatistics().Should().BeEmpty();
+            wordsStatistics.AddWord("");
+            wordsStatistics.GetStatistics().Should().BeEmpty();
         }
 
         [Test]
         public void AddWord_Ignores_WhitespaceWord()
         {
-            statistics.AddWord(" ");
-            statistics.GetStatistics().Should().BeEmpty();
+            wordsStatistics.AddWord(" ");
+            wordsStatistics.GetStatistics().Should().BeEmpty();
         }
 
         [Test]
         public void AddWord_CutsWords_LongerThan10()
         {
-            statistics.AddWord("12345678901");
-            statistics.GetStatistics().Select(t => t.Item2)
+            wordsStatistics.AddWord("12345678901");
+            wordsStatistics.GetStatistics().Select(t => t.Item2)
                 .Should().BeEquivalentTo("1234567890");
         }
 
         [Test]
         public void AddWord_CutWordsJoined()
         {
-            statistics.AddWord("12345678901");
-            statistics.AddWord("1234567890");
-            statistics.GetStatistics().Select(t => t.Item1)
+            wordsStatistics.AddWord("12345678901");
+            wordsStatistics.AddWord("1234567890");
+            wordsStatistics.GetStatistics().Select(t => t.Item1)
                 .Should().BeEquivalentTo(2);
         }
 
         [Test]
         public void AddWord_AllowWordAndCutItToWhitespaces_WhenWordPrecededByWhitespaces()
         {
-            statistics.AddWord("          a");
-            statistics.GetStatistics().Select(t => t.Item2)
+            wordsStatistics.AddWord("          a");
+            wordsStatistics.GetStatistics().Select(t => t.Item2)
                 .Should().BeEquivalentTo("          ");
         }
 
@@ -138,17 +138,17 @@ namespace Challenge.Solved
             var counter = 0;
             for (char c = 'a'; c <= 'z'; c++)
             {
-                statistics.AddWord("".PadRight(10, c));
-                statistics.AddWord("".PadRight(10, c).ToUpper());
+                wordsStatistics.AddWord(c.ToString());
+                wordsStatistics.AddWord(c.ToString().ToUpper());
                 counter++;
             }
             for (char c = 'а'; c <= 'я' || c <= 'ё'; c++)
             {
-                statistics.AddWord("".PadRight(10, c));
-                statistics.AddWord("".PadRight(10, c).ToUpper());
+                wordsStatistics.AddWord(c.ToString());
+                wordsStatistics.AddWord(c.ToString().ToUpper());
                 counter++;
             }
-            statistics.GetStatistics().Should().HaveCount(counter);
+            wordsStatistics.GetStatistics().Should().HaveCount(counter);
         }
 
         [Test]
@@ -157,36 +157,19 @@ namespace Challenge.Solved
             const int wordCount = 1000;
             for (int i = 0; i < wordCount; i++)
             {
-                statistics.AddWord(i.ToString().PadRight(10));
+                wordsStatistics.AddWord(i.ToString().PadRight(10));
             }
-            statistics.GetStatistics().Should().HaveCount(wordCount);
+            wordsStatistics.GetStatistics().Should().HaveCount(wordCount);
         }
-
-	    [Test]
-	    public void GetStatistics_ReturnsSameResult_OnSecondCall()
-	    {
-		    statistics.AddWord("abc");
-		    statistics.GetStatistics().Should().Equal(Tuple.Create(1, "abc"));
-		    statistics.GetStatistics().Should().Equal(Tuple.Create(1, "abc"));
-	    }
-
-	    [Test]
-	    public void GetStatistics_BuildsResult_OnEveryCall()
-	    {
-		    statistics.AddWord("abc");
-		    statistics.GetStatistics().Should().HaveCount(1);
-		    statistics.AddWord("def");
-		    statistics.GetStatistics().Should().HaveCount(2);
-	    }
 
 		[Test, Timeout(100)]
         public void AddWord_HaveSufficientPerformance_OnAddingDifferentWords()
         {
             for (int i = 0; i < 1000; i++)
             {
-                statistics.AddWord(i.ToString().PadRight(10));
+                wordsStatistics.AddWord(i.ToString().PadRight(10));
             }
-            statistics.GetStatistics();
+            wordsStatistics.GetStatistics();
         }
 
         [Test, Timeout(100)]
@@ -194,23 +177,40 @@ namespace Challenge.Solved
         {
             for (int i = 0; i < 1000; i++)
             {
-                statistics.AddWord(i.ToString().PadRight(10));
+                wordsStatistics.AddWord(i.ToString().PadRight(10));
             }
             var sameWord = 9.ToString().PadRight(10);
             for (int i = 0; i < 1000; i++)
             {
-                statistics.AddWord(sameWord);
+                wordsStatistics.AddWord(sameWord);
             }
-            statistics.GetStatistics();
+            wordsStatistics.GetStatistics();
         }
 
-        [Test]
-        public void SeveralInstansesAreSupported()
-        {
-            var anotherStatistics = CreateStatistics();
-            statistics.AddWord("aaaaaaaaaa");
-            anotherStatistics.AddWord("bbbbbbbbbb");
-            statistics.GetStatistics().Should().HaveCount(1);
-        }
+	    [Test]
+	    public void SeveralInstansesAreSupported()
+	    {
+		    var anotherStatistics = CreateStatistics();
+		    wordsStatistics.AddWord("aaaaaaaaaa");
+		    anotherStatistics.AddWord("bbbbbbbbbb");
+		    wordsStatistics.GetStatistics().Should().HaveCount(1);
+	    }
+
+		[Test]
+	    public void GetStatistics_ReturnsSameResult_OnSecondCall()
+	    {
+		    wordsStatistics.AddWord("abc");
+		    wordsStatistics.GetStatistics().Should().Equal(Tuple.Create(1, "abc"));
+		    wordsStatistics.GetStatistics().Should().Equal(Tuple.Create(1, "abc"));
+	    }
+
+	    [Test]
+	    public void GetStatistics_BuildsResult_OnEveryCall()
+	    {
+		    wordsStatistics.AddWord("abc");
+		    wordsStatistics.GetStatistics().Should().HaveCount(1);
+		    wordsStatistics.AddWord("def");
+		    wordsStatistics.GetStatistics().Should().HaveCount(2);
+	    }
     }
 }

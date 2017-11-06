@@ -1,6 +1,7 @@
 import sortBy from "sort-by";
 
 import * as stringHelpers from "./infrastructure/stringHelpers";
+import ArgumentNullError from "./infrastructure/argumentNullError";
 
 export default class WordsStatistics {
     constructor() {
@@ -9,19 +10,15 @@ export default class WordsStatistics {
 
     addWord(word) {
         if (!stringHelpers.isDefinedString(word)) {
-            throw Error("word should be a defined string");
+            throw new ArgumentNullError("word should be a defined string");
         }
-
         if (stringHelpers.isWhitespace(word)) {
             return;
         }
-
         if (word.length > 10) {
             word = word.substr(0, 10);
         }
-
-        const lowerCaseWord = word.toLowerCase();
-        this.statistics.set(lowerCaseWord, (this.statistics.get(lowerCaseWord) || 0) + 1);
+        this.statistics.set(word.toLowerCase(), 1 + (this.statistics.get(word.toLowerCase()) || 0));
     }
 
     getStatistics() {

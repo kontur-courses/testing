@@ -6,7 +6,7 @@ namespace Challenge
 {
 	public class WordsStatistics : IWordsStatistics
 	{
-		protected readonly IDictionary<string, int> stats 
+		protected readonly IDictionary<string, int> statistics 
 			= new Dictionary<string, int>();
 
 		public virtual void AddWord(string word)
@@ -16,12 +16,12 @@ namespace Challenge
 			if (word.Length > 10)
 				word = word.Substring(0, 10);
 			int count;
-			stats[word.ToLower()] = stats.TryGetValue(word.ToLower(), out count) ? count + 1 : 1;
+			statistics[word.ToLower()] = 1 + (statistics.TryGetValue(word.ToLower(), out count) ? count : 0);
 		}
 
 		public virtual IEnumerable<Tuple<int, string>> GetStatistics()
 		{
-			return stats.OrderByDescending(kv => kv.Value)
+			return statistics.OrderByDescending(kv => kv.Value)
 				.ThenBy(kv => kv.Key)
 				.Select(kv => Tuple.Create(kv.Value, kv.Key));
 		}

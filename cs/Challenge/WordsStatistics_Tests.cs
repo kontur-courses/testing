@@ -15,33 +15,33 @@ namespace Challenge
 			return new WordsStatistics();
 		}
 
-		private IWordsStatistics statistics;
+		private IWordsStatistics wordsStatistics;
 
 		[SetUp]
 		public void SetUp()
 		{
-			statistics = CreateStatistics();
+			wordsStatistics = CreateStatistics();
 		}
 
 		[Test]
 		public void GetStatistics_IsEmpty_AfterCreation()
 		{
-			statistics.GetStatistics().Should().BeEmpty();
+			wordsStatistics.GetStatistics().Should().BeEmpty();
 		}
 
 		[Test]
 		public void GetStatistics_ContainsItem_AfterAddition()
 		{
-			statistics.AddWord("abc");
-			statistics.GetStatistics().Should().Equal(Tuple.Create(1, "abc"));
+			wordsStatistics.AddWord("abc");
+			wordsStatistics.GetStatistics().Should().Equal(Tuple.Create(1, "abc"));
 		}
 
 		[Test]
 		public void GetStatistics_ContainsManyItems_AfterAdditionOfDifferentWords()
 		{
-			statistics.AddWord("abc");
-			statistics.AddWord("def");
-			statistics.GetStatistics().Should().HaveCount(2);
+			wordsStatistics.AddWord("abc");
+			wordsStatistics.AddWord("def");
+			wordsStatistics.GetStatistics().Should().HaveCount(2);
 		}
 
 

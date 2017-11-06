@@ -22,7 +22,7 @@
 
 ### JS
 1. Познакомься с Mocha, если ещё не знаком, научись подключать его через npm (yarn) 
-2. Изучи возможности синтаксиса [Mocha](https://mochajs.org/) и BDD-стиль проверок в [Chai](http://chaijs.com/api/bdd/)
+2. Изучи возможности синтаксиса [Mocha](https://mochajs.org/)
 3. Научись запускать тесты в терминале (`npm test` или `yarn test`), из WebStorm по [инструкции](https://www.jetbrains.com/help/webstorm/testing.html) или другой любимой JavaScript IDE 
 
 

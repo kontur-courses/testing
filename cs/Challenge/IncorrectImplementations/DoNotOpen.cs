@@ -15,8 +15,8 @@ namespace Challenge.IncorrectImplementations
             if (word == null) throw new ArgumentNullException(nameof(word));
             if (string.IsNullOrWhiteSpace(word)) return;
             int count;
-            stats[word.ToLower()] = stats.TryGetValue(word.ToLower(), out count) ? count + 1 : 1;
-        }
+			statistics[word.ToLower()] = 1 + (statistics.TryGetValue(word.ToLower(), out count) ? count : 0);
+		}
     }
 
     [IncorrectImplementation]
@@ -29,9 +29,8 @@ namespace Challenge.IncorrectImplementations
             if (word.Length > 10) word = word.Substring(0, 10);
             else if (word.Length > 5) word = word.Substring(0, word.Length - 2);
             int count;
-            stats[word.ToLower()] = stats.TryGetValue(word.ToLower(), out count) ? count + 1 : 1;
-
-        }
+			statistics[word.ToLower()] = 1 + (statistics.TryGetValue(word.ToLower(), out count) ? count : 0);
+		}
     }
 
     [IncorrectImplementation]
@@ -43,8 +42,8 @@ namespace Challenge.IncorrectImplementations
             if (string.IsNullOrWhiteSpace(word)) return;
             if (word.Length - 1 > 10) word = word.Substring(0, 10);
             int count;
-            stats[word.ToLower()] = stats.TryGetValue(word.ToLower(), out count) ? count + 1 : 1;
-        }
+			statistics[word.ToLower()] = 1 + (statistics.TryGetValue(word.ToLower(), out count) ? count : 0);
+		}
     }
 
     [IncorrectImplementation]
@@ -55,9 +54,9 @@ namespace Challenge.IncorrectImplementations
             if (word == null) throw new ArgumentNullException(nameof(word));
             if (string.IsNullOrWhiteSpace(word)) return;
             if (word.Length > 10) word = word.Substring(0, 10);
-            if (!stats.ContainsKey(word.ToLower()))
-                stats[word] = 0;
-            stats[word]++;
+            if (!statistics.ContainsKey(word.ToLower()))
+                statistics[word] = 0;
+            statistics[word]++;
         }
     }
 
@@ -69,8 +68,8 @@ namespace Challenge.IncorrectImplementations
             if (string.IsNullOrWhiteSpace(word)) throw new ArgumentNullException(nameof(word));
             if (word.Length > 10) word = word.Substring(0, 10);
             int count;
-            stats[word.ToLower()] = stats.TryGetValue(word.ToLower(), out count) ? count + 1 : 1;
-        }
+			statistics[word.ToLower()] = 1 + (statistics.TryGetValue(word.ToLower(), out count) ? count : 0);
+		}
     }
 
     [IncorrectImplementation]
@@ -81,8 +80,8 @@ namespace Challenge.IncorrectImplementations
             if (string.IsNullOrWhiteSpace(word)) return;
             if (word.Length > 10) word = word.Substring(0, 10);
             int count;
-            stats[word.ToLower()] = stats.TryGetValue(word.ToLower(), out count) ? count + 1 : 1;
-        }
+			statistics[word.ToLower()] = 1 + (statistics.TryGetValue(word.ToLower(), out count) ? count : 0);
+		}
     }
 
     [IncorrectImplementation]
@@ -94,8 +93,8 @@ namespace Challenge.IncorrectImplementations
             if (word.Length > 10) word = word.Substring(0, 10);
             if (string.IsNullOrWhiteSpace(word)) return;
             int count;
-            stats[word.ToLower()] = stats.TryGetValue(word.ToLower(), out count) ? count + 1 : 1;
-        }
+			statistics[word.ToLower()] = 1 + (statistics.TryGetValue(word.ToLower(), out count) ? count : 0);
+		}
     }
 
     [IncorrectImplementation]
@@ -106,8 +105,8 @@ namespace Challenge.IncorrectImplementations
             if (word.Length == 0 || word.All(char.IsWhiteSpace)) return;
             if (word.Length > 10) word = word.Substring(0, 10);
             int count;
-            stats[word.ToLower()] = stats.TryGetValue(word.ToLower(), out count) ? count + 1 : 1;
-        }
+			statistics[word.ToLower()] = 1 + (statistics.TryGetValue(word.ToLower(), out count) ? count : 0);
+		}
     }
 
     [IncorrectImplementation]
@@ -115,7 +114,7 @@ namespace Challenge.IncorrectImplementations
     {
         public override IEnumerable<Tuple<int, string>> GetStatistics()
         {
-            return stats.OrderBy(kv => kv.Key)
+            return statistics.OrderBy(kv => kv.Key)
                 .Select(kv => Tuple.Create(kv.Value, kv.Key));
         }
     }
@@ -125,7 +124,7 @@ namespace Challenge.IncorrectImplementations
     {
         public override IEnumerable<Tuple<int, string>> GetStatistics()
         {
-            return stats.OrderByDescending(kv => kv.Value)
+            return statistics.OrderByDescending(kv => kv.Value)
                 .Select(kv => Tuple.Create(kv.Value, kv.Key));
         }
     }
@@ -151,7 +150,7 @@ namespace Challenge.IncorrectImplementations
     [IncorrectImplementation]
     public class WordsStatisticsCR : IWordsStatistics
     {
-        private readonly IDictionary<string, int> stats =
+        private readonly IDictionary<string, int> statistics =
             new Dictionary<string, int>();
 
         public void AddWord(string word)
@@ -161,13 +160,12 @@ namespace Challenge.IncorrectImplementations
             if (word.Length > 10) word = word.Substring(0, 10);
             word = word.ToLower();
             int count;
-            stats[word] = stats.TryGetValue(word, out count)
-                ? count + 1 : 1;
+            statistics[word] = 1 + (statistics.TryGetValue(word, out count) ? count : 0);
         }
 
         public IEnumerable<Tuple<int, string>> GetStatistics()
         {
-            return stats.OrderByDescending(kv => kv.Value)
+            return statistics.OrderByDescending(kv => kv.Value)
                 .ThenBy(kv => kv.Key)
                 .Select(kv => Tuple.Create(kv.Value, kv.Key));
         }
@@ -176,11 +174,11 @@ namespace Challenge.IncorrectImplementations
     [IncorrectImplementation]
     public class WordsStatistics_STA : IWordsStatistics
     {
-        private static readonly IDictionary<string, int> stats = new Dictionary<string, int>();
+        private static readonly IDictionary<string, int> statistics = new Dictionary<string, int>();
 
         public WordsStatistics_STA()
         {
-            stats.Clear();
+	        statistics.Clear();
         }
 
         public void AddWord(string word)
@@ -189,12 +187,12 @@ namespace Challenge.IncorrectImplementations
             if (string.IsNullOrWhiteSpace(word)) return;
             if (word.Length > 10) word = word.Substring(0, 10);
             int count;
-            stats[word.ToLower()] = stats.TryGetValue(word.ToLower(), out count) ? count + 1 : 1;
-        }
+			statistics[word.ToLower()] = 1 + (statistics.TryGetValue(word.ToLower(), out count) ? count : 0);
+		}
 
         public IEnumerable<Tuple<int, string>> GetStatistics()
         {
-            return stats.OrderByDescending(kv => kv.Value).ThenBy(kv => kv.Key).Select(kv => Tuple.Create(kv.Value, kv.Key));
+            return statistics.OrderByDescending(kv => kv.Value).ThenBy(kv => kv.Key).Select(kv => Tuple.Create(kv.Value, kv.Key));
         }
     }
 
@@ -203,7 +201,7 @@ namespace Challenge.IncorrectImplementations
     {
         private const int MAX_SIZE = 12347;
 
-        private readonly int[] stats = new int[MAX_SIZE];
+        private readonly int[] statistics = new int[MAX_SIZE];
         private readonly string[] words = new string[MAX_SIZE];
 
         public void AddWord(string word)
@@ -212,13 +210,13 @@ namespace Challenge.IncorrectImplementations
             if (string.IsNullOrWhiteSpace(word)) return;
             if (word.Length > 10) word = word.Substring(0, 10);
             var index = Math.Abs(word.ToLower().GetHashCode()) % MAX_SIZE;
-            stats[index]++;
+	        statistics[index]++;
             words[index] = word.ToLower();
         }
 
         public IEnumerable<Tuple<int, string>> GetStatistics()
         {
-            return stats.Zip(words, Tuple.Create)
+            return statistics.Zip(words, Tuple.Create)
                 .Where(t => t.Item1 > 0)
                 .OrderByDescending(t => t.Item1)
                 .ThenBy(t => t.Item2);
@@ -228,7 +226,7 @@ namespace Challenge.IncorrectImplementations
     [IncorrectImplementation]
     public class WordsStatistics_QWE : IWordsStatistics
     {
-        private readonly IDictionary<string, int> stats = new Dictionary<string, int>();
+        private readonly IDictionary<string, int> statistics = new Dictionary<string, int>();
 
         public void AddWord(string word)
         {
@@ -237,12 +235,12 @@ namespace Challenge.IncorrectImplementations
             if (word.Length > 10) word = word.Substring(0, 10);
             word = ToLower(word);
             int count;
-            stats[word] = stats.TryGetValue(word, out count) ? count + 1 : 1;
+	        statistics[word] = 1 + (statistics.TryGetValue(word, out count) ? count : 0);
         }
 
         public IEnumerable<Tuple<int, string>> GetStatistics()
         {
-            return stats.OrderByDescending(kv => kv.Value).ThenBy(kv => kv.Key).Select(kv => Tuple.Create(kv.Value, kv.Key));
+            return statistics.OrderByDescending(kv => kv.Value).ThenBy(kv => kv.Key).Select(kv => Tuple.Create(kv.Value, kv.Key));
         }
 
         private char ToLower(char c)
@@ -263,25 +261,25 @@ namespace Challenge.IncorrectImplementations
     [IncorrectImplementation]
     public class WordsStatistics_998 : IWordsStatistics
     {
-        private readonly List<Tuple<int, string>> stats = new List<Tuple<int, string>>();
+        private readonly List<Tuple<int, string>> statistics = new List<Tuple<int, string>>();
 
         public void AddWord(string word)
         {
             if (word == null) throw new ArgumentNullException(nameof(word));
             if (string.IsNullOrWhiteSpace(word)) return;
             if (word.Length > 10) word = word.Substring(0, 10);
-            var tuple = stats.FirstOrDefault(s => s.Item2 == word.ToLower());
-            if (tuple != null)
-                stats.Remove(tuple);
+            var stat = statistics.FirstOrDefault(s => s.Item2 == word.ToLower());
+            if (stat != null)
+                statistics.Remove(stat);
             else
-                tuple = Tuple.Create(0, word.ToLower());
-            stats.Add(Tuple.Create(tuple.Item1 - 1, tuple.Item2));
-            stats.Sort();
+                stat = Tuple.Create(0, word.ToLower());
+            statistics.Add(Tuple.Create(stat.Item1 - 1, stat.Item2));
+            statistics.Sort();
         }
 
         public IEnumerable<Tuple<int, string>> GetStatistics()
         {
-            return stats.Select(t => Tuple.Create(-t.Item1, t.Item2));
+            return statistics.Select(t => Tuple.Create(-t.Item1, t.Item2));
         }
     }
 
@@ -289,13 +287,7 @@ namespace Challenge.IncorrectImplementations
     public class WordsStatistics_999 : IWordsStatistics
     {
         private readonly HashSet<string> usedWords = new HashSet<string>();
-        private readonly List<Tuple<int, string>> stats = new List<Tuple<int, string>>();
-
-        public IEnumerable<Tuple<int, string>> GetStatistics()
-        {
-            return stats.OrderByDescending(t => t.Item1)
-                .ThenBy(t => t.Item2);
-        }
+        private readonly List<Tuple<int, string>> statistics = new List<Tuple<int, string>>();
 
         public void AddWord(string word)
         {
@@ -305,22 +297,28 @@ namespace Challenge.IncorrectImplementations
             word = word.ToLower();
             if (usedWords.Contains(word))
             {
-                var tuple = stats.First(s => s.Item2 == word);
-                stats.Remove(tuple);
-                stats.Add(Tuple.Create(tuple.Item1 + 1, tuple.Item2));
+                var stat = statistics.First(s => s.Item2 == word);
+                statistics.Remove(stat);
+                statistics.Add(Tuple.Create(stat.Item1 + 1, stat.Item2));
             }
             else
             {
-                stats.Add(Tuple.Create(1, word));
+                statistics.Add(Tuple.Create(1, word));
                 usedWords.Add(word);
             }
         }
-    }
+
+	    public IEnumerable<Tuple<int, string>> GetStatistics()
+	    {
+		    return statistics.OrderByDescending(t => t.Item1)
+			    .ThenBy(t => t.Item2);
+	    }
+	}
 
     [IncorrectImplementation]
     public class WordsStatistics_EN1 : IWordsStatistics
     {
-        private IDictionary<string, int> stats
+        private IDictionary<string, int> statistics
             = new Dictionary<string, int>();
 
         public void AddWord(string word)
@@ -330,13 +328,13 @@ namespace Challenge.IncorrectImplementations
             if (word.Length > 10)
                 word = word.Substring(0, 10);
             int count;
-            stats[word.ToLower()] = stats.TryGetValue(word.ToLower(), out count) ? count + 1 : 1;
+            statistics[word.ToLower()] = 1 + (statistics.TryGetValue(word.ToLower(), out count) ? count : 0);
         }
 
         public IEnumerable<Tuple<int, string>> GetStatistics()
         {
-            var temp = stats;
-            stats = new Dictionary<string, int>();
+            var temp = statistics;
+            statistics = new Dictionary<string, int>();
             return temp.OrderByDescending(kv => kv.Value)
                 .ThenBy(kv => kv.Key)
                 .Select(kv => Tuple.Create(kv.Value, kv.Key));
