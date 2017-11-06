@@ -1,0 +1,37 @@
+{
+  "name": "testing",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "dependencies": {
+    "dateformat": "^3.0.2",
+    "deep-equal": "^1.0.1",
+    "firebase-client": "^0.1.1",
+    "sort-by": "^1.2.0"
+  },
+  "devDependencies": {
+    "babel-cli": "^6.26.0",
+    "babel-core": "^6.26.0",
+    "babel-plugin-transform-object-rest-spread": "^6.26.0",
+    "babel-preset-env": "^1.6.1",
+    "chai": "latest",
+    "colors": "^1.1.2",
+    "mocha": "^4.0.1",
+    "mocha-cases": "^0.1.10"
+  },
+  "scripts": {
+    "test": "mocha --require babel-register --reporter Progress ./src/samples/**/*.test.js",
+    "challenge": "babel-node ./src/challenge/infrastructure/index.js",
+    "challenge-debug": "babel-node %NODE_DEBUG_OPTION% ./src/challenge/infrastructure/index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/levdimov/testing-js.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/levdimov/testing-js/issues"
+  },
+  "homepage": "https://github.com/levdimov/testing-js#readme"
+}

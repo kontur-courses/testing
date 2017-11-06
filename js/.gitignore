@@ -1,0 +1,7 @@
+.vscode
+*.log
+node_modules
+build
+
+.idea/**/*.*
+!.idea/runConfigurations/Test.xml
