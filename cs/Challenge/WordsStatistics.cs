@@ -4,6 +4,14 @@ using System.Linq;
 
 namespace Challenge
 {
+	/**
+	 * <summary>
+	 * Частотный словарь добавленных слов. 
+	 * Слова сравниваются без учета регистра символов. 
+	 * Порядок — по убыванию частоты слова.
+	 * При одинаковой частоте — в лексикографическом порядке.
+	 * </summary>
+	 */
 	public class WordsStatistics : IWordsStatistics
 	{
 		protected readonly IDictionary<string, int> statistics 

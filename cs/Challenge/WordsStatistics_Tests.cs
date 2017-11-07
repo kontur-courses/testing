@@ -7,7 +7,10 @@ namespace Challenge
 	[TestFixture]
 	public class WordsStatistics_Tests
 	{
-		public static string Authors = "ВАШИ ФАМИЛИИ ЧЕРЕЗ ПРОБЕЛ"; // "Egorov Shagalina"
+		/// <summary>
+		/// Ваши фамилии через пробел. Например, "Egorov Shagalina"
+		/// </summary>
+		public const string Authors = "";
 
 		public virtual IWordsStatistics CreateStatistics()
 		{

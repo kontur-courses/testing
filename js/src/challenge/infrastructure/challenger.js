@@ -8,23 +8,24 @@ import FirebaseTestResultsPoster from "./testResultsPoster";
 import * as stringHelpers from "./stringHelpers";
 import ConsoleWriter from "./consoleWriter";
 
-import { AUTHOR } from "../yourName";
+import { AUTHORS } from "../yourName";
 
 export default class Challenger {
     async run() {
-        if (!stringHelpers.isDefinedString(AUTHOR) || stringHelpers.isWhitespace(AUTHOR)){
-            ConsoleWriter.writeError("Enter your name at yourName.js");
-            return;
+        if (!stringHelpers.isDefinedString(AUTHORS) || stringHelpers.isWhitespace(AUTHORS)){
+            ConsoleWriter.writeError("Enter your surnames at yourName.js in AUTHORS constant");
         }
 
+        ConsoleWriter.write("Check all tests pass with correct implementation...");
         const failedCount = await this.testCorrectImplementation();
         if (failedCount > 0) {
             return;
         }
-
         const incorrectImplementationTestResult = await this.testIncorrectImplementation();
 
-        await this.postResults(incorrectImplementationTestResult);
+        if (!stringHelpers.isDefinedString(AUTHORS) || stringHelpers.isWhitespace(AUTHORS)) {
+            await this.postResults(incorrectImplementationTestResult);
+        }
     }
 
     testCorrectImplementation() {
@@ -64,7 +65,7 @@ export default class Challenger {
         }), {});
 
         try {
-            await firebasePoster.writeAsync(AUTHOR, { data: values });
+            await firebasePoster.writeAsync(AUTHORS, { data: values });
         } catch (error) {
             console.error(error)
         }

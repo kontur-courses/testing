@@ -6,8 +6,6 @@ using System.Linq;
 using System.Reflection;
 using System.Threading;
 using System.Xml;
-using FireSharp;
-using FireSharp.Config;
 using NUnit.Engine;
 
 namespace Challenge.Infrastructure
@@ -16,9 +14,9 @@ namespace Challenge.Infrastructure
     {
         private static void Main()
         {
-            if (WordsStatistics_Tests.Authors == "<ВАШИ ФАМИЛИИ>")
+            if (string.IsNullOrWhiteSpace(WordsStatistics_Tests.Authors))
             {
-                Console.WriteLine("Укажите ваши фамилии в классе WordsStatistics_Tests в поле Authors!");
+                Console.WriteLine("Enter your surnames at WordsStatistics_Tests in Authors constant!");
                 Thread.Sleep(3000);
             }
             var testPackage = new TestPackage(Assembly.GetExecutingAssembly().Location);
@@ -34,7 +32,8 @@ namespace Challenge.Infrastructure
                         res.Add(status);
                         WriteImplementationStatusToConsole(status);
                     }
-                    PostResults(res);
+                    if (!string.IsNullOrWhiteSpace(WordsStatistics_Tests.Authors))
+                        PostResults(res);
                 }
         }
 
@@ -97,7 +96,7 @@ namespace Challenge.Infrastructure
             else
             {
                 Console.ForegroundColor = ConsoleColor.Red;
-                Console.WriteLine(paddedName + "write some test to kill it");
+                Console.WriteLine(paddedName + "write tests to kill it");
                 Console.ForegroundColor = ConsoleColor.Gray;
             }
         }

@@ -1,6 +1,12 @@
 import * as stringHelpers from "./infrastructure/stringHelpers";
 import ArgumentNullError from "./infrastructure/argumentNullError";
 
+/**
+ * Частотный словарь добавленных слов.
+ * Слова сравниваются без учета регистра символов.
+ * Порядок — по убыванию частоты слова.
+ * При одинаковой частоте — в лексикографическом порядке.
+ */
 export default class WordsStatistics {
     constructor() {
         this.statistics = new Map();
