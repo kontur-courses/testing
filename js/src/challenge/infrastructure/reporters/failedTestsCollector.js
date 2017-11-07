@@ -1,5 +1,3 @@
-import sortBy from "sort-by";
-
 export default class FailedTestsCollector {
     constructor() {
         this.statistics = new Map();
@@ -15,6 +13,9 @@ export default class FailedTestsCollector {
                 failedTests: keyValue[1],
                 implementationName: keyValue[0]
             }))
-            .sort(sortBy("implementationName", "failedTests"));
+            .sort((a, b) => {
+                const compare = a.implementationName.localeCompare(b.implementationName);
+                return compare !== 0 ? compare : a.failedTests - b.failedTests;
+            });
     }
 }

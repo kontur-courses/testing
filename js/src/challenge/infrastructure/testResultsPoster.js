@@ -1,6 +1,4 @@
 import FirebaseClient from "firebase-client";
-import dateFormat from "dateformat"
-
 import { toUriSafeString } from "./stringHelpers";
 
 export default class FirebaseTestResultsPoster {
@@ -13,15 +11,22 @@ export default class FirebaseTestResultsPoster {
     writeAsync(author, data) {
         const safeAuthor = toUriSafeString(author);
 
-        const now = new Date();
         const postData = {
-            time: now.toISOString(),
+            time: new Date().toISOString(),
             ...data
         };
 
         return this.firebase.set(
-            `word-statistics-js/${dateFormat(now, "yyyymmdd")}/${safeAuthor}`,
+            `word-statistics-js/${this.buildDateKey()}/${safeAuthor}`,
             postData
         );
+    }
+
+    buildDateKey() {
+        const now = new Date();
+        const day = ("0" + now.getDate()).slice(-2);
+        const month = ("0" + (now.getMonth() + 1)).slice(-2);
+        const year = now.getFullYear();
+        return year + month + day;
     }
 }

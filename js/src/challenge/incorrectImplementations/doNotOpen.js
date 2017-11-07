@@ -1,6 +1,3 @@
-import sortBy from "sort-by";
-import deepEqual from "deep-equal";
-
 import * as stringHelpers from "../infrastructure/stringHelpers";
 import ArgumentNullError from "../infrastructure/argumentNullError";
 import "../../lib/zip";
@@ -130,7 +127,7 @@ export class WordsStatisticsO1 extends WordsStatistics {
                 count: keyValue[1],
                 word: keyValue[0]
             }))
-            .sort(sortBy("word"));
+            .sort((a, b) => a.word.localeCompare(b.word));
     }
 }
 
@@ -142,19 +139,21 @@ export class WordsStatisticsO2 extends WordsStatistics {
                 count: keyValue[1],
                 word: keyValue[0]
             }))
-            .sort(sortBy("-count"));
+            .sort((a, b) => b.count - a.count);
     }
 }
 
 export class WordsStatisticsO3 extends WordsStatistics {
     getStatistics() {
-        return super.getStatistics().sort(sortBy("word"));
+        return super.getStatistics().sort((a, b) => a.word.localeCompare(b.word));
     }
 }
 
 export class WordsStatisticsO4 extends WordsStatistics {
     getStatistics() {
-        return super.getStatistics().sort(sortBy("-count", "-word"));
+        return super.getStatistics().sort((a, b) => a.count !== b.count
+            ? b.count - a.count
+            : -a.word.localeCompare(b.word));
     }
 }
 
@@ -185,7 +184,9 @@ export class WordsStatisticsCR {
                 count: keyValue[1],
                 word: keyValue[0]
             }))
-            .sort(sortBy("-count", "word"));
+            .sort((a, b) => a.count !== b.count
+                ? b.count - a.count
+                : a.word.localeCompare(b.word));
     }
 }
 
@@ -220,13 +221,15 @@ export class WordsStatisticsSTA {
                 count: keyValue[1],
                 word: keyValue[0]
             }))
-            .sort(sortBy("-count", "word"));
+            .sort((a, b) => a.count !== b.count
+                ? b.count - a.count
+                : a.word.localeCompare(b.word));
     }
 }
 
 export class WordsStatistics123 {
     constructor() {
-        this.MAX_SIZE = 12347;
+        this.MAX_SIZE = 1237;
 
         this.statistics = new Array(this.MAX_SIZE);
         this.words = new Array(this.MAX_SIZE);
@@ -251,7 +254,9 @@ export class WordsStatistics123 {
         return this.statistics
             .zip(this.words, (s, w) => ({ count: s, word: w }))
             .filter(s => s.count > 0)
-            .sort(sortBy("-count", "word"))
+            .sort((a, b) => a.count !== b.count
+                ? b.count - a.count
+                : a.word.localeCompare(b.word))
     }
 }
 
@@ -280,7 +285,9 @@ export class WordsStatisticsQWE {
                 count: keyValue[1],
                 word: keyValue[0]
             }))
-            .sort(sortBy("-count", "word"));
+            .sort((a, b) => a.count !== b.count
+                ? b.count - a.count
+                : a.word.localeCompare(b.word));
     }
 
     toLower(word) {
@@ -316,14 +323,17 @@ export class WordsStatistics998 {
         if (word.length > 10) {
             word = word.substr(0, 10);
         }
-        let stat = this.statistics.filter(s => s.word === word.toLowerCase())[0] || null;
+        let lowerCaseWord = word.toLowerCase();
+        let stat = this.statistics.find(s => s.word === lowerCaseWord) || null;
         if (stat !== null) {
             this.statistics = this.statistics.filter(s => s.word !== stat.word || s.count !== stat.count);
         } else {
-            stat = { count: 0, word: word.toLowerCase() };
+            stat = { count: 0, word: lowerCaseWord };
         }
         this.statistics.push({ count: stat.count - 1, word: stat.word });
-        this.statistics.sort(sortBy("count", "word"));
+        this.statistics.sort((a, b) => a.count === b.count
+            ? a.word.localeCompare(b.word)
+            : a.count - b.count);
     }
 
     getStatistics() {
@@ -350,7 +360,7 @@ export class WordsStatistics999 {
         word = word.toLowerCase();
 
         if (this.usedWords.has(word)) {
-            const stat = this.statistics.filter(s => s.word === word)[0] || null;
+            let stat = this.statistics.find(s => s.word === word) || null;
             this.statistics = this.statistics.filter(s => s.word !== stat.word || s.count !== stat.count);
             this.statistics.push({ count: stat.count + 1, word: stat.word });
         } else {
@@ -360,7 +370,9 @@ export class WordsStatistics999 {
     }
 
     getStatistics() {
-        return this.statistics.sort(sortBy("-count", "word"));
+        return this.statistics.sort((a, b) => a.count !== b.count
+            ? b.count - a.count
+            : a.word.localeCompare(b.word));
     }
 }
 
@@ -391,7 +403,9 @@ export class WordsStatisticsEN1 {
                 count: keyValue[1],
                 word: keyValue[0]
             }))
-            .sort(sortBy("-count", "word"));
+            .sort((a, b) => a.count !== b.count
+                ? b.count - a.count
+                : a.word.localeCompare(b.word));
     }
 }
 

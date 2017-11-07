@@ -199,7 +199,7 @@ namespace Challenge.IncorrectImplementations
     [IncorrectImplementation]
     public class WordsStatistics_123 : IWordsStatistics
     {
-        private const int MAX_SIZE = 12347;
+        private const int MAX_SIZE = 1237;
 
         private readonly int[] statistics = new int[MAX_SIZE];
         private readonly string[] words = new string[MAX_SIZE];
@@ -268,11 +268,12 @@ namespace Challenge.IncorrectImplementations
             if (word == null) throw new ArgumentNullException(nameof(word));
             if (string.IsNullOrWhiteSpace(word)) return;
             if (word.Length > 10) word = word.Substring(0, 10);
-            var stat = statistics.FirstOrDefault(s => s.Item2 == word.ToLower());
+	        var lowerCaseWord = word.ToLower();
+	        var stat = statistics.FirstOrDefault(s => s.Item2 == lowerCaseWord);
             if (stat != null)
                 statistics.Remove(stat);
             else
-                stat = Tuple.Create(0, word.ToLower());
+                stat = Tuple.Create(0, lowerCaseWord);
             statistics.Add(Tuple.Create(stat.Item1 - 1, stat.Item2));
             statistics.Sort();
         }

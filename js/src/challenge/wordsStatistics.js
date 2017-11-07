@@ -1,5 +1,3 @@
-import sortBy from "sort-by";
-
 import * as stringHelpers from "./infrastructure/stringHelpers";
 import ArgumentNullError from "./infrastructure/argumentNullError";
 
@@ -28,6 +26,8 @@ export default class WordsStatistics {
                 count: keyValue[1],
                 word: keyValue[0]
             }))
-            .sort(sortBy("-count", "word"));
+            .sort((a, b) => a.count !== b.count
+                ? b.count - a.count
+                : a.word.localeCompare(b.word));
     }
 }

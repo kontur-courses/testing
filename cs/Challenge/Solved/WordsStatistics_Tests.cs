@@ -154,33 +154,33 @@ namespace Challenge.Solved
         [Test]
         public void AddWord_HaveNoCollisions()
         {
-            const int wordCount = 1000;
+            const int wordCount = 500;
             for (int i = 0; i < wordCount; i++)
             {
-                wordsStatistics.AddWord(i.ToString().PadRight(10));
+                wordsStatistics.AddWord(i.ToString());
             }
             wordsStatistics.GetStatistics().Should().HaveCount(wordCount);
         }
 
-		[Test, Timeout(100)]
+		[Test, Timeout(10)]
         public void AddWord_HaveSufficientPerformance_OnAddingDifferentWords()
         {
-            for (int i = 0; i < 1000; i++)
+            for (int i = 0; i < 100; i++)
             {
-                wordsStatistics.AddWord(i.ToString().PadRight(10));
+                wordsStatistics.AddWord(i.ToString());
             }
             wordsStatistics.GetStatistics();
         }
 
-        [Test, Timeout(100)]
+        [Test, Timeout(10)]
         public void AddWord_HaveSufficientPerformance_OnAddingSameWord()
         {
-            for (int i = 0; i < 1000; i++)
+            for (int i = 0; i < 300; i++)
             {
-                wordsStatistics.AddWord(i.ToString().PadRight(10));
+                wordsStatistics.AddWord(i.ToString());
             }
-            var sameWord = 9.ToString().PadRight(10);
-            for (int i = 0; i < 1000; i++)
+            var sameWord = 9.ToString();
+            for (int i = 0; i < 300; i++)
             {
                 wordsStatistics.AddWord(sameWord);
             }
@@ -188,7 +188,7 @@ namespace Challenge.Solved
         }
 
 	    [Test]
-	    public void SeveralInstansesAreSupported()
+	    public void SeveralInstancesAreSupported()
 	    {
 		    var anotherStatistics = CreateStatistics();
 		    wordsStatistics.AddWord("aaaaaaaaaa");
