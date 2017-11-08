@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using FluentAssertions;
 using NUnit.Framework;
 
@@ -36,7 +37,7 @@ namespace Challenge
 		public void GetStatistics_ContainsItem_AfterAddition()
 		{
 			wordsStatistics.AddWord("abc");
-			wordsStatistics.GetStatistics().Should().Equal(Tuple.Create(1, "abc"));
+			wordsStatistics.GetStatistics().Should().Equal(new WordCount("abc", 1));
 		}
 
 		[Test]

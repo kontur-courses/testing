@@ -32,7 +32,7 @@ namespace Challenge.Solved
 	    public void GetStatistics_ContainsItem_AfterAddition()
 	    {
 		    wordsStatistics.AddWord("abc");
-		    wordsStatistics.GetStatistics().Should().Equal(Tuple.Create(1, "abc"));
+		    wordsStatistics.GetStatistics().Should().Equal(new WordCount("abc", 1));
 	    }
 
 	    [Test]
@@ -62,7 +62,7 @@ namespace Challenge.Solved
         {
             wordsStatistics.AddWord("aaaaaaaaaa");
             wordsStatistics.AddWord("aaaaaaaaaa");
-            wordsStatistics.GetStatistics().Select(t => t.Item1)
+            wordsStatistics.GetStatistics().Select(t => t.Count)
                 .Should().BeEquivalentTo(2);
         }
 
@@ -72,7 +72,7 @@ namespace Challenge.Solved
             wordsStatistics.AddWord("aaaaaaaaaa");
             wordsStatistics.AddWord("bbbbbbbbbb");
             wordsStatistics.AddWord("bbbbbbbbbb");
-            wordsStatistics.GetStatistics().Select(t => t.Item2)
+            wordsStatistics.GetStatistics().Select(t => t.Word)
                 .ShouldBeEquivalentTo(new[] { "bbbbbbbbbb", "aaaaaaaaaa" },
                     options => options.WithStrictOrdering());
         }
@@ -83,7 +83,7 @@ namespace Challenge.Solved
             wordsStatistics.AddWord("cccccccccc");
             wordsStatistics.AddWord("aaaaaaaaaa");
             wordsStatistics.AddWord("bbbbbbbbbb");
-            wordsStatistics.GetStatistics().Select(t => t.Item2)
+            wordsStatistics.GetStatistics().Select(t => t.Word)
                 .Should().ContainInOrder("aaaaaaaaaa", "bbbbbbbbbb", "cccccccccc");
         }
 
@@ -111,7 +111,7 @@ namespace Challenge.Solved
         public void AddWord_CutsWords_LongerThan10()
         {
             wordsStatistics.AddWord("12345678901");
-            wordsStatistics.GetStatistics().Select(t => t.Item2)
+            wordsStatistics.GetStatistics().Select(t => t.Word)
                 .Should().BeEquivalentTo("1234567890");
         }
 
@@ -120,7 +120,7 @@ namespace Challenge.Solved
         {
             wordsStatistics.AddWord("12345678901");
             wordsStatistics.AddWord("1234567890");
-            wordsStatistics.GetStatistics().Select(t => t.Item1)
+            wordsStatistics.GetStatistics().Select(t => t.Count)
                 .Should().BeEquivalentTo(2);
         }
 
@@ -128,7 +128,7 @@ namespace Challenge.Solved
         public void AddWord_AllowWordAndCutItToWhitespaces_WhenWordPrecededByWhitespaces()
         {
             wordsStatistics.AddWord("          a");
-            wordsStatistics.GetStatistics().Select(t => t.Item2)
+            wordsStatistics.GetStatistics().Select(t => t.Word)
                 .Should().BeEquivalentTo("          ");
         }
 
@@ -200,8 +200,8 @@ namespace Challenge.Solved
 	    public void GetStatistics_ReturnsSameResult_OnSecondCall()
 	    {
 		    wordsStatistics.AddWord("abc");
-		    wordsStatistics.GetStatistics().Should().Equal(Tuple.Create(1, "abc"));
-		    wordsStatistics.GetStatistics().Should().Equal(Tuple.Create(1, "abc"));
+		    wordsStatistics.GetStatistics().Should().Equal(new WordCount("abc", 1));
+		    wordsStatistics.GetStatistics().Should().Equal(new WordCount("abc", 1));
 	    }
 
 	    [Test]

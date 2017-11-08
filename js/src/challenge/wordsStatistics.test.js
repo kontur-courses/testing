@@ -21,7 +21,7 @@ const tests = (wordsStatisticsFactory) => {
             wordsStatistics.addWord(word);
             wordsStatistics
                 .getStatistics()
-                .should.be.eql([{count: 1, word: word}])
+                .should.be.eql([{word: word, count: 1}])
         });
 
         it("getStatistics contains many items after addition of different words", () => {

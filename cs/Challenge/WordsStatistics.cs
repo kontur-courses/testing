@@ -27,11 +27,11 @@ namespace Challenge
 			statistics[word.ToLower()] = 1 + (statistics.TryGetValue(word.ToLower(), out count) ? count : 0);
 		}
 
-		public virtual IEnumerable<Tuple<int, string>> GetStatistics()
+		public virtual IEnumerable<WordCount> GetStatistics()
 		{
 			return statistics.OrderByDescending(kv => kv.Value)
 				.ThenBy(kv => kv.Key)
-				.Select(kv => Tuple.Create(kv.Value, kv.Key));
+				.Select(WordCount.Create);
 		}
 	}
 }

@@ -124,8 +124,8 @@ export class WordsStatisticsO1 extends WordsStatistics {
         return Array
             .from(this.statistics)
             .map((keyValue) => ({
-                count: keyValue[1],
-                word: keyValue[0]
+                word: keyValue[0],
+                count: keyValue[1]
             }))
             .sort((a, b) => a.word.localeCompare(b.word));
     }
@@ -136,8 +136,8 @@ export class WordsStatisticsO2 extends WordsStatistics {
         return Array
             .from(this.statistics)
             .map((keyValue) => ({
-                count: keyValue[1],
-                word: keyValue[0]
+                word: keyValue[0],
+                count: keyValue[1]
             }))
             .sort((a, b) => b.count - a.count);
     }
@@ -181,8 +181,8 @@ export class WordsStatisticsCR {
         return Array
             .from(this.statistics)
             .map((keyValue) => ({
-                count: keyValue[1],
-                word: keyValue[0]
+                word: keyValue[0],
+                count: keyValue[1]
             }))
             .sort((a, b) => a.count !== b.count
                 ? b.count - a.count
@@ -218,8 +218,8 @@ export class WordsStatisticsSTA {
         return Array
             .from(this.statistics)
             .map((keyValue) => ({
-                count: keyValue[1],
-                word: keyValue[0]
+                word: keyValue[0],
+                count: keyValue[1]
             }))
             .sort((a, b) => a.count !== b.count
                 ? b.count - a.count
@@ -252,7 +252,7 @@ export class WordsStatistics123 {
 
     getStatistics() {
         return this.statistics
-            .zip(this.words, (s, w) => ({ count: s, word: w }))
+            .zip(this.words, (s, w) => ({ word: w, count: s }))
             .filter(s => s.count > 0)
             .sort((a, b) => a.count !== b.count
                 ? b.count - a.count
@@ -282,8 +282,8 @@ export class WordsStatisticsQWE {
         return Array
             .from(this.statistics)
             .map((keyValue) => ({
-                count: keyValue[1],
-                word: keyValue[0]
+                word: keyValue[0],
+                count: keyValue[1]
             }))
             .sort((a, b) => a.count !== b.count
                 ? b.count - a.count
@@ -324,20 +324,20 @@ export class WordsStatistics998 {
             word = word.substr(0, 10);
         }
         let lowerCaseWord = word.toLowerCase();
-        let stat = this.statistics.find(s => s.word === lowerCaseWord) || null;
-        if (stat !== null) {
-            this.statistics = this.statistics.filter(s => s.word !== stat.word || s.count !== stat.count);
+        let wordCount = this.statistics.find(s => s.word === lowerCaseWord) || null;
+        if (wordCount !== null) {
+            this.statistics = this.statistics.filter(s => s.word !== wordCount.word || s.count !== wordCount.count);
         } else {
-            stat = { count: 0, word: lowerCaseWord };
+            wordCount = { word: lowerCaseWord, count: 0 };
         }
-        this.statistics.push({ count: stat.count - 1, word: stat.word });
+        this.statistics.push({ word: wordCount.word, count: wordCount.count - 1 });
         this.statistics.sort((a, b) => a.count === b.count
             ? a.word.localeCompare(b.word)
             : a.count - b.count);
     }
 
     getStatistics() {
-        return this.statistics.map(s => ({count: -s.count, word: s.word}))
+        return this.statistics.map(s => ({word: s.word, count: -s.count}))
     }
 }
 
@@ -360,11 +360,11 @@ export class WordsStatistics999 {
         word = word.toLowerCase();
 
         if (this.usedWords.has(word)) {
-            let stat = this.statistics.find(s => s.word === word) || null;
-            this.statistics = this.statistics.filter(s => s.word !== stat.word || s.count !== stat.count);
-            this.statistics.push({ count: stat.count + 1, word: stat.word });
+            let wordCount = this.statistics.find(s => s.word === word) || null;
+            this.statistics = this.statistics.filter(s => s.word !== wordCount.word || s.count !== wordCount.count);
+            this.statistics.push({ word: wordCount.word, count: wordCount.count + 1 });
         } else {
-            this.statistics.push({ count: 1, word: word});
+            this.statistics.push({ word: word, count: 1 });
             this.usedWords.add(word);
         }
     }
@@ -400,8 +400,8 @@ export class WordsStatisticsEN1 {
         return Array
             .from(temp)
             .map((keyValue) => ({
-                count: keyValue[1],
-                word: keyValue[0]
+                word: keyValue[0],
+                count: keyValue[1]
             }))
             .sort((a, b) => a.count !== b.count
                 ? b.count - a.count

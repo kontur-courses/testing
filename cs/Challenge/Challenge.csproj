@@ -117,6 +117,7 @@
     <Compile Include="Infrastructure\IncorrectImplementation_TestsBase.cs" />
     <Compile Include="IWordsStatistics.cs" />
     <Compile Include="IncorrectImplementations\DoNotOpen.cs" />
+    <Compile Include="WordCount.cs" />
     <Compile Include="WordsStatistics.cs" />
     <Compile Include="Infrastructure\Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

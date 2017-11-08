@@ -112,38 +112,38 @@ namespace Challenge.IncorrectImplementations
     [IncorrectImplementation]
     public class WordsStatisticsO1 : WordsStatistics
     {
-        public override IEnumerable<Tuple<int, string>> GetStatistics()
+        public override IEnumerable<WordCount> GetStatistics()
         {
             return statistics.OrderBy(kv => kv.Key)
-                .Select(kv => Tuple.Create(kv.Value, kv.Key));
+                .Select(WordCount.Create);
         }
     }
 
     [IncorrectImplementation]
     public class WordsStatisticsO2 : WordsStatistics
     {
-        public override IEnumerable<Tuple<int, string>> GetStatistics()
+        public override IEnumerable<WordCount> GetStatistics()
         {
             return statistics.OrderByDescending(kv => kv.Value)
-                .Select(kv => Tuple.Create(kv.Value, kv.Key));
+                .Select(WordCount.Create);
         }
     }
 
     [IncorrectImplementation]
     public class WordsStatisticsO3 : WordsStatistics
     {
-        public override IEnumerable<Tuple<int, string>> GetStatistics()
+        public override IEnumerable<WordCount> GetStatistics()
         {
-            return base.GetStatistics().OrderBy(t => t.Item2);
+            return base.GetStatistics().OrderBy(wordCount => wordCount.Word);
         }
     }
 
     [IncorrectImplementation]
     public class WordsStatisticsO4 : WordsStatistics
     {
-        public override IEnumerable<Tuple<int, string>> GetStatistics()
+        public override IEnumerable<WordCount> GetStatistics()
         {
-            return base.GetStatistics().OrderByDescending(t => t);
+            return base.GetStatistics().OrderByDescending(w => w);
         }
     }
 
@@ -163,11 +163,11 @@ namespace Challenge.IncorrectImplementations
             statistics[word] = 1 + (statistics.TryGetValue(word, out count) ? count : 0);
         }
 
-        public IEnumerable<Tuple<int, string>> GetStatistics()
+        public IEnumerable<WordCount> GetStatistics()
         {
             return statistics.OrderByDescending(kv => kv.Value)
                 .ThenBy(kv => kv.Key)
-                .Select(kv => Tuple.Create(kv.Value, kv.Key));
+                .Select(WordCount.Create);
         }
     }
 
@@ -190,9 +190,12 @@ namespace Challenge.IncorrectImplementations
 			statistics[word.ToLower()] = 1 + (statistics.TryGetValue(word.ToLower(), out count) ? count : 0);
 		}
 
-        public IEnumerable<Tuple<int, string>> GetStatistics()
+        public IEnumerable<WordCount> GetStatistics()
         {
-            return statistics.OrderByDescending(kv => kv.Value).ThenBy(kv => kv.Key).Select(kv => Tuple.Create(kv.Value, kv.Key));
+            return statistics
+                .OrderByDescending(kv => kv.Value)
+                .ThenBy(kv => kv.Key)
+                .Select(WordCount.Create);
         }
     }
 
@@ -214,12 +217,12 @@ namespace Challenge.IncorrectImplementations
             words[index] = word.ToLower();
         }
 
-        public IEnumerable<Tuple<int, string>> GetStatistics()
+        public IEnumerable<WordCount> GetStatistics()
         {
-            return statistics.Zip(words, Tuple.Create)
-                .Where(t => t.Item1 > 0)
-                .OrderByDescending(t => t.Item1)
-                .ThenBy(t => t.Item2);
+            return statistics.Zip(words, (s, w) => new WordCount(w, s))
+                .Where(t => t.Count > 0)
+                .OrderByDescending(t => t.Count)
+                .ThenBy(t => t.Word);
         }
     }
 
@@ -238,9 +241,9 @@ namespace Challenge.IncorrectImplementations
 	        statistics[word] = 1 + (statistics.TryGetValue(word, out count) ? count : 0);
         }
 
-        public IEnumerable<Tuple<int, string>> GetStatistics()
+        public IEnumerable<WordCount> GetStatistics()
         {
-            return statistics.OrderByDescending(kv => kv.Value).ThenBy(kv => kv.Key).Select(kv => Tuple.Create(kv.Value, kv.Key));
+            return statistics.OrderByDescending(kv => kv.Value).ThenBy(kv => kv.Key).Select(WordCount.Create);
         }
 
         private char ToLower(char c)
@@ -261,7 +264,7 @@ namespace Challenge.IncorrectImplementations
     [IncorrectImplementation]
     public class WordsStatistics_998 : IWordsStatistics
     {
-        private readonly List<Tuple<int, string>> statistics = new List<Tuple<int, string>>();
+        private readonly List<WordCount> statistics = new List<WordCount>();
 
         public void AddWord(string word)
         {
@@ -269,18 +272,18 @@ namespace Challenge.IncorrectImplementations
             if (string.IsNullOrWhiteSpace(word)) return;
             if (word.Length > 10) word = word.Substring(0, 10);
 	        var lowerCaseWord = word.ToLower();
-	        var stat = statistics.FirstOrDefault(s => s.Item2 == lowerCaseWord);
-            if (stat != null)
-                statistics.Remove(stat);
+	        var wordCount = statistics.FirstOrDefault(s => s.Word == lowerCaseWord);
+            if (wordCount.Word != null)
+                statistics.Remove(wordCount);
             else
-                stat = Tuple.Create(0, lowerCaseWord);
-            statistics.Add(Tuple.Create(stat.Item1 - 1, stat.Item2));
+                wordCount = new WordCount(lowerCaseWord, 0);
+            statistics.Add(new WordCount(wordCount.Word, wordCount.Count - 1));
             statistics.Sort();
         }
 
-        public IEnumerable<Tuple<int, string>> GetStatistics()
+        public IEnumerable<WordCount> GetStatistics()
         {
-            return statistics.Select(t => Tuple.Create(-t.Item1, t.Item2));
+            return statistics.Select(w => new WordCount(w.Word, -w.Count));
         }
     }
 
@@ -288,7 +291,7 @@ namespace Challenge.IncorrectImplementations
     public class WordsStatistics_999 : IWordsStatistics
     {
         private readonly HashSet<string> usedWords = new HashSet<string>();
-        private readonly List<Tuple<int, string>> statistics = new List<Tuple<int, string>>();
+        private readonly List<WordCount> statistics = new List<WordCount>();
 
         public void AddWord(string word)
         {
@@ -298,21 +301,21 @@ namespace Challenge.IncorrectImplementations
             word = word.ToLower();
             if (usedWords.Contains(word))
             {
-                var stat = statistics.First(s => s.Item2 == word);
+                var stat = statistics.First(s => s.Word == word);
                 statistics.Remove(stat);
-                statistics.Add(Tuple.Create(stat.Item1 + 1, stat.Item2));
+                statistics.Add(new WordCount(stat.Word, stat.Count + 1));
             }
             else
             {
-                statistics.Add(Tuple.Create(1, word));
+                statistics.Add(new WordCount(word, 1));
                 usedWords.Add(word);
             }
         }
 
-	    public IEnumerable<Tuple<int, string>> GetStatistics()
+	    public IEnumerable<WordCount> GetStatistics()
 	    {
-		    return statistics.OrderByDescending(t => t.Item1)
-			    .ThenBy(t => t.Item2);
+		    return statistics.OrderByDescending(t => t.Count)
+			    .ThenBy(t => t.Word);
 	    }
 	}
 
@@ -332,22 +335,22 @@ namespace Challenge.IncorrectImplementations
             statistics[word.ToLower()] = 1 + (statistics.TryGetValue(word.ToLower(), out count) ? count : 0);
         }
 
-        public IEnumerable<Tuple<int, string>> GetStatistics()
+        public IEnumerable<WordCount> GetStatistics()
         {
             var temp = statistics;
             statistics = new Dictionary<string, int>();
             return temp.OrderByDescending(kv => kv.Value)
                 .ThenBy(kv => kv.Key)
-                .Select(kv => Tuple.Create(kv.Value, kv.Key));
+                .Select(WordCount.Create);
         }
     }
 
     [IncorrectImplementation]
     public class WordsStatistics_EN2 : WordsStatistics
     {
-        private List<Tuple<int, string>> result;
+        private List<WordCount> result;
 
-        public override IEnumerable<Tuple<int, string>> GetStatistics()
+        public override IEnumerable<WordCount> GetStatistics()
         {
             return result ?? (result = base.GetStatistics().ToList());
         }

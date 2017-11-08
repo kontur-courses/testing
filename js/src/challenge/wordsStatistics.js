@@ -29,8 +29,8 @@ export default class WordsStatistics {
         return Array
             .from(this.statistics)
             .map((keyValue) => ({
-                count: keyValue[1],
-                word: keyValue[0]
+                word: keyValue[0],
+                count: keyValue[1]
             }))
             .sort((a, b) => a.count !== b.count
                 ? b.count - a.count
