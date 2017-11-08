@@ -1,6 +1,6 @@
 import * as incorrectImplementations from "./doNotOpen";
 
-import tests from "../wordsStatistics.test";
+import wordsStatisticsTests from "../wordsStatistics.test";
 
 const implementations = [
     incorrectImplementations.WordsStatisticsL2,
@@ -26,5 +26,7 @@ const implementations = [
 ];
 
 for (const implementation of implementations) {
-    describe(implementation.name, tests(() => new implementation()));
+    describe(implementation.name, function (){
+        wordsStatisticsTests(() => new implementation())
+    });
 }
