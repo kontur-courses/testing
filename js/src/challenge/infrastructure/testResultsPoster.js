@@ -1,5 +1,5 @@
 import FirebaseClient from "firebase-client";
-import { toUriSafeString } from "./stringHelpers";
+import { toUriSafeString } from "../../lib/stringHelpers";
 
 export default class FirebaseTestResultsPoster {
     constructor() {

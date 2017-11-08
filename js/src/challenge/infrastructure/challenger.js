@@ -5,7 +5,7 @@ import * as reporters from "./reporters";
 import ReportDataCollector from "./reporters/failedTestsCollector";
 import FirebaseTestResultsPoster from "./testResultsPoster";
 
-import * as stringHelpers from "./stringHelpers";
+import * as stringHelpers from "../../lib/stringHelpers";
 import ConsoleWriter from "./consoleWriter";
 
 import { AUTHORS } from "../yourName";
@@ -19,6 +19,7 @@ export default class Challenger {
         ConsoleWriter.write("Check all tests pass with correct implementation...");
         const failedCount = await this.testCorrectImplementation();
         if (failedCount > 0) {
+            ConsoleWriter.write("Incorrect tests detected: " + failedCount);
             return;
         }
         const incorrectImplementationTestResult = await this.testIncorrectImplementation();

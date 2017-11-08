@@ -3,6 +3,8 @@ import chai from "chai";
 chai.should();
 
 import WordsStatistics from "./wordsStatistics";
+import ArgumentNullError from "../lib/argumentNullError";
+
 
 const tests = (wordsStatisticsFactory) => {
     return () => {

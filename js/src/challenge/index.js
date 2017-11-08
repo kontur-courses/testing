@@ -1,4 +1,4 @@
-import Challenger from "./challenger";
+import Challenger from "./infrastructure/challenger";
 
 (async function() {
     try {

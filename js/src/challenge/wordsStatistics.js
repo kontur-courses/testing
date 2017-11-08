@@ -1,5 +1,5 @@
-import * as stringHelpers from "./infrastructure/stringHelpers";
-import ArgumentNullError from "./infrastructure/argumentNullError";
+import * as stringHelpers from "../lib/stringHelpers";
+import ArgumentNullError from "../lib/argumentNullError";
 
 /**
  * Частотный словарь добавленных слов.

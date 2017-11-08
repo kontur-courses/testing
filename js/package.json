@@ -18,8 +18,8 @@
   },
   "scripts": {
     "test": "mocha --require babel-register --reporter Progress ./src/samples/**/*.test.js",
-    "challenge": "babel-node ./src/challenge/infrastructure/index.js",
-    "challenge-debug": "babel-node %NODE_DEBUG_OPTION% ./src/challenge/infrastructure/index.js"
+    "challenge": "babel-node ./src/challenge/index.js",
+    "challenge-debug": "babel-node %NODE_DEBUG_OPTION% ./src/challenge/index.js"
   },
   "repository": {
     "type": "git",
