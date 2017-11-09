@@ -12,7 +12,7 @@ describe("Stack2", () => {
         }
     })
 
-    // <editor-fold defaultstate="collapsed" desc="Почему это плохо?">
+    //#region Почему это плохо?
 
     /*
     ## Антипаттерн Loudmouth
@@ -24,5 +24,5 @@ describe("Stack2", () => {
     Вместо вывода на консоль, используйте Assert-ы.
     */
 
-    // </editor-fold>
+    //#endregion
 });

@@ -12,7 +12,7 @@ describe("Stack4", () => {
         assert.deepEqual(stack.toArray(), [4, 3, 2, 1]);
     })
 
-    // <editor-fold defaultstate="collapsed" desc="Почему это плохо?">
+    //#region Почему это плохо?
 
     /*
     ## Антипаттерн Overspecification
@@ -32,5 +32,5 @@ describe("Stack4", () => {
     Признак возможной проблемы — более одного Assert на метод.
     */
 
-    // </editor-fold>
+    //#endregion
 });

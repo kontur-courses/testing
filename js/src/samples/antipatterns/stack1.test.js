@@ -18,7 +18,7 @@ describe("Stack1", () => {
         }
     });
 
-    // <editor-fold defaultstate="collapsed" desc="Почему это плохо?">
+    //#region Почему это плохо?
 
     /*
     ## Антипаттерн Local Hero
@@ -34,5 +34,5 @@ describe("Stack1", () => {
     var lines = fs.readFileSync(path.resolve("data.txt"));
     */
 
-    // </editor-fold>
+    //#endregion
 });

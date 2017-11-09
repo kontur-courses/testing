@@ -27,7 +27,7 @@ describe("Stack3", () => {
         }
     });
 
-    // <editor-fold defaultstate="collapsed" desc="Почему это плохо?">
+    //#region Почему это плохо?
 
     /*
     ## Антипаттерн Freeride
@@ -47,5 +47,5 @@ describe("Stack3", () => {
     Если вы не можете придумать название теста, у вас Loudmouth!
     */
 
-    // </editor-fold>
+    //#endregion
 });

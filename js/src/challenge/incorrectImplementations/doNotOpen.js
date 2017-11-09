@@ -4,7 +4,7 @@ import "../../lib/zip";
 
 import WordsStatistics from "../wordsStatistics";
 
-// <editor-fold defaultstate="collapsed" desc="Do not open!">
+//#region Do not open!
 
 export class WordsStatisticsL2 extends WordsStatistics {
     addWord(word) {
@@ -424,4 +424,4 @@ export class WordsStatisticsEN2 extends WordsStatistics {
     }
 }
 
-// </editor-fold>
+//#endregion

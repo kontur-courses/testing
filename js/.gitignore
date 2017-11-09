@@ -1,7 +1,2 @@
-.vscode
-*.log
-node_modules
-build
-
-.idea/**/*.*
-!.idea/runConfigurations/Test.xml
+.idea/workspace.xml
+.idea/tasks.xml
