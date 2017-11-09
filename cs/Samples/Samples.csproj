@@ -60,7 +60,7 @@
     <Compile Include="Specifications\Stack_Specification.cs" />
     <Compile Include="TestDataBuilder\TestUserBuilder.cs" />
     <Compile Include="TestDataBuilder\TestUsers.cs" />
-    <Compile Include="TestDataBuilder\Sample_Tests.cs" />
+    <Compile Include="TestDataBuilder\TestDataBuilder_Sample_Tests.cs" />
     <Compile Include="TestDataBuilder\User.cs" />
   </ItemGroup>
   <ItemGroup>

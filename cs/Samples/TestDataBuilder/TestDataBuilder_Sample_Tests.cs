@@ -3,7 +3,7 @@
 namespace Samples.TestDataBuilder
 {
 	[TestFixture]
-	public class Sample_Tests
+	public class TestDataBuilder_Sample_Tests
 	{
 		[Test]
 		public void WithObjectMother()
