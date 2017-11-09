@@ -32,7 +32,7 @@ describe("Stack1", () => {
     Если нужна работа с файлами, делайте это по относительным путям.
 
     // path.resolve превращает относительный путь в абсолютный
-    var lines = fs.readFileSync(path.resolve("data.txt"));
+    const lines = fs.readFileSync(path.resolve("data.txt"));
     */
 
     //#endregion
