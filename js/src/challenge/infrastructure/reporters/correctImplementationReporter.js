@@ -13,8 +13,8 @@ export default function CorrectImplementationReporter(runner) {
 
     runner.on('end', function() {
         if (failedTests.length > 0) {
-            const failedTestNames = failedTests.map((t) => t.name).join(", ");
-            ConsoleWriter.writeError(`Incorrect test${failedTests.length === 1 ? "" : "s"} detected: ${failedTestNames}`);
+            const failedTestNames = failedTests.map((t) => `"${t.name}"`).join(", ");
+            ConsoleWriter.writeError(`Incorrect tests detected: ${failedTestNames}`);
         } else {
             ConsoleWriter.writeSuccess("Tests are OK!");
         }

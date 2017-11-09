@@ -44,12 +44,13 @@ namespace Challenge.Infrastructure
                 using (var client = Firebase.CreateClient())
                 {
                     string authorsKey = MakeFirebaseSafe(WordsStatistics_Tests.Authors);
-                    var values = statuses.Select(s => s.Fails.Length).ToArray();
+                    var values = statuses.ToDictionary(s => s.Name, s => s.Fails.Length);
                     //client.Set(authorsKey + "/implementations", values);
                     client.Set(authorsKey, new
                     {
                         implementations = values,
-                        time = DateTime.Now.ToUniversalTime()
+                        time = DateTime.Now.ToUniversalTime(),
+                        lang = "cs"
                     });
                 }
                 Console.WriteLine("");

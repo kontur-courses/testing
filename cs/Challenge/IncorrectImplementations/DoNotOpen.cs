@@ -114,8 +114,9 @@ namespace Challenge.IncorrectImplementations
     {
         public override IEnumerable<WordCount> GetStatistics()
         {
-            return statistics.OrderBy(kv => kv.Key)
-                .Select(WordCount.Create);
+            return statistics
+                .Select(WordCount.Create)
+                .OrderBy(wordCount => wordCount.Word);
         }
     }
 
@@ -124,8 +125,9 @@ namespace Challenge.IncorrectImplementations
     {
         public override IEnumerable<WordCount> GetStatistics()
         {
-            return statistics.OrderByDescending(kv => kv.Value)
-                .Select(WordCount.Create);
+            return statistics
+                .Select(WordCount.Create)
+                .OrderBy(wordCount => wordCount.Count);
         }
     }
 
@@ -143,7 +145,9 @@ namespace Challenge.IncorrectImplementations
     {
         public override IEnumerable<WordCount> GetStatistics()
         {
-            return base.GetStatistics().OrderByDescending(w => w);
+            return base.GetStatistics()
+                .OrderByDescending(wordCount => wordCount.Count)
+                .ThenByDescending(wordCount => wordCount.Word);
         }
     }
 
@@ -165,18 +169,19 @@ namespace Challenge.IncorrectImplementations
 
         public IEnumerable<WordCount> GetStatistics()
         {
-            return statistics.OrderByDescending(kv => kv.Value)
-                .ThenBy(kv => kv.Key)
-                .Select(WordCount.Create);
+            return statistics
+                .Select(WordCount.Create)
+                .OrderByDescending(wordCount => wordCount.Count)
+                .ThenBy(wordCount => wordCount.Word);
         }
     }
 
     [IncorrectImplementation]
-    public class WordsStatistics_STA : IWordsStatistics
+    public class WordsStatisticsSTA : IWordsStatistics
     {
         private static readonly IDictionary<string, int> statistics = new Dictionary<string, int>();
 
-        public WordsStatistics_STA()
+        public WordsStatisticsSTA()
         {
 	        statistics.Clear();
         }
@@ -193,14 +198,14 @@ namespace Challenge.IncorrectImplementations
         public IEnumerable<WordCount> GetStatistics()
         {
             return statistics
-                .OrderByDescending(kv => kv.Value)
-                .ThenBy(kv => kv.Key)
-                .Select(WordCount.Create);
+                .Select(WordCount.Create)
+                .OrderByDescending(wordCount => wordCount.Count)
+                .ThenBy(wordCount => wordCount.Word);
         }
     }
 
     [IncorrectImplementation]
-    public class WordsStatistics_123 : IWordsStatistics
+    public class WordsStatistics123 : IWordsStatistics
     {
         private const int MAX_SIZE = 1237;
 
@@ -227,7 +232,7 @@ namespace Challenge.IncorrectImplementations
     }
 
     [IncorrectImplementation]
-    public class WordsStatistics_QWE : IWordsStatistics
+    public class WordsStatisticsQWE : IWordsStatistics
     {
         private readonly IDictionary<string, int> statistics = new Dictionary<string, int>();
 
@@ -243,7 +248,10 @@ namespace Challenge.IncorrectImplementations
 
         public IEnumerable<WordCount> GetStatistics()
         {
-            return statistics.OrderByDescending(kv => kv.Value).ThenBy(kv => kv.Key).Select(WordCount.Create);
+            return statistics
+                .Select(WordCount.Create)
+                .OrderByDescending(wordCount => wordCount.Count)
+                .ThenBy(wordCount => wordCount.Word);
         }
 
         private char ToLower(char c)
@@ -262,7 +270,7 @@ namespace Challenge.IncorrectImplementations
     }
 
     [IncorrectImplementation]
-    public class WordsStatistics_998 : IWordsStatistics
+    public class WordsStatistics998 : IWordsStatistics
     {
         private readonly List<WordCount> statistics = new List<WordCount>();
 
@@ -278,7 +286,10 @@ namespace Challenge.IncorrectImplementations
             else
                 wordCount = new WordCount(lowerCaseWord, 0);
             statistics.Add(new WordCount(wordCount.Word, wordCount.Count - 1));
-            statistics.Sort();
+
+            statistics.Sort((a, b) => a.Count == b.Count
+                ? string.Compare(a.Word, b.Word, StringComparison.Ordinal)
+                : a.Count - b.Count);
         }
 
         public IEnumerable<WordCount> GetStatistics()
@@ -288,7 +299,7 @@ namespace Challenge.IncorrectImplementations
     }
 
     [IncorrectImplementation]
-    public class WordsStatistics_999 : IWordsStatistics
+    public class WordsStatistics999 : IWordsStatistics
     {
         private readonly HashSet<string> usedWords = new HashSet<string>();
         private readonly List<WordCount> statistics = new List<WordCount>();
@@ -314,13 +325,14 @@ namespace Challenge.IncorrectImplementations
 
 	    public IEnumerable<WordCount> GetStatistics()
 	    {
-		    return statistics.OrderByDescending(t => t.Count)
+		    return statistics
+                .OrderByDescending(t => t.Count)
 			    .ThenBy(t => t.Word);
 	    }
 	}
 
     [IncorrectImplementation]
-    public class WordsStatistics_EN1 : IWordsStatistics
+    public class WordsStatisticsEN1 : IWordsStatistics
     {
         private IDictionary<string, int> statistics
             = new Dictionary<string, int>();
@@ -339,14 +351,15 @@ namespace Challenge.IncorrectImplementations
         {
             var temp = statistics;
             statistics = new Dictionary<string, int>();
-            return temp.OrderByDescending(kv => kv.Value)
-                .ThenBy(kv => kv.Key)
-                .Select(WordCount.Create);
+            return temp
+                .Select(WordCount.Create)
+                .OrderByDescending(wordCount => wordCount.Count)
+                .ThenBy(wordCount => wordCount.Word);
         }
     }
 
     [IncorrectImplementation]
-    public class WordsStatistics_EN2 : WordsStatistics
+    public class WordsStatisticsEN2 : WordsStatistics
     {
         private List<WordCount> result;
 

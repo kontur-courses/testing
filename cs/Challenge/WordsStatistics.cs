@@ -29,9 +29,10 @@ namespace Challenge
 
 		public virtual IEnumerable<WordCount> GetStatistics()
 		{
-			return statistics.OrderByDescending(kv => kv.Value)
-				.ThenBy(kv => kv.Key)
-				.Select(WordCount.Create);
+			return statistics
+				.Select(WordCount.Create)
+				.OrderByDescending(wordCount => wordCount.Count)
+				.ThenBy(wordCount => wordCount.Word);
 		}
 	}
 }

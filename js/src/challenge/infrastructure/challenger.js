@@ -19,19 +19,21 @@ export default class Challenger {
         ConsoleWriter.write("Check all tests pass with correct implementation...");
         const failedCount = await this.testCorrectImplementation();
         if (failedCount > 0) {
-            ConsoleWriter.write("Incorrect tests detected: " + failedCount);
             return;
         }
         const incorrectImplementationTestResult = await this.testIncorrectImplementation();
 
-        if (!stringHelpers.isDefinedString(AUTHORS) || stringHelpers.isWhitespace(AUTHORS)) {
+        if (stringHelpers.isDefinedString(AUTHORS) || !stringHelpers.isWhitespace(AUTHORS)) {
             await this.postResults(incorrectImplementationTestResult);
         }
     }
 
     testCorrectImplementation() {
         return new Promise((resolve) => {
-            this.createTestsRunner(reporters.CorrectImplementationReporter, "./src/challenge/wordsStatistics.test.js")
+            const reporter = reporters.CorrectImplementationReporter;
+            const testFileName = "./src/challenge/wordsStatistics.test.js";
+
+            this.createTestsRunner(reporter, testFileName)
                 .run((failedCount) => resolve(failedCount));
         });
     }

@@ -12,12 +12,13 @@ export default class FirebaseTestResultsPoster {
         const safeAuthor = toUriSafeString(author);
 
         const postData = {
+            implementations: data.data,
             time: new Date().toISOString(),
-            ...data
+            lang: 'js',
         };
 
         return this.firebase.set(
-            `word-statistics-js/${this.buildDateKey()}/${safeAuthor}`,
+            `word-statistics/${this.buildDateKey()}/${safeAuthor}`,
             postData
         );
     }

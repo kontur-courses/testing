@@ -48,13 +48,13 @@ namespace Challenge.Infrastructure
     public class WordsStatisticsO2_Tests : IncorrectImplementation_TestsBase { }
     public class WordsStatisticsO3_Tests : IncorrectImplementation_TestsBase { }
     public class WordsStatisticsO4_Tests : IncorrectImplementation_TestsBase { }
-    public class WordsStatistics_123_Tests : IncorrectImplementation_TestsBase { }
-    public class WordsStatistics_998_Tests : IncorrectImplementation_TestsBase { }
-    public class WordsStatistics_999_Tests : IncorrectImplementation_TestsBase { }
-    public class WordsStatistics_EN1_Tests : IncorrectImplementation_TestsBase { }
-    public class WordsStatistics_EN2_Tests : IncorrectImplementation_TestsBase { }
-    public class WordsStatistics_QWE_Tests : IncorrectImplementation_TestsBase { }
-    public class WordsStatistics_STA_Tests : IncorrectImplementation_TestsBase { }
+    public class WordsStatistics123_Tests : IncorrectImplementation_TestsBase { }
+    public class WordsStatistics998_Tests : IncorrectImplementation_TestsBase { }
+    public class WordsStatistics999_Tests : IncorrectImplementation_TestsBase { }
+    public class WordsStatisticsEN1_Tests : IncorrectImplementation_TestsBase { }
+    public class WordsStatisticsEN2_Tests : IncorrectImplementation_TestsBase { }
+    public class WordsStatisticsQWE_Tests : IncorrectImplementation_TestsBase { }
+    public class WordsStatisticsSTA_Tests : IncorrectImplementation_TestsBase { }
 
     #endregion
 }
