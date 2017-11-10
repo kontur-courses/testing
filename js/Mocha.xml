@@ -1,0 +1,19 @@
+<templateSet group="JavaScript Mocha">
+  <template name="desc" value="describe(&quot;$DESCRIPTION$&quot;, () =&gt; {&#10;  $END$&#10;});" description="default" toReformat="true" toShortenFQNames="true">
+    <variable name="DESCRIPTION" expression="" defaultValue="" alwaysStopAt="true" />
+    <context>
+      <option name="JS_STATEMENT" value="true" />
+    </context>
+  </template>
+  <template name="it" value="it(&quot;$DESCRIPTION$&quot;, () =&gt; {&#10;  $END$&#10;});" description="default" toReformat="true" toShortenFQNames="true">
+    <variable name="DESCRIPTION" expression="" defaultValue="" alwaysStopAt="true" />
+    <context>
+      <option name="JS_STATEMENT" value="true" />
+    </context>
+  </template>
+  <template name="before" value="beforeEach(() =&gt; {&#10;  $END$&#10;});" description="default" toReformat="true" toShortenFQNames="true">
+    <context>
+      <option name="JS_STATEMENT" value="true" />
+    </context>
+  </template>
+</templateSet>
