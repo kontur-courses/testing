@@ -6,7 +6,7 @@
     <pass-parent-env>true</pass-parent-env>
     <envs />
     <ui>bdd</ui>
-    <extra-mocha-options>--require babel-register --exit</extra-mocha-options>
+    <extra-mocha-options>--require babel-register</extra-mocha-options>
     <test-kind>SUITE</test-kind>
     <test-file>$PROJECT_DIR$/src/challenge/wordsStatistics.test.js</test-file>
     <test-names>
