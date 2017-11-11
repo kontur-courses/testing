@@ -6,11 +6,6 @@ namespace Challenge
 	[TestFixture]
 	public class WordsStatistics_Tests
 	{
-		/// <summary>
-		/// Ваши фамилии через пробел. Например, "Egorov Shagalina"
-		/// </summary>
-		public const string Authors = "";
-
 		public virtual IWordsStatistics CreateStatistics()
 		{
 			// меняется на разные реализации при запуске exe

@@ -14,9 +14,9 @@ namespace Challenge.Infrastructure
     {
         private static void Main()
         {
-            if (string.IsNullOrWhiteSpace(WordsStatistics_Tests.Authors))
+            if (string.IsNullOrWhiteSpace(YourName.Authors))
             {
-                Console.WriteLine("Enter your surnames at WordsStatistics_Tests in Authors constant!");
+                Console.WriteLine("Enter your surnames at YourName.cs in AUTHORS constant");
                 Thread.Sleep(3000);
             }
             var testPackage = new TestPackage(Assembly.GetExecutingAssembly().Location);
@@ -32,7 +32,7 @@ namespace Challenge.Infrastructure
                         res.Add(status);
                         WriteImplementationStatusToConsole(status);
                     }
-                    if (!string.IsNullOrWhiteSpace(WordsStatistics_Tests.Authors))
+                    if (!string.IsNullOrWhiteSpace(YourName.Authors))
                         PostResults(res);
                 }
         }
@@ -43,7 +43,7 @@ namespace Challenge.Infrastructure
             {
                 using (var client = Firebase.CreateClient())
                 {
-                    string authorsKey = MakeFirebaseSafe(WordsStatistics_Tests.Authors);
+                    string authorsKey = MakeFirebaseSafe(YourName.Authors);
                     var values = statuses.ToDictionary(s => s.Name, s => s.Fails.Length);
                     //client.Set(authorsKey + "/implementations", values);
                     client.Set(authorsKey, new

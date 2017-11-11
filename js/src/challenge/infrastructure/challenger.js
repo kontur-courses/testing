@@ -3,7 +3,7 @@ import path from "path";
 
 import * as reporters from "./reporters";
 import ReportDataCollector from "./reporters/failedTestsCollector";
-import FirebaseTestResultsPoster from "./testResultsPoster";
+import FirebaseTestResultsPoster from "./resultPoster";
 
 import * as stringHelpers from "../../lib/stringHelpers";
 import ConsoleWriter from "./consoleWriter";

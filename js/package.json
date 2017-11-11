@@ -7,9 +7,7 @@
     "test": "mocha --require babel-register ./src/samples/**/*.test.js ./src/samples/**/*.spec.js",
     "challenge": "babel-node ./src/challenge/index.js"
   },
-  "dependencies": {
-    "firebase-client": "^0.1.1"
-  },
+  "dependencies": {},
   "devDependencies": {
     "babel-cli": "^6.26.0",
     "babel-core": "^6.26.0",
@@ -17,6 +15,7 @@
     "babel-preset-env": "^1.6.1",
     "chai": "^4.1.2",
     "colors": "^1.1.2",
+    "firebase": "^4.6.0",
     "mocha": "^4.0.1"
   },
   "author": "",

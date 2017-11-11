@@ -23,7 +23,3 @@ export function calculateHash(word) {
     }
     return hash;
 }
-
-export function toUriSafeString(word) {
-    return word.replace(/[.$#\[\]\/\u0000-\u0020 ]/g, "_");
-}
