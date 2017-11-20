@@ -8,20 +8,12 @@ namespace Samples.Specifications
 	public class Stack_Specification
 	{
 		[Test]
-		public void DefaultConstructor_CreatesEmptyStack()
+		public void Constructor_CreatesEmptyStack()
 		{
 			// ReSharper disable once CollectionNeverUpdated.Local
 			var stack = new Stack<int>();
 
 			Assert.AreEqual(0, stack.Count);
-		}
-
-		[Test]
-		public void Pop_OnEmptyStack_Fails()
-		{
-			var stack = new Stack<int>();
-
-			Assert.Throws<InvalidOperationException>(() => stack.Pop());
 		}
 
 		[Test]
@@ -54,6 +46,14 @@ namespace Samples.Specifications
 			CollectionAssert.AreEqual(new[] { 42, 3, 2, 1 }, stack.ToArray());
 		}
 
+		[Test]
+		public void Pop_OnEmptyStack_Fails()
+		{
+			var stack = new Stack<int>();
+
+			Assert.Throws<InvalidOperationException>(() => stack.Pop());
+		}
+		
 		[Test]
 		public void Pop_ReturnsLastPushedItem()
 		{

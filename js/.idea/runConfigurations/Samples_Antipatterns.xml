@@ -1,5 +1,5 @@
 <component name="ProjectRunConfigurationManager">
-  <configuration default="false" name="Words Statistics Tests" type="mocha-javascript-test-runner" factoryName="Mocha">
+  <configuration default="false" name="Samples Antipatterns" type="mocha-javascript-test-runner" factoryName="Mocha">
     <node-interpreter>project</node-interpreter>
     <node-options />
     <working-directory>$PROJECT_DIR$</working-directory>
@@ -7,11 +7,9 @@
     <envs />
     <ui>bdd</ui>
     <extra-mocha-options>--require babel-register</extra-mocha-options>
-    <test-kind>SUITE</test-kind>
-    <test-file>$PROJECT_DIR$/src/challenge/wordsStatistics.test.js</test-file>
-    <test-names>
-      <name value="words statistics" />
-    </test-names>
+    <test-kind>DIRECTORY</test-kind>
+    <test-directory>$PROJECT_DIR$/src/samples/antipatterns</test-directory>
+    <recursive>true</recursive>
     <method />
   </configuration>
 </component>

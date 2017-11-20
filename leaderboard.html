@@ -47,7 +47,7 @@
 
         var res = snapshot.val();
         res = res ? res : [];
-        var names = Object.keys(res);
+        var names = Object.keys(res).filter(k => res[k].implementations);
         names.sort((a, b) => -countNonZero(res[a].implementations) + countNonZero(res[b].implementations));
         names.forEach(function(name) {
             var lang = res[name].lang;

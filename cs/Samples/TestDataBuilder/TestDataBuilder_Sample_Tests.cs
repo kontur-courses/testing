@@ -6,7 +6,7 @@ namespace Samples.TestDataBuilder
 	public class TestDataBuilder_Sample_Tests
 	{
 		[Test]
-		public void WithObjectMother()
+		public void WorksWithObjectMother()
 		{
 			var user = TestUsers.ARegularUser();
 			var adminUser = TestUsers.AnAdmin();
@@ -14,7 +14,7 @@ namespace Samples.TestDataBuilder
 		}
 
 		[Test]
-		public void WithBuilder()
+		public void WorksWithBuilder()
 		{
 			var user = TestUserBuilder.AUser().Build();
 			var adminUser = TestUserBuilder.AUser().InAdminRole().Build();
