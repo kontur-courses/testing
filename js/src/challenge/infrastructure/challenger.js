@@ -23,7 +23,7 @@ export default class Challenger {
         }
         const incorrectImplementationTestResult = await this.testIncorrectImplementation();
 
-        if (stringHelpers.isDefinedString(AUTHORS) || !stringHelpers.isWhitespace(AUTHORS)) {
+        if (stringHelpers.isDefinedString(AUTHORS) && !stringHelpers.isWhitespace(AUTHORS)) {
             await this.postResults(incorrectImplementationTestResult);
         }
     }
