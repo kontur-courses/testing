@@ -297,9 +297,9 @@ export class WordsStatisticsQWE {
         const lowerCharacter = character => {
             const charCode = character.charCodeAt(0);
             if (englishCharsArray.includes(character)) {
-                return String.fromCharCode(charCode - "D".charCodeAt(0) + "d".charCodeAt(0));
+                return charCode - "D".charCodeAt(0) + "d".charCodeAt(0);
             } else if (russianCharsArray.includes(character)) {
-                return String.fromCharCode(charCode - "Я".charCodeAt(0) + "я".charCodeAt(0));
+                return charCode - "Я".charCodeAt(0) + "я".charCodeAt(0);
             }
             return charCode;
         };
