@@ -29,7 +29,7 @@
 1. Познакомься с Mocha, если ещё не знаком, научись подключать его через npm (yarn) 
 2. Изучи возможности синтаксиса [Mocha](https://mochajs.org/)
 3. Научись запускать тесты в терминале (`npm test` или `yarn test`), из WebStorm по [инструкции](https://www.jetbrains.com/help/webstorm/testing.html) или другой любимой JavaScript IDE
-4. Если пока плохо знаком с Node.js и ES6, то начни с Шага 1 этого [туторила](https://github.com/kontur-csharper/frontend-starter-tutorial)
+4. Если пока плохо знаком с Node.js и ES6, то начни с Шага 1 этого [туторила](https://github.com/kontur-courses/frontend-starter-tutorial)
 
 
 ## Очная встреча
