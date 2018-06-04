@@ -73,8 +73,7 @@
 
     function countFailedTests(implementations) {
         return Object
-            .keys(implementations)
-            .map(k => implementations[k])
+            .values(implementations)
             .reduce((sum, val) => sum + val);
     }
 
