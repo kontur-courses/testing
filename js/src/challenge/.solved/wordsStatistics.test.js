@@ -143,25 +143,25 @@ export default function wordStatisticsTests(createWordStatistics) {
             }
             wordsStatistics.getStatistics().should.be.lengthOf(wordCount);
         });
-
-        it("has sufficient performance on adding different words", () => {
-            for (let i = 0; i < 100; i++) {
-                wordsStatistics.addWord(i.toString());
-            }
-            wordsStatistics.getStatistics();
-        }).timeout(10);
-
-        it("has sufficient performance on adding same word", () => {
-            for (let i = 0; i < 300; i++) {
-                wordsStatistics.addWord(i.toString());
-            }
-            const sameWord = "9";
-            for (let i = 0; i < 300; i++) {
-                wordsStatistics.addWord(sameWord);
-            }
-            wordsStatistics.getStatistics();
-        }).timeout(10);
     });
+
+    it("has sufficient performance on adding different words", () => {
+        for (let i = 0; i < 1500; i++) {
+            wordsStatistics.addWord(i.toString());
+        }
+        wordsStatistics.getStatistics();
+    }).timeout(1000);
+
+    it("has sufficient performance on adding same word", () => {
+        for (let i = 0; i < 250; i++) {
+            wordsStatistics.addWord(i.toString());
+        }
+        const sameWord = "9";
+        for (let i = 0; i < 5000; i++) {
+            wordsStatistics.addWord(sameWord);
+        }
+        wordsStatistics.getStatistics();
+    }).timeout(1000);
 
     it("supports several instances", () => {
         const anotherWordsStatistics = createWordStatistics();

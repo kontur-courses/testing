@@ -1,7 +1,8 @@
 <html>
 <head>
     <script src="https://cdn.firebase.com/js/client/2.4.2/firebase.js"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.0.0-alpha/css/bootstrap.min.css">
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.0.0-alpha/css/bootstrap.min.css">
     <style>
         .no {
             background-color: #FCC;
@@ -17,7 +18,7 @@
     </style>
 </head>
 <body>
-<div id="container" />
+<div id="container"/>
 
 <script>
     var implementationCodes = ["C", "E", "CR", "E2", "E3", "E4", "L2", "L3", "L4", "O1", "O2", "O3", "O4", "123", "998", "999", "EN1", "EN2", "QWE", "STA"];
@@ -39,7 +40,7 @@
 
     console.log("hi!");
     var fb = createFirebase();
-    fb.on("value", function(snapshot) {
+    fb.on("value", function (snapshot) {
         var html = "<table class='table table-condensed'>";
         html += "<tr>";
         ["Name"].concat(implementationCodes).forEach(v => html += "<th>" + v + "</th>");
@@ -48,11 +49,14 @@
         var res = snapshot.val();
         res = res ? res : [];
         var names = Object.keys(res).filter(k => res[k].implementations);
-        names.sort((a, b) => -countNonZero(res[a].implementations) + countNonZero(res[b].implementations));
-        names.forEach(function(name) {
+        names.sort((a, b) => {
+            return -countNonZero(res[a].implementations) + countNonZero(res[b].implementations)
+                || countFailedTests(res[a].implementations) - countFailedTests(res[b].implementations)
+        });
+        names.forEach(function (name) {
             var lang = res[name].lang;
             var suffix = lang ? " (" + lang + ")" : "";
-            html += "<tr><td>" + name.replace("<", "").replace(">", "") + suffix  + "</td>";
+            html += "<tr><td>" + name.replace("<", "").replace(">", "") + suffix + "</td>";
             implementationCodes.forEach(i => {
                 var result = res[name].implementations["WordsStatistics" + i];
                 html += formatCell(result);
@@ -65,6 +69,12 @@
 
     function countNonZero(implementations) {
         return Object.keys(implementations).filter(k => implementations[k] > 0).length;
+    }
+
+    function countFailedTests(implementations) {
+        return Object
+            .values(implementations)
+            .reduce((sum, val) => sum + val);
     }
 
     function formatCell(v) {

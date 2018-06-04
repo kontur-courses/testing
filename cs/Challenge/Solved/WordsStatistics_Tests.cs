@@ -179,25 +179,25 @@ namespace Challenge.Solved
 			wordsStatistics.GetStatistics().Should().HaveCount(wordCount);
 		}
 
-		[Test, Timeout(10)]
+		[Test, Timeout(1500)]
 		public void AddWord_HasSufficientPerformance_OnAddingDifferentWords()
 		{
-			for (int i = 0; i < 100; i++)
+			for (int i = 0; i < 5000; i++)
 			{
 				wordsStatistics.AddWord(i.ToString());
 			}
 			wordsStatistics.GetStatistics();
 		}
 
-		[Test, Timeout(10)]
+		[Test, Timeout(1500)]
 		public void AddWord_HasSufficientPerformance_OnAddingSameWord()
 		{
-			for (int i = 0; i < 300; i++)
+			for (int i = 0; i < 20000; i++)
 			{
 				wordsStatistics.AddWord(i.ToString());
 			}
 			var sameWord = 9.ToString();
-			for (int i = 0; i < 300; i++)
+			for (int i = 0; i < 20000; i++)
 			{
 				wordsStatistics.AddWord(sameWord);
 			}
