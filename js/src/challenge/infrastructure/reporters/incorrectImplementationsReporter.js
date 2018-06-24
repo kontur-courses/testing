@@ -8,24 +8,26 @@ export default function IncorrectImplementationsReporter(runner, options) {
     const testSuitesResults = [];
     let failedTests = [];
 
-    const { collector } = options.reporterOptions.custom;
+    const {collector} = options.reporterOptions.custom;
 
-    runner.on('suite', function() {
-        failedTests = [];
+    runner.on('suite', function (suite) {
+        if (isImplementationSuite(suite)) {
+            failedTests = [];
+        }
     });
 
-    runner.on('fail', function(test, error) {
+    runner.on('fail', function (test, error) {
         failedTests.push({
-            name: test.titlePath().slice(-1)[0],
+            name: test.titlePath().slice(1).join(" "),
             error: error
         });
     });
 
-    runner.on('suite end', function(suite) {
-        if (suite.root === false) {
-            const { title: implementationName } = suite;
+    runner.on('suite end', function (suite) {
+        if (isImplementationSuite(suite)) {
+            const {title: implementationName} = suite;
 
-            const failedTestNames = failedTests.map((t) => t.name);
+            const failedTestNames = failedTests.map((t) => `[${t.name}]`);
             const failedTestNamesString = failedTestNames.join(", ");
             testSuitesResults.push({
                 failed: failedTests.length > 0,
@@ -37,7 +39,7 @@ export default function IncorrectImplementationsReporter(runner, options) {
         }
     });
 
-    runner.on('end', function() {
+    runner.on('end', function () {
         testSuitesResults.forEach((r) => {
             if (r.failed === true) {
                 ConsoleWriter.writeSuccess(`${r.implementationName}\tfails on: ${r.failedTestNames}`);
@@ -46,4 +48,8 @@ export default function IncorrectImplementationsReporter(runner, options) {
             }
         })
     })
+}
+
+function isImplementationSuite(suite) {
+    return suite.parent && suite.parent.root === true;
 }
