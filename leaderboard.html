@@ -55,8 +55,12 @@
         });
         names.forEach(function (name) {
             var lang = res[name].lang;
+            var urlParams = new URLSearchParams(window.location.search);
+            var langFilter = urlParams.get('lang');
+            if (langFilter != null && langFilter != lang) return;
             var suffix = lang ? " (" + lang + ")" : "";
-            html += "<tr><td>" + name.replace("<", "").replace(">", "") + suffix + "</td>";
+            if (langFilter != null) suffix = "";
+            html += "<tr><td>" + name.replace("<", "").replace(">", "") + suffix  + "</td>";
             implementationCodes.forEach(i => {
                 var result = res[name].implementations["WordsStatistics" + i];
                 html += formatCell(result);
