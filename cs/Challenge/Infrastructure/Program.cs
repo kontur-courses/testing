@@ -18,6 +18,7 @@ namespace Challenge.Infrastructure
             {
                 Console.WriteLine("Enter your surnames at YourName.cs in AUTHORS constant");
                 Thread.Sleep(3000);
+                return;
             }
             var testPackage = new TestPackage(Assembly.GetExecutingAssembly().Location);
             using (var engine = new TestEngine())

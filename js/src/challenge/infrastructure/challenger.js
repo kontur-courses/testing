@@ -14,6 +14,7 @@ export default class Challenger {
     async run() {
         if (!stringHelpers.isDefinedString(AUTHORS) || stringHelpers.isWhitespace(AUTHORS)){
             ConsoleWriter.writeError("Enter your surnames at yourName.js in AUTHORS constant");
+            return;
         }
 
         ConsoleWriter.write("Check all tests pass with correct implementation...");
