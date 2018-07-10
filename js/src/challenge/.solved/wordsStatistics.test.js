@@ -153,15 +153,15 @@ export default function wordStatisticsTests(createWordStatistics) {
     }).timeout(1000);
 
     it("has sufficient performance on adding same word", () => {
-        for (let i = 0; i < 250; i++) {
+        for (let i = 0; i < 2500; i++) {
             wordsStatistics.addWord(i.toString());
         }
         const sameWord = "9";
-        for (let i = 0; i < 5000; i++) {
+        for (let i = 0; i < 2500; i++) {
             wordsStatistics.addWord(sameWord);
         }
         wordsStatistics.getStatistics();
-    }).timeout(1000);
+    }).timeout(100);
 
     it("supports several instances", () => {
         const anotherWordsStatistics = createWordStatistics();

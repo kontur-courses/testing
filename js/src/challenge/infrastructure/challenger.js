@@ -17,11 +17,12 @@ export default class Challenger {
             return;
         }
 
-        ConsoleWriter.write("Check all tests pass with correct implementation...");
+        ConsoleWriter.write("Checking if all tests pass with correct implementation...");
         const failedCount = await this.testCorrectImplementation();
         if (failedCount > 0) {
             return;
         }
+        ConsoleWriter.write("Checking if tests fail with incorrect implementations...");
         const incorrectImplementationTestResult = await this.testIncorrectImplementation();
 
         if (stringHelpers.isDefinedString(AUTHORS) && !stringHelpers.isWhitespace(AUTHORS)) {

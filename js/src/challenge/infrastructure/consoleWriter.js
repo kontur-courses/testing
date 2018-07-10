@@ -6,11 +6,11 @@ const terminalCodes = {
 
 class ConsoleWriter {
     static writeSuccess(message) {
-        console.log(terminalCodes.green, message, terminalCodes.reset);
+        console.log(`${terminalCodes.green}${message}${terminalCodes.reset}`);
     }
 
     static writeError(message) {
-        console.log(terminalCodes.red, message, terminalCodes.reset);
+        console.log(`${terminalCodes.red}${message}${terminalCodes.reset}`);
     }
 
     static write(message) {
