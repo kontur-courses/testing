@@ -21,7 +21,7 @@ namespace HomeExercises
 			var actualTsar = TsarRegistry.GetCurrentTsar();
 			var expectedTsar = CurrentTsar;
 
-			actualTsar.ShouldBeEquivalentTo(expectedTsar, option => option.Excluding(p => p.SelectedMemberInfo.Name == "Id"));
+			actualTsar.ShouldBeEquivalentTo(expectedTsar, option => option.Excluding(p => p.SelectedMemberPath.EndsWith(nameof(Person.Id))));
 		}
 		// Решение в CheckCurrentTsar читается намного лучше, чем CheckCurrentTsar_WithCustomEquality, так как нам не нужно читать, как работает метод AreEqual.
 		// AreEqual проверяет равенство царей только по конкретным полям в текущей реализации класса Person,

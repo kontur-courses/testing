@@ -12,21 +12,21 @@ namespace HomeExercises
 
 		[TestCase("0.0", ExpectedResult = true, TestName = "Fraction")]
 		[TestCase("0", ExpectedResult = true, TestName = "Integer")]
-		[TestCase("0.000", ExpectedResult = false, TestName = "FractionPartLargerThenScale")]
-		[TestCase("123456789123", ExpectedResult = true, TestName = "Double")]
+		[TestCase("123456789123", ExpectedResult = true, TestName = "Long")]
 		public bool NumberValidator_WithBigPrecisionAndSmallScale_IsValid(string input)
 		{
 			var validator = new NumberValidator(17, 2, true);
 			return validator.IsValidNumber(input);
 		}
 
-		[TestCase("00.00", ExpectedResult = false, TestName = "FractionLargerThenPrecision")]
-		[TestCase("+1.23", ExpectedResult = false, TestName = "NegativeFractionLargerThenPrecision")]
-		[TestCase("-1.23", ExpectedResult = false, TestName = "PositiveFractionLargerThenPrecision")]
+		[TestCase("00.00", ExpectedResult = false, TestName = "FractionLargerThanPrecision")]
+		[TestCase("0.000", ExpectedResult = false, TestName = "FractionPartLargerThanScale")]
+		[TestCase("+1.23", ExpectedResult = false, TestName = "NegativeFractionLargerThanPrecision")]
+		[TestCase("-1.23", ExpectedResult = false, TestName = "PositiveFractionLargerThanPrecision")]
 		[TestCase("a.sd", ExpectedResult = false, TestName = "Letters")]
 		[TestCase("a.12", ExpectedResult = false, TestName = "FractionLettersWithDigits")]
-		[TestCase("a.12", ExpectedResult = false, TestName = "FractionDigitsWithLetters")]
-		public bool NumberValidator_SmallPrecisionAndSmallScale_IsValid(string input)
+		[TestCase("12.a", ExpectedResult = false, TestName = "FractionDigitsWithLetters")]
+		public bool NumberValidator_SmallPrecisionAndSmallScale_IsNotValid(string input)
 		{
 			var validator = new NumberValidator(3, 2, true);
 
@@ -50,14 +50,6 @@ namespace HomeExercises
 			Action action = () => { new NumberValidator(precision, scale, true); };
 
 			action.ShouldThrow<ArgumentException>();
-		}
-
-		[Test]
-		public void NumberValidator_WithRightArguments_ShouldNotThrowException()
-		{
-			Action action = () => { new NumberValidator(1, 0, true); };
-
-			action.ShouldNotThrow();
 		}
 	}
 
