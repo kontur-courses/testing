@@ -13,7 +13,7 @@ namespace HomeExercises
         [TestCase(17, 2, false, "-0", Description = "Correct Zero")]
         [TestCase(4, 2, true, "+1.23", Description = "Correct Real positive number")]
         [TestCase(4, 2, false, "-1.23", Description = "Correct Real negative number")]
-        public void ReturnTrue_TestOnMultipleParameters(int precision, int scale, bool onlyPositive, string expected)
+        public void IsValidNumber_ShouldBeTrue_TestOnMultipleParameters(int precision, int scale, bool onlyPositive, string expected)
         {
             new NumberValidator(precision, scale, onlyPositive).IsValidNumber(expected).Should().BeTrue();
         }
@@ -25,7 +25,13 @@ namespace HomeExercises
         [TestCase(3, 2, true, "a.sd", Description = "Not a number value")]
         [TestCase(1, 0, true, null, Description = "Null value")]
         [TestCase(1, 0, true, "", Description = "Empty value")]
-        public void ReturnFalse_TestOnMultipleParameters(int precision, int scale, bool onlyPositive, string expected)
+        [TestCase(3, 2, false, ".00", Description = "If point is not lead by digit")]
+        [TestCase(2, 1, false, ",0", Description = "If comma is not lead by digit")]
+        [TestCase(3, 2, false, "-1.", Description = "If point is not followed by digit")]
+        [TestCase(2, 1, false, "0,", Description = "If comma is not followed by digit")]
+        [TestCase(20, 19, false, "-", Description = "Only sign without digits")]
+        [TestCase(20, 19, false, "+", Description = "Only sign without digits")]
+        public void IsValidNumber_ShouldBeFalse_TestOnMultipleParameters(int precision, int scale, bool onlyPositive, string expected)
         {
             new NumberValidator(precision, scale, onlyPositive).IsValidNumber(expected).Should().BeFalse();
         }
