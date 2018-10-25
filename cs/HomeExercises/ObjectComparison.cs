@@ -5,7 +5,7 @@ namespace HomeExercises
 {
 	[TestFixture]
 	[Description("Проверка текущего царя")]
-	public class ObjectComparison_Should
+	public class ObjectComparison_Tests
 	{
 		private Person actualTsar;
 
@@ -16,55 +16,55 @@ namespace HomeExercises
 		}
 
 		[Test]
-		public void GetCurrentTcar_NameShouldBeRight_AfterCreation()
+		public void GetCurrentTsar_NameShouldBeRight_AfterCreation()
 		{
 			actualTsar.Name.Should().Be("Ivan IV The Terrible");
 		}
 
 		[Test]
-		public void GetCurrentTcar_AgeShouldBeRight_AfterCreation()
+		public void GetCurrentTsar_AgeShouldBeRight_AfterCreation()
 		{
 			actualTsar.Age.Should().Be(54);
 		}
 
 		[Test]
-		public void GetCurrentTcar_HeightShouldBeRight_AfterCreation()
+		public void GetCurrentTsar_HeightShouldBeRight_AfterCreation()
 		{
 			actualTsar.Height.Should().Be(170);
 		}
 
 		[Test]
-		public void GetCurrentTcar_WeightShouldBeRight_AfterCreation()
+		public void GetCurrentTsar_WeightShouldBeRight_AfterCreation()
 		{
 			actualTsar.Weight.Should().Be(70);
 		}
 
 		[Test]
-		public void GetCurrentTcar_ParentNameShouldBeRight_AfterCreation()
+		public void GetCurrentTsar_ParentNameShouldBeRight_AfterCreation()
 		{
 			actualTsar.Parent.Name.Should().Be("Vasili III of Russia");
 		}
 
 		[Test]
-		public void GetCurrentTcar_ParentAgeShouldBeRight_AfterCreation()
+		public void GetCurrentTsar_ParentAgeShouldBeRight_AfterCreation()
 		{
 			actualTsar.Parent.Age.Should().Be(28);
 		}
 
 		[Test]
-		public void GetCurrentTcar_ParentHeightShouldBeRight_AfterCreation()
+		public void GetCurrentTsar_ParentHeightShouldBeRight_AfterCreation()
 		{
 			actualTsar.Parent.Height.Should().Be(170);
 		}
 
 		[Test]
-		public void GetCurrentTcar_ParentWeightShouldBeRight_AfterCreation()
+		public void GetCurrentTsar_ParentWeightShouldBeRight_AfterCreation()
 		{
 			actualTsar.Parent.Weight.Should().Be(60);
 		}
 
 		[Test]
-		public void GetCurrentTcar_ParentOfParentShouldBeNull_AfterCreation()
+		public void GetCurrentTsar_ParentOfParentShouldBeNull_AfterCreation()
 		{
 			actualTsar.Parent.Parent.Should().BeNull();
 		}

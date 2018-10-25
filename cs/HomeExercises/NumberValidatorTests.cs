@@ -6,10 +6,10 @@ using NUnit.Framework;
 namespace HomeExercises
 {
 	[TestFixture]
-	public class NumberValidatorTests_Should
+	public class NumberValidator_Tests
 	{
 		[TestFixture]
-		public class InitNumberValidatorTests
+		public class InitNumberValidator_Tests
 		{
 			[Test]
 			public void NumberValidator_ThrowsException_WhenCreatingWithNegativePrecision()
@@ -24,58 +24,44 @@ namespace HomeExercises
 				Action action = () => new NumberValidator(1, 0, true);
 				action.Should().NotThrow<ArgumentException>();
 			}
-
+			
 			[Test]
-			public void NumberValidator_ThrowsException_WhenCreatingWithNegativePrecisionAndOnlyPositiveFlag()
+			public void NumberValidator_ThrowsException_WhenCreatingWithScaleLargerPrecision()
 			{
-				Action action = () => new NumberValidator(-1, 2, false);
+				Action action = () => new NumberValidator(1, 2, false);
 				action.Should().Throw<ArgumentException>();
 			}
 		}
 
 		[TestFixture]
-		public class IsValidNumberTests
+		public class IsValidNumber_Tests
 		{
 			[Test]
-			public void IsValidNumber_ReturnsTrue_ForValidNumber()
-			{
-				var validator = new NumberValidator(17, 2, true);
-				validator.IsValidNumber("0.0").Should().BeTrue();
-			}
-
-			[Test]
-			public void IsValidNumber_ReturnsTrue_ForIntegerLengthShorterPrecision()
+			public void IsValidNumber_ReturnsTrue_IfNumberLengthShorterPrecision()
 			{
 				var validator = new NumberValidator(17, 2, true);
 				validator.IsValidNumber("0").Should().BeTrue();
 			}
 
 			[Test]
-			public void IsValidNumber_ReturnsFalse_IfDoubleNumberLengthLongerPrecision()
+			public void IsValidNumber_ReturnsFalse_IfNumberLengthLongerPrecision()
 			{
 				var validator = new NumberValidator(3, 2, true);
 				validator.IsValidNumber("00.00").Should().BeFalse();
 			}
 
 			[Test]
-			public void IsValidNumber_ReturnsFalse_IfNumberWithNegativeSignLengthLongerPrecision()
+			public void IsValidNumber_ReturnsFalse_IfNumberWithSignLengthLongerPrecision()
 			{
 				var validator = new NumberValidator(3, 2, true);
 				validator.IsValidNumber("-0.00").Should().BeFalse();
 			}
 
 			[Test]
-			public void IsValidNumber_ReturnsTrue_ForNumberWithSignLengthEqualPrecision()
+			public void IsValidNumber_ReturnsTrue_IfNumberWithSignLengthEqualPrecision()
 			{
 				var validator = new NumberValidator(4, 2, true);
 				validator.IsValidNumber("+1.23").Should().BeTrue();
-			}
-
-			[Test]
-			public void IsValidNumber_ReturnsFalse_IfNumberWithPositiveSignLengthLongerPrecision()
-			{
-				var validator = new NumberValidator(3, 2, true);
-				validator.IsValidNumber("+1.23").Should().BeFalse();
 			}
 
 			[Test]
@@ -105,6 +91,13 @@ namespace HomeExercises
 				var validator = new NumberValidator(3, 2, true);
 				string arg = null;
 				validator.IsValidNumber(arg).Should().BeFalse();
+			}
+			
+			[Test]
+			public void IsValidNumber_ReturnsFalse_IfOnlyPositiveFlagButNumberIsNegative()
+			{
+				var validator = new NumberValidator(3, 2, true);
+				validator.IsValidNumber("-1").Should().BeFalse();
 			}
 		}
 	}
