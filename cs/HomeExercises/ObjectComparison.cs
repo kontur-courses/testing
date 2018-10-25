@@ -3,28 +3,70 @@ using NUnit.Framework;
 
 namespace HomeExercises
 {
-	public class ObjectComparison
+	[TestFixture]
+	[Description("Проверка текущего царя")]
+	public class ObjectComparison_Should
 	{
-		[Test]
-		[Description("Проверка текущего царя")]
-		[Category("ToRefactor")]
-		public void CheckCurrentTsar()
+		private Person actualTsar;
+
+		[SetUp]
+		public void SetUp()
 		{
-			var actualTsar = TsarRegistry.GetCurrentTsar();
+			actualTsar = TsarRegistry.GetCurrentTsar();
+		}
 
-			var expectedTsar = new Person("Ivan IV The Terrible", 54, 170, 70,
-				new Person("Vasili III of Russia", 28, 170, 60, null));
+		[Test]
+		public void GetCurrentTcar_NameShouldBeRight_AfterCreation()
+		{
+			actualTsar.Name.Should().Be("Ivan IV The Terrible");
+		}
 
-			// Перепишите код на использование Fluent Assertions.
-			Assert.AreEqual(actualTsar.Name, expectedTsar.Name);
-			Assert.AreEqual(actualTsar.Age, expectedTsar.Age);
-			Assert.AreEqual(actualTsar.Height, expectedTsar.Height);
-			Assert.AreEqual(actualTsar.Weight, expectedTsar.Weight);
+		[Test]
+		public void GetCurrentTcar_AgeShouldBeRight_AfterCreation()
+		{
+			actualTsar.Age.Should().Be(54);
+		}
 
-			Assert.AreEqual(expectedTsar.Parent.Name, actualTsar.Parent.Name);
-			Assert.AreEqual(expectedTsar.Parent.Age, actualTsar.Parent.Age);
-			Assert.AreEqual(expectedTsar.Parent.Height, actualTsar.Parent.Height);
-			Assert.AreEqual(expectedTsar.Parent.Parent, actualTsar.Parent.Parent);
+		[Test]
+		public void GetCurrentTcar_HeightShouldBeRight_AfterCreation()
+		{
+			actualTsar.Height.Should().Be(170);
+		}
+
+		[Test]
+		public void GetCurrentTcar_WeightShouldBeRight_AfterCreation()
+		{
+			actualTsar.Weight.Should().Be(70);
+		}
+
+		[Test]
+		public void GetCurrentTcar_ParentNameShouldBeRight_AfterCreation()
+		{
+			actualTsar.Parent.Name.Should().Be("Vasili III of Russia");
+		}
+
+		[Test]
+		public void GetCurrentTcar_ParentAgeShouldBeRight_AfterCreation()
+		{
+			actualTsar.Parent.Age.Should().Be(28);
+		}
+
+		[Test]
+		public void GetCurrentTcar_ParentHeightShouldBeRight_AfterCreation()
+		{
+			actualTsar.Parent.Height.Should().Be(170);
+		}
+
+		[Test]
+		public void GetCurrentTcar_ParentWeightShouldBeRight_AfterCreation()
+		{
+			actualTsar.Parent.Weight.Should().Be(60);
+		}
+
+		[Test]
+		public void GetCurrentTcar_ParentOfParentShouldBeNull_AfterCreation()
+		{
+			actualTsar.Parent.Parent.Should().BeNull();
 		}
 
 		[Test]
@@ -38,6 +80,8 @@ namespace HomeExercises
 			// Какие недостатки у такого подхода? 
 			Assert.True(AreEqual(actualTsar, expectedTsar));
 		}
+
+		// Если изменится только одно поле, то будет сложнее понять из-за чего тест завалился т.к. все поля проверяются в одном тесте вместе
 
 		private bool AreEqual(Person actual, Person expected)
 		{
