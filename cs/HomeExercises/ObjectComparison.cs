@@ -5,27 +5,28 @@ namespace HomeExercises
 {
 	public class ObjectComparison
 	{
+		private Person CurrentTsar;
+
+		[SetUp]
+		public void SetUp()
+		{
+			CurrentTsar = new Person("Ivan IV The Terrible", 54, 170, 70,
+				new Person("Vasili III of Russia", 28, 170, 60, null));
+		}
+
 		[Test]
 		[Description("Проверка текущего царя")]
-		[Category("ToRefactor")]
 		public void CheckCurrentTsar()
 		{
 			var actualTsar = TsarRegistry.GetCurrentTsar();
+			var expectedTsar = CurrentTsar;
 
-			var expectedTsar = new Person("Ivan IV The Terrible", 54, 170, 70,
-				new Person("Vasili III of Russia", 28, 170, 60, null));
-
-			// Перепишите код на использование Fluent Assertions.
-			Assert.AreEqual(actualTsar.Name, expectedTsar.Name);
-			Assert.AreEqual(actualTsar.Age, expectedTsar.Age);
-			Assert.AreEqual(actualTsar.Height, expectedTsar.Height);
-			Assert.AreEqual(actualTsar.Weight, expectedTsar.Weight);
-
-			Assert.AreEqual(expectedTsar.Parent.Name, actualTsar.Parent.Name);
-			Assert.AreEqual(expectedTsar.Parent.Age, actualTsar.Parent.Age);
-			Assert.AreEqual(expectedTsar.Parent.Height, actualTsar.Parent.Height);
-			Assert.AreEqual(expectedTsar.Parent.Parent, actualTsar.Parent.Parent);
+			actualTsar.ShouldBeEquivalentTo(expectedTsar, option => option.Excluding(p => p.SelectedMemberInfo.Name == "Id"));
 		}
+		// Решение в CheckCurrentTsar читается намного лучше, чем CheckCurrentTsar_WithCustomEquality, так как нам не нужно читать, как работает метод AreEqual.
+		// AreEqual проверяет равенство царей только по конкретным полям в текущей реализации класса Person,
+		// если нам нужно будет добавить еще одно поле в класс Person, то придется править код в AreEqual, но это очень легко забыть сделать.
+		// Значит кроме читаемости, выросла расширяемость кода.
 
 		[Test]
 		[Description("Альтернативное решение. Какие у него недостатки?")]

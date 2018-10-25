@@ -1,32 +1,63 @@
 ﻿using System;
+using System.Collections;
 using System.Text.RegularExpressions;
 using FluentAssertions;
 using NUnit.Framework;
 
 namespace HomeExercises
 {
+	[TestFixture]
 	public class NumberValidatorTests
 	{
-		[Test]
-		public void Test()
-		{
-			Assert.Throws<ArgumentException>(() => new NumberValidator(-1, 2, true));
-			Assert.DoesNotThrow(() => new NumberValidator(1, 0, true));
-			Assert.Throws<ArgumentException>(() => new NumberValidator(-1, 2, false));
-			Assert.DoesNotThrow(() => new NumberValidator(1, 0, true));
 
-			Assert.IsTrue(new NumberValidator(17, 2, true).IsValidNumber("0.0"));
-			Assert.IsTrue(new NumberValidator(17, 2, true).IsValidNumber("0"));
-			Assert.IsTrue(new NumberValidator(17, 2, true).IsValidNumber("0.0"));
-			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("00.00"));
-			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("-0.00"));
-			Assert.IsTrue(new NumberValidator(17, 2, true).IsValidNumber("0.0"));
-			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("+0.00"));
-			Assert.IsTrue(new NumberValidator(4, 2, true).IsValidNumber("+1.23"));
-			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("+1.23"));
-			Assert.IsFalse(new NumberValidator(17, 2, true).IsValidNumber("0.000"));
-			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("-1.23"));
-			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("a.sd"));
+		[TestCase("0.0", ExpectedResult = true, TestName = "Fraction")]
+		[TestCase("0", ExpectedResult = true, TestName = "Integer")]
+		[TestCase("0.000", ExpectedResult = false, TestName = "FractionPartLargerThenScale")]
+		[TestCase("123456789123", ExpectedResult = true, TestName = "Double")]
+		public bool NumberValidator_WithBigPrecisionAndSmallScale_IsValid(string input)
+		{
+			var validator = new NumberValidator(17, 2, true);
+			return validator.IsValidNumber(input);
+		}
+
+		[TestCase("00.00", ExpectedResult = false, TestName = "FractionLargerThenPrecision")]
+		[TestCase("+1.23", ExpectedResult = false, TestName = "NegativeFractionLargerThenPrecision")]
+		[TestCase("-1.23", ExpectedResult = false, TestName = "PositiveFractionLargerThenPrecision")]
+		[TestCase("a.sd", ExpectedResult = false, TestName = "Letters")]
+		[TestCase("a.12", ExpectedResult = false, TestName = "FractionLettersWithDigits")]
+		[TestCase("a.12", ExpectedResult = false, TestName = "FractionDigitsWithLetters")]
+		public bool NumberValidator_SmallPrecisionAndSmallScale_IsValid(string input)
+		{
+			var validator = new NumberValidator(3, 2, true);
+
+			return validator.IsValidNumber(input);
+		}
+
+		[TestCase("-1.23", ExpectedResult = true, TestName = "NegativeFraction")]
+		[TestCase("+1.23", ExpectedResult = true, TestName = "PositiveFraction")]
+		public bool NumberValidator_NotOnlyPositive_IsValid(string input)
+		{
+			var validator = new NumberValidator(5, 3);
+
+			return validator.IsValidNumber(input);
+		}
+
+		[TestCase(-1, 2, TestName = "PrecisionNegative")]
+		[TestCase(1, -1, TestName = "ScaleNegative")]
+		[TestCase(2, 3, TestName = "ScaleLargerPrecision")]
+		public void NumberValidator_WithBadArguments_ShouldThrowException(int precision, int scale)
+		{
+			Action action = () => { new NumberValidator(precision, scale, true); };
+
+			action.ShouldThrow<ArgumentException>();
+		}
+
+		[Test]
+		public void NumberValidator_WithRightArguments_ShouldNotThrowException()
+		{
+			Action action = () => { new NumberValidator(1, 0, true); };
+
+			action.ShouldNotThrow();
 		}
 	}
 
