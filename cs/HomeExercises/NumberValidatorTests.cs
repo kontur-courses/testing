@@ -30,12 +30,12 @@ namespace HomeExercises
 		[TestCase("", TestName = "is empty")]
 		[TestCase("   \t  ", TestName = "contains only whitespace characters")]
 		[TestCase("a7,3e", TestName = "contains any letter")]
-		[TestCase("1..1", TestName = "contains several \".\"")]
-		[TestCase("1,,1", TestName = "contains several \",\"")]
+		[TestCase("1..1", TestName = "contains several dots")]
+		[TestCase("1,,1", TestName = "contains several commas ")]
 		[TestCase("++1", TestName = "contains several \"+\"")]
-		[TestCase("--1", TestName = "contains several \",\"")]
-		[TestCase(",1", TestName = "starts with \",\"")]
-		[TestCase(".1", TestName = "starts with \".\"")]
+		[TestCase("--1", TestName = "contains several \"-\"")]
+		[TestCase(",1", TestName = "starts with comma")]
+		[TestCase(".1", TestName = "starts with dot")]
 		public void BeFalse_WhenValue(string value)
 		{
 			TestOneCase(value: value);
@@ -43,8 +43,8 @@ namespace HomeExercises
 
 		[TestCase("1", TestName = "has only integral part")]
 		[TestCase("0.13", TestName = "has only fractal part")]
-		[TestCase("1,4", TestName = "has \",\" as delimiter")]
-		[TestCase("1.4", TestName = "has \".\" as delimiter")]
+		[TestCase("1,4", TestName = "has comma as delimiter")]
+		[TestCase("1.4", TestName = "has dot as delimiter")]
 		[TestCase("-1", TestName = "has \"-\" sign")]
 		[TestCase("+1", TestName = "has \"+\" sign")]
 		[TestCase("00.00", TestName = "has several zeroes")]
@@ -53,9 +53,16 @@ namespace HomeExercises
 			TestOneCase(value: value, expected: true);
 		}
 
-		[TestCase()]
-		public void DoSomething_WhenSomething()
+		[TestCase(2, 1, TestName = "has less precision than needed")]
+		[TestCase(2, 0, TestName = "has less scale than needed")]
+		[TestCase(4, 2, false, "-12,34", TestName =
+			"counts \"-\" sign as part of precision equals to amount of digits")]
+		[TestCase(4, 2, false, "+12,34", TestName =
+			"counts \"+\" sign as part of precision equals to amount of digits")]
+		[TestCase(4, 2, true, "-12,34", TestName = "allows only positive values and value is negative")]
+		public void BeFalse_WhenFormat(int precision, int scale, bool onlyPositive = false, string value = "12.34")
 		{
+			TestOneCase(precision, scale, value: value);
 		}
 
 		private static void TestOneCase(
