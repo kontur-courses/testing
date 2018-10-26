@@ -15,19 +15,18 @@ namespace HomeExercises
 			var expectedTsar = new Person("Ivan IV The Terrible", 54, 170, 70,
 				new Person("Vasili III of Russia", 28, 170, 60, null));
 
-			// Перепишите код на использование Fluent Assertions.
-			Assert.AreEqual(actualTsar.Name, expectedTsar.Name);
-			Assert.AreEqual(actualTsar.Age, expectedTsar.Age);
-			Assert.AreEqual(actualTsar.Height, expectedTsar.Height);
-			Assert.AreEqual(actualTsar.Weight, expectedTsar.Weight);
+			actualTsar.Should().BeEquivalentTo(expectedTsar, options => 
+				options.Excluding(p => p.SelectedMemberPath.EndsWith("Id")));
+            // Плюсы такого подхода:
+            // По сути, плюсами такого подхода является отсутствие перечисленных ниже минусов с:
+            //
+            // Примечание:
+            // Без знания того, как работает метод BeEquivalentTo, преимущество над первым недостатком подхода,
+            // использованного в тесте CheckCurrentTsar_WithCustomEquality, сводится на нет и, более того,
+			// на то, чтобы разобраться, что именно происходит в этом методе, уйдет еще больше времени
+        }
 
-			Assert.AreEqual(expectedTsar.Parent.Name, actualTsar.Parent.Name);
-			Assert.AreEqual(expectedTsar.Parent.Age, actualTsar.Parent.Age);
-			Assert.AreEqual(expectedTsar.Parent.Height, actualTsar.Parent.Height);
-			Assert.AreEqual(expectedTsar.Parent.Parent, actualTsar.Parent.Parent);
-		}
-
-		[Test]
+        [Test]
 		[Description("Альтернативное решение. Какие у него недостатки?")]
 		public void CheckCurrentTsar_WithCustomEquality()
 		{
@@ -37,9 +36,16 @@ namespace HomeExercises
 
 			// Какие недостатки у такого подхода? 
 			Assert.True(AreEqual(actualTsar, expectedTsar));
-		}
 
-		private bool AreEqual(Person actual, Person expected)
+            // Недостатки такого подхода: 
+			// 1. Меньшая читаемость кода. Для того, чтобы понять, что именно происходит в этом тесте,
+			//    приходится смотреть реализацию метода AreEqual
+            // 2. Если тест свалится, то не будет показано, при проверке какого именно поля возникла ошибка
+            // 3. Меньшая расширяемость. При каждом добавлении нового поля/свойства в класс Person
+            //    придется прописывать дополнительную проверку в методе AreEqual
+        }
+
+        private bool AreEqual(Person actual, Person expected)
 		{
 			if (actual == expected) return true;
 			if (actual == null || expected == null) return false;
