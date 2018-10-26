@@ -10,27 +10,30 @@ namespace HomeExercises
 	public class NumberValidatorTests
 	{
 
-		[TestCase("0.0", ExpectedResult = true, TestName = "Fraction")]
-		[TestCase("0", ExpectedResult = true, TestName = "Integer")]
-		[TestCase("123456789123", ExpectedResult = true, TestName = "Long")]
-		public bool NumberValidator_WithBigPrecisionAndSmallScale_IsValid(string input)
+		[TestCase("0.0", TestName = "Fraction")]
+		[TestCase("0", TestName = "Integer")]
+		[TestCase("123456789123", TestName = "Long")]
+		public void NumberValidator_WithBigPrecisionAndSmallScale_IsValid(string input)
 		{
 			var validator = new NumberValidator(17, 2, true);
-			return validator.IsValidNumber(input);
+
+			validator.IsValidNumber(input).Should().BeTrue();
 		}
 
-		[TestCase("00.00", ExpectedResult = false, TestName = "FractionLargerThanPrecision")]
-		[TestCase("0.000", ExpectedResult = false, TestName = "FractionPartLargerThanScale")]
-		[TestCase("+1.23", ExpectedResult = false, TestName = "NegativeFractionLargerThanPrecision")]
-		[TestCase("-1.23", ExpectedResult = false, TestName = "PositiveFractionLargerThanPrecision")]
-		[TestCase("a.sd", ExpectedResult = false, TestName = "Letters")]
-		[TestCase("a.12", ExpectedResult = false, TestName = "FractionLettersWithDigits")]
-		[TestCase("12.a", ExpectedResult = false, TestName = "FractionDigitsWithLetters")]
-		public bool NumberValidator_SmallPrecisionAndSmallScale_IsNotValid(string input)
+		[TestCase("00.00", TestName = "FractionLargerThanPrecision")]
+		[TestCase("0.000", TestName = "FractionPartLargerThanScale")]
+		[TestCase("+1.23", TestName = "NegativeFractionLargerThanPrecision")]
+		[TestCase("-1.23", TestName = "PositiveFractionLargerThanPrecision")]
+		[TestCase("a.sd", TestName = "Letters")]
+		[TestCase("a.12", TestName = "FractionLettersWithDigits")]
+		[TestCase("12.a", TestName = "FractionDigitsWithLetters")]
+		[TestCase("-", TestName = "SignWithoutDigits")]
+		[TestCase(null, TestName = "Null")]
+		public void NumberValidator_SmallPrecisionAndSmallScale_IsNotValid(string input)
 		{
 			var validator = new NumberValidator(3, 2, true);
 
-			return validator.IsValidNumber(input);
+			validator.IsValidNumber(input).Should().BeFalse();
 		}
 
 		[TestCase("-1.23", ExpectedResult = true, TestName = "NegativeFraction")]
