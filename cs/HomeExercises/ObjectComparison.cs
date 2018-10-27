@@ -16,7 +16,7 @@ namespace HomeExercises
 				new Person("Vasili III of Russia", 28, 170, 60, null));
 
             // Перепишите код на использование Fluent Assertions.
-			actualTsar.ShouldBeEquivalentTo(expectedTsar, options => options
+			actualTsar.Should().BeEquivalentTo(expectedTsar, options => options
 				.Excluding(e => e.Id)
 				.Excluding(e => e.Parent.Id));
         }
