@@ -3,6 +3,7 @@ using System.Collections;
 using System.Text.RegularExpressions;
 using FluentAssertions;
 using NUnit.Framework;
+using NUnit.Framework.Internal.Filters;
 
 namespace HomeExercises
 {
@@ -16,7 +17,7 @@ namespace HomeExercises
         }
 
         [Test]
-        public void TestNumberValidator_ShouldNotThrowsArgumentException_AfterInvokeWithPositivePrecision()
+        public void TestNumberValidator_ShouldNotThrowsArgumentException_AfterInvokeWithValidArguments()
         {
             Action constructor = () => new NumberValidator(1, 0, true);
             constructor.ShouldNotThrow();
@@ -36,43 +37,25 @@ namespace HomeExercises
             constructor.ShouldThrow<ArgumentException>();
         }
 
-
-        [Test, TestCaseSource(nameof(NumberValidatorTestCases))]
+        [TestCase(4, 2, true, "+1.23", ExpectedResult = true, TestName = "IsValid_AfterSimpleInput")]
+        [TestCase(3, 2, true, "+1.23", ExpectedResult = false, TestName = "IsNotValid_WhenActualPrecisionMoreThanRequired")]
+        [TestCase(17, 2, true, "0", ExpectedResult = true, TestName = "IsValid_OnInputWithoutSeparator")]
+        [TestCase(17, 2, true, "0.0", ExpectedResult = true, TestName = "IsValid_WithoutSignInTheBeginning")]
+        [TestCase(4, 2, true, "+0.0", ExpectedResult = true, TestName = "IsValid_WithPlusInTheBeginning")]
+        [TestCase(4, 2, false, "-0.0", ExpectedResult = true, TestName = "IsValid_WithMinusInTheBeginning")]
+        [TestCase(17, 2, true, "0.000", ExpectedResult = false, TestName = "IsNotValid_WhenActualScaleMoreThanRequired")]
+        [TestCase(3, 2, true, "a.sd", ExpectedResult = false, TestName = "IsNotValid_AfterInvokeWithStringInsteadOfNumbers")]
+        [TestCase(3, 2, true, "", ExpectedResult = false, TestName = "IsNotValid_AfterInvokeWithEmptyString")]
+        [TestCase(3, 2, true, null, ExpectedResult = false, TestName = "IsNotValid_AfterInvokeWithNullString")]
+        [TestCase(17, 2, true, "0,0", ExpectedResult = true, TestName = "IsValid_AfterInvokeWithCommaSeparator")]
+        [TestCase(4, 2, true, "-0.00", ExpectedResult = false, TestName = "IsNotValid_AfterNegativeInputWhenOnlyPositiveRequired")]
         public bool TestNumberValidator_NumberIsValid
             (int precision, int scale, bool onlyPositive, String numberToValid)
         {
             return new NumberValidator(precision, scale, onlyPositive)
                 .IsValidNumber(numberToValid);
         }
-
-        public static IEnumerable NumberValidatorTestCases
-        {
-            get
-            {
-                yield return new TestCaseData(17, 2, true, "0.0").Returns(true);
-                yield return new TestCaseData(17, 2, true, "0").Returns(true);
-                yield return new TestCaseData(3, 2, true, "00.00").Returns(false);
-                yield return new TestCaseData(3, 2, true, "+0.00").Returns(false);
-                yield return new TestCaseData(4, 2, true, "+1.23").Returns(true);
-                yield return new TestCaseData(3, 2, true, "+1.23").Returns(false);
-                yield return new TestCaseData(3, 2, true, "-1.23").Returns(false);
-
-                yield return new TestCaseData(17, 2, true, "0.000").Returns(false)
-                    .SetName("TestNumberValidator_ReturnFalse_WhenActualScaleMoreThanRequired");
-                yield return new TestCaseData(3, 2, true, "a.sd")
-                    .Returns(false).SetName("TestNumberValidator_ReturnFalse_AfterInvokeWithStringInsteadOfNumbers");
-                yield return new TestCaseData(3, 2, true, "")
-                    .Returns(false).SetName("TestNumberValidator_ReturnFalse_AfterInvokeWithEmptyString");
-                yield return new TestCaseData(3, 2, true, null)
-                    .Returns(false).SetName("TestNumberValidator_ReturnFalse_AfterInvokeWithNullString");
-                yield return new TestCaseData(17, 2, true, "0,0")
-                    .Returns(true).SetName("TestNumberValidator_ReturnTrue_AfterInvokeWithCommaSeparator");
-                yield return new TestCaseData(3, 2, true, "-0.00")
-                    .Returns(false).SetName("TestNumberValidator_ReturnFalse_AfterNegativeInputWhenOnlyPositiveRequired");
-            }
-        }
     }
-
 
     public class NumberValidator
     {
