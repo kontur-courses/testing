@@ -84,6 +84,18 @@ namespace HomeExercises
 		}
 
 		[Test]
+		public void IsValidNumber_NullInput_False()
+		{
+			standardNonNegativeValidator.IsValidNumber(null).Should().BeFalse();
+        }
+
+		[Test]
+		public void IsValidNumber_EmptyInput_False()
+		{
+			standardNonNegativeValidator.IsValidNumber("").Should().BeFalse();
+        }
+
+		[Test]
 		public void IsValidNumber_IntNumberLengthEqualsPrecision_True()
 		{
 			standardNonNegativeValidator.IsValidNumber("1234567890").Should().BeTrue();
