@@ -1,5 +1,4 @@
-﻿using System.Collections;
-using FluentAssertions;
+﻿using FluentAssertions;
 using NUnit.Framework;
 
 namespace HomeExercises
