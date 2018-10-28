@@ -12,6 +12,23 @@ namespace Challenge
 	 * При одинаковой частоте — в лексикографическом порядке.
 	 * </summary>
 	 */
+	[NUnit.Framework.TestFixture]
+	public class WordsStatistics_Should
+	{
+		[NUnit.Framework.SetUpAttribute]
+		public void SetUp()
+		{
+			
+		}
+
+		[NUnit.Framework.Test]
+		public void DoSomething_WhenSomething()
+		{
+
+		}
+	}
+
+	
 	public class WordsStatistics : IWordsStatistics
 	{
 		protected readonly IDictionary<string, int> statistics 
