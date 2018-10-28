@@ -3,7 +3,7 @@
 ## Сравнение объектов
 
 Изучите тест в классе ObjectComparison.
-Затем изучите [документацию FluentAssertions](http://fluentassertions.com/documentation.html). 
+Затем изучите [документацию FluentAssertions](http://fluentassertions.com/documentation). 
 
 Перепишите тест с использованием наиболее подходящего метода FluentAssertions так чтобы:
 

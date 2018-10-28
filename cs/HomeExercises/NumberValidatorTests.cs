@@ -7,7 +7,7 @@ namespace HomeExercises
 {
 	public class NumberValidatorTests
 	{
-		[Test]
+		//[Test]
 		public void Test()
 		{
 			Assert.Throws<ArgumentException>(() => new NumberValidator(-1, 2, true));
@@ -28,7 +28,116 @@ namespace HomeExercises
 			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("-1.23"));
 			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("a.sd"));
 		}
-	}
+
+		[Test]
+		public void Precision_Should_Be_Positive()
+		{
+			Assert.Throws<ArgumentException>(() => new NumberValidator(-1, 0, true));
+			Assert.Throws<ArgumentException>(() => new NumberValidator(0, 0, true));
+			Assert.DoesNotThrow(() => new NumberValidator(1, 0, true));
+		}
+
+		[Test]
+		public void Scale_Should_Be_NonNegative()
+		{
+			Assert.Throws<ArgumentException>(() => new NumberValidator(1, -1, true));
+			Assert.DoesNotThrow(() => new NumberValidator(1, 0, true));
+		}
+
+        [Test]
+		public void Scale_Should_Be_LessThanPrecision()
+		{
+			Assert.Throws<ArgumentException>(() => new NumberValidator(2, 4, true));
+			Assert.Throws<ArgumentException>(() => new NumberValidator(4, 4, true));
+			Assert.DoesNotThrow(() => new NumberValidator(5, 4, true));
+		}
+
+		[Test]
+		public void Should_Valid_Integer()
+		{
+			Assert.IsTrue(new NumberValidator(10, 2, true).IsValidNumber("10"));
+		}
+
+		[Test]
+		public void Should_Valid_OnlyInteger()
+		{
+			Assert.IsTrue(new NumberValidator(10, 0, true).IsValidNumber("10"));
+        }
+		
+		[Test]
+		public void Should_Valid_Fractional()
+		{
+			Assert.IsTrue(new NumberValidator(16, 8, true).IsValidNumber("10.5060"));
+        }
+
+		[Test]
+		public void Should_NotValid_ToLongIntegerPart()
+		{
+			Assert.IsFalse(new NumberValidator(4, 0, true).IsValidNumber("10240"));
+		}
+
+		[Test]
+		public void Should_NotValid_ToLongFactionalPart()
+		{
+			Assert.IsFalse(new NumberValidator(4, 1, true).IsValidNumber("10.24"));
+		}
+
+        [Test]
+		public void Should_Be_CultureIndependent()
+		{
+			Assert.IsTrue(new NumberValidator(17, 2, true).IsValidNumber("0,0"));
+			Assert.IsTrue(new NumberValidator(17, 2, true).IsValidNumber("0.0"));
+        }
+
+		[Test]
+		public void Should_Valid_NotSignificantZeros()
+		{
+			Assert.IsTrue(new NumberValidator(4, 2, true).IsValidNumber("00.00"));
+        }
+
+		[Test]
+		public void Should_NotValid_NullOrWhiteSpace()
+		{
+			var numberValidator = new NumberValidator(3, 2, true);
+			Assert.IsFalse(numberValidator.IsValidNumber("  "));
+			Assert.IsFalse(numberValidator.IsValidNumber(null));
+        }
+
+        [Test]
+		public void Should_Valid_OnlyPositive()
+		{
+			var numberValidator = new NumberValidator(3, 2, true);
+            Assert.IsTrue(numberValidator.IsValidNumber("1.0"));
+			Assert.IsFalse(numberValidator.IsValidNumber("-1.0"));
+        }
+
+        [Test]
+		public void Should_Count_PrecisionWithSign()
+		{
+			var numberValidator = new NumberValidator(3, 2, false);
+            Assert.IsFalse(numberValidator.IsValidNumber("+1.23"));
+			Assert.IsFalse(numberValidator.IsValidNumber("-1.23"));
+
+			numberValidator = new NumberValidator(4, 2, false);
+            Assert.IsTrue(numberValidator.IsValidNumber("+1.23"));
+			Assert.IsTrue(numberValidator.IsValidNumber("-1.23"));
+        }
+
+		[Test]
+		public void Should_Valid_OnlyNumbers()
+		{
+			Assert.IsFalse(new NumberValidator(10, 4, false).IsValidNumber("a.sd"));
+		}
+
+		[Test]
+		public void Should_Valid_PositiveOrNegativeZero()
+		{
+			var numberValidator = new NumberValidator(4, 2, false);
+            Assert.IsTrue(numberValidator.IsValidNumber("+0"));
+			Assert.IsTrue(numberValidator.IsValidNumber("-0"));
+        }
+
+    }
 
 	public class NumberValidator
 	{
@@ -45,10 +154,10 @@ namespace HomeExercises
 			if (precision <= 0)
 				throw new ArgumentException("precision must be a positive number");
 			if (scale < 0 || scale >= precision)
-				throw new ArgumentException("precision must be a non-negative number less or equal than precision");
+				throw new ArgumentException("scale must be a non-negative number less than precision");
 			numberRegex = new Regex(@"^([+-]?)(\d+)([.,](\d+))?$", RegexOptions.IgnoreCase);
-		}
-
+        }
+		
 		public bool IsValidNumber(string value)
 		{
 			// Проверяем соответствие входного значения формату N(m,k), в соответствии с правилом, 
@@ -76,5 +185,5 @@ namespace HomeExercises
 				return false;
 			return true;
 		}
-	}
+    }
 }
