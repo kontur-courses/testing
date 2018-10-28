@@ -11,8 +11,8 @@ namespace HomeExercises
 		public class NumberValidator_Should
 		{
 			[Test]
-			[TestCase(-1, 2, TestName = "Precision is megative")]
-			[TestCase(2, -2, TestName = "Scale is megative")]
+			[TestCase(-1, 2, TestName = "Precision is negative")]
+			[TestCase(2, -2, TestName = "Scale is negative")]
 			[TestCase(2, 3, TestName = "Scale is more than precision")]
 			[TestCase(2, 2, TestName = "Scale equals precision")]
 			public void ThrowArgumentException_When(int precision, int scale)
