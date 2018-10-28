@@ -10,45 +10,57 @@ namespace HomeExercises
     public class NumberValidatorTests
     {
         [Test]
-        public void TestNumberValidator_ThrowsArgumentException_AfterInvokeWithNegativePrecisionAndOnlyPositiveNumbers()
-        {
-            Action constructor = () => new NumberValidator(-1, 2, true);
-            constructor.ShouldThrow<ArgumentException>();
-        }
-
-        [Test]
-        public void TestNumberValidator_ShouldNotThrowsArgumentException_AfterInvokeWithValidArguments()
+        public void ShouldNotThrowsArgumentException_AfterInvokeWithValidArguments()
         {
             Action constructor = () => new NumberValidator(1, 0, true);
             constructor.ShouldNotThrow();
         }
-
-        [Test]
-        public void TestNumberValidator_ThrowsArgumentException_AfterInvokeWithScaleMoreThanPrecision()
+		
+		[TestCase(-1, 2, true, TestName = "ThrowsArgumentException_AfterInvokeWithNegativePrecisionAndOnlyPositiveNumbers")]
+		[TestCase(1, 2, true, TestName = "ThrowsArgumentException_AfterInvokeWithScaleMoreThanPrecision")]
+		[TestCase(0, -1, true, TestName = "ThrowsArgumentException_AfterInvokeWithNegativeScale")]
+	    [TestCase(10, 10, true, TestName = "ThrowsArgumentException_AfterInvokeWithScaleEqualsToPrecision")]
+        public void TestNumberValidator_ThrowsArgumentException(int precision, int scale, bool onlyPositive)
         {
-            Action constructor = () => new NumberValidator(1, 2, true);
-            constructor.ShouldThrow<ArgumentException>();
-        }
-
-        [Test]
-        public void TestNumberValidator_ThrowsArgumentException_AfterInvokeWithNegativeScale()
-        {
-            Action constructor = () => new NumberValidator(0, -1, true);
-            constructor.ShouldThrow<ArgumentException>();
-        }
+		    Action constructor = () => new NumberValidator(precision, scale, onlyPositive);
+		    constructor.ShouldThrow<ArgumentException>();
+	    }
 
         [TestCase(4, 2, true, "+1.23", ExpectedResult = true, TestName = "IsValid_AfterSimpleInput")]
         [TestCase(3, 2, true, "+1.23", ExpectedResult = false, TestName = "IsNotValid_WhenActualPrecisionMoreThanRequired")]
+        [TestCase(4, 2, true, "-1.00", ExpectedResult = false, TestName = "IsNotValid_AfterNegativeInputWhenOnlyPositiveRequired")]
+        [TestCase(15, 2, true, "3000000000", ExpectedResult = true, TestName = "IsValid_AfterInvokeWithValueMoreThanInt32MaxValue")]
+
         [TestCase(17, 2, true, "0", ExpectedResult = true, TestName = "IsValid_OnInputWithoutSeparator")]
         [TestCase(17, 2, true, "0.0", ExpectedResult = true, TestName = "IsValid_WithoutSignInTheBeginning")]
         [TestCase(4, 2, true, "+0.0", ExpectedResult = true, TestName = "IsValid_WithPlusInTheBeginning")]
-        [TestCase(4, 2, false, "-0.0", ExpectedResult = true, TestName = "IsValid_WithMinusInTheBeginning")]
+        [TestCase(4, 2, true, "+", ExpectedResult = false, TestName = "IsNotValid_AfterInvokeOnlyWithSign")]
+
+        [TestCase(17, 2, true, "0,0", ExpectedResult = true, TestName = "IsValid_AfterInvokeWithCommaSeparator")]
+        [TestCase(17, 2, true, "0:0", ExpectedResult = false, TestName = "IsNotValid_AfterInvokeWithColonSeparator")]
+        [TestCase(17, 2, true, "0;0", ExpectedResult = false, TestName = "IsNotValid_AfterInvokeWithSemiсolonSeparator")]
+
+        [TestCase(17, 2, false, "-1.1000", ExpectedResult = false, TestName = "IsNotValid_WithNegativeNumberAndScaleMoreThanRequiredWhenOnlyPositiveFalse")]
+        [TestCase(4, 2, false, "-0.0", ExpectedResult = true, TestName = "IsValid_AfterInvokeWithZeroAndMinusInTheBeginningWhenOnlyPositiveFalse")]
+        [TestCase(4, 2, false, "-1.0", ExpectedResult = true, TestName = "IsValid_AfterInvokeWithNegativeNumberWhenOnlyPositiveTrueWhenOnlyPositiveFalse")]
+        [TestCase(4, 2, false, "", ExpectedResult = false, TestName = "IsNotValid_AfterInvokeWithEmptyStringWhenOnlyPositiveFalse")]
+
         [TestCase(17, 2, true, "0.000", ExpectedResult = false, TestName = "IsNotValid_WhenActualScaleMoreThanRequired")]
-        [TestCase(3, 2, true, "a.sd", ExpectedResult = false, TestName = "IsNotValid_AfterInvokeWithStringInsteadOfNumbers")]
+        [TestCase(3, 2, true, "1.111", ExpectedResult = false, TestName = "IsNotValid_WhenActualPrecisionMoreThanRequired")]
+
         [TestCase(3, 2, true, "", ExpectedResult = false, TestName = "IsNotValid_AfterInvokeWithEmptyString")]
         [TestCase(3, 2, true, null, ExpectedResult = false, TestName = "IsNotValid_AfterInvokeWithNullString")]
-        [TestCase(17, 2, true, "0,0", ExpectedResult = true, TestName = "IsValid_AfterInvokeWithCommaSeparator")]
-        [TestCase(4, 2, true, "-0.00", ExpectedResult = false, TestName = "IsNotValid_AfterNegativeInputWhenOnlyPositiveRequired")]
+
+        [TestCase(17, 2, true, "a.sd", ExpectedResult = false, TestName = "IsNotValid_AfterInvokeWithStringInsteadOfNumbers")]
+        [TestCase(17, 2, true, "A.SD", ExpectedResult = false, TestName = "IsNotValid_AfterInvokeWithStringInUpperCase")]
+        [TestCase(17, 2, true, "ф.ыв", ExpectedResult = false, TestName = "IsNotValid_AfterInvokeWithStringWithRussianLetters")]
+        [TestCase(17, 2, true, "a.00", ExpectedResult = false, TestName = "IsNotValid_AfterInvokeWithStringMixWithNumbers")]
+
+        [TestCase(17, 2, true, "0..0", ExpectedResult = false, TestName = "IsNotValid_AfterInvokeWithDoubleSeparator")]
+        [TestCase(17, 4, true, "0.0.0", ExpectedResult = false, TestName = "IsNotValid_AfterInvokeWithDoubleFraction")]
+        [TestCase(17, 4, true, "0. 0", ExpectedResult = false, TestName = "IsNotValid_AfterInvokeWithSpace")]
+        [TestCase(17, 4, true, "0.\n0", ExpectedResult = false, TestName = "IsNotValid_AfterInvokeWithLineBreak")]
+        [TestCase(17, 4, true, "0.\"0\"", ExpectedResult = false, TestName = "IsNotValid_AfterInvokeWithQuotedFraction")]
         public bool TestNumberValidator_NumberIsValid
             (int precision, int scale, bool onlyPositive, String numberToValid)
         {
