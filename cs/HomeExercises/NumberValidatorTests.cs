@@ -25,7 +25,7 @@ namespace HomeExercises
 		[TestCase(1, 2, TestName = "scale greater than precision")]
 		public void Constructor_WhenInvalidScale_ThrowsException(int precision, int scale)
 		{
-			var exceptionMessage = "precision must be a non-negative number less or equal than precision";
+			var exceptionMessage = "scale must be a non-negative number less than precision";
 			Action action = () => new NumberValidator(precision, scale);
 			action
 				.Should()
@@ -132,7 +132,7 @@ namespace HomeExercises
 			if (precision <= 0)
 				throw new ArgumentException("precision must be a positive number");
 			if (scale < 0 || scale >= precision)
-				throw new ArgumentException("precision must be a non-negative number less or equal than precision");
+				throw new ArgumentException("scale must be a non-negative number less than precision");
 
 			numberRegex = new Regex(@"^([+-]?)(\d+)([.,](\d+))?$", RegexOptions.IgnoreCase);
 		}
