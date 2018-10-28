@@ -11,20 +11,14 @@ namespace HomeExercises
 		public void CheckCurrentTsar()
 		{
 			var actualTsar = TsarRegistry.GetCurrentTsar();
-
 			var expectedTsar = new Person("Ivan IV The Terrible", 54, 170, 70,
 				new Person("Vasili III of Russia", 28, 170, 60, null));
 
-			// Перепишите код на использование Fluent Assertions.
-			Assert.AreEqual(actualTsar.Name, expectedTsar.Name);
-			Assert.AreEqual(actualTsar.Age, expectedTsar.Age);
-			Assert.AreEqual(actualTsar.Height, expectedTsar.Height);
-			Assert.AreEqual(actualTsar.Weight, expectedTsar.Weight);
-
-			Assert.AreEqual(expectedTsar.Parent.Name, actualTsar.Parent.Name);
-			Assert.AreEqual(expectedTsar.Parent.Age, actualTsar.Parent.Age);
-			Assert.AreEqual(expectedTsar.Parent.Height, actualTsar.Parent.Height);
-			Assert.AreEqual(expectedTsar.Parent.Parent, actualTsar.Parent.Parent);
+            actualTsar.ShouldBeEquivalentTo(expectedTsar, assertionOptions => 
+				assertionOptions
+					.Excluding(x => x.SelectedMemberInfo.Name == "Parent.Parent")
+					.Excluding(x => x.SelectedMemberInfo.Name == "Id")
+					.Excluding(x => x.SelectedMemberInfo.Name == "Parent.Id"));
 		}
 
 		[Test]
@@ -35,7 +29,13 @@ namespace HomeExercises
 			var expectedTsar = new Person("Ivan IV The Terrible", 54, 170, 70,
 				new Person("Vasili III of Russia", 28, 170, 60, null));
 
-			// Какие недостатки у такого подхода? 
+			// Какие недостатки у такого подхода?
+			// 
+			// Данный подход требует создания дополнительного метода, в
+		    // различных тестах может потребоваться проверка различных полей и создание
+		    // новых методых,
+			// при тестировании не понятно, какое поле неправильное, при добавлении новых полей сравнения
+			// придется изменить метод AreEqual
 			Assert.True(AreEqual(actualTsar, expectedTsar));
 		}
 
