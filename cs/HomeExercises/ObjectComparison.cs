@@ -15,16 +15,9 @@ namespace HomeExercises
 			var expectedTsar = new Person("Ivan IV The Terrible", 54, 170, 70,
 				new Person("Vasili III of Russia", 28, 170, 60, null));
 
-			// Перепишите код на использование Fluent Assertions.
-			Assert.AreEqual(actualTsar.Name, expectedTsar.Name);
-			Assert.AreEqual(actualTsar.Age, expectedTsar.Age);
-			Assert.AreEqual(actualTsar.Height, expectedTsar.Height);
-			Assert.AreEqual(actualTsar.Weight, expectedTsar.Weight);
+			actualTsar.Should().BeEquivalentTo(expectedTsar, options => options
+				.Excluding(obj => obj.SelectedMemberInfo.Name == nameof(Person.Id)));
 
-			Assert.AreEqual(expectedTsar.Parent.Name, actualTsar.Parent.Name);
-			Assert.AreEqual(expectedTsar.Parent.Age, actualTsar.Parent.Age);
-			Assert.AreEqual(expectedTsar.Parent.Height, actualTsar.Parent.Height);
-			Assert.AreEqual(expectedTsar.Parent.Parent, actualTsar.Parent.Parent);
 		}
 
 		[Test]
@@ -36,7 +29,13 @@ namespace HomeExercises
 				new Person("Vasili III of Russia", 28, 170, 60, null));
 
 			// Какие недостатки у такого подхода? 
-			Assert.True(AreEqual(actualTsar, expectedTsar));
+			// При добавлении новых свойств в Person,
+			// нужно будет постоянно менять реализацию кастомного AreEqual.
+			// В моем решении просто сравниваются все поля,
+			// (кроме id, потому что они статические) поэтому при добавлении новых свойств не нужно
+			// будет переписывать тесты.
+			// AreEqual рекурсивный, может быть StackOverlowException.
+            Assert.True(AreEqual(actualTsar, expectedTsar));
 		}
 
 		private bool AreEqual(Person actual, Person expected)
