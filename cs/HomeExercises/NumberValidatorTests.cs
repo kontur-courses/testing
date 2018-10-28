@@ -7,26 +7,51 @@ namespace HomeExercises
 {
 	public class NumberValidatorTests
 	{
-		[Test]
-		public void Test()
+		[TestCase(-1, 0, "precision must be a positive number", TestName = "negative precision")]
+		[TestCase(1, -1, "scale must be a non-negative number less or equal than precision", TestName = "negative scale")]
+		[TestCase(1, 2, "scale must be a non-negative number less or equal than precision", TestName = "scale greater than precision")]
+		public void Constructor_OnInvalidInput_ThrowsException(int precision, int scale, string message)
 		{
-			Assert.Throws<ArgumentException>(() => new NumberValidator(-1, 2, true));
-			Assert.DoesNotThrow(() => new NumberValidator(1, 0, true));
-			Assert.Throws<ArgumentException>(() => new NumberValidator(-1, 2, false));
-			Assert.DoesNotThrow(() => new NumberValidator(1, 0, true));
+			Action act = () => new NumberValidator(precision, scale);
 
-			Assert.IsTrue(new NumberValidator(17, 2, true).IsValidNumber("0.0"));
-			Assert.IsTrue(new NumberValidator(17, 2, true).IsValidNumber("0"));
-			Assert.IsTrue(new NumberValidator(17, 2, true).IsValidNumber("0.0"));
-			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("00.00"));
-			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("-0.00"));
-			Assert.IsTrue(new NumberValidator(17, 2, true).IsValidNumber("0.0"));
-			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("+0.00"));
-			Assert.IsTrue(new NumberValidator(4, 2, true).IsValidNumber("+1.23"));
-			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("+1.23"));
-			Assert.IsFalse(new NumberValidator(17, 2, true).IsValidNumber("0.000"));
-			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("-1.23"));
-			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("a.sd"));
+			act.ShouldThrow<ArgumentException>()
+				.WithMessage(message);
+		}
+
+		[TestCase(1, TestName = "positive precision")]
+		[TestCase(2, 1, TestName = "custom scale")]
+		[TestCase(2, 1, true, TestName = "onlyPositive")]
+		public void Constructor_OnValidInput_NotThrowsException(int precision, int scale = 0, bool onlyPositive = false)
+		{
+			Action act = () => new NumberValidator(precision, scale, onlyPositive);
+
+			act.ShouldNotThrow<ArgumentException>();
+		}
+
+		[TestCase(17, 2, false, "", TestName = "empty string")]
+		[TestCase(17, 2, false, null, TestName = "null")]
+		[TestCase(17, 2, false, "0.", TestName = "dot without fractional part")]
+		[TestCase(3, 2, false, "+1.23", TestName = "signs count greater than precision")]
+		[TestCase(17, 2, false, "0.000", TestName = "frac part signs count greater than scale")]
+		[TestCase(3, 2, false, "a.$%", TestName = "not numbers")]
+		[TestCase(3, 2, true, "-1.23", TestName = "negative number when onlyPositive flag")]
+		[TestCase(4, 2, false, " 1.2 ", TestName = "beginner and trailing whitespaces")]
+		public void IsValidNumber_OnInvalidInput_Fails(int precision, int scale, bool onlyPositive, string value)
+		{
+			var act =  new NumberValidator(precision, scale, onlyPositive).IsValidNumber(value);
+
+			act.Should().BeFalse();
+		}
+
+		[TestCase(3, 0, false, "0", TestName = "integer")]
+		[TestCase(10, 5, false, "12345.67890", TestName = "number which contain all digits")]
+		[TestCase(3, 2, false, "-0.5", TestName = "negative number")]
+		[TestCase(3, 2, false, "0.5", TestName = "positive number")]
+		public void IsValidNumber_OnValidInput_Passes(int precision, int scale, bool onlyPositive, string value)
+		{
+			var act = new NumberValidator(precision, scale, onlyPositive).IsValidNumber(value);
+
+			act.Should().BeTrue();
 		}
 	}
 
@@ -45,7 +70,7 @@ namespace HomeExercises
 			if (precision <= 0)
 				throw new ArgumentException("precision must be a positive number");
 			if (scale < 0 || scale >= precision)
-				throw new ArgumentException("precision must be a non-negative number less or equal than precision");
+				throw new ArgumentException("scale must be a non-negative number less or equal than precision");
 			numberRegex = new Regex(@"^([+-]?)(\d+)([.,](\d+))?$", RegexOptions.IgnoreCase);
 		}
 
