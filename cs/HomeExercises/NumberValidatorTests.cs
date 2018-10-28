@@ -2,7 +2,6 @@
 using System.Text.RegularExpressions;
 using FluentAssertions;
 using NUnit.Framework;
-using NUnit.Framework.Internal;
 
 namespace HomeExercises
 {
@@ -16,19 +15,8 @@ namespace HomeExercises
         public void ThrowsArgumentExceptionOnCreating(int precision, int scale = 0)
 		{
 			Action action = () => new NumberValidator(precision, scale);
-			action.Should().Throw<ArgumentException>();
-        }
-
-        [Test]
-		[TestCase(null, TestName = "NumberIsNull")]
-        [TestCase("", TestName = "NumberIsEmpty")]
-		[TestCase("a", TestName = "NumberIsLetter")]
-        [TestCase(" ", TestName = "NumberIsSpace")]
-        public void DoesNotThrowsArgumentExceptionOnValidating(string number)
-        {
-            Action action = () => new NumberValidator(1).IsValidNumber(number);
-            action.Should().NotThrow<ArgumentException>();
-        }
+			action.ShouldThrow<ArgumentException>();
+		}
 
         [Test]
 		[TestCase("1234567890", 10, TestName = "NumberCanContainAnyDigit")]
@@ -45,6 +33,7 @@ namespace HomeExercises
 		[TestCase("a.aa", 3, 2, TestName = "UsingNotNumber")]
 		[TestCase(null, 1, TestName = "NumberIsNull")]
 		[TestCase("", 1, TestName = "NumberIsEmpty")]
+		[TestCase(" ", 1, TestName = "NumberIsSpace")]
 		[TestCase("00.00", 3, 2, TestName = "MoreDigitsThenPrecision")]
 		[TestCase("0.00", 3, 1, TestName = "MoreDigitsThenScale")]
 		[TestCase("-0", 2, 0, true, TestName = "UsingMinusInOnlyPositive")]
