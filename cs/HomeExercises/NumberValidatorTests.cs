@@ -7,26 +7,112 @@ namespace HomeExercises
 {
 	public class NumberValidatorTests
 	{
+		[TestFixture]
+		public class NumberValidatorConstructor_Should
+		{
+			[Test]
+			public void ThrowExtention_WithNegativePrecision()
+			{
+				Assert.Throws<ArgumentException>(() => new NumberValidator(-1, 2));
+            }
+			[Test]
+			public void ThrowExtention_WithZeroPrecision()
+			{
+				Assert.Throws<ArgumentException>(() => new NumberValidator(0, 2));
+			}
+            [Test]
+			public void ThrowExtention_WithNegativeScale()
+			{
+				Assert.Throws<ArgumentException>(() => new NumberValidator(1, -2));
+			}
+			[Test]
+			public void ThrowExtention_WithScaleGreaterThanPrecision()
+			{
+				Assert.Throws<ArgumentException>(() => new NumberValidator(1, 2));
+			}
+
+			[Test]
+			public void DoesNotThrowExtention_WithCorrectArguments()
+			{
+				Assert.DoesNotThrow(() => new NumberValidator(1, 0, true));
+            }
+		}
+
+		[TestFixture]
+		public class NumberValidator_IsValidNumber_Should
+		{
+			[Test]
+			public void BeFalse_OnNullString()
+			{
+				Assert.IsFalse(new NumberValidator(2, 1, true).IsValidNumber(null));
+			}
+
+			[Test]
+			public void BeFalse_OnEmptyString()
+			{
+				Assert.IsFalse(new NumberValidator(2, 1, true).IsValidNumber(""));
+            }
+
+			[Test]
+			public void BeFalse_OnIncorrectValue()
+			{
+				Assert.IsFalse(new NumberValidator(2, 1, true).IsValidNumber("testData"));
+			}
+
+			[Test]
+			public void BeFalse_PrecisionLowerThanValue()
+			{
+				Assert.IsFalse(new NumberValidator(2, 0, true).IsValidNumber("111"));
+            }
+
+			[Test]
+			public void BeFalse_ScaleLowerThanValue()
+			{
+				Assert.IsFalse(new NumberValidator(3, 1, true).IsValidNumber("1.11"));
+			}
+			[Test]
+			public void BeFalse_PrecisionLowerThanValueWithSign()
+			{
+				Assert.IsFalse(new NumberValidator(3, 0, true).IsValidNumber("+111"));
+			}
+			[Test]
+			public void BeFalse_WithNegativeValue_PositiveFlag()
+			{
+				Assert.IsFalse(new NumberValidator(2, 0, true).IsValidNumber("-1"));
+			}
+            [Test]
+			public void BeTrue_WithNegativeValue_NotPoritiveFlag()
+			{
+				Assert.IsTrue(new NumberValidator(2, 0, false).IsValidNumber("-1"));
+            }
+			[Test]
+			public void BeTrue_WithCorrectValue()
+			{
+				Assert.IsTrue(new NumberValidator(3, 2, false).IsValidNumber("1.1"));
+			}
+
+        }
+
 		[Test]
 		public void Test()
 		{
-			Assert.Throws<ArgumentException>(() => new NumberValidator(-1, 2, true));
+			/*Assert.Throws<ArgumentException>(() => new NumberValidator(-1, 2, true));
 			Assert.DoesNotThrow(() => new NumberValidator(1, 0, true));
 			Assert.Throws<ArgumentException>(() => new NumberValidator(-1, 2, false));
-			Assert.DoesNotThrow(() => new NumberValidator(1, 0, true));
+			Assert.DoesNotThrow(() => new NumberValidator(1, 0, true));*/
 
 			Assert.IsTrue(new NumberValidator(17, 2, true).IsValidNumber("0.0"));
 			Assert.IsTrue(new NumberValidator(17, 2, true).IsValidNumber("0"));
 			Assert.IsTrue(new NumberValidator(17, 2, true).IsValidNumber("0.0"));
-			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("00.00"));
-			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("-0.00"));
+			//Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("00.00"));
+			//Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("-0.00"));
 			Assert.IsTrue(new NumberValidator(17, 2, true).IsValidNumber("0.0"));
-			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("+0.00"));
+			//Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("+0.00"));
 			Assert.IsTrue(new NumberValidator(4, 2, true).IsValidNumber("+1.23"));
-			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("+1.23"));
-			Assert.IsFalse(new NumberValidator(17, 2, true).IsValidNumber("0.000"));
-			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("-1.23"));
-			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("a.sd"));
+			//Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("+1.23"));
+			//Assert.IsFalse(new NumberValidator(17, 2, true).IsValidNumber("0.000"));
+			//Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("-1.23"));
+			//Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("a.sd"));
 		}
 	}
 
