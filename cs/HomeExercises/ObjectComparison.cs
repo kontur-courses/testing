@@ -1,10 +1,12 @@
-﻿using FluentAssertions;
+﻿using System.Linq;
+using FluentAssertions;
 using NUnit.Framework;
 
 namespace HomeExercises
 {
     public class ObjectComparison
     {
+		
         [Test]
         [Description("Проверка текущего царя")]
         [Category("ToRefactor")]
@@ -14,9 +16,14 @@ namespace HomeExercises
 
             var expectedTsar = new Person("Ivan IV The Terrible", 54, 170, 70,
                 new Person("Vasili III of Russia", 28, 170, 60, null));
+			
 
             actualTsar.ShouldBeEquivalentTo(expectedTsar, config => config
-	            .Excluding(person => person.SelectedMemberInfo.Name == nameof(Person.Id)));
+                .Excluding(subjectInfo =>
+                    subjectInfo.SelectedMemberInfo.Name == nameof(Person.Id) && 
+                    typeof(Person).GetMembers()
+	                    .Select(member => member.Name)
+	                    .Contains(subjectInfo.SelectedMemberInfo.Name)));
         }
 
         [Test]
