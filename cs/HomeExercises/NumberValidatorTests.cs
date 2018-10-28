@@ -77,15 +77,18 @@ namespace HomeExercises
 
 		[Test]
 		[Category("Exceptions")]
-		public void ThrowsArgumentException_WhenScaleIsMoreOrEqualThanPrecision()
+		public void ThrowsArgumentException_WhenScaleIsMoreThanPrecision()
 		{
-			Action action = () => new NumberValidator(2, 2, true);
-			action.Should().Throw<ArgumentException>();
-
 			Action action2 = () => new NumberValidator(2, 3, true);
 			action2.Should().Throw<ArgumentException>();
 		}
 
+		[Test]
+		public void ThrowsArgumentException_WhenScaleIsEqualToPrecision()
+		{
+			Action action = () => new NumberValidator(2, 2, true);
+			action.Should().Throw<ArgumentException>();
+        }
 		[Test]
 		[Category("NumberValidations")]
 		public void IsInvalid_WhenInputIsEmptyString()
