@@ -7,6 +7,51 @@ namespace HomeExercises
 {
 	public class NumberValidatorTests
 	{
+		[TestCase(-1, 2, true, TestName = "precision < 0")]
+		[TestCase(0, 2, true, TestName = "precision = 0")]
+		[TestCase(1, -2, false, TestName = "scale < 0")]
+		[TestCase(1, 2, false, TestName = "precision < scale")]
+		[TestCase(1, 1, false, TestName = "precision = scale")]
+		public void Constructor_fail(int precision, int scale, bool onlyPositive)
+		{
+			Assert.Throws<ArgumentException>(() => new NumberValidator(precision, scale, onlyPositive));
+        }
+
+		[TestCase(1, 0, true, TestName = "precision > 0 and scale = 0")]
+		[TestCase(2, 1, true, TestName = "precision > scale")]
+        public void Constructor_success(int precision, int scale, bool onlyPositive)
+		{
+			Assert.DoesNotThrow(() => new NumberValidator(precision, scale, onlyPositive));
+        }
+
+		[TestCase(17, 2, true, "0.0", ExpectedResult = true, TestName = "value = 0.0")]
+		[TestCase(17, 2, true, "0", ExpectedResult = true, TestName = "value = 0")]
+		[TestCase(3, 2, true, "00.00", ExpectedResult = false, TestName = "value without point length > precision")]
+		[TestCase(3, 2, true, "-0.00", ExpectedResult = false, TestName = "minus counts per sign")]
+		[TestCase(3, 2, true, "+0.00", ExpectedResult = false, TestName = "plus counts as sign")]
+		[TestCase(3, 2, true, "+1.23", ExpectedResult = false, TestName = "value start with + with positive - scale = 1")]
+		[TestCase(17, 2, true, "0.000", ExpectedResult = false, TestName = "10")]
+		[TestCase(3, 2, true, "-1.23", ExpectedResult = false, TestName = "11")]
+		[TestCase(3, 2, true, "a.sd", ExpectedResult = false, TestName = "12")]
+		[TestCase(3, 2, true, null, ExpectedResult = false, TestName = "value = null")]
+		[TestCase(3, 2, true, "", ExpectedResult = false, TestName = "empty value")]
+		[TestCase(4, 2, true, "+1,23", ExpectedResult = true, TestName = "value start with +")]
+		[TestCase(17, 9, true, "0.0.0", ExpectedResult = false, TestName = "2 points")]
+		[TestCase(17, 9, true, "0.", ExpectedResult = false, TestName = "0 chars after point")]
+		[TestCase(17, 9, true, ".0", ExpectedResult = false, TestName = "0 chars before point")]
+		[TestCase(17, 9, true, "-0", ExpectedResult = false, TestName = "value -0 without only positive and scale")]
+		[TestCase(17, 9, false, "-0", ExpectedResult = true, TestName = "value -0 with only positive without scale")]
+		[TestCase(17, 9, true, "+-0", ExpectedResult = false, TestName = "value with +-")]
+		[TestCase(17, 9, true, " -0.0", ExpectedResult = false, TestName = "value start with space")]
+		[TestCase(17, 9, true, "0.0 ", ExpectedResult = false, TestName = "value ends with space")]
+		[TestCase(17, 9, true, "000.0000", ExpectedResult = true, TestName = "value starts with extra zeros")]
+		[TestCase(17, 9, true, "000.0", ExpectedResult = true, TestName = "value starts with 3 zero")]
+		[TestCase(17, 9, true, "0٤٥٦٧٨.0", ExpectedResult = true, TestName = "Eastern Arabic numerals")]
+        public bool ValidNumber(int precision, int scale, bool onlyPositive, string value)
+		{
+			return new NumberValidator(precision, scale, onlyPositive).IsValidNumber(value);
+		}
+
 		[Test]
 		public void Test()
 		{
