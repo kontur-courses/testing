@@ -6,8 +6,6 @@ namespace HomeExercises
 	public class ObjectComparison
 	{
         private Person actualTsar;
-		private const string CharacteristicsCategory = "TsarCharacteristics";
-		private const string ParentCharacteristicsCategory = "TsarParentCharacteristics";
 
         [SetUp]
 		public void SetUp()
@@ -16,39 +14,34 @@ namespace HomeExercises
 		}
 
 		[Test]
-		[Category(CharacteristicsCategory)]
-        public void CheckCurrentTsarName()
+		public void CheckCurrentTsarName()
 		{
 			const string expectedName = "Ivan IV The Terrible";
 			actualTsar.Name.Should().Be(expectedName);
 		}
 
 		[Test]
-		[Category(CharacteristicsCategory)]
-        public void CheckCurrentTsarAge()
+		public void CheckCurrentTsarAge()
 		{
 			const int expectedAge = 54;
 			actualTsar.Age.Should().Be(expectedAge);
 		}
 
 		[Test]
-		[Category(CharacteristicsCategory)]
-        public void CheckCurrentTsarHeight()
+		public void CheckCurrentTsarHeight()
 		{
 			const int expectedHeight = 170;
 			actualTsar.Height.Should().Be(expectedHeight);
 		}
 
 		[Test]
-		[Category(CharacteristicsCategory)]
-        public void CheckCurrentTsarWeight()
+		public void CheckCurrentTsarWeight()
 		{
 			const int expectedWeight = 70;
 			actualTsar.Weight.Should().Be(expectedWeight);
 		}
 
 		[Test]
-		[Category(ParentCharacteristicsCategory)]
 		public void CheckCurrentTsarParentName()
 		{
 			const string expectedName = "Vasili III of Russia";
@@ -56,7 +49,6 @@ namespace HomeExercises
 		}
 
 		[Test]
-		[Category(ParentCharacteristicsCategory)]
 		public void CheckCurrentTsarParentAge()
 		{
 			const int expectedAge = 28;
@@ -64,16 +56,14 @@ namespace HomeExercises
 		}
 
 		[Test]
-		[Category(ParentCharacteristicsCategory)]
-        public void CheckCurrentTsarParentHeight()
+		public void CheckCurrentTsarParentHeight()
 		{
 			const int expectedHeight = 170;
 			actualTsar.Parent.Height.Should().Be(expectedHeight);
 		}
 
 		[Test]
-		[Category(ParentCharacteristicsCategory)]
-        public void CheckCurrentTsarParentWeight()
+		public void CheckCurrentTsarParentWeight()
 		{
 			const int expectedWeight = 60;
 			actualTsar.Parent.Weight.Should().Be(expectedWeight);
