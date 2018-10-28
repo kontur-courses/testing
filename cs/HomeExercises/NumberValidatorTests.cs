@@ -13,7 +13,7 @@ namespace HomeExercises
 		[TestCase(1, -1, true, TestName = "when scale is negative")]
 		[TestCase(1, 2, true, TestName = "when scale is larger than precision")]
 		[TestCase(1, 1, true, TestName = "when scale equals precision")]
-        public void ThrowArgumentException(int precision, int scale, bool onlyPositive)
+        	public void ThrowArgumentException(int precision, int scale, bool onlyPositive)
 		{
 			Action constructor = () => new NumberValidator(precision, scale, onlyPositive);
 			constructor.Should().Throw<ArgumentException>();
@@ -38,7 +38,7 @@ namespace HomeExercises
 		[TestCase(3, 2, true, ".0", TestName = "when no integer part")]
 		[TestCase(10, 9, true, "5.5.5", TestName = "when more than one fraction part")]
 		[TestCase(6, 5, true, "++5.6", TestName = "when more than one sign")]
-        public void BeFalse(int precision, int scale, bool onlyPositive, string value)
+        	public void BeFalse(int precision, int scale, bool onlyPositive, string value)
 		{
 			new NumberValidator(precision, scale, onlyPositive).IsValidNumber(value).Should().BeFalse();
 		}
