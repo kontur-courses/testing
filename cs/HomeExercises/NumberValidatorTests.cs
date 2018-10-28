@@ -8,63 +8,45 @@ namespace HomeExercises
 {
     public class NumberValidatorTests
     {
-        [TestCase(17, 2, true, "1.23", Description = "Correct Real number")]
-        [TestCase(17, 2, true, "0", Description = "Correct Zero")]
-        [TestCase(17, 2, false, "-0", Description = "Correct Zero")]
-        [TestCase(4, 2, true, "+1.23", Description = "Correct Real positive number")]
-        [TestCase(4, 2, false, "-1.23", Description = "Correct Real negative number")]
-        public void IsValidNumber_ShouldBeTrue_TestOnMultipleParameters(int precision, int scale, bool onlyPositive, string expected)
+        [TestCase(17, 2, true, "1.23", TestName = "IfValueIsRealNumber")]
+        [TestCase(17, 2, true, "0", TestName = "IfValueIsZero")]
+        [TestCase(17, 2, false, "-0", TestName = "IfValueIsNegativeZero")]
+        [TestCase(4, 2, true, "+1.23", TestName = "IfValueIsRealPositiveNumber")]
+        [TestCase(4, 2, false, "-1.23", TestName = "IfValueIsRealNegativeNumber")]
+        public void IsValidNumber_ShouldBeTrue_IfNumberFormatIsValid(int precision, int scale, bool onlyPositive, string inputValue)
         {
-            new NumberValidator(precision, scale, onlyPositive).IsValidNumber(expected).Should().BeTrue();
-        }
-
-        [TestCase(3, 2, true, "00.00", Description = "Wrong number length")]
-        [TestCase(4, 2, true, "-0.00", Description = "Wrong onlyPositive parameter")]
-        [TestCase(17, 2, true, "0.000", Description = "Wrong scale length")]
-        [TestCase(3, 2, true, "-1.23", Description = "Wrong precision length")]
-        [TestCase(3, 2, true, "a.sd", Description = "Not a number value")]
-        [TestCase(1, 0, true, null, Description = "Null value")]
-        [TestCase(1, 0, true, "", Description = "Empty value")]
-        [TestCase(3, 2, false, ".00", Description = "If point is not lead by digit")]
-        [TestCase(2, 1, false, ",0", Description = "If comma is not lead by digit")]
-        [TestCase(3, 2, false, "-1.", Description = "If point is not followed by digit")]
-        [TestCase(2, 1, false, "0,", Description = "If comma is not followed by digit")]
-        [TestCase(20, 19, false, "-", Description = "Only sign without digits")]
-        [TestCase(20, 19, false, "+", Description = "Only sign without digits")]
-        public void IsValidNumber_ShouldBeFalse_TestOnMultipleParameters(int precision, int scale, bool onlyPositive, string expected)
-        {
-            new NumberValidator(precision, scale, onlyPositive).IsValidNumber(expected).Should().BeFalse();
+            new NumberValidator(precision, scale, onlyPositive).IsValidNumber(inputValue).Should().BeTrue();
         }
 
 
-        [Test]
-        public void ThrowsArgumentExceptionOnNegativePrecision()
+        [TestCase(3, 2, true, "00.00", TestName = "IfValue_IntegerAndFractal_LengthGreaterThanPrecision")]
+        [TestCase(4, 2, true, "-0.00", TestName = "IfOnlyPositiveNotFalse")]
+        [TestCase(17, 2, true, "0.000", TestName = "IfScaleExceededLimit")]
+        [TestCase(3, 2, true, "-1.23", TestName = "IfPrecisionExceedLimitWithNegativeSign")]
+        [TestCase(3, 2, true, "a.sd", TestName = "IfValueIsNotANumber")]
+        [TestCase(1, 0, true, null, TestName = "IfValueIsNull")]
+        [TestCase(1, 0, true, "", TestName = "IfValueIsEmptyString")]
+        [TestCase(3, 2, false, ".00", TestName = "IfPointIsNotLeadByDigit")]
+        [TestCase(2, 1, false, ",0", TestName = "IfCommaIsNotLeadByDigit")]
+        [TestCase(3, 2, false, "-1.", TestName = "IfPointIsNotFollowedByDigit")]
+        [TestCase(2, 1, false, "0,", TestName = "IfCommaIsNotFollowedByDigit")]
+        [TestCase(20, 19, false, "-", TestName = "OnlySignWithoutDigits")]
+        [TestCase(20, 19, false, "+", TestName = "OnlySignWithoutDigits")]
+        public void IsValidNumber_ShouldBeFalse_IfNumberFormatIsNotValid(int precision, int scale, bool onlyPositive, string inputValue)
         {
-            Action action = () => new NumberValidator(-1, 2);
-            action.ShouldThrow<ArgumentException>();
-
+            new NumberValidator(precision, scale, onlyPositive).IsValidNumber(inputValue).Should().BeFalse();
         }
 
-        [Test]
-        public void ThrowsArgumentExceptonOnNegativeScale()
+
+        [TestCase(2, -1, "scale must be a non-negative number less than precision", TestName = "ScaleIsNegative")]
+        [TestCase(-1, 2, "precision must be a positive number", TestName = "PrecisionIsNegative")]
+        [TestCase(1, 2, "scale must be a non-negative number less than precision", TestName ="ScaleIsGreaterThanPrecision")]
+        public void ThrowsArgumentExceptionWhen(int precision, int scale, string message)
         {
-            Action action = () => new NumberValidator(2, -1);
+            Action action = () => new NumberValidator(precision, scale);
             action.ShouldThrow<ArgumentException>();
         }
 
-        [Test]
-        public void ThrowsArgumentExceptionIfScaleGreaterThenPrecision()
-        {
-            Action action = () => new NumberValidator(1, 2);
-            action.ShouldThrow<ArgumentException>();
-        }
-
-        [Test]
-        public void DoesNotThrowExceptionOnZeroScale()
-        {
-            Action action = () => new NumberValidator(1, 0);
-            action.ShouldNotThrow();
-        }
     }
 
     public class NumberValidator
@@ -82,7 +64,7 @@ namespace HomeExercises
             if (precision <= 0)
                 throw new ArgumentException("precision must be a positive number");
             if (scale < 0 || scale >= precision)
-                throw new ArgumentException("precision must be a non-negative number less or equal than precision");
+                throw new ArgumentException("scale must be a non-negative number less or equal than precision");
             numberRegex = new Regex(@"^([+-]?)(\d+)([.,](\d+))?$", RegexOptions.IgnoreCase);
         }
 
