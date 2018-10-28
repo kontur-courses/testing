@@ -15,26 +15,25 @@ namespace HomeExercises
 			var expectedTsar = new Person("Ivan IV The Terrible", 54, 170, 70,
 				new Person("Vasili III of Russia", 28, 170, 60, null));
 
-			actualTsar.Should()
-				.BeEquivalentTo(expectedTsar, options =>
-					options
-						.AllowingInfiniteRecursion()
-						.Excluding(tsar => tsar.Id)
-						.Excluding(tsar => tsar.Parent.Id));
+			actualTsar.Should().BeEquivalentTo(expectedTsar, options => 
+				options
+					.AllowingInfiniteRecursion()
+					.Excluding(tsar => tsar.Id)
+					.Excluding(tsar => tsar.Parent.Id));
 		}
 
-		/*
-		   * Достоинства CheckCurrentTsar:
-		   * 1) При изменении полей класса Person не придется переписывать много кода
-		 * 2) По результату теста можно сказать где он упал
-		 * (мы сможем сказать, что у царей были разные имена или возраст или ...)
-		 *
-		 * Недостатки CheckCurrentTsar_WithCustomEquality вытекают из достоинств CheckCurrentTsar,
-		 * которые CheckCurrentTsar_WithCustomEquality не имеет.
-		 * Также на метод AreEqual не написаны тесты.
-		   */
+        /*
+		 * Достоинства CheckCurrentTsar:
+		 * 1) При изменении полей класса Person не придется переписывать много кода
+         * 2) По результату теста можно сказать где он упал
+         * (мы сможем сказать, что у царей были разные имена или возраст или ...)
+         *
+         * Недостатки CheckCurrentTsar_WithCustomEquality вытекают из достоинств CheckCurrentTsar,
+         * которые CheckCurrentTsar_WithCustomEquality не имеет.
+         * Также на метод AreEqual не написаны тесты.
+		 */
 
-		[Test]
+        [Test]
 		[Description("Альтернативное решение. Какие у него недостатки?")]
 		public void CheckCurrentTsar_WithCustomEquality()
 		{
@@ -48,16 +47,8 @@ namespace HomeExercises
 
 		private bool AreEqual(Person actual, Person expected)
 		{
-			if (actual == expected)
-			{
-				return true;
-			}
-
-			if (actual == null || expected == null)
-			{
-				return false;
-			}
-
+			if (actual == expected) return true;
+			if (actual == null || expected == null) return false;
 			return
 				actual.Name == expected.Name
 				&& actual.Age == expected.Age
