@@ -8,28 +8,33 @@ namespace HomeExercises
 {
     public class NumberValidatorTests
     {
-        [TestCase(17, 2, true, "1.23", TestName = "IfValueIsRealNumber")]
-        [TestCase(17, 2, true, "0", TestName = "IfValueIsZero")]
-        [TestCase(17, 2, false, "-0", TestName = "IfValueIsNegativeZero")]
-        [TestCase(4, 2, true, "+1.23", TestName = "IfValueIsRealPositiveNumber")]
-        [TestCase(4, 2, false, "-1.23", TestName = "IfValueIsRealNegativeNumber")]
+        
+        [TestCase(17, 2, true, "0", TestName = "ValueIsZero")]
+        [TestCase(17, 2, false, "-0", TestName = "ValueIsNegativeZero")]
+        [TestCase(17, 2, false, "+0", TestName = "ValueIsPositiveZero")]
+        [TestCase(17, 2, true, "0.0", TestName = "ValidZeroWithFraction")]
+        [TestCase(17, 2, true, "0,0", TestName = "ValidZeroWithFractionSeparatedWithComma")]
+        [TestCase(17, 2, true, "1.23", TestName = "ValueIsRealNumber")]
+        [TestCase(4, 2, true, "+1.23", TestName = "ValueIsRealPositiveNumber")]
+        [TestCase(4, 2, false, "-1.23", TestName = "ValueIsRealNegativeNumber")]
+        [TestCase(17, 2, true, "1234567890", TestName = "ValueIsValidWithAllDigits")]
         public void IsValidNumber_ShouldBeTrue_IfNumberFormatIsValid(int precision, int scale, bool onlyPositive, string inputValue)
         {
             new NumberValidator(precision, scale, onlyPositive).IsValidNumber(inputValue).Should().BeTrue();
         }
 
 
-        [TestCase(3, 2, true, "00.00", TestName = "IfValue_IntegerAndFractal_LengthGreaterThanPrecision")]
-        [TestCase(4, 2, true, "-0.00", TestName = "IfOnlyPositiveNotFalse")]
-        [TestCase(17, 2, true, "0.000", TestName = "IfScaleExceededLimit")]
-        [TestCase(3, 2, true, "-1.23", TestName = "IfPrecisionExceedLimitWithNegativeSign")]
-        [TestCase(3, 2, true, "a.sd", TestName = "IfValueIsNotANumber")]
-        [TestCase(1, 0, true, null, TestName = "IfValueIsNull")]
-        [TestCase(1, 0, true, "", TestName = "IfValueIsEmptyString")]
-        [TestCase(3, 2, false, ".00", TestName = "IfPointIsNotLeadByDigit")]
-        [TestCase(2, 1, false, ",0", TestName = "IfCommaIsNotLeadByDigit")]
-        [TestCase(3, 2, false, "-1.", TestName = "IfPointIsNotFollowedByDigit")]
-        [TestCase(2, 1, false, "0,", TestName = "IfCommaIsNotFollowedByDigit")]
+        [TestCase(3, 2, true, "00.00", TestName = "Value_IntegerAndFractal_LengthGreaterThanPrecision")]
+        [TestCase(4, 2, true, "-0.00", TestName = "OnlyPositiveNotFalse")]
+        [TestCase(17, 2, true, "0.000", TestName = "ScaleExceededLimit")]
+        [TestCase(3, 2, true, "-1.23", TestName = "PrecisionExceedLimitWithNegativeSign")]
+        [TestCase(3, 2, true, "a.sd", TestName = "ValueIsNotANumber")]
+        [TestCase(1, 0, true, null, TestName = "ValueIsNull")]
+        [TestCase(1, 0, true, "", TestName = "ValueIsEmptyString")]
+        [TestCase(3, 2, false, ".00", TestName = "PointIsNotLeadByDigit")]
+        [TestCase(2, 1, false, ",0", TestName = "CommaIsNotLeadByDigit")]
+        [TestCase(3, 2, false, "-1.", TestName = "PointIsNotFollowedByDigit")]
+        [TestCase(2, 1, false, "0,", TestName = "CommaIsNotFollowedByDigit")]
         [TestCase(20, 19, false, "-", TestName = "OnlySignWithoutDigits")]
         [TestCase(20, 19, false, "+", TestName = "OnlySignWithoutDigits")]
         public void IsValidNumber_ShouldBeFalse_IfNumberFormatIsNotValid(int precision, int scale, bool onlyPositive, string inputValue)
@@ -38,13 +43,13 @@ namespace HomeExercises
         }
 
 
-        [TestCase(2, -1, "scale must be a non-negative number less than precision", TestName = "ScaleIsNegative")]
         [TestCase(-1, 2, "precision must be a positive number", TestName = "PrecisionIsNegative")]
-        [TestCase(1, 2, "scale must be a non-negative number less than precision", TestName ="ScaleIsGreaterThanPrecision")]
+        [TestCase(2, -1, "scale must be a non-negative number less or equal than precision", TestName = "ScaleIsNegative")]
+        [TestCase(1, 2, "scale must be a non-negative number less or equal than precision", TestName ="ScaleIsGreaterThanPrecision")]
         public void ThrowsArgumentExceptionWhen(int precision, int scale, string message)
         {
             Action action = () => new NumberValidator(precision, scale);
-            action.ShouldThrow<ArgumentException>();
+            action.ShouldThrow<ArgumentException>().WithMessage(message);
         }
 
     }
