@@ -7,144 +7,59 @@ namespace HomeExercises
 {
 	public class NumberValidatorTests
 	{
-		// Refactored tests
-		[Test]
-		[Category("Exceptions")]
-		public void ThrowsArgumentException_WhenPrecisionIsNegative()
+		[TestFixture]
+		public class NumberValidator_Should
 		{
-			Action action = () => new NumberValidator(-1, 2, true);
-			action.Should().Throw<ArgumentException>();
+			[Test]
+			[TestCase(-1, 2, TestName = "Precision is megative")]
+			[TestCase(2, -2, TestName = "Scale is megative")]
+			[TestCase(2, 3, TestName = "Scale is more than precision")]
+			[TestCase(2, 2, TestName = "Scale equals precision")]
+			public void ThrowArgumentException_When(int precision, int scale)
+			{
+				Action action = () => new NumberValidator(precision, scale);
+				action.Should().Throw<ArgumentException>();
+            }
+
+			[Test]
+			[TestCase(17, 2, null, TestName = "Input is null")]
+			[TestCase(17, 2, "", TestName = "Input is Empty")]
+            public void NotThrowArgumentException_When(int precision, int scale, string input)
+			{
+				Action action = () => new NumberValidator(precision, scale).IsValidNumber(input);
+				action.Should().NotThrow<ArgumentException>();
+            }
 		}
 
-		[Test]
-		[Category("Exceptions")]
-		public void DoesNotThrowArgumentException_WhenPrecisionIsPositiveAndScaleIsZero()
-		{
-			Action action = () => new NumberValidator(1, 0, true);
-			action.Should().NotThrow<ArgumentException>();
+        [TestFixture]
+		public class IsValidNumber_Should
+        {
+			[Test]
+			[TestCase("0.0", TestName = "Precision is more than digits")]
+			[TestCase("0", TestName = "Scale has no digits")]
+			[TestCase("+1.23", TestName = "Has plus sign")]
+			[TestCase("-1.23", TestName = "Has minus sign")]
+	        [TestCase("0,12", TestName = "Has only fractal part")]
+			[TestCase("0,00", TestName = "Has comma as delimiter")]
+			public void BeTrue_WhenInput(string input)
+			{
+				new NumberValidator(4, 2).IsValidNumber(input).Should().BeTrue();
+            }
+
+	        [Test]
+	        [TestCase("00.00", TestName = "Precision is less than digits")]
+	        [TestCase("0.000", TestName = "Scale is less than digits")]
+	        [TestCase("a.sd", TestName = "Non numeric input")]
+	        [TestCase("", TestName = "Is empty string")]
+	        [TestCase(null, TestName = "Is null")]
+	        [TestCase("-5", true, TestName = "Has minus with onlypositive flag being set")]
+	        [TestCase("+-0,00", TestName = "Starts with several signs")]
+            public void BeFalse_WhenInput(string input, bool onlyPositive = false)
+	        {
+		        new NumberValidator(3, 2, onlyPositive).IsValidNumber(input).Should().BeFalse();
+            }
 		}
 
-		[Test]
-		[Category("NumberValidations")]
-		public void IsValid_WhenPrecisionIsMoreThanDigits()
-		{
-			new NumberValidator(17, 2).IsValidNumber("0.0").Should().BeTrue();
-		}
-
-		[Test]
-		[Category("NumberValidations")]
-		public void IsValid_WhenScaleHasNoDigits()
-		{
-			new NumberValidator(17, 2).IsValidNumber("0").Should().BeTrue();
-		}
-
-		[Test]
-		[Category("NumberValidations")]
-		public void IsInvalid_WhenPrecisionIsLessThanDigits()
-		{
-			new NumberValidator(3, 2).IsValidNumber("00.00").Should().BeFalse();
-		}
-
-		[Test]
-		[Category("NumberValidations")]
-		public void IsValid_WhenInputHasPlusSign()
-		{
-			new NumberValidator(4, 2).IsValidNumber("+1.23").Should().BeTrue();
-		}
-
-		[Test]
-		[Category("NumberValidations")]
-		public void IsInvalid_WhenScaleIsLessThanDigits()
-		{
-			new NumberValidator(17, 2).IsValidNumber("0.000").Should().BeFalse();
-		}
-
-		[Test]
-		[Category("NumberValidations")]
-		public void IsInvalid_WhenNotNumericInput()
-		{
-			new NumberValidator(17, 2).IsValidNumber("a.sd").Should().BeFalse();
-		}
-
-		// Additional tests
-		[Test]
-		[Category("Exceptions")]
-		public void ThrowsArgumentException_WhenScaleIsNegative()
-		{
-			Action action = () => new NumberValidator(2, -2, true);
-			action.Should().Throw<ArgumentException>();
-		}
-
-		[Test]
-		[Category("Exceptions")]
-		public void ThrowsArgumentException_WhenScaleIsMoreThanPrecision()
-		{
-			Action action2 = () => new NumberValidator(2, 3, true);
-			action2.Should().Throw<ArgumentException>();
-		}
-
-		[Test]
-		public void ThrowsArgumentException_WhenScaleIsEqualToPrecision()
-		{
-			Action action = () => new NumberValidator(2, 2, true);
-			action.Should().Throw<ArgumentException>();
-        }
-		[Test]
-		[Category("NumberValidations")]
-		public void IsInvalid_WhenInputIsEmptyString()
-		{
-			new NumberValidator(17, 2).IsValidNumber("").Should().BeFalse();
-		}
-
-		[Test]
-		[Category("NumberValidations")]
-		public void IsInvalid_WhenInputIsNull()
-		{
-			new NumberValidator(17, 2).IsValidNumber(null).Should().BeFalse();
-		}
-
-		[Test]
-		[Category("Exceptions")]
-		public void DoesNotThrowArgumentException_WhenInputIsNull()
-		{
-			Action action = () => new NumberValidator(17, 2).IsValidNumber(null);
-			action.Should().NotThrow<ArgumentException>();
-		}
-
-		[Test]
-		[Category("Exceptions")]
-		public void DoesNotThrowArgumentException_WhenInputIsEmpty()
-		{
-			Action action = () => new NumberValidator(17, 2).IsValidNumber("");
-			action.Should().NotThrow<ArgumentException>();
-        }
-		[Test]
-		[Category("NumberValidations")]
-		public void IsInvalid_WhenMinusWithOnlyPositiveFlagIsSet()
-		{
-			new NumberValidator(17, 2, true).IsValidNumber("-5").Should().BeFalse();
-		}
-
-		[Test]
-		[Category("NumberValidations")]
-		public void IsValid_WhenCommaUsedAsDelimiter()
-		{
-			new NumberValidator(17, 2).IsValidNumber("0,00").Should().BeTrue();
-		}
-
-		[Test]
-		[Category("NumberValidations")]
-		public void IsInvalid_WhenStartsWithSeveralSymbols()
-		{
-			new NumberValidator(17, 2).IsValidNumber("+-0,00").Should().BeFalse();
-		}
-
-		[Test]
-		[Category("NumberValidations")]
-		public void IsValid_WhenHasOnlyFractalPart()
-		{
-			new NumberValidator(17, 2).IsValidNumber("0,12").Should().BeTrue();
-		}
 
 		public class NumberValidator
 		{
