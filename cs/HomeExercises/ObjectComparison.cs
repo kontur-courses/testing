@@ -58,6 +58,8 @@ namespace HomeExercises
             // return predFunc;
             //}
             // Но такой код не становится более читаемым, но зато расширяемость возрастает.
+            // Если тест CheckCurrentTsar_WithCustomEquality реально упадёт, то будет непонятно на чём именно он упал
+            // получим сообщение Expected: True But was: False, а в CheckCurrentTsar укажется поле которое не совпадает.
             Assert.True(AreEqual(actualTsar, expectedTsar));
         }
 
