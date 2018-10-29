@@ -25,6 +25,8 @@ namespace HomeExercises
 			Assert.AreEqual(expectedTsar.Parent.Age, actualTsar.Parent.Age);
 			Assert.AreEqual(expectedTsar.Parent.Height, actualTsar.Parent.Height);
 			Assert.AreEqual(expectedTsar.Parent.Parent, actualTsar.Parent.Parent);
+
+			actualTsar.Should().BeEquivalentTo(expectedTsar);
 		}
 
 		[Test]
@@ -38,6 +40,18 @@ namespace HomeExercises
 			// Какие недостатки у такого подхода? 
 			Assert.True(AreEqual(actualTsar, expectedTsar));
 		}
+		//Ответ:
+		// [Недостатки "Альтернативного решения"]
+		//1. При изменении названия любого из полей метод AreEqual придётся также изменить.
+		//2. Если полей будет в разы больше, то написание проверки на эквивалентность
+		//	 для каждого поля будет занимать много времени. Это нецелесообразно, отнимает
+		//	 много сил и времени, которые можно потратить на что-то более полезное.
+		// [Пояснения]
+		//1. Использование Fluent Assertions сильно улучшает читаемость кода - тесты
+		//	 действительно становятся аналогом документации.
+		//2. Использовав Fluent Assertions, сама проверка заняла всего одну, крайне читаемую,
+		//	 строку. В альтернативном же решении, был создан целый метод, который делает
+		//	 то же самое.
 
 		private bool AreEqual(Person actual, Person expected)
 		{
