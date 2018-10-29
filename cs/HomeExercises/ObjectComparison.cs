@@ -15,9 +15,20 @@ namespace HomeExercises
 
 			var expectedTsar = new Person("Ivan IV The Terrible", 54, 170, 70,
 				new Person("Vasili III of Russia", 28, 170, 60, null));
+
+			while (actualTsar != null || expectedTsar != null)
+			{
+				actualTsar.ShouldBeEquivalentTo(expectedTsar,
+					option => option.Excluding(o => o.Id).Excluding(o => o.Parent));
+				actualTsar = actualTsar.Parent;
+				expectedTsar = expectedTsar.Parent;
+			}
+
+			//Недостататки альтернативого решения
 			
-			actualTsar.ShouldBeEquivalentTo(expectedTsar, option => option.Excluding(o => o.Id).Excluding(o => o.Parent.Id));
-			//Недостаток альтернативого решения - необходимость переписывать тест, при изменении полей класса Person
+			//* необходимость переписывать тест, при изменении полей класса Person
+			//* не проверяет всю династию
+
 		}
 
 		[Test]
