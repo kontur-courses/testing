@@ -20,8 +20,7 @@ namespace HomeExercises
 				.BeEquivalentTo(expectedTsar, options =>
 					options
 						.AllowingInfiniteRecursion()
-						.Excluding(person => person.Id)
-						.Excluding(person => person.Parent.Id));
+						.Excluding(person => person.SelectedMemberInfo.Name.Equals(nameof(Person.Id))));
 		}
 
 		/*
