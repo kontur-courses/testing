@@ -5,31 +5,9 @@ using NUnit.Framework;
 
 namespace HomeExercises
 {
-	[TestFixture]
+    [TestFixture]
     public class NumberValidatorTests
     {
-        //[Test]
-        //public void Test()
-        //{
-        //    Assert.Throws<ArgumentException>(() => new NumberValidator(-1, 2, true));
-        //    Assert.DoesNotThrow(() => new NumberValidator(1, 0, true));
-        //    Assert.Throws<ArgumentException>(() => new NumberValidator(-1, 2, false));
-        //    Assert.DoesNotThrow(() => new NumberValidator(1, 0, true));
-
-        //    Assert.IsTrue(new NumberValidator(17, 2, true).IsValidNumber("0.0"));
-        //    Assert.IsTrue(new NumberValidator(17, 2, true).IsValidNumber("0"));
-        //    Assert.IsTrue(new NumberValidator(17, 2, true).IsValidNumber("0.0"));
-        //    Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("00.00"));
-        //    Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("-0.00"));
-        //    Assert.IsTrue(new NumberValidator(17, 2, true).IsValidNumber("0.0"));
-        //    Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("+0.00"));
-        //    Assert.IsTrue(new NumberValidator(4, 2, true).IsValidNumber("+1.23"));
-        //    Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("+1.23"));
-        //    Assert.IsFalse(new NumberValidator(17, 2, true).IsValidNumber("0.000"));
-        //    Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("-1.23"));
-        //    Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("a.sd"));
-        //}
-
         [TestCase(-1, 0, TestName = "Negative precision")]
         [TestCase(0, 1, TestName = "Zero precision")]
         [TestCase(1, -1, TestName = "Negative scale")]
@@ -52,21 +30,21 @@ namespace HomeExercises
         [TestCase("-1", 3, 2, true, TestName = "Only positive permitted, negative value")]
         public void IsNotValidNumber(string value, int precision = 3, int scale = 2, bool onlyPositive = false)
         {
-	        new NumberValidator(precision, scale, onlyPositive).IsValidNumber(value).Should().BeFalse(
-		        "value is {0}, precision is {1}, scale is {2}, onlyPositive is {3}", value, precision, scale, onlyPositive);
+            new NumberValidator(precision, scale, onlyPositive).IsValidNumber(value).Should().BeFalse(
+                "value is {0}, precision is {1}, scale is {2}, onlyPositive is {3}", value, precision, scale, onlyPositive);
         }
 
-	    [TestCase("12.3", TestName = "Integer+fractional equals precision")]
-	    [TestCase("1.23", TestName = "Fractional equals scale")]
+        [TestCase("12.3", TestName = "Integer+fractional equals precision")]
+        [TestCase("1.23", TestName = "Fractional equals scale")]
         [TestCase("+0.1", TestName = "Value starts \"+\" sign")]
-	    [TestCase("1.2", 3, 2, true, TestName = "Only positive permitted, positive value")]
+        [TestCase("1.2", 3, 2, true, TestName = "Only positive permitted, positive value")]
         [TestCase("123", TestName = "Integer part only")]
-	    [TestCase("1,00", TestName = "Comma-separated")]
+        [TestCase("1,00", TestName = "Comma-separated")]
         public void IsValidNumber(string value, int precision = 3, int scale = 2, bool onlyPositive = false)
-	    {
-		    new NumberValidator(precision, scale, onlyPositive).IsValidNumber(value).Should().BeTrue(
-			    "value is {0}, precision is {1}, scale is {2}, onlyPositive is {3}", value, precision, scale, onlyPositive);
-	    }
+        {
+            new NumberValidator(precision, scale, onlyPositive).IsValidNumber(value).Should().BeTrue(
+                "value is {0}, precision is {1}, scale is {2}, onlyPositive is {3}", value, precision, scale, onlyPositive);
+        }
     }
 
     public class NumberValidator
