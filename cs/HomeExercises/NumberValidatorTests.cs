@@ -55,10 +55,10 @@ namespace HomeExercises
 		[TestCase(3, 2, "10.00", TestName = "too long positive rational")]
 		[TestCase(1, 0, "10", TestName = "too long positive integer")]
 		[TestCase(1, 0, "-10", TestName = "too long negative integer")]
-		[TestCase(3, 2, "-0.00", TestName = "too long negative rational")]
+		[TestCase(3, 2, "-0.00", TestName = "too long negative rational with sign")]
 		[TestCase(3, 2, "+0.00", TestName = "too long positive rational with sign")]
 		[TestCase(17, 2, "17.000", TestName = "too long fractional part of positive rational")]
-		[TestCase(17, 2, "-17.000", TestName = "too long fractional part of negative rational")]
+		[TestCase(17, 2, "-17.000", TestName = "too long fractional part of negative rational with sign")]
 		[TestCase(17, 2, "+17.000", TestName = "too long fractional part of positive rational with sign")]
 		public void IsValidNumber_WhenTooLongIntegerPartOrFractionalPart_ReturnsFalse(int precision, int scale,
 			string value)
@@ -105,8 +105,15 @@ namespace HomeExercises
 		[TestCase("1;0", TestName = "invalid separator char")]
 		[TestCase(".0", TestName = "empty integer part")]
 		[TestCase("0.", TestName = "empty fractional part")]
+		[TestCase(".", TestName = "empty integer and fractional part")]
 		[TestCase("++1", TestName = "double positive sign")]
 		[TestCase("--1", TestName = "double negative sign")]
+		[TestCase("1+", TestName = "positive sign after integer part")]
+		[TestCase("1-", TestName = "negative sign after integer part")]
+		[TestCase("1.0+", TestName = "positive sign after fractional part")]
+		[TestCase("1.+0", TestName = "positive sign after separator")]
+		[TestCase("1.0-", TestName = "negative sign after fractional part")]
+		[TestCase("1.-0", TestName = "negative sign after separator")]
 		public void IsValidNumber_WhenInvalidFormat_ReturnsFalse(string value)
 		{
 			new NumberValidator(17, 2)
