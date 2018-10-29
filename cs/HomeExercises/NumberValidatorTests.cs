@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Reflection;
 using System.Text.RegularExpressions;
 using FluentAssertions;
 using NUnit.Framework;
@@ -27,6 +28,37 @@ namespace HomeExercises
 			Assert.IsFalse(new NumberValidator(17, 2, true).IsValidNumber("0.000"));
 			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("-1.23"));
 			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("a.sd"));
+		}
+
+		[TestCase("0")]
+		[TestCase("0.0")]
+		[TestCase("0.0")]//I Suppose there is 3 types of dots
+		[TestCase("0.0")]
+		[TestCase("+1.23",4)]
+		public void TestValid(string value, int precision = 17, int scale = 2, bool onlyPositive = true)=>
+			Assert.IsTrue(new NumberValidator(precision,scale,onlyPositive).IsValidNumber(value));
+
+		[TestCase("00.00",3)]
+		[TestCase("-0.00",3)]
+		[TestCase("+0.00",3)]
+		[TestCase("+1.23",3)]
+		[TestCase("0.000")]
+		[TestCase("-1.23",3)]
+		[TestCase("a.sd",3)]
+		public void TestInvalid(string value, int precision = 17, int scale = 2, bool onlyPositive = true) =>
+			Assert.IsFalse(new NumberValidator(precision, scale, onlyPositive).IsValidNumber(value));
+
+		[TestCase(typeof(ArgumentException),-1,2)]
+		[TestCase(typeof(ArgumentException),-1,2,false)]
+		[TestCase(null,1,0)]
+		public void TestThrows(Type exceptionType, int precision , int scale , bool onlyPositive = true)
+		{
+			void Deleg() => new NumberValidator(precision, scale, onlyPositive);
+			if (exceptionType == null)
+				Assert.DoesNotThrow(Deleg);
+			else
+				Assert.Throws(exceptionType, Deleg);
+				// typeof(Assert).GetMethod("Throws", BindingFlags.Public | BindingFlags.Static).MakeGenericMethod(exceptionType).Invoke(null, new Action[] { Deleg });
 		}
 	}
 
