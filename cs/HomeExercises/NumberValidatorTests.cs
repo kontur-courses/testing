@@ -2,33 +2,60 @@
 using System.Text.RegularExpressions;
 using FluentAssertions;
 using NUnit.Framework;
+using NUnit.Framework.Internal;
 
 namespace HomeExercises
 {
 	public class NumberValidatorTests
 	{
-		[Test]
-		public void Test()
+		[TestCase(-1, 2, TestName = "throws when precision is negative")]
+		[TestCase(0, 1, TestName = "throws when precision is zero")]
+		[TestCase(1, -1, TestName = "throws when scale is negative")]
+		[TestCase(2, 3, TestName = "throws when scale is less than precision")]
+		[TestCase(2, 3, TestName = "throws when scale equals precision")]
+		public void ConstructorShouldThrow(int precision, int scale)
 		{
-			Assert.Throws<ArgumentException>(() => new NumberValidator(-1, 2, true));
-			Assert.DoesNotThrow(() => new NumberValidator(1, 0, true));
-			Assert.Throws<ArgumentException>(() => new NumberValidator(-1, 2, false));
-			Assert.DoesNotThrow(() => new NumberValidator(1, 0, true));
-
-			Assert.IsTrue(new NumberValidator(17, 2, true).IsValidNumber("0.0"));
-			Assert.IsTrue(new NumberValidator(17, 2, true).IsValidNumber("0"));
-			Assert.IsTrue(new NumberValidator(17, 2, true).IsValidNumber("0.0"));
-			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("00.00"));
-			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("-0.00"));
-			Assert.IsTrue(new NumberValidator(17, 2, true).IsValidNumber("0.0"));
-			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("+0.00"));
-			Assert.IsTrue(new NumberValidator(4, 2, true).IsValidNumber("+1.23"));
-			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("+1.23"));
-			Assert.IsFalse(new NumberValidator(17, 2, true).IsValidNumber("0.000"));
-			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("-1.23"));
-			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("a.sd"));
+			Assert.Throws<ArgumentException>(() => new NumberValidator(precision, scale));
 		}
-	}
+
+		[TestCase(3, 2, TestName = "does not throw when precision > scale > 0")]
+		[TestCase(3, 0, TestName = "does not throw when precision > scale = 0")]
+		public void ConstructorShouldNotThrow(int precision, int scale)
+		{
+			Assert.DoesNotThrow(() => new NumberValidator(precision, scale));
+        }
+
+		[TestCase("", ExpectedResult = false, TestName = "false if empty")]
+		[TestCase(null, ExpectedResult = false, TestName = "false if null")]
+		[TestCase("123", ExpectedResult = true, TestName = "true on integer within precision")]
+		[TestCase("0.1", ExpectedResult = true, TestName = "true on float within scale and precision")]
+		[TestCase("-1.1", ExpectedResult = true, TestName = "true on negative number when onlyPositive is false")]
+		[TestCase("+1.1", ExpectedResult = true, TestName = "true on number with plus sign")]
+        [TestCase("123456", ExpectedResult = false, TestName = "false when out of precision")]
+		[TestCase("123.45", ExpectedResult = true, TestName = "does not include point to scale")]
+		[TestCase("-12345", ExpectedResult = false, TestName = "false when digits with sign is out of precision")]
+		[TestCase("0.123", ExpectedResult = false, TestName = "false when fraction more than scale")]
+		[TestCase("12,34", ExpectedResult = true, TestName = "true with comma instead of point")]
+		[TestCase("a.b", ExpectedResult = false, TestName = "false when has letters")]
+		[TestCase("1.0.2", ExpectedResult = false, TestName = "false when more than one dot")]
+		[TestCase("+-1", ExpectedResult = false, TestName = "false when move than one sign")]
+		[TestCase(".", ExpectedResult = false, TestName = "false when no digits and point")]
+		[TestCase("1.", ExpectedResult = false, TestName = "false when no digits after point")]
+		[TestCase(".1", ExpectedResult = false, TestName = "false when no digits before point")]
+		[TestCase("000000", ExpectedResult = false, TestName = "false on too many redundant zeros")]
+		public bool TestIsValidNumber_WithOnlyPositiveFlagOff(string value)
+		{
+			return new NumberValidator(5, 2).IsValidNumber(value);
+		}
+
+		[TestCase("+1", ExpectedResult = true, TestName = "true on positive with sign")]
+		[TestCase("-1", ExpectedResult = false, TestName = "false on negative")]
+		[TestCase("1", ExpectedResult = true, TestName = "true when no sign")]
+		public bool TestIsValidNumber_WithOnlyPositiveFlagOn(string value)
+		{
+			return new NumberValidator(5, 2, true).IsValidNumber(value);
+		}
+    }
 
 	public class NumberValidator
 	{
