@@ -15,17 +15,20 @@ namespace HomeExercises
 			var expectedTsar = new Person("Ivan IV The Terrible", 54, 170, 70,
 				new Person("Vasili III of Russia", 28, 170, 60, null));
 
-			// Перепишите код на использование Fluent Assertions.
-			Assert.AreEqual(actualTsar.Name, expectedTsar.Name);
-			Assert.AreEqual(actualTsar.Age, expectedTsar.Age);
-			Assert.AreEqual(actualTsar.Height, expectedTsar.Height);
-			Assert.AreEqual(actualTsar.Weight, expectedTsar.Weight);
+            // Перепишите код на использование Fluent Assertions.
+            //Assert.AreEqual(actualTsar.Name, expectedTsar.Name);
+            //Assert.AreEqual(actualTsar.Age, expectedTsar.Age);
+            //Assert.AreEqual(actualTsar.Height, expectedTsar.Height);
+            //Assert.AreEqual(actualTsar.Weight, expectedTsar.Weight);
 
-			Assert.AreEqual(expectedTsar.Parent.Name, actualTsar.Parent.Name);
-			Assert.AreEqual(expectedTsar.Parent.Age, actualTsar.Parent.Age);
-			Assert.AreEqual(expectedTsar.Parent.Height, actualTsar.Parent.Height);
-			Assert.AreEqual(expectedTsar.Parent.Parent, actualTsar.Parent.Parent);
-		}
+            //Assert.AreEqual(expectedTsar.Parent.Name, actualTsar.Parent.Name);
+            //Assert.AreEqual(expectedTsar.Parent.Age, actualTsar.Parent.Age);
+            //Assert.AreEqual(expectedTsar.Parent.Height, actualTsar.Parent.Height);
+			//Assert.AreEqual(expectedTsar.Parent.Parent, actualTsar.Parent.Parent);
+
+			actualTsar.ShouldBeEquivalentTo(expectedTsar, options => options.Excluding(
+				m => m.SelectedMemberInfo.Name == nameof(Person.Id)));
+        }
 
 		[Test]
 		[Description("Альтернативное решение. Какие у него недостатки?")]
@@ -35,8 +38,11 @@ namespace HomeExercises
 			var expectedTsar = new Person("Ivan IV The Terrible", 54, 170, 70,
 				new Person("Vasili III of Russia", 28, 170, 60, null));
 
-			// Какие недостатки у такого подхода? 
-			Assert.True(AreEqual(actualTsar, expectedTsar));
+            // Какие недостатки у такого подхода? 
+            // Изобретаем велосипед, в то время как есть готовые проверенные решения (например, ShouldBeEquivalentTo в FA).
+            // Если в класс Person добавятся новые поля, то нужно будет заодно и переделывать тест,
+            // а если мы забудем его переделать, он не будет учитывать новые поля и может реализовать антипаттерн Liar.
+            Assert.True(AreEqual(actualTsar, expectedTsar));
 		}
 
 		private bool AreEqual(Person actual, Person expected)
