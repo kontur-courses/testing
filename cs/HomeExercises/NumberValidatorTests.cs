@@ -12,12 +12,11 @@ namespace HomeExercises
         [TestCase(17, 2, true, "0", TestName = "ValueIsZero")]
         [TestCase(17, 2, false, "-0", TestName = "ValueIsNegativeZero")]
         [TestCase(17, 2, false, "+0", TestName = "ValueIsPositiveZero")]
-        [TestCase(17, 2, true, "0.0", TestName = "ValidZeroWithFraction")]
-        [TestCase(17, 2, true, "0,0", TestName = "ValidZeroWithFractionSeparatedWithComma")]
-        [TestCase(17, 2, true, "1.23", TestName = "ValueIsRealNumber")]
+        [TestCase(17, 3, true, "723.456", TestName = "ValidIntegerWithFraction")]
+        [TestCase(17, 1, true, "238,2", TestName = "ValidIntegerWithFractionSeparatedWithComma")]
         [TestCase(4, 2, true, "+1.23", TestName = "ValueIsRealPositiveNumber")]
         [TestCase(4, 2, false, "-1.23", TestName = "ValueIsRealNegativeNumber")]
-        [TestCase(17, 2, true, "1234567890", TestName = "ValueIsValidWithAllDigits")]
+        [TestCase(17, 2, true, "62749", TestName = "ValueIsIntegerNumber")]
         public void IsValidNumber_ShouldBeTrue_IfNumberFormatIsValid(int precision, int scale, bool onlyPositive, string inputValue)
         {
             new NumberValidator(precision, scale, onlyPositive).IsValidNumber(inputValue).Should().BeTrue();
