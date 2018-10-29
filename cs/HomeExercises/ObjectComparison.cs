@@ -1,4 +1,5 @@
-﻿using FluentAssertions;
+﻿
+using FluentAssertions;
 using NUnit.Framework;
 
 namespace HomeExercises
@@ -16,7 +17,7 @@ namespace HomeExercises
 				new Person("Vasili III of Russia", 28, 170, 60, null));
 
 			// Перепишите код на использование Fluent Assertions.
-			Assert.AreEqual(actualTsar.Name, expectedTsar.Name);
+			/*Assert.AreEqual(actualTsar.Name, expectedTsar.Name);
 			Assert.AreEqual(actualTsar.Age, expectedTsar.Age);
 			Assert.AreEqual(actualTsar.Height, expectedTsar.Height);
 			Assert.AreEqual(actualTsar.Weight, expectedTsar.Weight);
@@ -24,8 +25,10 @@ namespace HomeExercises
 			Assert.AreEqual(expectedTsar.Parent.Name, actualTsar.Parent.Name);
 			Assert.AreEqual(expectedTsar.Parent.Age, actualTsar.Parent.Age);
 			Assert.AreEqual(expectedTsar.Parent.Height, actualTsar.Parent.Height);
-			Assert.AreEqual(expectedTsar.Parent.Parent, actualTsar.Parent.Parent);
-		}
+			Assert.AreEqual(expectedTsar.Parent.Parent, actualTsar.Parent.Parent);*/
+			actualTsar.ShouldBeEquivalentTo(expectedTsar, options => options
+				.Excluding(person => person.SelectedMemberPath.Contains("Id")));
+        }
 
 		[Test]
 		[Description("Альтернативное решение. Какие у него недостатки?")]
@@ -35,8 +38,15 @@ namespace HomeExercises
 			var expectedTsar = new Person("Ivan IV The Terrible", 54, 170, 70,
 				new Person("Vasili III of Russia", 28, 170, 60, null));
 
-			// Какие недостатки у такого подхода? 
-			Assert.True(AreEqual(actualTsar, expectedTsar));
+            // Какие недостатки у такого подхода? 
+			/*
+			 Этот подход может привести к ошибке StackOverflowException, которая является частой для рекурсивных методов.
+			   Если в поле Parent будет ссылка на объект, для которого мы проверяем равенство, (что, конечно, в реальном мире невозможно, 
+			   но сам объект этого не запрещает), то также произойдет StackOverflowException. А при работе с FluentAssertions такого не будет.
+			   При каждом добавлении новых полей классу Person, нам придется дописывать этот метод. Также при расширении класса Person читаемость
+			   этого метода снизится.
+			   */
+            Assert.True(AreEqual(actualTsar, expectedTsar));
 		}
 
 		private bool AreEqual(Person actual, Person expected)
