@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq.Expressions;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using FluentAssertions;
@@ -7,6 +8,14 @@ using NUnit.Framework;
 
 namespace HomeExercises
 {
+	public static class FluentAssertionsExtensions
+	{
+		public static T ExcludeField<T>(
+			this SelfReferenceEquivalencyAssertionOptions<T> options,
+			string name) where T : SelfReferenceEquivalencyAssertionOptions<T>
+			=> options.Excluding(info => info.SelectedMemberInfo.Name == name);
+	}
+
 	public class ObjectComparison
 	{
 		[Test]
@@ -32,7 +41,10 @@ namespace HomeExercises
 
 			actualTsar.Should().BeEquivalentTo(expectedTsar, options 
 				=> options.Excluding(f => f.SelectedMemberInfo.Name == "Id"));
-		}
+
+            actualTsar.Should().BeEquivalentTo(expectedTsar, options => options.ExcludeField("Id"));
+
+        }
 
 		[Test]
 		[Description("Альтернативное решение. Какие у него недостатки?")]
