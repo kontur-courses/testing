@@ -13,7 +13,7 @@ namespace HomeExercises
 		[TestCase(1, -1, true, TestName = "when scale is negative")]
 		[TestCase(1, 2, true, TestName = "when scale is larger than precision")]
 		[TestCase(1, 1, true, TestName = "when scale equals precision")]
-        	public void ConstructorShould_ThrowArgumentException(int precision, int scale, bool onlyPositive)
+        	public void Constructor_ThrowArgumentException(int precision, int scale, bool onlyPositive)
 		{
 			Action constructor = () => new NumberValidator(precision, scale, onlyPositive);
 			constructor.Should().Throw<ArgumentException>();
@@ -34,7 +34,7 @@ namespace HomeExercises
 		[TestCase(3, 2, true, ".0", TestName = "when no integer part")]
 		[TestCase(10, 9, true, "5.5.5", TestName = "when more than one fraction part")]
 		[TestCase(6, 5, true, "++5.6", TestName = "when more than one sign")]
-        	public void IsValidNumber_ShouldBeFalse(int precision, int scale, bool onlyPositive, string value)
+        	public void IsValidNumber_BeFalse(int precision, int scale, bool onlyPositive, string value)
 		{
 			new NumberValidator(precision, scale, onlyPositive).IsValidNumber(value).Should().BeFalse();
 		}
@@ -46,7 +46,7 @@ namespace HomeExercises
 		[TestCase(4,2, false, "-0.0", TestName = "when onlyPositive is false on negative number")]
 		[TestCase(15, 0, true, "3000000000", TestName = "when value is larger than max int value")]
 		[TestCase(3, 2, false, "1.0", TestName = "when onlyPositive is false on positive number")]
-		public void IsValidNumber_ShouldBeTrue(int precision, int scale, bool onlyPositive, string value)
+		public void IsValidNumber_BeTrue(int precision, int scale, bool onlyPositive, string value)
 		{
 			new NumberValidator(precision, scale, onlyPositive).IsValidNumber(value).Should().BeTrue();
 		}
