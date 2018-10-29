@@ -29,6 +29,8 @@ namespace HomeExercises
 				new Person("Vasili III of Russia", 28, 170, 60, new Person("Basili III of Russia", 28, 170, 60, null)));
 
 			// Какие недостатки у такого подхода? 
+			/* В этом тесте используеться своя реализация AreEqual, поэтому каждый раз
+			 когда будет меняться\добавляться какие-либо поля у класса его нужно будет переделывать*/
 			Assert.True(AreEqual(actualTsar, expectedTsar));
 		}
 
