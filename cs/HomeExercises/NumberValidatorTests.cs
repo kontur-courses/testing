@@ -32,24 +32,34 @@ namespace HomeExercises
 
 		[TestCase("0")]
 		[TestCase("0.0")]
-		[TestCase("0.0")]//I Suppose there is 3 types of dots
-		[TestCase("0.0")]
 		[TestCase("+1.23",4)]
+		[TestCase("1.23", 3)]
+		[TestCase("1.23", 4)]
+		[TestCase("1.23", 1000)]
+		[TestCase("-1.23", 4, 2, false)]
+		[TestCase("-1.23", 1000, 2,false)]
 		public void TestValid(string value, int precision = 17, int scale = 2, bool onlyPositive = true)=>
-			Assert.IsTrue(new NumberValidator(precision,scale,onlyPositive).IsValidNumber(value));
+			new NumberValidator(precision,scale,onlyPositive).IsValidNumber(value).Should().BeTrue();
 
-		[TestCase("00.00",3)]
-		[TestCase("-0.00",3)]
-		[TestCase("+0.00",3)]
-		[TestCase("+1.23",3)]
-		[TestCase("0.000")]
-		[TestCase("-1.23",3)]
-		[TestCase("a.sd",3)]
-		public void TestInvalid(string value, int precision = 17, int scale = 2, bool onlyPositive = true) =>
-			Assert.IsFalse(new NumberValidator(precision, scale, onlyPositive).IsValidNumber(value));
+		[TestCase("00.00")]
+		[TestCase("-0.00")]
+		[TestCase("+0.00")]
+		[TestCase("+1.23")]
+		[TestCase("1.2345")]
+		[TestCase("0.000",17)]
+		[TestCase("-1.23")]
+		[TestCase("a.sd")]
+		[TestCase("a.0")]
+		[TestCase("0.sd")]
+		public void TestInvalid(string value, int precision = 3, int scale = 2, bool onlyPositive = true) =>
+			new NumberValidator(precision, scale, onlyPositive).IsValidNumber(value).Should().BeFalse();
 
 		[TestCase(typeof(ArgumentException),-1,2)]
-		[TestCase(typeof(ArgumentException),-1,2,false)]
+		[TestCase(typeof(ArgumentException), 2, 2)]
+		[TestCase(typeof(ArgumentException), 2, -2)]
+		[TestCase(typeof(ArgumentException), -1, 2, false)]
+		[TestCase(typeof(ArgumentException), 2, 2, false)]
+		[TestCase(typeof(ArgumentException), 2, -2, false)]
 		[TestCase(null,1,0)]
 		public void TestThrows(Type exceptionType, int precision , int scale , bool onlyPositive = true)
 		{
