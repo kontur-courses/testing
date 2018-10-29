@@ -114,6 +114,8 @@ namespace HomeExercises
 		[TestCase("1.+0", TestName = "positive sign after separator")]
 		[TestCase("1.0-", TestName = "negative sign after fractional part")]
 		[TestCase("1.-0", TestName = "negative sign after separator")]
+		[TestCase("+", TestName = "only positive sign")]
+		[TestCase("-", TestName = "only negative sign")]
 		public void IsValidNumber_WhenInvalidFormat_ReturnsFalse(string value)
 		{
 			new NumberValidator(17, 2)
