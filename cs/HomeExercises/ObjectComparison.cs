@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using FluentAssertions;
 using NUnit.Framework;
 
@@ -16,14 +17,13 @@ namespace HomeExercises
 
             var expectedTsar = new Person("Ivan IV The Terrible", 54, 170, 70,
                 new Person("Vasili III of Russia", 28, 170, 60, null));
-			
+	        var d = typeof(Person).GetField("Id");
 
-            actualTsar.ShouldBeEquivalentTo(expectedTsar, config => config
-                .Excluding(subjectInfo =>
-                    subjectInfo.SelectedMemberInfo.Name == nameof(Person.Id) && 
-                    typeof(Person).GetMembers()
-	                    .Select(member => member.Name)
-	                    .Contains(subjectInfo.SelectedMemberInfo.Name)));
+
+	        actualTsar.ShouldBeEquivalentTo(expectedTsar, config => config
+		        .Excluding(subjectInfo =>
+			        subjectInfo.SelectedMemberInfo.Name == nameof(Person.Id) &&
+			        subjectInfo.SelectedMemberInfo.DeclaringType.Name == nameof(Person)));
         }
 
         [Test]
