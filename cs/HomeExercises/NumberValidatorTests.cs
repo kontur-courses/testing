@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Diagnostics.CodeAnalysis;
 using System.Text.RegularExpressions;
-using FluentAssertions;
 using NUnit.Framework;
 
 namespace HomeExercises
@@ -9,55 +8,42 @@ namespace HomeExercises
 	[SuppressMessage("ReSharper", "ObjectCreationAsStatement")]
 	public class NumberValidatorTests
 	{
-		[TestCase(true)]
-		[TestCase(false)]
-		public void Throws_WhenPrecision_IsNegative(bool positiveOnly)
+		[TestCase(6, 5, false)]
+		[TestCase(5, 1, false)]
+		[TestCase(5, 0, true)]
+		public void Constructor_DoesNot_Throw_WithValidArguments(int precision, int scale, bool onlyPositive)
 		{
-			Assert.Throws<ArgumentException>(() => new NumberValidator(-1, 2, positiveOnly));
+			Assert.DoesNotThrow(() => new NumberValidator(precision, scale, onlyPositive),
+				"Expected constructor not to throw with validator settings:" +
+				$"\n\tPrecision: {precision};" +
+				$"\n\tScale: {scale};" +
+				$"\n\t{(onlyPositive ? "Only positive" : "All numbers")}.");
 		}
 
-		[TestCase(true)]
-		[TestCase(false)]
-		public void Throws_WhenPrecision_IsZero(bool positiveOnly)
+		[TestCase(-1, 2, false, TestName = "WhenPrecision_IsNegative")]
+		[TestCase(0, -2, false, TestName = "WhenPrecision_IsZero")]
+		[TestCase(1, -2, false, TestName = "WhenScale_IsNegative")]
+		[TestCase(5, 6, false, TestName = "WhenScale_IsGreaterThanPrecision")]
+		[TestCase(5, 5, false, TestName = "WhenScale_IsEqualToPrecision")]
+		public void Constructor_Throws_ArgumentException(int precision, int scale, bool onlyPositive)
 		{
-			Assert.Throws<ArgumentException>(() => new NumberValidator(0, 2, positiveOnly));
+			Assert.Throws<ArgumentException>(() => new NumberValidator(precision, scale, onlyPositive),
+				"Expected constructor to throw an ArgumentException with validator settings:" +
+				$"\n\tPrecision: {precision};" +
+				$"\n\tScale: {scale};" +
+				$"\n\t{(onlyPositive ? "Only positive" : "All numbers")}.");
 		}
 
-
-		[TestCase(true)]
-		[TestCase(false)]
-		public void DoesNotThrow_WhenPrecision_IsPositive(bool positiveOnly)
+		[Test]
+		public void Validates_Numbers_WithLessSymbols()
 		{
-			Assert.DoesNotThrow(() => new NumberValidator(1, 0, positiveOnly));
+			AssertValid("0.0", 17, 2, false);
 		}
 
-		[TestCase(true)]
-		[TestCase(false)]
-		public void Throws_WhenScale_IsNegative(bool positiveOnly)
+		[Test]
+		public void Validates_Integer_Numbers()
 		{
-			Assert.Throws<ArgumentException>(() => new NumberValidator(1, -2, positiveOnly));
-		}
-
-		[TestCase(true)]
-		[TestCase(false)]
-		public void Throws_WhenScale_IsGreaterThanPrecision(bool positiveOnly)
-		{
-			Assert.Throws<ArgumentException>(() => new NumberValidator(5, 8, positiveOnly));
-		}
-
-		[TestCase(true)]
-		[TestCase(false)]
-		public void Validates_Numbers_WithLessSymbols(bool positiveOnly)
-		{
-			Assert.IsTrue(new NumberValidator(17, 2, positiveOnly).IsValidNumber("0.0"));
-		}
-
-
-		[TestCase(true)]
-		[TestCase(false)]
-		public void Validates_Integer_Numbers(bool positiveOnly)
-		{
-			Assert.IsTrue(new NumberValidator(17, 2, positiveOnly).IsValidNumber("0"));
+			AssertValid("0", 4, 2, false);
 		}
 
 		[TestCase("000.00")]
@@ -66,7 +52,7 @@ namespace HomeExercises
 		[TestCase("-00.00")]
 		public void DoesNot_Validate_Numbers_WithTooManySymbols(string number)
 		{
-			Assert.IsFalse(new NumberValidator(4, 2).IsValidNumber(number));
+			AssertInvalid(number, 4, 2, false);
 		}
 
 		[TestCase("-0.0")]
@@ -74,22 +60,47 @@ namespace HomeExercises
 		[TestCase("-1.23")]
 		public void PosOnly_DoesNot_Validate_Negative_Numbers(string number)
 		{
-			Assert.IsFalse(new NumberValidator(4, 2, true).IsValidNumber(number));
+			AssertInvalid(number, 4, 2, true);
 		}
 
 		[TestCase("0.0")]
 		[TestCase("+0.0")]
 		[TestCase("1.0")]
 		[TestCase("+1.23")]
+		[TestCase("11.23")]
 		public void PosOnly_Validates_NonNegative_Numbers(string number)
 		{
-			Assert.IsTrue(new NumberValidator(4, 2, true).IsValidNumber(number));
+			AssertValid(number, 4, 2, true);
 		}
 
-		[TestCase("a.sd")]
-		public void DoesNot_Validate_NonNumber(string number)
+		[Test]
+		public void DoesNot_Validate_NonNumber()
 		{
-			Assert.IsFalse(new NumberValidator(4, 2, true).IsValidNumber(number));
+			AssertInvalid("a.sd", 4, 2, false);
+		}
+
+		[Test]
+		public void DoesNot_Validate_EmptyString()
+		{
+			AssertInvalid("", 4, 2, false);
+		}
+
+        private static void AssertInvalid(string number, int precision, int scale, bool onlyPositive)
+		{
+			Assert.IsFalse(new NumberValidator(precision, scale, onlyPositive).IsValidNumber(number),
+				$"Expected \"{number}\" to be invalid (actual: valid) with validator settings:" +
+				$"\n\tPrecision: {precision};" +
+				$"\n\tScale: {scale};" +
+				$"\n\t{(onlyPositive ? "Only positive" : "All numbers")}.");
+		}
+
+		private static void AssertValid(string number, int precision, int scale, bool onlyPositive)
+		{
+			Assert.IsTrue(new NumberValidator(precision, scale, onlyPositive).IsValidNumber(number),
+				$"Expected \"{number}\" to be valid (actual: invalid) with validator settings:" +
+				$"\n\tPrecision: {precision};" +
+				$"\n\tScale: {scale};" +
+				$"\n\t{(onlyPositive ? "Only positive" : "All numbers")}.");
 		}
 	}
 
@@ -106,9 +117,10 @@ namespace HomeExercises
 			this.scale = scale;
 			this.onlyPositive = onlyPositive;
 			if (precision <= 0)
-				throw new ArgumentException("precision must be a positive number");
+				throw new ArgumentException("Precision must be a positive number");
 			if (scale < 0 || scale >= precision)
-				throw new ArgumentException("precision must be a non-negative number less or equal than precision");
+				//Вы тут намеренно ошиблись?
+				throw new ArgumentException("Scale must be a non-negative number and less than precision");
 			numberRegex = new Regex(@"^([+-]?)(\d+)([.,](\d+))?$", RegexOptions.IgnoreCase);
 		}
 
