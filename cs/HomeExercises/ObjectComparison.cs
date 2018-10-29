@@ -8,67 +8,23 @@ namespace HomeExercises
 	public class ObjectComparison_Tests
 	{
 		private Person actualTsar;
+		private Person expectedTsar;
 
 		[SetUp]
 		public void SetUp()
 		{
 			actualTsar = TsarRegistry.GetCurrentTsar();
+			expectedTsar = new Person("Ivan IV The Terrible", 54, 170, 70,
+				new Person("Vasili III of Russia", 28, 170, 60, null));
 		}
 
 		[Test]
-		public void GetCurrentTsar_NameShouldBeRight_AfterCreation()
+		public void GetCurrentTsar_ShouldBeRight_AfterCreation()
 		{
-			actualTsar.Name.Should().Be("Ivan IV The Terrible");
+			actualTsar.Should().BeEquivalentTo(expectedTsar, config => config.Excluding(info => 
+				info.SelectedMemberInfo.Name == nameof(Person.Id)));
 		}
-
-		[Test]
-		public void GetCurrentTsar_AgeShouldBeRight_AfterCreation()
-		{
-			actualTsar.Age.Should().Be(54);
-		}
-
-		[Test]
-		public void GetCurrentTsar_HeightShouldBeRight_AfterCreation()
-		{
-			actualTsar.Height.Should().Be(170);
-		}
-
-		[Test]
-		public void GetCurrentTsar_WeightShouldBeRight_AfterCreation()
-		{
-			actualTsar.Weight.Should().Be(70);
-		}
-
-		[Test]
-		public void GetCurrentTsar_ParentNameShouldBeRight_AfterCreation()
-		{
-			actualTsar.Parent.Name.Should().Be("Vasili III of Russia");
-		}
-
-		[Test]
-		public void GetCurrentTsar_ParentAgeShouldBeRight_AfterCreation()
-		{
-			actualTsar.Parent.Age.Should().Be(28);
-		}
-
-		[Test]
-		public void GetCurrentTsar_ParentHeightShouldBeRight_AfterCreation()
-		{
-			actualTsar.Parent.Height.Should().Be(170);
-		}
-
-		[Test]
-		public void GetCurrentTsar_ParentWeightShouldBeRight_AfterCreation()
-		{
-			actualTsar.Parent.Weight.Should().Be(60);
-		}
-
-		[Test]
-		public void GetCurrentTsar_ParentOfParentShouldBeNull_AfterCreation()
-		{
-			actualTsar.Parent.Parent.Should().BeNull();
-		}
-
+		
 		[Test]
 		[Description("Альтернативное решение. Какие у него недостатки?")]
 		public void CheckCurrentTsar_WithCustomEquality()
@@ -81,7 +37,8 @@ namespace HomeExercises
 			Assert.True(AreEqual(actualTsar, expectedTsar));
 		}
 
-		// Если изменится только одно поле, то будет сложнее понять из-за чего тест завалился т.к. все поля проверяются в одном тесте вместе
+		// Если изменится только одно поле, то будет сложнее понять из-за чего тест завалился т.к. все поля проверяются в одном тесте вместе.
+		// Также, если тест завалится, то невозможно понять, на каком поколении это произошло
 
 		private bool AreEqual(Person actual, Person expected)
 		{
