@@ -27,90 +27,34 @@ namespace HomeExercises
 		}
 
 		[Test]
-		public void Should_Valid_Integer()
+		[TestCase(10, 2, true, "10")]
+		[TestCase(10, 0, true, "10")]
+		[TestCase(10, 5, true, "10.10")]
+		[TestCase(10, 5, true, "10,00")]
+		[TestCase(10, 5, false, "-10.10")]
+		[TestCase(10, 0, false, "-0")]
+		[TestCase(10, 0, false, "+0")]
+		[TestCase(4, 2, true, "00.00")]
+		[TestCase(4, 2, false, "+1.23")]
+		public void Should_Valid_CorrectNumbers(int p, int s, bool rule, string number)
 		{
-			Assert.IsTrue(new NumberValidator(10, 2, true).IsValidNumber("10"));
+			Assert.IsTrue(new NumberValidator(p, s, rule).IsValidNumber(number));
 		}
 
 		[Test]
-		public void Should_Valid_OnlyInteger()
+		[TestCase(4, 0, true, "25565")]
+		[TestCase(4, 1, true, "10.24")]
+		[TestCase(4, 2, true, "-1.0")]
+		[TestCase(4, 2, false, null)]
+		[TestCase(4, 2, false, " 10 . 3 ")]
+		[TestCase(4, 2, false, "")]
+		[TestCase(3, 2, false, "+1.23")]
+		[TestCase(3, 2, false, "-1.23")]
+		[TestCase(10, 5, false, "ws.ad")]
+		public void Should_NotValid_IncorrectNumbers(int b, int s, bool rule, string number)
 		{
-			Assert.IsTrue(new NumberValidator(10, 0, true).IsValidNumber("10"));
+			Assert.IsFalse(new NumberValidator(b, s, rule).IsValidNumber(number));
 		}
-		
-		[Test]
-		public void Should_Valid_Fractional()
-		{
-			Assert.IsTrue(new NumberValidator(16, 8, true).IsValidNumber("10.5060"));
-		}
-
-		[Test]
-		public void Should_NotValid_ToLongIntegerPart()
-		{
-			Assert.IsFalse(new NumberValidator(4, 0, true).IsValidNumber("10240"));
-		}
-
-		[Test]
-		public void Should_NotValid_ToLongFactionalPart()
-		{
-			Assert.IsFalse(new NumberValidator(4, 1, true).IsValidNumber("10.24"));
-		}
-
-		[Test]
-		public void Should_Be_CultureIndependent()
-		{
-			Assert.IsTrue(new NumberValidator(17, 2, true).IsValidNumber("0,0"));
-			Assert.IsTrue(new NumberValidator(17, 2, true).IsValidNumber("0.0"));
-		}
-
-		[Test]
-		public void Should_Valid_NotSignificantZeros()
-		{
-			Assert.IsTrue(new NumberValidator(4, 2, true).IsValidNumber("00.00"));
-		}
-
-		[Test]
-		public void Should_NotValid_NullOrWhiteSpace()
-		{
-			var numberValidator = new NumberValidator(3, 2, true);
-			Assert.IsFalse(numberValidator.IsValidNumber("  "));
-			Assert.IsFalse(numberValidator.IsValidNumber(null));
-		}
-
-		[Test]
-		public void Should_Valid_OnlyPositive()
-		{
-			var numberValidator = new NumberValidator(3, 2, true);
-			Assert.IsTrue(numberValidator.IsValidNumber("1.0"));
-			Assert.IsFalse(numberValidator.IsValidNumber("-1.0"));
-		}
-
-		[Test]
-		public void Should_Count_PrecisionWithSign()
-		{
-			var numberValidator = new NumberValidator(3, 2, false);
-			Assert.IsFalse(numberValidator.IsValidNumber("+1.23"));
-			Assert.IsFalse(numberValidator.IsValidNumber("-1.23"));
-
-			numberValidator = new NumberValidator(4, 2, false);
-			Assert.IsTrue(numberValidator.IsValidNumber("+1.23"));
-			Assert.IsTrue(numberValidator.IsValidNumber("-1.23"));
-		}
-
-		[Test]
-		public void Should_Valid_OnlyNumbers()
-		{
-			Assert.IsFalse(new NumberValidator(10, 4, false).IsValidNumber("a.sd"));
-		}
-
-		[Test]
-		public void Should_Valid_PositiveOrNegativeZero()
-		{
-			var numberValidator = new NumberValidator(4, 2, false);
-			Assert.IsTrue(numberValidator.IsValidNumber("+0"));
-			Assert.IsTrue(numberValidator.IsValidNumber("-0"));
-		}
-
 	}
 
 	public class NumberValidator
