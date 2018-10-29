@@ -17,9 +17,10 @@ namespace HomeExercises
 			var expectedTsar = new Person("Ivan IV The Terrible", 54, 170, 70,
 				new Person("Vasili III of Russia", 28, 170, 60, null));
 
-            actualTsar.ShouldBeEquivalentTo(expectedTsar, options => options.Excluding(tsarInfo => tsarInfo.SelectedMemberDescription == "Id" || tsarInfo.SelectedMemberDescription == "member Parent.Id"));
+            actualTsar.ShouldBeEquivalentTo(expectedTsar, options => options.Excluding(tsarInfo => tsarInfo.SelectedMemberInfo.Name == nameof(Person.Id)
+                                                                                               && tsarInfo.SelectedMemberInfo.DeclaringType == typeof(Person)));
         }
-
+		
 		[Test]
 		[Description("Альтернативное решение. Какие у него недостатки?")]
 		public void CheckCurrentTsar_WithCustomEquality()
@@ -33,6 +34,7 @@ namespace HomeExercises
 			// если в дереве этих объектов есть цикл, то будет бесконечная рекурсия (в случае с царями этого, конечно, не может быть)
 			// если тест завалится то сложно понять почему, тк он напишет просто expected true и больше никакой инфы
 			// Assert.True не совпадает с семантикой теста
+			// при добавлении/удалении полей из Person рефакторить тест
 		}
 
 		private bool AreEqual(Person actual, Person expected)
