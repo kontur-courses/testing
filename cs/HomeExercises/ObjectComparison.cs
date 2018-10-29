@@ -15,10 +15,15 @@ namespace HomeExercises
 				new Person("Vasili III of Russia", 28, 170, 60, new Person("Basili III of Russia", 28, 170, 60, null)));
 
 			// Перепишите код на использование Fluent Assertions.
-			expectedTsar.Should().BeEquivalentTo(actualTsar,
-				options => options.Excluding(x =>
-					x.SelectedMemberInfo.DeclaringType == typeof(Person) && x.SelectedMemberInfo.Name == "Id"));
+			Should_Person_Equal(expectedTsar, actualTsar);
 		}
+
+		public void Should_Person_Equal(Person first, Person second)
+		{
+			first.Should().BeEquivalentTo(second,
+				options => options.Excluding(x =>
+					x.SelectedMemberInfo.DeclaringType == typeof(Person) && x.SelectedMemberInfo.Name == nameof(Person.Id)));
+        }
 
 		[Test]
 		[Description("Альтернативное решение. Какие у него недостатки?")]
@@ -30,7 +35,9 @@ namespace HomeExercises
 
 			// Какие недостатки у такого подхода? 
 			/* В этом тесте используеться своя реализация AreEqual, поэтому каждый раз
-			 когда будет меняться\добавляться какие-либо поля у класса его нужно будет переделывать*/
+			 когда будет меняться\добавляться какие-либо поля у класса его нужно будет переделывать
+			 
+			 Еще одна проблема будет, если тест упадет не будет понятна в чем проблема будет просто ожидалось тру, а найденно фалс*/
 			Assert.True(AreEqual(actualTsar, expectedTsar));
 		}
 
