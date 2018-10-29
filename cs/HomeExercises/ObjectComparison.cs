@@ -28,22 +28,7 @@ namespace HomeExercises
 			var expectedTsar = new Person("Ivan IV The Terrible", 54, 170, 70,
 				new Person("Vasili III of Russia", 28, 170, 60, null));
 
-			// Перепишите код на использование Fluent Assertions.
-			//Assert.AreEqual(actualTsar.Name, expectedTsar.Name);
-			//Assert.AreEqual(actualTsar.Age, expectedTsar.Age);
-			//Assert.AreEqual(actualTsar.Height, expectedTsar.Height);
-			//Assert.AreEqual(actualTsar.Weight, expectedTsar.Weight);
-
-			//Assert.AreEqual(expectedTsar.Parent.Name, actualTsar.Parent.Name);
-			//Assert.AreEqual(expectedTsar.Parent.Age, actualTsar.Parent.Age);
-			//Assert.AreEqual(expectedTsar.Parent.Height, actualTsar.Parent.Height);
-			//Assert.AreEqual(expectedTsar.Parent.Parent, actualTsar.Parent.Parent);
-
-			actualTsar.Should().BeEquivalentTo(expectedTsar, options 
-				=> options.Excluding(f => f.SelectedMemberInfo.Name == "Id"));
-
             actualTsar.Should().BeEquivalentTo(expectedTsar, options => options.ExcludeField("Id"));
-
         }
 
 		[Test]
@@ -66,9 +51,6 @@ namespace HomeExercises
 		// [Пояснения]
 		//1. Использование Fluent Assertions сильно улучшает читаемость кода - тесты
 		//	 действительно становятся аналогом документации.
-		//2. Использовав Fluent Assertions, сама проверка заняла всего одну, крайне читаемую,
-		//	 строку. В альтернативном же решении, был создан целый метод, который делает
-		//	 то же самое.
 
 		private bool AreEqual(Person actual, Person expected)
 		{
