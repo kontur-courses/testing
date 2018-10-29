@@ -16,10 +16,14 @@ namespace HomeExercises
 			var expectedTsar = new Person("Ivan IV The Terrible", 54, 170, 70,
 				new Person("Vasili III of Russia", 28, 170, 60, null));
 
+			var generation = 1;
 			while (actualTsar != null || expectedTsar != null)
 			{
+				if (actualTsar == null || expectedTsar == null)
+					Assert.Fail("Registries have a different amount of tsars");
+
 				actualTsar.ShouldBeEquivalentTo(expectedTsar,
-					option => option.Excluding(o => o.Id).Excluding(o => o.Parent));
+					option => option.Excluding(o => o.Id).Excluding(o => o.Parent), "because {0} and {1} aren't equal in the {2}-th generation!", new object[] {actualTsar.Name, expectedTsar.Name, generation});
 				actualTsar = actualTsar.Parent;
 				expectedTsar = expectedTsar.Parent;
 			}
@@ -27,6 +31,7 @@ namespace HomeExercises
 			//Недостататки альтернативого решения
 			
 			//* необходимость переписывать тест, при изменении полей класса Person
+			//* не понятно на каких данных тест сломается
 
 		}
 
