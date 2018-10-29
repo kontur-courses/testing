@@ -7,28 +7,23 @@ namespace HomeExercises
 {
 	public class NumberValidatorTests
 	{
-
 		[Test]
-		public void Precision_Should_Be_Positive()
+		[TestCase(1, 0)]
+		[TestCase(2, 1)]
+		public void Should_Initialize_WhenParameters_Correct(int p, int s)
 		{
-			Assert.Throws<ArgumentException>(() => new NumberValidator(-1, 0, true));
-			Assert.Throws<ArgumentException>(() => new NumberValidator(0, 0, true));
-			Assert.DoesNotThrow(() => new NumberValidator(1, 0, true));
+			Assert.DoesNotThrow(() => new NumberValidator(p, s));
 		}
 
 		[Test]
-		public void Scale_Should_Be_NonNegative()
+		[TestCase(-1, 0)]
+		[TestCase(0, 0)]
+		[TestCase(1, -1)]
+		[TestCase(2, 4)]
+		[TestCase(2, 2)]
+		public void Should_ThrowException_WhenParameters_Incorrect(int p, int s)
 		{
-			Assert.Throws<ArgumentException>(() => new NumberValidator(1, -1, true));
-			Assert.DoesNotThrow(() => new NumberValidator(1, 0, true));
-		}
-
-		[Test]
-		public void Scale_Should_Be_LessThanPrecision()
-		{
-			Assert.Throws<ArgumentException>(() => new NumberValidator(2, 4, true));
-			Assert.Throws<ArgumentException>(() => new NumberValidator(4, 4, true));
-			Assert.DoesNotThrow(() => new NumberValidator(5, 4, true));
+			Assert.Throws<ArgumentException>(() => new NumberValidator(p, s));
 		}
 
 		[Test]
