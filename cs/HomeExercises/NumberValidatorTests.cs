@@ -11,7 +11,7 @@ namespace HomeExercises
         [TestCase(0, 1, TestName = "PrecisionIsZero")]
         [TestCase(1, -1, TestName = "NegativeScale")]
         [TestCase(1, 2, TestName = "ScaleMoreThanPrecision")]
-        public void ShouldThrowArgumentException(int precision, int scale)
+        public void Constructor_ShouldThrowArgumentException_OnInvalidParams(int precision, int scale)
         {
             Action action = () => new NumberValidator(precision, scale);
             action.ShouldThrow<ArgumentException>();
@@ -24,7 +24,7 @@ namespace HomeExercises
         [TestCase("0,00", 3, 2, TestName = "UsingComma")]
         [TestCase("-0", 2, TestName = "UsingMinus")]
         [TestCase("+0", 2, 0, true, TestName = "UsePlusInOnlyPositive")]
-        public void IsValidShouldReturnTrue(string number, int precision, int scale = 0, bool onlyPositive = false) =>
+        public void IsValid_ShouldReturnTrue_OnRightNumberFormat(string number, int precision, int scale = 0, bool onlyPositive = false) =>
             new NumberValidator(precision, scale, onlyPositive).IsValidNumber(number).Should().BeTrue();
 
         [TestCase("a.aa", 3, 2, TestName = "UsingNotNumber")]
@@ -35,7 +35,7 @@ namespace HomeExercises
         [TestCase("0.00", 3, 1, TestName = "MoreDigitsThanScale")]
         [TestCase("-0", 2, 0, true, TestName = "UsingMinusInOnlyPositive")]
         [TestCase("+0", 1, TestName = "PlusCountsAsDigit")]
-        public void IsValidShouldReturnFalse(string number, int precision, int scale = 0, bool onlyPositive = false) =>
+        public void IsValid_ShouldReturnFalse_OnWrongNumberFormat(string number, int precision, int scale = 0, bool onlyPositive = false) =>
             new NumberValidator(precision, scale, onlyPositive).IsValidNumber(number).Should().BeFalse();
     }
 
