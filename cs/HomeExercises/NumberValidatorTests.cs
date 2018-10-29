@@ -23,24 +23,24 @@ namespace HomeExercises
         [TestCase("a.sd", TestName = "Value does not represent a number")]
         [TestCase("5.", TestName = "Fractional part is absent while delimiter is present")]
         [TestCase(".9", TestName = "Integer part is absent")]
-        [TestCase("123.4", TestName = "Integer+fractional is more than precision")]
+        [TestCase("1234.56", TestName = "Integer+fractional is more than precision")]
         [TestCase("1.234", TestName = "Fractional part is more than scale")]
-        [TestCase("00.00", TestName = "Zeroes are taken into account")]
-        [TestCase("+00.0", TestName = "Sign is taken into account in precision")]
-        [TestCase("-1", 3, 2, true, TestName = "Only positive permitted, negative value")]
-        public void IsNotValidNumber(string value, int precision = 3, int scale = 2, bool onlyPositive = false)
+        [TestCase("00000.0", TestName = "Zeroes are taken into account in precision")]
+        [TestCase("+000.00", TestName = "Sign is taken into account in precision")]
+        [TestCase("-1", 5, 2, true, TestName = "Only positive permitted, negative value")]
+        public void IsNotValidNumber(string value, int precision = 5, int scale = 2, bool onlyPositive = false)
         {
             new NumberValidator(precision, scale, onlyPositive).IsValidNumber(value).Should().BeFalse(
                 "value is {0}, precision is {1}, scale is {2}, onlyPositive is {3}", value, precision, scale, onlyPositive);
         }
 
-        [TestCase("12.3", TestName = "Integer+fractional equals precision")]
-        [TestCase("1.23", TestName = "Fractional equals scale")]
+        [TestCase("1234.5", TestName = "Integer+fractional parts equals precision")]
+        [TestCase("1.23", TestName = "Fractional part equals scale")]
         [TestCase("+0.1", TestName = "Value starts \"+\" sign")]
         [TestCase("1.2", 3, 2, true, TestName = "Only positive permitted, positive value")]
         [TestCase("123", TestName = "Integer part only")]
         [TestCase("1,00", TestName = "Comma-separated")]
-        public void IsValidNumber(string value, int precision = 3, int scale = 2, bool onlyPositive = false)
+        public void IsValidNumber(string value, int precision = 5, int scale = 2, bool onlyPositive = false)
         {
             new NumberValidator(precision, scale, onlyPositive).IsValidNumber(value).Should().BeTrue(
                 "value is {0}, precision is {1}, scale is {2}, onlyPositive is {3}", value, precision, scale, onlyPositive);
