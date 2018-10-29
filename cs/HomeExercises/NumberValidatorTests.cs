@@ -1,32 +1,95 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 using System.Text.RegularExpressions;
 using FluentAssertions;
 using NUnit.Framework;
 
 namespace HomeExercises
 {
+	[SuppressMessage("ReSharper", "ObjectCreationAsStatement")]
 	public class NumberValidatorTests
 	{
-		[Test]
-		public void Test()
+		[TestCase(true)]
+		[TestCase(false)]
+		public void Throws_WhenPrecision_IsNegative(bool positiveOnly)
 		{
-			Assert.Throws<ArgumentException>(() => new NumberValidator(-1, 2, true));
-			Assert.DoesNotThrow(() => new NumberValidator(1, 0, true));
-			Assert.Throws<ArgumentException>(() => new NumberValidator(-1, 2, false));
-			Assert.DoesNotThrow(() => new NumberValidator(1, 0, true));
+			Assert.Throws<ArgumentException>(() => new NumberValidator(-1, 2, positiveOnly));
+		}
 
-			Assert.IsTrue(new NumberValidator(17, 2, true).IsValidNumber("0.0"));
-			Assert.IsTrue(new NumberValidator(17, 2, true).IsValidNumber("0"));
-			Assert.IsTrue(new NumberValidator(17, 2, true).IsValidNumber("0.0"));
-			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("00.00"));
-			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("-0.00"));
-			Assert.IsTrue(new NumberValidator(17, 2, true).IsValidNumber("0.0"));
-			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("+0.00"));
-			Assert.IsTrue(new NumberValidator(4, 2, true).IsValidNumber("+1.23"));
-			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("+1.23"));
-			Assert.IsFalse(new NumberValidator(17, 2, true).IsValidNumber("0.000"));
-			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("-1.23"));
-			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("a.sd"));
+		[TestCase(true)]
+		[TestCase(false)]
+		public void Throws_WhenPrecision_IsZero(bool positiveOnly)
+		{
+			Assert.Throws<ArgumentException>(() => new NumberValidator(0, 2, positiveOnly));
+		}
+
+
+		[TestCase(true)]
+		[TestCase(false)]
+		public void DoesNotThrow_WhenPrecision_IsPositive(bool positiveOnly)
+		{
+			Assert.DoesNotThrow(() => new NumberValidator(1, 0, positiveOnly));
+		}
+
+		[TestCase(true)]
+		[TestCase(false)]
+		public void Throws_WhenScale_IsNegative(bool positiveOnly)
+		{
+			Assert.Throws<ArgumentException>(() => new NumberValidator(1, -2, positiveOnly));
+		}
+
+		[TestCase(true)]
+		[TestCase(false)]
+		public void Throws_WhenScale_IsGreaterThanPrecision(bool positiveOnly)
+		{
+			Assert.Throws<ArgumentException>(() => new NumberValidator(5, 8, positiveOnly));
+		}
+
+		[TestCase(true)]
+		[TestCase(false)]
+		public void Validates_Numbers_WithLessSymbols(bool positiveOnly)
+		{
+			Assert.IsTrue(new NumberValidator(17, 2, positiveOnly).IsValidNumber("0.0"));
+		}
+
+
+		[TestCase(true)]
+		[TestCase(false)]
+		public void Validates_Integer_Numbers(bool positiveOnly)
+		{
+			Assert.IsTrue(new NumberValidator(17, 2, positiveOnly).IsValidNumber("0"));
+		}
+
+		[TestCase("000.00")]
+		[TestCase("0.000")]
+		[TestCase("+00.00")]
+		[TestCase("-00.00")]
+		public void DoesNot_Validate_Numbers_WithTooManySymbols(string number)
+		{
+			Assert.IsFalse(new NumberValidator(4, 2).IsValidNumber(number));
+		}
+
+		[TestCase("-0.0")]
+		[TestCase("-1.0")]
+		[TestCase("-1.23")]
+		public void PosOnly_DoesNot_Validate_Negative_Numbers(string number)
+		{
+			Assert.IsFalse(new NumberValidator(4, 2, true).IsValidNumber(number));
+		}
+
+		[TestCase("0.0")]
+		[TestCase("+0.0")]
+		[TestCase("1.0")]
+		[TestCase("+1.23")]
+		public void PosOnly_Validates_NonNegative_Numbers(string number)
+		{
+			Assert.IsTrue(new NumberValidator(4, 2, true).IsValidNumber(number));
+		}
+
+		[TestCase("a.sd")]
+		public void DoesNot_Validate_NonNumber(string number)
+		{
+			Assert.IsFalse(new NumberValidator(4, 2, true).IsValidNumber(number));
 		}
 	}
 
