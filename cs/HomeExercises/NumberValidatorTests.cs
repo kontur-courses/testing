@@ -6,23 +6,19 @@ using NUnit.Framework;
 namespace HomeExercises
 {
 	[TestFixture]
-	public class NumberValidatorTests_ConstructorShould
+	public class NumberValidatorTests
 	{
 		[TestCase(-1, 0, true, TestName = "when precision is negative")]
 		[TestCase(0, 0, true, TestName = "when precision is zero")]
 		[TestCase(1, -1, true, TestName = "when scale is negative")]
 		[TestCase(1, 2, true, TestName = "when scale is larger than precision")]
 		[TestCase(1, 1, true, TestName = "when scale equals precision")]
-        public void ThrowArgumentException(int precision, int scale, bool onlyPositive)
+        public void ConstructorShould_ThrowArgumentException(int precision, int scale, bool onlyPositive)
 		{
 			Action constructor = () => new NumberValidator(precision, scale, onlyPositive);
 			constructor.Should().Throw<ArgumentException>();
 		}
-	}
 
-	[TestFixture]
-	public class NumberValidator_IsValidNumberTestsShould
-	{
 		[TestCase(1, 0, true, null, TestName = "when value is null")]
 		[TestCase(1, 0, true, "", TestName = "when value is empty string")]
 		[TestCase(6, 5, true, "a.cd", TestName = "when value is non-number string")]
@@ -38,7 +34,7 @@ namespace HomeExercises
 		[TestCase(3, 2, true, ".0", TestName = "when no integer part")]
 		[TestCase(10, 9, true, "5.5.5", TestName = "when more than one fraction part")]
 		[TestCase(6, 5, true, "++5.6", TestName = "when more than one sign")]
-        public void BeFalse(int precision, int scale, bool onlyPositive, string value)
+        public void IsValidNumber_ShouldBeFalse(int precision, int scale, bool onlyPositive, string value)
 		{
 			new NumberValidator(precision, scale, onlyPositive).IsValidNumber(value).Should().BeFalse();
 		}
@@ -49,7 +45,8 @@ namespace HomeExercises
 		[TestCase(4, 2, true, "+0.2", TestName = "when number with plus sign")]
 		[TestCase(4,2, false, "-0.0", TestName = "when onlyPositive is false on negative number")]
 		[TestCase(15, 0, true, "3000000000", TestName = "when value is larger than max int value")]
-		public void BeTrue(int precision, int scale, bool onlyPositive, string value)
+		[TestCase(3, 2, false, "1.0", TestName = "when onlyPositive is false on positive number")]
+		public void IsValidNumber_ShouldBeTrue(int precision, int scale, bool onlyPositive, string value)
 		{
 			new NumberValidator(precision, scale, onlyPositive).IsValidNumber(value).Should().BeTrue();
 		}
