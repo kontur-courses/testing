@@ -9,13 +9,34 @@ namespace HomeExercises
 	[TestFixture]
 	public class NumberValidatorTests
 	{
+		[TestCase("1234567890123", TestName = "LongInteger")]
+		[TestCase("1234567890.12", TestName = "BigFraction")]
+		public void NumberValidator_BigPrecisionAndSmallScale_IsValid(string input)
+		{
+			var validator = new NumberValidator(13, 2, true);
+
+			validator.IsValidNumber(input).Should().BeTrue();
+		}
+
+		[TestCase("123456789012345", TestName = "LongInteger")]
+		[TestCase("1234567890123.4567", TestName = "FractionPartLargerThanScale")]
+		public void NumberValidator_BigPrecisionAndSmallScale_IsNotValid(string input)
+		{
+			var validator = new NumberValidator(13, 2, true);
+
+			validator.IsValidNumber(input).Should().BeFalse();
+		}
 
 		[TestCase("0.0", TestName = "Fraction")]
-		[TestCase("0", TestName = "Integer")]
-		[TestCase("123456789123", TestName = "Long")]
-		public void NumberValidator_WithBigPrecisionAndSmallScale_IsValid(string input)
+		[TestCase("123", TestName = "Integer")]
+		[TestCase("-1.23", TestName = "NegativeFraction")]
+		[TestCase("-1", TestName = "NegativeInteger")]
+		[TestCase("+1.23", TestName = "PositiveFraction")]
+		[TestCase("1,23", TestName = "CommaDelimeter")]
+		[TestCase("0.12", TestName = "IntPartZeroFracPartTwoDigits")]
+		public void NumberValidator_SmallPrecisionAndNotOnlyPositive_IsValid(string input)
 		{
-			var validator = new NumberValidator(17, 2, true);
+			var validator = new NumberValidator(5, 3);
 
 			validator.IsValidNumber(input).Should().BeTrue();
 		}
@@ -34,15 +55,6 @@ namespace HomeExercises
 			var validator = new NumberValidator(3, 2, true);
 
 			validator.IsValidNumber(input).Should().BeFalse();
-		}
-
-		[TestCase("-1.23", ExpectedResult = true, TestName = "NegativeFraction")]
-		[TestCase("+1.23", ExpectedResult = true, TestName = "PositiveFraction")]
-		public bool NumberValidator_NotOnlyPositive_IsValid(string input)
-		{
-			var validator = new NumberValidator(5, 3);
-
-			return validator.IsValidNumber(input);
 		}
 
 		[TestCase(-1, 2, TestName = "PrecisionNegative")]
