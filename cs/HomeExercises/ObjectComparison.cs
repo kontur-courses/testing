@@ -1,9 +1,20 @@
 ﻿using FluentAssertions;
+using FluentAssertions.Primitives;
 using NUnit.Framework;
 
 namespace HomeExercises
 {
-	public class ObjectComparison
+	public static class PersonExtension
+	{
+		public static void ShouldBeEquivalentTo(this Person expected, Person actual)
+		{
+			expected.Should().BeEquivalentTo(actual,
+				options => options.Excluding(x =>
+					x.SelectedMemberInfo.DeclaringType == typeof(Person) && x.SelectedMemberInfo.Name == nameof(Person.Id)));
+        }
+    }
+
+    public class ObjectComparison
 	{
 		[Test]
 		[Description("Проверка текущего царя")]
@@ -15,15 +26,8 @@ namespace HomeExercises
 				new Person("Vasili III of Russia", 28, 170, 60, new Person("Basili III of Russia", 28, 170, 60, null)));
 
 			// Перепишите код на использование Fluent Assertions.
-			Should_Person_Equal(expectedTsar, actualTsar);
+			expectedTsar.ShouldBeEquivalentTo(actualTsar);
 		}
-
-		public void Should_Person_Equal(Person first, Person second)
-		{
-			first.Should().BeEquivalentTo(second,
-				options => options.Excluding(x =>
-					x.SelectedMemberInfo.DeclaringType == typeof(Person) && x.SelectedMemberInfo.Name == nameof(Person.Id)));
-        }
 
 		[Test]
 		[Description("Альтернативное решение. Какие у него недостатки?")]
