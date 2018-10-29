@@ -10,16 +10,16 @@ namespace HomeExercises
         [TestCase(-1, 1, TestName = "NegativePrecision")]
         [TestCase(0, 1, TestName = "PrecisionIsZero")]
         [TestCase(1, -1, TestName = "NegativeScale")]
-        [TestCase(1, 2, TestName = "ScaleMoreThenPrecision")]
-        public void ShouldThrowArgumentException(int precision, int scale = 0)
+        [TestCase(1, 2, TestName = "ScaleMoreThanPrecision")]
+        public void ShouldThrowArgumentException(int precision, int scale)
         {
             Action action = () => new NumberValidator(precision, scale);
             action.ShouldThrow<ArgumentException>();
         }
 
         [TestCase("1234567890", 10, TestName = "NumberCanContainAnyDigit")]
-        [TestCase("0.00", 17, 2, TestName = "LessDigitsThenPrecision")]
-        [TestCase("0.0", 3, 2, TestName = "LessDigitsThenScale")]
+        [TestCase("0.00", 17, 2, TestName = "LessDigitsThanPrecision")]
+        [TestCase("0.0", 3, 2, TestName = "LessDigitsThanScale")]
         [TestCase("0", 3, 2, TestName = "NoDigitsInScale")]
         [TestCase("0,00", 3, 2, TestName = "UsingComma")]
         [TestCase("-0", 2, TestName = "UsingMinus")]
@@ -31,8 +31,8 @@ namespace HomeExercises
         [TestCase(null, 1, TestName = "NumberIsNull")]
         [TestCase("", 1, TestName = "NumberIsEmpty")]
         [TestCase(" ", 1, TestName = "NumberIsSpace")]
-        [TestCase("00.00", 3, 2, TestName = "MoreDigitsThenPrecision")]
-        [TestCase("0.00", 3, 1, TestName = "MoreDigitsThenScale")]
+        [TestCase("00.00", 3, 2, TestName = "MoreDigitsThanPrecision")]
+        [TestCase("0.00", 3, 1, TestName = "MoreDigitsThanScale")]
         [TestCase("-0", 2, 0, true, TestName = "UsingMinusInOnlyPositive")]
         [TestCase("+0", 1, TestName = "PlusCountsAsDigit")]
         public void IsValidShouldReturnFalse(string number, int precision, int scale = 0, bool onlyPositive = false) =>
