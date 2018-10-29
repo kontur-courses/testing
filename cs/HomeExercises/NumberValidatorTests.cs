@@ -8,24 +8,18 @@ namespace HomeExercises
 	[TestFixture]
 	public class NumberValidatorTests
 	{
-		[TestCase(0, TestName = "precision equal to zero")]
-		[TestCase(-1, TestName = "precision less than zero")]
-		public void Constructor_WhenInvalidPrecision_ThrowsException(int precision)
+		[TestCase(0, 0, "precision must be a positive number", TestName =
+			"when precision equal to zero throws exception")]
+		[TestCase(-1, 0, "precision must be a positive number", TestName =
+			"when precision less than zero throws exception")]
+		[TestCase(1, -1, "scale must be a non-negative number less than precision", TestName =
+			"when scale less than zero throws exception")]
+		[TestCase(1, 1, "scale must be a non-negative number less than precision", TestName =
+			"when scale equals precision throws exception")]
+		[TestCase(1, 2, "scale must be a non-negative number less than precision", TestName =
+			"when scale greater than precision throws exception")]
+		public void Constructor(int precision, int scale, string exceptionMessage)
 		{
-			var exceptionMessage = "precision must be a positive number";
-			Action action = () => new NumberValidator(precision);
-			action
-				.Should()
-				.Throw<ArgumentException>()
-				.WithMessage(exceptionMessage);
-		}
-
-		[TestCase(1, -1, TestName = "scale less than zero")]
-		[TestCase(1, 1, TestName = "scale equals precision")]
-		[TestCase(1, 2, TestName = "scale greater than precision")]
-		public void Constructor_WhenInvalidScale_ThrowsException(int precision, int scale)
-		{
-			var exceptionMessage = "scale must be a non-negative number less than precision";
 			Action action = () => new NumberValidator(precision, scale);
 			action
 				.Should()
