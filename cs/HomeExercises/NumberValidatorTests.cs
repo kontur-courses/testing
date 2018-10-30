@@ -29,8 +29,8 @@ namespace HomeExercises
 		[TestCase(5, 4, false, "-1", TestName = "Valid integer with minus sign")]
 		[TestCase(5, 3, false, "1.23", TestName = "Fractional number parts separated by point")]
 		[TestCase(5, 3, false, "1,23", TestName = "Fractional number parts separated by comma")]
-		[TestCase(5, 3, false, "1.23", TestName = "Fractional number parts separated by point with sign")]
-		[TestCase(5, 3, false, "1,23", TestName = "Fractional number parts separated by comma with sign")]
+		[TestCase(5, 3, false, "+1.23", TestName = "Fractional number parts separated by point with sign")]
+		[TestCase(5, 3, false, "+1,23", TestName = "Fractional number parts separated by comma with sign")]
 		public void IsValidNumber_ReturnsTrue_If(int precision, int scale, bool onlyPositive, string number)
 		{
 			var validator = new NumberValidator(precision, scale, onlyPositive);
