@@ -1,89 +1,118 @@
 ﻿using System;
+using System.Text;
 using System.Text.RegularExpressions;
 using FluentAssertions;
 using NUnit.Framework;
+using NUnit.Framework.Internal.Filters;
 
 namespace HomeExercises
 {
 	public class NumberValidatorTests
 	{
+		[TestCase(-1, 2, TestName = "Negative precision")]
+		[TestCase(0, 0, TestName = "Zero precision")]
+		[TestCase(1, -2, TestName = "Negative scale")]
+		[TestCase(2, 3, TestName = "Scale is greater then precision")]
+		[TestCase(1, 2, TestName = "Scale equals precision")]
+		public void Constructor_ThrowsException_OnWrongArguments(int precision, int scale)
+		{
+			Action act = () => new NumberValidator(precision, scale, true);
+			act.ShouldThrow<ArgumentException>();
+		}
 
-        [Test]
-        public void Constructor_ThrowsException_OnNegativePrecision()
-        {
-            Action act = () => new NumberValidator(-1, 2, true);
-            act.ShouldThrow<ArgumentException>()
-                .And.Message.Should().Be("precision must be a positive number");
+		[TestCase(2, 0, TestName = "Zero scale")]
+		[TestCase(2, 1, TestName = "Positive scale is less then positive precision")]
+		[TestCase(20000000, 1000000, TestName = "Scale and precision is more than 10000")]
+		public void Constructor_DoesNotThrowException_OnCorrectArguments(int precision, int scale)
+		{
+			Action act = () => new NumberValidator(precision, scale, true);
+			act.ShouldNotThrow();
+		}
+
+		[TestCase("", TestName = "String is empty")]
+		[TestCase(null, TestName = "It is null")]
+		[TestCase("abc.5", TestName = "String contains non digit before dot")]
+		[TestCase("abc", TestName = "String is non digit")]
+		[TestCase("12.abc", TestName = "String contains non digit after dot")]
+		[TestCase("12.12.12", TestName = "String contains 2 dots")]
+		[TestCase(".12", TestName = "Empty string before dot")]
+		[TestCase("12.", TestName = "Empty string after dot")]
+		public void IsValid_ReturnFalse_WithWrongString(string value)
+		{
+			var validator = new NumberValidator(20, 10, true);
+			validator.IsValidNumber(value).Should().BeFalse();
+		}
+
+		[TestCase(20, 10, true, "-1.2", TestName = "Number should be positive but it is negative")]
+		[TestCase(3, 2, true, "12.23", TestName = "Sum of int and frac parts is greater then precision")]
+		[TestCase(5, 2, true, "0.000", TestName = "Frac part is greater then scale")]
+		[TestCase(3, 2, true, "0000", TestName = "Integer part is greater then precision")]
+		[TestCase(4, 3, false, "-12.32", TestName = "Number of digits and minus is greater then precision")]
+		[TestCase(4, 3, false, "+12.32", TestName = "Number of digits and plus is greater then precision")]
+		public void IsValid_ReturnFalse_OnWrongNumber(int precision, int scale, bool onlyPositive, string value)
+		{
+			var validator = new NumberValidator(precision, scale, onlyPositive);
+			validator.IsValidNumber(value).Should().BeFalse();
+		}
+
+		[TestCase(6, 3, true, "111.222", TestName = "Precision and scale are equal to parts")]
+		[TestCase(10, 5, true, "+1111.222", TestName = "Precision and scale are greater then parts and plus")]
+		[TestCase(10, 5, false, "-1111.222", TestName = "Precision and scale are greater then parts and minus")]
+		[TestCase(3, 0, true, "111", TestName = "Integer number")]
+		[TestCase(3, 0, true, "+11", TestName = "Integer number with minus")]
+		[TestCase(3, 0, false, "-11", TestName = "Integer number with plus")]
+		[TestCase(3, 2, false, "0.11", TestName = "Integer part is zero")]
+		[TestCase(3, 2, false, "0,11", TestName = "Number contains comma")]
+		public void IsValid_ReturnTrue_OnCorrectNumber(int precision, int scale, bool onlyPositive, string value)
+		{
+			var validator = new NumberValidator(precision, scale, onlyPositive);
+			validator.IsValidNumber(value).Should().BeTrue();
+		}
+
+		[TestCase(20000, 2, TestName = "Length of int part is more then 10000")]
+		[TestCase(2, 20000, TestName = "Length of frac part is more then 10000")]
+		[TestCase(20000, 20000, TestName = "Length of int adn frac part is more then 10000")]
+		public void IsValid_ReturnTrue_OnLongNumbers(int intPartLength, int fracPartLength)
+		{
+			var validator = new NumberValidator(200000, 100000, true);
+			var valueBuilder = new StringBuilder();
+			valueBuilder.Append('1', intPartLength);
+			valueBuilder.Append('.');
+			valueBuilder.Append('2', fracPartLength);
+			var value = valueBuilder.ToString();
+			validator.IsValidNumber(value).Should().BeTrue();
+		}
+
+		[Test]
+		public void IsValid_ReturnTrue_OnMoreThanOneNumbers()
+		{
+			var validator = new NumberValidator(10, 5);
+			validator.IsValidNumber("+1.235").Should().BeTrue();
+			validator.IsValidNumber("-1234.235").Should().BeTrue();
         }
 
-        [Test]
-        public void Constructor_ThrowsException_OnNegativeScale()
-        {
-            Action act = () => new NumberValidator(1, -2, true);
-            act.ShouldThrow<ArgumentException>()
-                .And.Message.Should().Be("precision must be a non-negative number less or equal than precision");
-        }
+		[Test]
+		public void IsValid_ReturnTrue_WithMoreThanOneValidator()
+		{
+			var validator1 = new NumberValidator(2, 1, true);
+			var validator2 = new NumberValidator(10, 5);
+			validator2.IsValidNumber("-12.356").Should().BeTrue();
+		}
 
-        [Test]
-        public void Constructor_ThrowsException_IfScaleGreaterOrEqualToPrecision()
-        {
-            Action act = () => new NumberValidator(3, 6, true);
-            act.ShouldThrow<ArgumentException>()
-                .And.Message.Should().Be("precision must be a non-negative number less or equal than precision");
-        }
+        [Test, Timeout(1000)]
+        public void IsValid_WorksFast_On1000Iterations()
+		{
+			var validator = new NumberValidator(10, 5);
+			for (var i = 0; i < 10000; i++)
+				validator.IsValidNumber("-1234.567");
+		}
 
-        [Test]
-        public void IsValid_ReturnFalse_OnEmptyString()
-        {
-            new NumberValidator(10, 3, true).IsValidNumber("").Should().BeFalse();
-        }
-
-        [Test]
-        public void IsValid_ReturnFalse_OnNonDigitString()
-        {
-            new NumberValidator(10, 3, true).IsValidNumber("a.sd").Should().BeFalse();
-        }
-
-        [Test]
-        public void IsValid_ReturnFalse_OnOnlyPositiveWithNegative()
-        {
-            new NumberValidator(4, 2, true).IsValidNumber("-1.23").Should().BeFalse();
-        }
-
-        [Test]
-        public void IsValid_ReturnFalse_IfIntAndFracPartsGreaterPrecision()
-        {
-            new NumberValidator(3, 2, true).IsValidNumber("-12.23").Should().BeFalse();
-        }
-
-        [Test]
-        public void IsValid_ReturnFalse_IfFracPartGreaterScale()
-        {
-            new NumberValidator(5, 2, true).IsValidNumber("0.000").Should().BeFalse();
-        }
-
-        [Test]
-        public void IsValid_ReturnTrue_PrecisionAndScaleAreEqualToParts()
-        {
-            new NumberValidator(6, 3, true).IsValidNumber("+12.000").Should().BeTrue();
-        }
-
-        [Test]
-        public void IsValid_ReturnTrue_PrecisionAndScaleAreGreaterThanParts()
-        {
-            new NumberValidator(8, 4, true).IsValidNumber("+12.000").Should().BeTrue();
-        }
-
-        [Test]
-        public void IsValid_CountsSign()
-        {
-            new NumberValidator(3, 2).IsValidNumber("-1.00").Should().BeFalse();
-        }
-
-        [Test]
-        public void IsValid_ReturnTrue_OnInteger()
-        {
-            new NumberValidator(3).IsValidNumber("+56").Should().BeTrue();
+		[Test, Timeout(1000)]
+		public void Constructor_WorksFast_On10000Iterations()
+		{
+			NumberValidator validator;
+			for (var i = 0; i < 10000; i++)
+				validator = new NumberValidator(10, 5);
         }
     }
 
