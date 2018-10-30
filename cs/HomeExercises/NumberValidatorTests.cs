@@ -3,49 +3,61 @@ using System.Text.RegularExpressions;
 using FluentAssertions;
 using NUnit.Framework;
 using NUnit.Framework.Constraints;
+using NUnit.Framework.Internal;
 
 namespace HomeExercises
 {
+	[TestFixture]
     public class NumberValidatorTests
     {
-        [TestCase(-1, 2, TestName = "Negative precision in constructor NumberValidator")]
-        [TestCase(3, -2, TestName = "Negative scale in constructor NumberValidator")]
-        [TestCase(3, 4, TestName = "Scale more then precision in constructor NumberValidator")]
-        [TestCase(3, 3, TestName = "Scale equal precision in constructor NumberValidator")]
-        public void Constructor_Should_ThrowArgumentException(int precision, int scale)
+	    [TestFixture]
+        private class Constructor
         {
-            Assert.Throws<ArgumentException>(() => new NumberValidator(precision, scale, true));
-        }
+		    [TestCase(-1, 2, TestName = "Precision is negative")]
+		    [TestCase(3, -2, TestName = "Scale is negative")]
+		    [TestCase(3, 4, TestName = "Scale more then precision")]
+		    [TestCase(3, 3, TestName = "Scale equal precision")]
+		    public void Should_ThrowArgumentException_When(int precision, int scale)
+		    {
+			    Assert.Throws<ArgumentException>(() => new NumberValidator(precision, scale, true));
+		    }
 
-        [TestCase(3, 2, TestName = "Correct precision and scale in constructor NumberValidator")]
-        public void Constructor_Should_DoesNotThrowArgumentException(int precision, int scale)
-        {
-            Assert.DoesNotThrow(() => new NumberValidator(precision, scale, true));
-        }
+		    [TestCase(3, 2, TestName = "Correct precision and scale")]
+		    public void Should_DoesNotThrowArgumentException_When(int precision, int scale)
+		    {
+			    Assert.DoesNotThrow(() => new NumberValidator(precision, scale, true));
+		    }
+	    }
 
-        [TestCase(4, 3, true, "3.141", TestName = "Corect only positive namber in IsValidNumber")]
-        [TestCase(11, 3, false, "-2.44", TestName = "Negative namber in IsValidNumber")]
-        [TestCase(11, 3, false, "+2.44", TestName = "Positive namber in IsValidNumber")]
-        [TestCase(4, 0, true, "3", TestName = "Integer number in IsValidNumber")]
-        [TestCase(4, 2, false, "+2.44", TestName = "Consider the sign in front of the number in IsValidNumber")]
-        [TestCase(3, 2, false, "2,44", TestName = "Consider a comma in IsValidNumber")]
-        public void IsValidNumber_Should_BeTrue(int precision, int scale, bool onlyPositive, string input)
-        {
-            new NumberValidator(precision, scale, onlyPositive).IsValidNumber(input).Should().Be(true);
-        }
+	    [TestFixture]
+        private class IsValidNumber
+	    {
 
-        [TestCase(10, 2, true, null, TestName = "Null string in IsValidNumber")]
-        [TestCase(10, 2, true, "", TestName = "Empty string in IsValidNumber")]
-        [TestCase(10, 2, true, "0zrt0", TestName = "Invalid string format in IsValidNumber")]
-        [TestCase(4, 3, true, "123.33", TestName = "Simbols in number more than precision in IsValidNumber")]
-        [TestCase(11, 3, true, "123.33240", TestName = "Simbols in fraction part more than scale in IsValidNumber")]
-        [TestCase(11, 3, true, "-2.44", TestName = "Incorrect only positive namber in IsValidNumber")]
-        [TestCase(4, 3, true, "3.2.2", TestName = "More one fraction part in IsValidNumber")]
-        [TestCase(3, 2, false, ".44", TestName = "No integer part in IsValidNumber")]
-        public void IsValidNumber_Should_BeFalse(int precision, int scale, bool onlyPositive, string input)
-        {
-            new NumberValidator(precision, scale, onlyPositive).IsValidNumber(input).Should().Be(false);
-        }
+		    [TestCase(4, 3, true, "3.141", TestName = "Number is only positive")]
+		    [TestCase(11, 3, false, "-2.44", TestName = "Number is negative")]
+		    [TestCase(11, 3, false, "+2.44", TestName = "Number is positive")]
+		    [TestCase(4, 0, true, "3", TestName = "Number is integer")]
+		    [TestCase(4, 2, false, "+2.44", TestName = "String includes the sign in front of the number")]
+		    [TestCase(3, 2, false, "2,44", TestName = "String includes a comma")]
+
+		    public void Should_BeTrue_When(int precision, int scale, bool onlyPositive, string input)
+		    {
+			    new NumberValidator(precision, scale, onlyPositive).IsValidNumber(input).Should().Be(true);
+		    }
+
+		    [TestCase(10, 2, true, null, TestName = "String is null")]
+		    [TestCase(10, 2, true, "", TestName = "String is empty")]
+		    [TestCase(10, 2, true, "0zrt0", TestName = "Invalid format string")]
+		    [TestCase(4, 3, true, "123.33", TestName = "Symbols in number more than precision")]
+		    [TestCase(11, 3, true, "123.33240", TestName = "Count of symbols in the fraction part more than the scale")]
+		    [TestCase(11, 3, true, "-2.44", TestName = "Number is not only positive")]
+		    [TestCase(4, 3, true, "3.2.2", TestName = "More one fraction part")]
+		    [TestCase(3, 2, false, ".44", TestName = "No integer part")]
+		    public void Should_BeFalse_When(int precision, int scale, bool onlyPositive, string input)
+		    {
+			    new NumberValidator(precision, scale, onlyPositive).IsValidNumber(input).Should().Be(false);
+		    }
+	    }
     }
 
     public class NumberValidator
