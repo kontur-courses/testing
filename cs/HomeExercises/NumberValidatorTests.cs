@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Text.RegularExpressions;
-using FluentAssertions;
 using NUnit.Framework;
 
 namespace HomeExercises
@@ -27,22 +26,22 @@ namespace HomeExercises
         [TestCase(17, 2, true, "0.0", ExpectedResult = true, TestName = "Should pass when value = 0.0 with precision and scale > 1")]
         [TestCase(17, 2, true, "0", ExpectedResult = true, TestName = "Should pass when value = 0 with precision and scale > 1")]
         [TestCase(3, 2, true, "00.00", ExpectedResult = false, TestName = "Should fail when value without point length > precision")]
-        [TestCase(3, 2, true, "-0.00", ExpectedResult = false, TestName = "Should fail when value have minus counts as sign")]
-        [TestCase(3, 2, true, "+0.00", ExpectedResult = false, TestName = "Should fail when value have plus counts as sign")]
+        [TestCase(3, 2, true, "-0.00", ExpectedResult = false, TestName = "Should fail when value with minus and length more then precision")]
+        [TestCase(3, 2, true, "+0.00", ExpectedResult = false, TestName = "Should fail when value with plus and length more then precision")]
         [TestCase(3, 2, true, "+1.23", ExpectedResult = false, TestName = "Should fail when value start with + with positive - scale = 1")]
         [TestCase(17, 2, true, "0.000", ExpectedResult = false, TestName = "Should fail when value after point > scale")]
         [TestCase(3, 2, true, "-1.23", ExpectedResult = false, TestName = "Should fail when value with - without point length > precision")]
         [TestCase(3, 2, true, "a.sd", ExpectedResult = false, TestName = "Should fail when value contains letters instead of digits")]
         [TestCase(3, 2, true, null, ExpectedResult = false, TestName = "Should fail when value = null")]
-        [TestCase(3, 2, true, "", ExpectedResult = false, TestName = "Should fail when value empty")]
+        [TestCase(3, 2, true, "", ExpectedResult = false, TestName = "Should fail when value is empty")]
         [TestCase(4, 2, true, "+1,23", ExpectedResult = true, TestName = "Should pass when value start with +")]
-        [TestCase(17, 9, true, "0.0.0", ExpectedResult = false, TestName = "Should fail when valye have 2 points")]
+        [TestCase(17, 9, true, "0.0.0", ExpectedResult = false, TestName = "Should fail when value have 2 points")]
         [TestCase(17, 9, true, "0.", ExpectedResult = false, TestName = "Should fail when 0 chars after point")]
         [TestCase(17, 9, true, ".0", ExpectedResult = false, TestName = "Should fail when 0 chars before point")]
         [TestCase(17, 9, true, "-0", ExpectedResult = false, TestName = "Should fail when value -0 with only positive without scale")]
         [TestCase(17, 9, false, "-0", ExpectedResult = true, TestName = "Should pass when value -0 without only positive and scale")]
         [TestCase(17, 9, true, "+-0", ExpectedResult = false, TestName = "Should fail when value with +-")]
-        [TestCase(17, 9, true, " -0.0", ExpectedResult = false, TestName = "Should fail when value start with space")]
+        [TestCase(17, 9, true, " -0.0", ExpectedResult = false, TestName = "Should fail when value starts with space")]
         [TestCase(17, 9, true, "0.0 ", ExpectedResult = false, TestName = "Should fail when value ends with space")]
         [TestCase(17, 9, true, "000.0000", ExpectedResult = true, TestName = "Should pass when value starts with extra zeros")]
         [TestCase(17, 9, true, "000.0", ExpectedResult = true, TestName = "Should pass when value starts with 3 zero")]
