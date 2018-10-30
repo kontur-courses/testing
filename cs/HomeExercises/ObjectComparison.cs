@@ -20,7 +20,7 @@ namespace HomeExercises
 				options.Excluding(o => o.SelectedMemberPath.Equals("Id"))
 					.Excluding(o => o.SelectedMemberPath.Equals("Parent")));
 			
-			expectedTsar.Parent.ShouldBeEquivalentTo(expectedTsar.Parent, options => 
+			actualTsar.Parent.ShouldBeEquivalentTo(expectedTsar.Parent, options => 
 				options.Excluding(o => o.SelectedMemberPath.Equals("Id"))
 					.Excluding(o => o.SelectedMemberPath.Equals("Parent")));
 		}
