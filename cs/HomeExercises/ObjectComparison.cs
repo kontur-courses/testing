@@ -8,8 +8,8 @@ using NUnit.Framework;
 
 namespace HomeExercises
 {
-	public static class FluentAssertionsExtensions
-	{
+	public static class SelfReferenceEquivalencyAssertionOptionsExtensions
+    {
 		public static T ExcludeField<T>(
 			this SelfReferenceEquivalencyAssertionOptions<T> options,
 			string name) where T : SelfReferenceEquivalencyAssertionOptions<T>
