@@ -7,26 +7,46 @@ namespace HomeExercises
 {
 	public class NumberValidatorTests
 	{
-		[Test]
-		public void Test()
+		[TestCase(-1, 5, TestName = "Precision is negative")]
+		[TestCase(5, -1, TestName = "Scale is negative")]
+		[TestCase(1, 5, TestName = "Scale greater then precision")]
+		[TestCase(5, 5, TestName = "Scale equals precision")]
+		public void ThrowsException_When(int precision, int scale)
 		{
-			Assert.Throws<ArgumentException>(() => new NumberValidator(-1, 2, true));
-			Assert.DoesNotThrow(() => new NumberValidator(1, 0, true));
-			Assert.Throws<ArgumentException>(() => new NumberValidator(-1, 2, false));
-			Assert.DoesNotThrow(() => new NumberValidator(1, 0, true));
-
-			Assert.IsTrue(new NumberValidator(17, 2, true).IsValidNumber("0.0"));
-			Assert.IsTrue(new NumberValidator(17, 2, true).IsValidNumber("0"));
-			Assert.IsTrue(new NumberValidator(17, 2, true).IsValidNumber("0.0"));
-			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("00.00"));
-			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("-0.00"));
-			Assert.IsTrue(new NumberValidator(17, 2, true).IsValidNumber("0.0"));
-			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("+0.00"));
-			Assert.IsTrue(new NumberValidator(4, 2, true).IsValidNumber("+1.23"));
-			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("+1.23"));
-			Assert.IsFalse(new NumberValidator(17, 2, true).IsValidNumber("0.000"));
-			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("-1.23"));
-			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("a.sd"));
+			Assert.Throws<ArgumentException>(() => new NumberValidator(precision, scale));
+		}
+		
+		[Test]
+		public void DoesNotThrowsException_WhenPrecisionAndScaleIsCorrect()
+		{
+			Assert.DoesNotThrow(() => new NumberValidator(5, 1, true));
+		}
+		
+		[TestCase(17, 2, false, "0", TestName = "Number without fraction")]
+		[TestCase(17, 2, false, "0.0", TestName = "Number with fraction divided by dot")]
+		[TestCase(4, 2, true, "+1.23", TestName = "When number with plus sign is equals precision")]
+		[TestCase(17, 2, true, "0,0", TestName = "Number with fraction divided by comma")]
+		public void ShouldBeTrue_WhenNumberIsValid(int precision, int scale, bool onlyPositive, string number)
+		{
+			var result = new NumberValidator(precision, scale, onlyPositive).IsValidNumber(number);
+			result.Should().BeTrue();
+		}
+		
+		[TestCase(3, 2, false, "00.00", TestName = "Number is grater than precision")]
+		[TestCase(5, 2, true, "-0.00", TestName = "Negative numbers are forbidden and number is negative")]
+		[TestCase(3, 2, true, "+0.00", TestName = "Number with plus sign is greater then precision")]
+		[TestCase(3, 2, false, "-1.23", TestName = "Number with minus sign is greater then precision")]
+		[TestCase(17, 2, true, "0.000", TestName = "Fraction is greater then allowed")]
+		[TestCase(3, 2, true, "a.sd", TestName = "Value is not a number")]
+		[TestCase(17, 2, true, "  0.0", TestName = "Value starts with whitespaces")]
+		[TestCase(17, 2, true, "0.0  ", TestName = "Value ends with whitespaces")]
+		[TestCase(17, 2, true, "0 . 0", TestName = "Value has inside whitespaces")]
+		[TestCase(17, 2, true, null, TestName = "Value is null")]
+		[TestCase(17, 2, true, "", TestName = "Value is empty string")]
+		public void ShouldBeFalse_WhenNumberIsInvalid(int precision, int scale, bool onlyPositive, string number)
+		{
+			var result = new NumberValidator(precision, scale, onlyPositive).IsValidNumber(number);
+			result.Should().BeFalse();
 		}
 	}
 
