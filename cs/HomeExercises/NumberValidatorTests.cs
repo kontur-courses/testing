@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Text.RegularExpressions;
 using FluentAssertions;
 using NUnit.Framework;
@@ -7,6 +8,12 @@ namespace HomeExercises
 {
 	public class NumberValidatorTests
 	{
+
+		public static IEnumerable OnlyPositiveTestCases
+		{
+			get { yield return new TestCaseData(new NumberValidator(17, 2, true)).Returns(true).TestName; }
+		}
+
 		[Test]
 		public void Test()
 		{
@@ -17,10 +24,10 @@ namespace HomeExercises
 
 			Assert.IsTrue(new NumberValidator(17, 2, true).IsValidNumber("0.0"));
 			Assert.IsTrue(new NumberValidator(17, 2, true).IsValidNumber("0"));
-			Assert.IsTrue(new NumberValidator(17, 2, true).IsValidNumber("0.0"));
+			//Assert.IsTrue(new NumberValidator(17, 2, true).IsValidNumber("0.0"));
 			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("00.00"));
 			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("-0.00"));
-			Assert.IsTrue(new NumberValidator(17, 2, true).IsValidNumber("0.0"));
+			//Assert.IsTrue(new NumberValidator(17, 2, true).IsValidNumber("0.0"));
 			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("+0.00"));
 			Assert.IsTrue(new NumberValidator(4, 2, true).IsValidNumber("+1.23"));
 			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("+1.23"));
