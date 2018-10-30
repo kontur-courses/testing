@@ -7,65 +7,53 @@ namespace HomeExercises
 {
     public class NumberValidatorTests
     {
-	    [Test]
-	    public void NumberValidator_ThrowArgumentException_WhenPrecisionIsNegative()
+		[TestCase(-100,1, "precision must be a positive number", TestName = "PrecisionIsNegative")]
+		[TestCase(0, 1, "precision must be a positive number", TestName = "PrecisionIs0")]
+		[TestCase(1, -2, "scale must be a non-negative number less or equal than precision", TestName = "ScaleIsNegative")]
+		[TestCase(3, 5, "scale must be a non-negative number less or equal than precision", TestName = "ScaleLessPrecision")]
+        public void NumberValidator_ShouldThrowArgumentException(int precision, int scale, string errorMessage)
 	    {
-			Action create = () => new NumberValidator(-100, 1, true);
-		    create.ShouldThrow<ArgumentException>().WithMessage("precision must be a positive number");
-	    }
-
-	    [Test]
-	    public void NumberValidator_ThrowArgumentException_WhenPrecisionIs0()
-	    {
-		    Action create = () => new NumberValidator(0, 1, true);
-		    create.ShouldThrow<ArgumentException>().WithMessage("precision must be a positive number");
-	    }
-
-        [Test]
-	    public void NumberValidator_ThrowArgumentException_WhenScaleIsNegative()
-	    {
-		    Action create = () => new NumberValidator(1, -2, true);
+		    Action create = () => new NumberValidator(precision, scale);
 		    create.ShouldThrow<ArgumentException>()
-			    .WithMessage("scale must be a non-negative number less or equal than precision");
-	    }
-
-	    [Test]
-	    public void NumberValidator_ThrowArgumentException_WhenScaleIsLessPrecision()
-	    {
-		    Action create = () => new NumberValidator(3, 5, true);
-		    create.ShouldThrow<ArgumentException>()
-			    .WithMessage("scale must be a non-negative number less or equal than precision");
-	    }
+			    .WithMessage(errorMessage);
+        }
 	   	   
-		[TestCase(20, 1, true, "1.1", Description = "When number length less what precision")]
-		[TestCase(20, 19, true, "1.1", Description = "When fracPart length less what scale")]
-		[TestCase(2, 1, true, "1", Description = "When fracPart is empty")]
+		[TestCase(20, 1, true, "1.1", TestName = "NumberLengthLessPrecision")]
+		[TestCase(20, 19, true, "1.1", TestName = "FracPartLengthLessScale")]
+		[TestCase(2, 1, true, "1", TestName = "WhenFracPartIsEmpty")]
+		[TestCase(3, 1, false, "+1.1", TestName = "NumberWithPlus")]
+		
+
         public void IsValidNumber_ShouldReturnTrue(int precision, int scale, bool onlyPositive, string testString)
 	    {
 		    new NumberValidator(precision, scale, onlyPositive).IsValidNumber(testString).Should().BeTrue(
-			    "because\n	NumberValidator:\n		precision {0},\n" +
-			    "		scale {1},\n" +
-			    "		onlyPositive {2}.\n" +
-			    "	Test string is \"{3}\"\n",
-			    precision, scale, onlyPositive, testString);
+			    "because\nNumberValidator:\n" +
+				$"	precision {precision},\n" +
+			    $"	scale {scale},\n" +
+			    $"	onlyPositive {onlyPositive}.\n" +
+			    $"Test string is \"{testString}\"\n");
 	    }
 
-	    [TestCase(3,2,true, null, Description = "When null string")]
-	    [TestCase(3, 2, true, "", Description = "When empty string")]
-        [TestCase(3, 2, true, "abracadabra", Description = "When string without matches")]
-	    [TestCase(3, 2, true, "11.23", Description = "When precision less what intPart anf fracPart length")]
-	    [TestCase(3, 2, true, "1.234", Description = "When scale less what fracPart length")]
-	    [TestCase(3, 2, true, "-1.2", Description = "When string with \"-\" and onlyPositive is true")]
-	    [TestCase(3, 2, true, "-11.2", Description = "When number length with sigh more what precision")]
+	    [TestCase(3,2,true, null, TestName = "NullString")]
+	    [TestCase(3, 2, true, "", TestName = "EmptyString")]
+        [TestCase(3, 2, true, "abracadabra", TestName = "StringWithoutMatches")]
+	    [TestCase(3, 2, true, "11.23", TestName = "PrecisionLessNumberLength")]
+	    [TestCase(3, 2, true, "1.234", TestName = "ScaleLessFracPartLength")]
+	    [TestCase(3, 2, true, "-1.2", TestName = "StringWithMinusAndOnlyPositiveTrue")]
+	    [TestCase(3, 2, true, "-11.2", TestName = "NumberLengthWithSighMorePrecision")]
+	    [TestCase(4, 1, false, "+-1.1", TestName = "NumberWithBothSighs")]
+	    [TestCase(4, 1, false, "1.,1", TestName = "NumberWithBothSeparatorsSighs")]
+	    [TestCase(4, 1, false, "1..1", TestName = "NumberWithDuplicateSigh")]
+	    [TestCase(4, 1, false, " ", TestName = "StringWithWhiteSpace")]
         public void IsValidNumber_ShouldReturnFalse(int precision, int scale, bool onlyPositive, string testString)
 	    {
 		    new NumberValidator(precision, scale, onlyPositive).IsValidNumber(testString).Should().BeFalse(
-			    "because\n	NumberValidator:\n		precision {0},\n" +
-			    "		scale {1},\n" +
-			    "		onlyPositive {2}.\n" +
-			    "	Test string is \"{3}\"\n",
-			    precision, scale, onlyPositive, testString);
-	    }
+			    "because\nNumberValidator:\n" +
+				$"	precision {precision},\n" +
+			    $"	scale {scale},\n" +
+			    $"	onlyPositive {onlyPositive}.\n" +
+			    $"Test string is \"{testString}\"\n");
+        }
     }
 
     public class NumberValidator
@@ -83,7 +71,7 @@ namespace HomeExercises
             if (precision <= 0)
                 throw new ArgumentException("precision must be a positive number");
             if (scale < 0 || scale >= precision)
-                throw new ArgumentException("precision must be a non-negative number less or equal than precision");
+                throw new ArgumentException("scale must be a non-negative number less or equal than precision");
             numberRegex = new Regex(@"^([+-]?)(\d+)([.,](\d+))?$", RegexOptions.IgnoreCase);
         }
 
