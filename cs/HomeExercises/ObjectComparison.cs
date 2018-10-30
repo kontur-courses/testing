@@ -13,7 +13,7 @@ namespace HomeExercises
             var expectedTsar = new Person("Ivan IV The Terrible", 54, 170, 70,
                                           new Person("Vasili III of Russia", 28, 170, 60, null));
             actualTsar.Should()
-                      .BeEquivalentTo(expectedTsar, options => options.ExcludeField<Person>(nameof(Person.Id)));
+                      .BeEquivalentTo(expectedTsar, options => options.ExcludeMember<Person>(nameof(Person.Id)));
         }
 
         [Test]
@@ -43,7 +43,7 @@ namespace HomeExercises
 
     public static class FluentAssertionsOptionsExtensions
     {
-        public static FluentAssertions.Equivalency.EquivalencyAssertionOptions<Person> ExcludeField<TDeclaring>(
+        public static FluentAssertions.Equivalency.EquivalencyAssertionOptions<Person> ExcludeMember<TDeclaring>(
             this FluentAssertions.Equivalency.EquivalencyAssertionOptions<Person> options,
             string fieldName)
         {
