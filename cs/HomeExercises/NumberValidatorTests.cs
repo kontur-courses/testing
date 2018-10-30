@@ -40,16 +40,11 @@ namespace HomeExercises
 			AssertValid("0.0", 17, 2, false);
 		}
 
-		[Test]
-		public void Validates_Integer_Numbers()
-		{
-			AssertValid("0", 4, 2, false);
-		}
-
 		[TestCase("000.00")]
 		[TestCase("0.000")]
 		[TestCase("+00.00")]
 		[TestCase("-00.00")]
+		[TestCase("11111")]
 		public void DoesNot_Validate_Numbers_WithTooManySymbols(string number)
 		{
 			AssertInvalid(number, 4, 2, false);
@@ -58,7 +53,8 @@ namespace HomeExercises
 		[TestCase("-0.0")]
 		[TestCase("-1.0")]
 		[TestCase("-1.23")]
-		public void PosOnly_DoesNot_Validate_Negative_Numbers(string number)
+		[TestCase("-1")]
+		public void PositiveOnly_DoesNot_Validate_Negative_Numbers(string number)
 		{
 			AssertInvalid(number, 4, 2, true);
 		}
@@ -68,24 +64,22 @@ namespace HomeExercises
 		[TestCase("1.0")]
 		[TestCase("+1.23")]
 		[TestCase("11.23")]
+		[TestCase("1123")]
+		[TestCase("+123")]
 		public void PosOnly_Validates_NonNegative_Numbers(string number)
 		{
 			AssertValid(number, 4, 2, true);
 		}
 
-		[Test]
-		public void DoesNot_Validate_NonNumber()
+		[TestCase("")]
+		[TestCase(".1")]
+		[TestCase("a.sd")]
+		public void DoesNot_Validate_NonNumber(string number)
 		{
-			AssertInvalid("a.sd", 4, 2, false);
+			AssertInvalid(number, 4, 2, false);
 		}
 
-		[Test]
-		public void DoesNot_Validate_EmptyString()
-		{
-			AssertInvalid("", 4, 2, false);
-		}
-
-        private static void AssertInvalid(string number, int precision, int scale, bool onlyPositive)
+		private static void AssertInvalid(string number, int precision, int scale, bool onlyPositive)
 		{
 			Assert.IsFalse(new NumberValidator(precision, scale, onlyPositive).IsValidNumber(number),
 				$"Expected \"{number}\" to be invalid (actual: valid) with validator settings:" +
