@@ -8,15 +8,15 @@ namespace HomeExercises
 	[TestFixture]
 	public class NumberValidatorTests
 	{
-		[TestCase(-1, 0, true, TestName = "when precision is negative")]
-		[TestCase(0, 0, true, TestName = "when precision is zero")]
-		[TestCase(1, -1, true, TestName = "when scale is negative")]
-		[TestCase(1, 2, true, TestName = "when scale is larger than precision")]
-		[TestCase(1, 1, true, TestName = "when scale equals precision")]
-        	public void Constructor_ThrowArgumentException(int precision, int scale, bool onlyPositive)
+		[TestCase(-1, 0, true, "precision must be*", TestName = "when precision is negative")]
+		[TestCase(0, 0, true, "precision must be*", TestName = "when precision is zero")]
+		[TestCase(1, -1, true, "scale must be*", TestName = "when scale is negative")]
+		[TestCase(1, 2, true, "scale must be*", TestName = "when scale is larger than precision")]
+		[TestCase(1, 1, true, "scale must be*", TestName = "when scale equals precision")]
+        	public void Constructor_ThrowArgumentException(int precision, int scale, bool onlyPositive, string message)
 		{
 			Action constructor = () => new NumberValidator(precision, scale, onlyPositive);
-			constructor.Should().Throw<ArgumentException>();
+			constructor.Should().Throw<ArgumentException>().WithMessage(message);
 		}
 
 		[TestCase(1, 0, true, null, TestName = "when value is null")]
