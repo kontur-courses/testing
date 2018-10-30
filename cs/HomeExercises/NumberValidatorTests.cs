@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections;
 using System.Text.RegularExpressions;
 using FluentAssertions;
 using NUnit.Framework;
@@ -9,50 +8,37 @@ namespace HomeExercises
 	[TestFixture]
 	public class NumberValidatorTests
 	{
-		[TestCase("1234567890123", TestName = "LongInteger")]
-		[TestCase("1234567890.12", TestName = "BigFraction")]
-		public void NumberValidator_BigPrecisionAndSmallScale_IsValid(string input)
-		{
-			var validator = new NumberValidator(13, 2, true);
 
-			validator.IsValidNumber(input).Should().BeTrue();
-		}
-
-		[TestCase("123456789012345", TestName = "LongInteger")]
-		[TestCase("1234567890123.4567", TestName = "FractionPartLargerThanScale")]
-		public void NumberValidator_BigPrecisionAndSmallScale_IsNotValid(string input)
-		{
-			var validator = new NumberValidator(13, 2, true);
-
-			validator.IsValidNumber(input).Should().BeFalse();
-		}
-
-		[TestCase("0.0", TestName = "Fraction")]
+		[TestCase("00.00", TestName = "Fraction")]
 		[TestCase("123", TestName = "Integer")]
 		[TestCase("-1.23", TestName = "NegativeFraction")]
 		[TestCase("-1", TestName = "NegativeInteger")]
 		[TestCase("+1.23", TestName = "PositiveFraction")]
 		[TestCase("1,23", TestName = "CommaDelimeter")]
 		[TestCase("0.12", TestName = "IntPartZeroFracPartTwoDigits")]
-		public void NumberValidator_SmallPrecisionAndNotOnlyPositive_IsValid(string input)
+		[TestCase("+2.12", 5, 3, true, TestName = "PositiveFractionWhenOnlyPositiveTrue")]
+		[TestCase("1234567890123", 13, 3, true, TestName = "LongInt")]
+		public void IsValidNumber_ReturnTrue
+			(string input, int precision = 5, int scale = 3, bool onlyPositive = false)
 		{
-			var validator = new NumberValidator(5, 3);
+			var validator = new NumberValidator(precision, scale, onlyPositive);
 
 			validator.IsValidNumber(input).Should().BeTrue();
 		}
 
 		[TestCase("00.00", TestName = "FractionLargerThanPrecision")]
 		[TestCase("0.000", TestName = "FractionPartLargerThanScale")]
-		[TestCase("+1.23", TestName = "NegativeFractionLargerThanPrecision")]
-		[TestCase("-1.23", TestName = "PositiveFractionLargerThanPrecision")]
+		[TestCase("+1.23", TestName = "PositiveFractionLargerThanPrecision")]
+		[TestCase("-1.23", 5, 3, true, TestName = "NegativeFractionWithOnlyPositiveTrue")]
 		[TestCase("a.sd", TestName = "Letters")]
 		[TestCase("a.12", TestName = "FractionLettersWithDigits")]
 		[TestCase("12.a", TestName = "FractionDigitsWithLetters")]
 		[TestCase("-", TestName = "SignWithoutDigits")]
 		[TestCase(null, TestName = "Null")]
-		public void NumberValidator_SmallPrecisionAndSmallScale_IsNotValid(string input)
+		public void IsValidNumber_ReturnFalse
+			(string input, int precision = 3, int scale = 2, bool onlyPositive = false)
 		{
-			var validator = new NumberValidator(3, 2, true);
+			var validator = new NumberValidator(precision, scale, onlyPositive);
 
 			validator.IsValidNumber(input).Should().BeFalse();
 		}
