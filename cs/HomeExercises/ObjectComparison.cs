@@ -19,7 +19,7 @@ namespace HomeExercises
 			expectedTsar.Should().BeEquivalentTo(actualTsar, options =>
 				options
 					.Excluding(x => x.SelectedMemberInfo.DeclaringType == typeof(Person) &&
-					                x.SelectedMemberInfo.Name == "Id"));
+					                x.SelectedMemberInfo.Name == nameof(Person.Id)));
 
 
 			//Это решение лучше, потому что тест нужно будет дописывать только
