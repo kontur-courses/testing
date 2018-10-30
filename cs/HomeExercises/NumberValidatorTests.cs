@@ -36,6 +36,8 @@ namespace HomeExercises
 		[TestCase(3, 2, false, "a.$%", TestName = "not numbers")]
 		[TestCase(3, 2, true, "-1.23", TestName = "negative number when onlyPositive flag")]
 		[TestCase(4, 2, false, " 1.2 ", TestName = "beginner and trailing whitespaces")]
+		[TestCase(4, 2, false, "1.,0", TestName = "too many dividers")]
+		[TestCase(4, 2, false, "-+1.0", TestName = "too many signs")]
 		public void IsValidNumber_OnInvalidInput_Fails(int precision, int scale, bool onlyPositive, string value)
 		{
 			var act =  new NumberValidator(precision, scale, onlyPositive).IsValidNumber(value);
@@ -47,6 +49,12 @@ namespace HomeExercises
 		[TestCase(10, 5, false, "12345.67890", TestName = "number which contain all digits")]
 		[TestCase(3, 2, false, "-0.5", TestName = "negative number")]
 		[TestCase(3, 2, false, "0.5", TestName = "positive number")]
+		[TestCase(3, 2, false, "+1.0", TestName = "signed positive number")]
+		[TestCase(3, 2, false, "0.0", TestName = "float delimited by point")]
+		[TestCase(3, 2, false, "0,0", TestName = "float delimited by comma")]
+		[TestCase(3, 2, true, "5.0", TestName = "only positive mode")]
+		[TestCase(10, 5, false, "2", TestName = "frac part signs count less than scale")]
+		[TestCase(10, 5, false, "4.20", TestName = "signs count less than precision")]
 		public void IsValidNumber_OnValidInput_Passes(int precision, int scale, bool onlyPositive, string value)
 		{
 			var act = new NumberValidator(precision, scale, onlyPositive).IsValidNumber(value);
