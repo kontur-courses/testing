@@ -5,30 +5,45 @@ using NUnit.Framework;
 
 namespace HomeExercises
 {
+	[TestFixture]
 	public class NumberValidatorTests
 	{
-		[Test]
-		public void Test()
+        [Test]
+		[TestCase(17, 2, true, "0.1", ExpectedResult = true, TestName = "Number with dot is valid")]
+		[TestCase(17, 2, true, "0,1", ExpectedResult = true, TestName = "Number with comma is valid")]
+		[TestCase(17, 2, true, "0", ExpectedResult = true, TestName = "Number without fract part is valid")]
+        [TestCase(3, 2, true, "+0.3", ExpectedResult = true, TestName = "Number with '+' in int part is valid")]
+        [TestCase(3, 2, false, "-0.3", ExpectedResult = true, TestName = "Negative is valid on disabled positive flag")]
+        [TestCase(3, 2, true, "00.00", ExpectedResult = false, TestName = "Number is longer than precision isnt valid ")]
+        [TestCase(3, 2, true, "-0.3", ExpectedResult = false, TestName = "Negative isnt valid on enabled positive flag")]
+		[TestCase(17, 2, true, "0.000", ExpectedResult = false, TestName = "Fractional part is longer than scale should not be validated")]
+		[TestCase(3, 2, true, "a.sd", ExpectedResult = false, TestName = "Not number isnt valid")]
+        [TestCase(4, 1, true, "", ExpectedResult = false, TestName = "Empty string isnt valid")]
+        [TestCase(4, 1, true, null, ExpectedResult = false, TestName = "Null isnt valid")]
+        public bool IsValidNumber_True_WhenArgsIsCorrect(int precision, int scale, bool onlyPositive, string value)
 		{
-			Assert.Throws<ArgumentException>(() => new NumberValidator(-1, 2, true));
-			Assert.DoesNotThrow(() => new NumberValidator(1, 0, true));
-			Assert.Throws<ArgumentException>(() => new NumberValidator(-1, 2, false));
-			Assert.DoesNotThrow(() => new NumberValidator(1, 0, true));
+			return new NumberValidator(precision, scale, onlyPositive).IsValidNumber(value);
+        }
 
-			Assert.IsTrue(new NumberValidator(17, 2, true).IsValidNumber("0.0"));
-			Assert.IsTrue(new NumberValidator(17, 2, true).IsValidNumber("0"));
-			Assert.IsTrue(new NumberValidator(17, 2, true).IsValidNumber("0.0"));
-			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("00.00"));
-			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("-0.00"));
-			Assert.IsTrue(new NumberValidator(17, 2, true).IsValidNumber("0.0"));
-			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("+0.00"));
-			Assert.IsTrue(new NumberValidator(4, 2, true).IsValidNumber("+1.23"));
-			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("+1.23"));
-			Assert.IsFalse(new NumberValidator(17, 2, true).IsValidNumber("0.000"));
-			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("-1.23"));
-			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("a.sd"));
+		[Test]
+        [TestCase(-1, 2, true, TestName = "Negative precision throws ArgumentException")]
+		[TestCase(1, 3, true, TestName = "Scale greater than presicion throws ArgumentException")]
+		[TestCase(0, -1, false, TestName = "Negative scale throws ArgumentException")]
+		[TestCase(1, 1, false, TestName = "Scale equal presicion throws ArgumentException")]
+        public void Constructor_ThrowArgumentException_OnIncorrectArgs(int precision, int scale, bool onlyPositive)
+		{
+			Assert.That(() => new NumberValidator(precision, scale, onlyPositive),
+				Throws.TypeOf<ArgumentException>());
 		}
-	}
+
+		[Test]
+        [TestCase(1, 0, true)]
+        public void Constructor_DoesNotThrowExeption_WhenArgsIsCorrect(int precision, int scale, bool onlyPositive)
+		{
+			Assert.That(() => new NumberValidator(precision, scale, onlyPositive),
+				Throws.Nothing);
+        }
+    }
 
 	public class NumberValidator
 	{
@@ -45,7 +60,7 @@ namespace HomeExercises
 			if (precision <= 0)
 				throw new ArgumentException("precision must be a positive number");
 			if (scale < 0 || scale >= precision)
-				throw new ArgumentException("precision must be a non-negative number less or equal than precision");
+				throw new ArgumentException("scale must be a non-negative number less or equal than precision");
 			numberRegex = new Regex(@"^([+-]?)(\d+)([.,](\d+))?$", RegexOptions.IgnoreCase);
 		}
 
