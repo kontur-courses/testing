@@ -27,7 +27,9 @@ namespace HomeExercises
         public void IsValid_ShouldReturnTrue_OnRightNumberFormat(string number, int precision, int scale = 0, bool onlyPositive = false) =>
             new NumberValidator(precision, scale, onlyPositive).IsValidNumber(number).Should().BeTrue();
 
-        [TestCase("a.aa", 3, 2, TestName = "UsingNotNumber")]
+        [TestCase("a.aa", 3, 2, TestName = "NumberIsLowercaseLetters")]
+        [TestCase("A.AA", 3, 2, TestName = "NumberIsUppercaseLetters")]
+        [TestCase("ё.яы", 3, 2, TestName = "NumberIsRussianLetters")]
         [TestCase(null, 1, TestName = "NumberIsNull")]
         [TestCase("", 1, TestName = "NumberIsEmpty")]
         [TestCase(" ", 1, TestName = "NumberIsSpace")]
@@ -35,6 +37,10 @@ namespace HomeExercises
         [TestCase("0.00", 3, 1, TestName = "MoreDigitsThanScale")]
         [TestCase("-0", 2, 0, true, TestName = "UsingMinusInOnlyPositive")]
         [TestCase("+0", 1, TestName = "PlusCountsAsDigit")]
+        [TestCase(" 0.0", 3, 2, TestName = "SymbolsBeforeNumber")]
+        [TestCase("0.0 ", 3, 2, TestName = "SymbolsAfterNumber")]
+        [TestCase("0.", 1, TestName = "NoDigitsAfterDot")]
+        [TestCase(".0", 2, 1, TestName = "NoDigitsBeforeDot")]
         public void IsValid_ShouldReturnFalse_OnWrongNumberFormat(string number, int precision, int scale = 0, bool onlyPositive = false) =>
             new NumberValidator(precision, scale, onlyPositive).IsValidNumber(number).Should().BeFalse();
     }
