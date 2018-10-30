@@ -54,10 +54,10 @@ namespace HomeExercises
 		[TestCase("0.0string1", TestName = "Word inside of a number after a dot")]
 		[TestCase("0.1string", TestName = "Word after a number")]
 		[TestCase("112str1.1", TestName = "Word inside of a number before a dot")]
-		public void IsValidNumber_ReturnsFalse_WhenValidatorGetsNotANumberWithDigits(String numberWithDigits)
+		public void IsValidNumber_ReturnsFalse_WhenValidatorGetsNotANumberWithDigits(String notANumberWithDigits)
 		{
 			numberValidator
-				.IsValidNumber(numberWithDigits)
+				.IsValidNumber(notANumberWithDigits)
 				.Should()
 				.BeFalse();
 		}
