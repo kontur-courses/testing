@@ -7,45 +7,45 @@ namespace HomeExercises
 {
 	public class NumberValidatorTests
 	{
-		[TestCase(5, -1, TestName = "WhenScaleIsNegativeNumber")]
-		[TestCase(5, 6, TestName = "WhenScaleIsGreaterThenPrecision")]
-		[TestCase(-1, TestName = "WhenPrecisionIsNegativeNumber")]
-		[TestCase(0, TestName = "WhenPrecisionIsNegativeNumber")]
+		[TestCase(5, -1, TestName = "when scale is negative number")]
+		[TestCase(5, 6, TestName = "when scale is greater then precision")]
+		[TestCase(-1, TestName = "when precision is negative number")]
+		[TestCase(0, TestName = "when precision is zero")]
 		public void ThrowArgumentException(int precision, int scale = 0)
 		{
 			Action act = () => new NumberValidator(precision, scale);
 			act.Should().Throw<ArgumentException>();
 		}
 
-		[TestCase(1, 0, TestName = "WhenCreateWithValidArguments")]
+		[TestCase(1, 0, TestName = "when create with valid arguments")]
 		public void DoesNotThrowException(int precision, int scale)
 		{
 			Action act = () => new NumberValidator(precision, scale, true);
 			act.Should().NotThrow();
         }
 
-		[TestCase(17, 2, "0.0", TestName = "WhenNumberWithPointIsCorrect")]
-		[TestCase(17, 2, "0", TestName = "WhenNumberWithoutFractionIsCorrect")]
-		[TestCase(4, 2, "+1.23", TestName = "WhenNumberWithPlusSignIsEqualsToPrecision")]
-		[TestCase(17, 2, "0,0", TestName = "WhenNumberWithCommaIsCorrect")]
-		[TestCase(17, 0, "0", TestName = "WhenScaleIsZero_AndNumberIsInteger")]
+		[TestCase(17, 2, "0.0", TestName = "when number with point is correct")]
+		[TestCase(17, 2, "0", TestName = "when number without fraction is correct")]
+		[TestCase(4, 2, "+1.23", TestName = "when number with plus sign is equals to precision")]
+		[TestCase(17, 2, "0,0", TestName = "when number with comma is correct")]
+		[TestCase(17, 0, "0", TestName = "when scale is zero and number is integer")]
 		public void ReturnTrue(int precision, int scale, string value)
 		{
 			var result = new NumberValidator(precision, scale).IsValidNumber(value);
 			result.Should().BeTrue();
         }
 
-		[TestCase(3, 2, "00.00", TestName = "WhenNumberIsGreaterThanPrecision")]
-		[TestCase(5, 2, "-0.00", true, TestName = "WhenNegativeNumbersAreForbidden_AndNumberIsNegative")]
-		[TestCase(3, 2, "+0.00", true, TestName = "WhenNumberWithPlusSignIsGreaterThenPrecision")]
-		[TestCase(3, 2, "-1.23", true, TestName = "WhenNumberWithMinusSignIsGreaterThenPrecision")]
-		[TestCase(17, 2, "0.000", true, TestName = "WhenFractionIsGreaterThenAllowed")]
-		[TestCase(3, 2, "a.sd", true, TestName = "WhenValueIsNotANumber")]
-		[TestCase(17, 2, "  0,0", true, TestName = "WhenValueStartsWithWhitespaces")]
-		[TestCase(17, 2, "0,0  ", true, TestName = "WhenValueEndsWithWhitespaces")]
-		[TestCase(17, 2, " 0 , 0  ", true, TestName = "WhenValueHaveWhitespaces")]
-		[TestCase(17, 2, null, true, TestName = "WhenValueIsNull")]
-		[TestCase(17, 2, "", true, TestName = "WhenValueIsEmpty")]
+		[TestCase(3, 2, "00.00", TestName = "when number is greater than precision")]
+		[TestCase(5, 2, "-0.00", true, TestName = "when negative numbers are forbidden and number is negative")]
+		[TestCase(3, 2, "+0.00", true, TestName = "when number with plus sign is greater then precision")]
+		[TestCase(3, 2, "-1.23", true, TestName = "when number with minus sign is greater then precision")]
+		[TestCase(17, 2, "0.000", true, TestName = "when fraction is greater then allowed")]
+		[TestCase(3, 2, "a.sd", true, TestName = "when value is not a number")]
+		[TestCase(17, 2, "  0,0", true, TestName = "when value starts with whitespaces")]
+		[TestCase(17, 2, "0,0  ", true, TestName = "when value ends with whitespaces")]
+		[TestCase(17, 2, " 0 , 0  ", true, TestName = "when value have whitespaces")]
+		[TestCase(17, 2, null, true, TestName = "when value is null")]
+		[TestCase(17, 2, "", true, TestName = "when value is empty")]
 		public void ReturnFalse(int precision, int scale, string value, bool onlyPositive = false)
 		{
 			var result = new NumberValidator(precision, scale, onlyPositive).IsValidNumber(value);
