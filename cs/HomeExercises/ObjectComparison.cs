@@ -10,21 +10,19 @@ namespace HomeExercises
 		[Category("ToRefactor")]
 		public void CheckCurrentTsar()
 		{
-			var actualTsar = TsarRegistry.GetCurrentTsar();
-
-			var expectedTsar = new Person("Ivan IV The Terrible", 54, 170, 70,
+			Person actualTsar = TsarRegistry.GetCurrentTsar();
+			Person expectedTsar = new Person("Ivan IV The Terrible", 54, 170, 70,
 				new Person("Vasili III of Russia", 28, 170, 60, null));
 
 			// Перепишите код на использование Fluent Assertions.
-			Assert.AreEqual(actualTsar.Name, expectedTsar.Name);
-			Assert.AreEqual(actualTsar.Age, expectedTsar.Age);
-			Assert.AreEqual(actualTsar.Height, expectedTsar.Height);
-			Assert.AreEqual(actualTsar.Weight, expectedTsar.Weight);
-
-			Assert.AreEqual(expectedTsar.Parent.Name, actualTsar.Parent.Name);
-			Assert.AreEqual(expectedTsar.Parent.Age, actualTsar.Parent.Age);
-			Assert.AreEqual(expectedTsar.Parent.Height, actualTsar.Parent.Height);
-			Assert.AreEqual(expectedTsar.Parent.Parent, actualTsar.Parent.Parent);
+			
+			actualTsar.ShouldBeEquivalentTo(expectedTsar, options => 
+				options.Excluding(o => o.SelectedMemberPath.Equals("Id"))
+					.Excluding(o => o.SelectedMemberPath.Equals("Parent")));
+			
+			expectedTsar.Parent.ShouldBeEquivalentTo(expectedTsar.Parent, options => 
+				options.Excluding(o => o.SelectedMemberPath.Equals("Id"))
+					.Excluding(o => o.SelectedMemberPath.Equals("Parent")));
 		}
 
 		[Test]
@@ -36,6 +34,11 @@ namespace HomeExercises
 				new Person("Vasili III of Russia", 28, 170, 60, null));
 
 			// Какие недостатки у такого подхода? 
+			// Недостатки у подобного подхода на мой взгляд заключаются в том, что:
+			// Название теста не подходит т.к. в нем происходит проверка не всего объекта целиком, а только тех полей, которые указаны в условии
+			// При добавлении новых свойств легко можно забыть внести изменения в условие
+			// Тест сломается, если будет несколько вложенных объектов в исходных данных из-за рекурсии
+			// По сообщению в случае если тест не пройдет будет не понятно что и где сломалось
 			Assert.True(AreEqual(actualTsar, expectedTsar));
 		}
 
