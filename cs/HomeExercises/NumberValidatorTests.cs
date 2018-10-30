@@ -12,87 +12,122 @@ namespace HomeExercises
         [TestFixture]
         public class Constructor_Should
         {
-            private Func<int, int, Action> constructorMaker;
+            private Func<int, int, Action> constructor;
 
             [SetUp]
             public void SetUp()
             {
-                constructorMaker = (precison, scale) =>
-                    () => new NumberValidator(precison, scale);
-            }
-            [Test]
-            public void ThrowsArgumentException_WhenPrecisionIsNegativeOrZero()
-            {
-                constructorMaker(0, 0).Should().Throw<ArgumentException>();
-                constructorMaker(-1, 0).Should().Throw<ArgumentException>();
+                constructor = (precision, scale) =>
+                    () => new NumberValidator(precision, scale);
             }
 
             [Test]
-            public void ThrowsArgumentException_WhenScaleIsNegativeOrGreaterOrEqualThanPrecision()
+            public void ThrowsArgumentException_WhenPrecisionIsNegative()
             {
-                constructorMaker(1, 2).Should().Throw<ArgumentException>();
-                constructorMaker(1, -1).Should().Throw<ArgumentException>();
-                constructorMaker(1, 1).Should().Throw<ArgumentException>();
+                constructor(-1, 0).Should().Throw<ArgumentException>();
             }
+
+	        [Test]
+	        public void ThrowsArgumentException_WhenPrecisionIsZero()
+	        {
+		        constructor(0, 0).Should().Throw<ArgumentException>();
+	        }
+
+            [Test]
+            public void ThrowsArgumentException_WhenScaleIsNegative()
+            {
+                constructor(1, -1).Should().Throw<ArgumentException>();
+            }
+
+	        [Test]
+	        public void ThrowsArgumentException_WhenScaleIsGreaterPrecision()
+	        {
+		        constructor(1, 2).Should().Throw<ArgumentException>();
+	        }
+
+	        [Test]
+	        public void ThrowsArgumentException_WhenScaleIsEqualToPrecision()
+	        {
+		        constructor(1, 1).Should().Throw<ArgumentException>();
+	        }
 
             [Test]
             public void DoesNotThrowException_WhenPrecisionIsPositiveAndScaleIsNonNegativeAndLessThanPrecision()
             {
-                constructorMaker(1, 0).Should().NotThrow<Exception>();
-                constructorMaker(2, 1).Should().NotThrow<Exception>();
+                constructor(1, 0).Should().NotThrow<Exception>();
             }
         }
 
         [TestFixture]
         public class Method_IsValidNumber_Should
         {
-            private Func<string, bool> checker;
+            private Func<string, bool> isValidNumber;
 
             [SetUp]
             public void SetUp()
             {
                 var validator = new NumberValidator(6, 2);
-                checker = (number) => validator.IsValidNumber(number);
+                isValidNumber = (number) => validator.IsValidNumber(number);
             }
 
             [Test]
-            public void ReturnFalse_WhenInputIsNullOrEmpty()
+            public void ReturnFalse_WhenInputIsEmpty()
             {
-                checker(" ").Should().BeFalse();
-                checker(null).Should().BeFalse();
+                isValidNumber(" ").Should().BeFalse();
             }
+
+	        [Test]
+	        public void ReturnFalse_WhenInputIsNull()
+	        {
+		        isValidNumber(null).Should().BeFalse();
+	        }
 
             [Test]
             public void ReturnFalse_WhenFractPartIsGreaterThanScale()
             {
-                checker("-1.002").Should().BeFalse();
+                isValidNumber("1.002").Should().BeFalse();
             }
 
             [Test]
             public void ReturnFalse_WhenIntPartIsGreaterThanPrecision()
             {
-                checker("1234567").Should().BeFalse();
-                checker("-123456").Should().BeFalse();
+                isValidNumber("1234567").Should().BeFalse();
             }
 
+	        [Test]
+	        public void ReturnTrue_WhenIntPartLessThanPrecision()
+	        {
+		        isValidNumber("-0").Should().BeTrue();
+	        }
+
+	        [Test]
+	        public void ReturnTrue_WhenIntPartEqualToPrecision()
+	        {
+		        isValidNumber("-12345").Should().BeTrue();
+	        }
+
+	        [Test]
+	        public void ReturnTrue_WhenFractPartIsZero()
+	        {
+		        isValidNumber("0").Should().BeTrue();
+	        }
+
             [Test]
-            public void ReturnTrue_WhenInputLengthLessOrEqualToPrecision()
-            {
-                checker("0").Should().BeTrue();
-                checker("-0.0").Should().BeTrue();
-                checker("000.00").Should().BeTrue();
-                checker("-12345").Should().BeTrue();
-                checker("-1234.5").Should().BeTrue();
-            }
+	        public void ReturnTrue_WhenFractPartLessThanScale()
+	        {
+		        isValidNumber("-0.0").Should().BeTrue();
+	        }
+
+	        [Test]
+	        public void ReturnTrue_WhenFractPartEqualToScale()
+	        {
+		        isValidNumber("0.00").Should().BeTrue();
+	        }
 
             [Test]
             public void ReturnFalse_WhenInputIsNotNumber()
             {
-                checker("lol.xD").Should().BeFalse();
-                checker("Even.1").Should().BeFalse();
-                checker("-2.NO").Should().BeFalse();
-                checker("-2X01").Should().BeFalse();
-                checker("-2.-1").Should().BeFalse();
+                isValidNumber("-2.-1").Should().BeFalse();
             }
 
             [TestFixture]
@@ -102,8 +137,8 @@ namespace HomeExercises
                 public void ReturnFalse_WhenInputIsNegative()
                 {
                     var validator = new NumberValidator(6, 0, true);
-                    Func<string, bool> checker = (number) => validator.IsValidNumber(number);
-                    checker("-1").Should().BeFalse();
+                    Func<string, bool> isValidNumber = (number) => validator.IsValidNumber(number);
+                    isValidNumber("-1").Should().BeFalse();
                 }
             }
         }
