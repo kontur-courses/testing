@@ -13,18 +13,20 @@ namespace HomeExercises
 		[TestCase(5, 5, TestName = "Scale equals precision")]
 		public void ThrowsException_When(int precision, int scale)
 		{
-			Assert.Throws<ArgumentException>(() => new NumberValidator(precision, scale));
+			Action action = () => new NumberValidator(precision, scale);
+			action.ShouldThrow<ArgumentException>();
 		}
 		
 		[Test]
 		public void DoesNotThrowsException_WhenPrecisionAndScaleIsCorrect()
 		{
-			Assert.DoesNotThrow(() => new NumberValidator(5, 1, true));
+			Action action = () => new NumberValidator(5, 1, true);
+			action.ShouldNotThrow<ArgumentException>();
 		}
 		
 		[TestCase(17, 2, false, "0", TestName = "Number without fraction")]
 		[TestCase(17, 2, false, "0.0", TestName = "Number with fraction divided by dot")]
-		[TestCase(4, 2, true, "+1.23", TestName = "When number with plus sign is equals precision")]
+		[TestCase(4, 2, true, "+1.23", TestName = "Number with plus sign is equals precision")]
 		[TestCase(17, 2, true, "0,0", TestName = "Number with fraction divided by comma")]
 		public void ShouldBeTrue_WhenNumberIsValid(int precision, int scale, bool onlyPositive, string number)
 		{
@@ -32,7 +34,7 @@ namespace HomeExercises
 			result.Should().BeTrue();
 		}
 		
-		[TestCase(3, 2, false, "00.00", TestName = "Number is grater than precision")]
+		[TestCase(3, 2, false, "00.00", TestName = "Number is greater than precision")]
 		[TestCase(5, 2, true, "-0.00", TestName = "Negative numbers are forbidden and number is negative")]
 		[TestCase(3, 2, true, "+0.00", TestName = "Number with plus sign is greater then precision")]
 		[TestCase(3, 2, false, "-1.23", TestName = "Number with minus sign is greater then precision")]

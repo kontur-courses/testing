@@ -17,12 +17,8 @@ namespace HomeExercises
 			// Перепишите код на использование Fluent Assertions.
 			
 			actualTsar.ShouldBeEquivalentTo(expectedTsar, options => 
-				options.Excluding(o => o.SelectedMemberPath.Equals("Id"))
-					.Excluding(o => o.SelectedMemberPath.Equals("Parent")));
-			
-			actualTsar.Parent.ShouldBeEquivalentTo(expectedTsar.Parent, options => 
-				options.Excluding(o => o.SelectedMemberPath.Equals("Id"))
-					.Excluding(o => o.SelectedMemberPath.Equals("Parent")));
+				options.Excluding(o => o.SelectedMemberPath.EndsWith("Id"))
+					.Excluding(o => o.SelectedMemberPath.EndsWith("Parent") && o.SelectedMemberInfo.MemberType == null));
 		}
 
 		[Test]
