@@ -9,6 +9,7 @@ namespace HomeExercises
 	{
 		[TestCase(5, -1, TestName = "when scale is negative number")]
 		[TestCase(5, 6, TestName = "when scale is greater then precision")]
+		[TestCase(5, 5, TestName = "when scale is equal to precision")]
 		[TestCase(-1, TestName = "when precision is negative number")]
 		[TestCase(0, TestName = "when precision is zero")]
 		public void ThrowArgumentException(int precision, int scale = 0)
