@@ -7,9 +7,10 @@ namespace HomeExercises
 {
 	public class NumberValidatorTests
 	{
-		[TestCase(1, 0)]
-		[TestCase(2, 1)]
-		public void Should_Initialize_WhenParameters_Correct(int precision, int scale)
+		[TestCase(1, 0, Description = "Zero scale")]
+        [TestCase(2, 1, Description = "Scale less than precision")]
+
+        public void Should_Initialize_WhenParameters_Correct(int precision, int scale)
 		{
 			Assert.DoesNotThrow(() => new NumberValidator(precision, scale));
 		}
@@ -24,34 +25,35 @@ namespace HomeExercises
 			Assert.Throws<ArgumentException>(() => new NumberValidator(precision, scale));
 		}
 		
-		[TestCase(10, 2, true, "10")]
-		[TestCase(10, 0, true, "10")]
-		[TestCase(10, 5, true, "10.10")]
-		[TestCase(10, 5, true, "10,00")]
-		[TestCase(10, 5, false, "-10.10")]
-		[TestCase(10, 0, false, "-0")]
-		[TestCase(10, 0, false, "+0")]
-		[TestCase(4, 2, true, "00.00", Description = "Non-significant Zeros")]
-		[TestCase(4, 2, false, "+1.23")]
-		public void Should_Valid_CorrectNumbers(int precision, int scale, bool onlyPositive, string number)
+		[TestCase(10, 2, true, "10", Description = "Integer number")]
+        [TestCase(10, 0, true, "10", Description = "Integer number with 0 scale")]
+        [TestCase(10, 5, true, "10.10", Description = "Fractional number")]
+        [TestCase(10, 5, true, "10,00", Description = "Comma instead of point")]
+        [TestCase(10, 5, false, "-10.10", Description = "Negative number")]
+		[TestCase(10, 5, false, "+10.10", Description = "Plus at the beginning")]
+        [TestCase(10, 0, false, "-0", Description = "Negative zero")]
+        [TestCase(10, 0, false, "+0", Description = "Positive zero")]
+        [TestCase(4, 2, true, "00.00", Description = "Non-significant Zeros")]
+
+        public void Should_Valid_CorrectNumbers(int precision, int scale, bool onlyPositive, string number)
 		{
 			Assert.IsTrue(new NumberValidator(precision, scale, onlyPositive).IsValidNumber(number));
 		}
 		
-		[TestCase(4, 0, true, "25565")]
-		[TestCase(4, 1, true, "10.24")]
-		[TestCase(4, 2, true, "-1.0")]
-        [TestCase(4, 2, false, null)]
-		[TestCase(4, 2, false, " 10 . 3 ")]
-		[TestCase(4, 2, false, "")]
-		[TestCase(3, 2, false, "+1.23")]
-		[TestCase(3, 2, false, "-1.23")]
-		[TestCase(10, 5, false, "ws.ad")]
-        [TestCase(10, 5, false, "100%")]
-		[TestCase(10, 5, false, "2/3")]
-		[TestCase(10, 5, false, ".0")]
-		[TestCase(10, 5, false, "0.")]
-		[TestCase(10, 5, false, "0b1001", Description = "Binary number")]
+		[TestCase(4, 0, true, "25565", Description = "Too long integer number")]
+        [TestCase(4, 1, true, "10.24", Description = "Too long fractional part")]
+        [TestCase(4, 2, true, "-1.0", Description = "Only positive number allowed")]
+        [TestCase(4, 2, false, null, Description = "Null is not correct")]
+        [TestCase(4, 2, false, " 10 . 3 ", Description = "Spaces not allowed")]
+        [TestCase(4, 2, false, "", Description = "Empty string")]
+        [TestCase(3, 2, false, "+1.23", Description = "Too long integer part with plus")]
+        [TestCase(3, 2, false, "-1.23", Description = "Too long integer part with minus")]
+        [TestCase(10, 5, false, "ws.ad", Description = "Only numbers allowed")]
+        [TestCase(10, 5, false, "100%", Description = "Percentage isn't correct number")]
+        [TestCase(10, 5, false, "2/3", Description = "Non decimal fraction")]
+        [TestCase(10, 5, false, ".0", Description = "No integer part")]
+        [TestCase(10, 5, false, "0.", Description = "No fractional part with point", TestName = "fsd")]
+        [TestCase(10, 5, false, "0b1001", Description = "Binary number")]
         public void Should_NotValid_IncorrectNumbers(int b, int scale, bool onlyPositive, string number)
 		{
 			Assert.IsFalse(new NumberValidator(b, scale, onlyPositive).IsValidNumber(number));
