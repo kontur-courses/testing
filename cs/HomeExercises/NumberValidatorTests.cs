@@ -11,92 +11,84 @@ namespace HomeExercises
 {
     public class NumberValidatorTests
     {
-        private readonly NumberValidator numberValidator = GetNumberValidator();
-
-        private static NumberValidator GetNumberValidator(int precision = 100,
-            int scale = 99,
-            bool onlyPositive = false)
-            => new NumberValidator(precision, scale, onlyPositive);
-
-
-	    [Test]
-		[TestCase(-1, 3, false, TestName = "Validator gets negative precision")]
-		[TestCase(0, 0, false, TestName = "Validator gets zero precision")]
-		[TestCase(1, -1, false, TestName = "Validator gets negative scale")]
-		[TestCase(1, 2, false, TestName = "Validator gets precision less than precision")]
-		[TestCase(2, 2, false, TestName = "Validator gets precision equals to scale")]
-	    [TestCase(9000, 10000, false, TestName = "Validator gets 9000 precision and 10000 scale")]
-
-        public void CreationFails_WhenValidatorGetsIncorrectArguments(int precision, int scale, bool onlyPositive)
+        private readonly NumberValidator numberValidator = new NumberValidator(100, 99);
+		
+		[Test]
+		[TestCase(-1, 3, false, TestName = "Negative precision")]
+		[TestCase(0, 0, false, TestName = "Zero precision")]
+		[TestCase(1, -1, false, TestName = "Negative scale")]
+		[TestCase(1, 2, false, TestName = "Precision less than precision")]
+		[TestCase(2, 2, false, TestName = "Precision equals to scale")]
+	    [TestCase(9000, 10000, false, TestName = "Big precision less than scale")]
+        public void CreationFails_WhenValidatorGetsIncorrectPrecisionAndScale(int precision, int scale, bool onlyPositive)
 	    {
-		    Assert.Throws<ArgumentException>(() => GetNumberValidator(precision, scale, onlyPositive));
+		    Assert.Throws<ArgumentException>(() => new NumberValidator(precision, scale, onlyPositive));
 	    }
 		
         [Test]
-		[TestCase(1, 0, false, TestName = "Precision is one and scale is zero")]
-		[TestCase(2, 1, false, TestName = "Precision is two and scale is zero")]
+		[TestCase(1, 0, false, TestName = "Precision is bigger than zero scale")]
+		[TestCase(2, 1, false, TestName = "Precision is bigger than scale")]
 		[TestCase(2, 1, true, TestName = "Validator can handle only positive numbers")]
-		[TestCase(10000, 9000, false, TestName = "Validator gets 10000 precision and 9000 scale")]
+		[TestCase(10000, 9000, false, TestName = "Precision is bigger than big scale")]
         public void CreationIsSuccessful_WhenValidatorGetsCorrectArguments(int precision, int scale, bool onlyPositive)
         {
-            Assert.DoesNotThrow(() => GetNumberValidator(precision, scale, onlyPositive));
+            Assert.DoesNotThrow(() => new NumberValidator(precision, scale, onlyPositive));
         }
 		
         [Test]
-        [TestCase("abc", TestName = "Word instead of a number")]
-        [TestCase("aaa.a", TestName = "Dot inside of word")]
-        [TestCase(".", TestName = "One dot")]
+		[TestCase("abc", TestName = "Word instead of a number")]
+		[TestCase("aaa.a", TestName = "Dot inside of word")]
+		[TestCase(".", TestName = "One dot")]
 		[TestCase("", TestName = "Empty string")]
 		[TestCase(null, TestName = "Null instead of a string")]
-        public void IsValidNumber_ReturnsFalse_WhenValidatorGetsNotANumberWithoutDigits(String notANumberString)
+		public void IsValidNumber_ReturnsFalse_WhenValidatorGetsNotANumberWithoutDigits(String notANumber)
         {
-            numberValidator
-                .IsValidNumber(notANumberString)
-                .Should()
-                .BeFalse();
-        }
+			numberValidator
+				.IsValidNumber(notANumber)
+				.Should()
+				.BeFalse();
+		}
 
-        [Test]
-        [TestCase("string0.1", TestName = "Word before a number")]
-        [TestCase("0.0string1", TestName = "Word inside of a number after a dot")]
-        [TestCase("0.1string", TestName = "Word after a number")]
-        [TestCase("112str1.1", TestName = "Word inside of a number before a dot")]
-        public void IsValidNumber_ReturnsFalse_WhenValidatorGetsNotANumberWithNumber(String numberWithNotNumberString)
-        {
-            numberValidator
-                .IsValidNumber(numberWithNotNumberString)
-                .Should()
-                .BeFalse();
-        }
+		[Test]
+		[TestCase("string0.1", TestName = "Word before a number")]
+		[TestCase("0.0string1", TestName = "Word inside of a number after a dot")]
+		[TestCase("0.1string", TestName = "Word after a number")]
+		[TestCase("112str1.1", TestName = "Word inside of a number before a dot")]
+		public void IsValidNumber_ReturnsFalse_WhenValidatorGetsNotANumberWithDigits(String numberWithDigits)
+		{
+		    numberValidator
+		        .IsValidNumber(numberWithDigits)
+		        .Should()
+		        .BeFalse();
+		}
 
-        [Test]
+		[Test]
 		[TestCase("-0.1", 100, 99, true, TestName = "Positive numbers validator gets a negative number")]
 		[TestCase("11.001", 6, 1, false, TestName = "Scale of a number is bigger than possible")]
 		[TestCase("110000.001", 5, 4, false, TestName = "Precision of a number is bigger than possible")]
-		[TestCase("1000.0000000", 20, 3, false, TestName = "Gets zero partial with 6 digits, when maximum possible is 3")]
-		[TestCase("00000000.1", 6, 4, false, TestName = "Gets zero integer part with 8 digits when maximum possible is 6")]
-		[TestCase("1.001", 6, 2, false, TestName = "Integer part digits is less than scale, but fraction part digits is more than scale")]
-		[TestCase("10.00001", 10, 4, false, TestName = "Integer contains less digits than a scale, but partial part contains more digits than the scale")]
-        public void IsValidNumber_ReturnsFalse_WhenValidatorGetsWrongNumber(String numberString,
+		[TestCase("1000.0000000", 20, 3, false, TestName = "Big zero partial part with scale more than possible")]
+		[TestCase("00000000.1", 6, 4, false, TestName = "Big zero integer part with precision more than possible")]
+		[TestCase("10.00001", 10, 4, false, TestName = "Integer part contains less digits than scale, but partial part contains more digits than scale")]
+		public void IsValidNumber_ReturnsFalse_WhenValidatorGetsWrongNumber(String number,
 	        int precision,
 	        int scale,
 	        bool onlyPositive)
         {
-            var validator = GetNumberValidator(precision, scale, true);
+            var validator = new NumberValidator(precision, scale, true);
 
             validator
-                .IsValidNumber(numberString)
+                .IsValidNumber(number)
                 .Should()
                 .BeFalse();
         }
 
-	    [Test]
+		[Test]
 		[TestCase(".001", TestName = "No integer part before a dot")]
 		[TestCase("100.", TestName = "No partial part after a dot")]
 		[TestCase("100.0.0", TestName = "Too many dots in a number")]
-	    public void IsValidNumber_ReturnsFalse_WhenValidatorGetsIncorrectNumberForms(String numberString)
+	    public void IsValidNumber_ReturnsFalse_WhenValidatorGetsIncorrectNumberForms(String number)
 	    {
-		    numberValidator.IsValidNumber(numberString)
+		    numberValidator.IsValidNumber(number)
 			    .Should()
 			    .BeFalse();
 	    }
@@ -107,19 +99,19 @@ namespace HomeExercises
 		[TestCase("+0.1", 100, 99, true, TestName = "Positive numbers validator gets a positive number")]
 		[TestCase("0.0", 100, 99, true, TestName = "Positive numbers validator gets a zero number")]
 		[TestCase("10.0", 100, 99, true, TestName = "Positive numbers validator gets a number without sign before")]
-	    [TestCase("10000.0", 6, 2, false, TestName = "Validator gets a number with maximum precision")]
-		[TestCase("11.00001", 10, 5, false, TestName = "Validator gets a number with maximum scale")]
-		[TestCase("100", 100, 99, false, TestName = "Validator gets a number without partial part")]
-		[TestCase("111111111111111111111111111111111111111.0", 100, 99, false, TestName = "Integer part is longer than long")]
-		[TestCase("1.11111111111111111111111111111111111111", 100, 99, false, TestName = "Partial part is longer than 20 signs")]
-	    public void IsValidNumber_ReturnsTrue_WhenValidatorGetsCorrectNumber(String numberString,
+	    [TestCase("10000.0", 6, 2, false, TestName = "Number with maximum allowed precision")]
+		[TestCase("11.00001", 10, 5, false, TestName = "Number with maximum allowed scale")]
+		[TestCase("100", 100, 99, false, TestName = "Number without partial part")]
+		[TestCase("111111111111111111111111111111111111111.0", 100, 99, false, TestName = "Integer part is bigger than any long number")]
+		[TestCase("1.11111111111111111111111111111111111111", 100, 99, false, TestName = "Partial part contains more digits than long type can contain")]
+	    public void IsValidNumber_ReturnsTrue_WhenValidatorGetsCorrectNumber(String number,
 		    int precision,
 		    int scale,
 		    bool onlyPositive)
 	    {
 			var validator = new NumberValidator(precision, scale, onlyPositive);
 
-		    validator.IsValidNumber(numberString)
+		    validator.IsValidNumber(number)
 			    .Should()
 			    .BeTrue();
 	    }
@@ -129,9 +121,9 @@ namespace HomeExercises
         {
             var oldValidator = new NumberValidator(100, 99);
             var newValidator = new NumberValidator(3, 1);
-            var numberString = "1111.0";
+            var number = "1111.0";
 
-            oldValidator.IsValidNumber(numberString)
+            oldValidator.IsValidNumber(number)
                 .Should()
                 .BeTrue();
         }
@@ -141,22 +133,22 @@ namespace HomeExercises
         {
             var oldValidator = new NumberValidator(3, 1);
             var newValidator = new NumberValidator(100, 99);
-            var numberString = "1111.0";
+            var number = "1111.0";
 
-            newValidator.IsValidNumber(numberString)
+            newValidator.IsValidNumber(number)
                 .Should()
                 .BeTrue();
         }
 
-        [Test, Timeout(1000)]
+		[Test, Timeout(1000)]
         public void IsValidNumber_WorksFast_WhenValidatorExecutesManyOperations()
         {
-            var numberString = "123456.123";
+            var number = "123456.123";
             var iterationsCount = 100000;
 
             for (var iterationIndex = 0; iterationIndex < iterationsCount; iterationIndex++)
             {
-                numberValidator.IsValidNumber(numberString);
+                numberValidator.IsValidNumber(number);
             }
         }
     }
