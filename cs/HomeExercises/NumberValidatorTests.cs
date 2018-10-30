@@ -10,7 +10,7 @@ namespace HomeExercises
 		[TestCase(1, 0, Description = "Zero scale")]
         [TestCase(2, 1, Description = "Scale less than precision")]
 
-        public void Should_Initialize_WhenParameters_Correct(int precision, int scale)
+        public void Constructor_CorrectParameters_ToCreate(int precision, int scale)
 		{
 			Assert.DoesNotThrow(() => new NumberValidator(precision, scale));
 		}
@@ -20,7 +20,7 @@ namespace HomeExercises
 		[TestCase(1, -1, Description = "Negative scale")]
 		[TestCase(2, 4, Description = "Scale is greater than precision")]
 		[TestCase(2, 2, Description = "Scale is equal to precision")]
-		public void Constructor_WithIncorrectParameter_ThrowsException(int precision, int scale)
+		public void Constructor_IncorrectParameters_ThrowsException(int precision, int scale)
 		{
 			Assert.Throws<ArgumentException>(() => new NumberValidator(precision, scale));
 		}
@@ -35,7 +35,7 @@ namespace HomeExercises
         [TestCase(10, 0, false, "+0", Description = "Positive zero")]
         [TestCase(4, 2, true, "00.00", Description = "Non-significant Zeros")]
 
-        public void Should_Valid_CorrectNumbers(int precision, int scale, bool onlyPositive, string number)
+        public void IsValidNumber_CorrectNumber_True(int precision, int scale, bool onlyPositive, string number)
 		{
 			Assert.IsTrue(new NumberValidator(precision, scale, onlyPositive).IsValidNumber(number));
 		}
@@ -54,7 +54,7 @@ namespace HomeExercises
         [TestCase(10, 5, false, ".0", Description = "No integer part")]
         [TestCase(10, 5, false, "0.", Description = "No fractional part with point", TestName = "fsd")]
         [TestCase(10, 5, false, "0b1001", Description = "Binary number")]
-        public void Should_NotValid_IncorrectNumbers(int b, int scale, bool onlyPositive, string number)
+        public void IsValidNumber_IncorrectNumber_False(int b, int scale, bool onlyPositive, string number)
 		{
 			Assert.IsFalse(new NumberValidator(b, scale, onlyPositive).IsValidNumber(number));
 		}
