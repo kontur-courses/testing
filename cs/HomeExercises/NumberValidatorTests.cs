@@ -7,37 +7,49 @@ namespace HomeExercises
 {
 	public class NumberValidatorTests
 	{
-		[Test]
-		public void Constructor_ShouldThrowException_WhenPrecisionIsNegative()
+		[TestCase(-8, 2, true, TestName = "When Precision Is Negative")]
+		[TestCase(1, 3, true, TestName = "When Scale Larger Than Precision")]
+		public void Constructor_ShouldThrowException(int precision, int scale, bool onlyPositive)
 		{
-			Assert.Throws<ArgumentException>(() => new NumberValidator(-1, 2, true));
-		}
-
-		[Test]
-		public void Constructor_ShouldThrowException_WhenScaleLargerThanPrecision()
-		{
-			Assert.Throws<ArgumentException>(() => new NumberValidator(1, 2, true));
+			Action constructor = (() => new NumberValidator(precision, scale, onlyPositive));
+			constructor.ShouldThrow<ArgumentException>();
 		}
 
 		[Test]
 		public void Constructor_CreatesNewValidator()
 		{
-			Assert.DoesNotThrow(() => new NumberValidator(1));
+			Action constructor = (() => new NumberValidator(2, 1, false));
+			constructor.ShouldNotThrow<ArgumentException>();
 		}
 
-		[TestCase(3, 2, true, "a.sd", false, TestName = "RegexTest wrong symbols in value")]
-		[TestCase(3, 1, true, "+.0", false, TestName = "RegexTest empty part")]
-		[TestCase(17, 2, true, "", false, TestName = "Empty value Test")]
-		[TestCase(17, 2, true, null, false, TestName = "Null value Test")]
-		[TestCase(3, 2, true, "00.00", false, TestName = "Precision Overflow Test")]
-		[TestCase(5, 2, true, "9.111", false, TestName = "Scale Overflow Test")]
-		[TestCase(3, 2, true, "-0.2", false, TestName = "Negative value and only-positive flag Test")]
-		[TestCase(15, 8, true, "4.24242", true, TestName = "Normal test")]
-		[TestCase(5, 1, false, "-122,2", true, TestName = "Normal test with sign")]
-		public void TestValidator(int precision, int scale, bool onlyPositive, string value, bool expected)
+
+		[TestCase(15, 8, true, "4.24242", TestName = "when number is positive")]
+		[TestCase(8, 2, true, "+122,2", TestName = "when number is positive with plus")]
+		[TestCase(10, 7, false, "-911.32", TestName = "when number is negative with minus")]
+		[TestCase(3, 1, false, "27.1", TestName = "when max count of digit")]
+		[TestCase(10, 9, false, "0.3101010", TestName = "when number less than 1")]
+		[TestCase(10, 9, false, "2048", TestName = "when number without fraction part")]
+		[TestCase(10, 7, false, "42,24", TestName = "when separator is coma")]
+		public void ShouldBeValid(int precision, int scale, bool onlyPositive, string value)
 		{
-			(new NumberValidator(precision, scale, onlyPositive)).IsValidNumber(value).Should().Be(expected, 
-													"[precision: {0}, scale: {1}, onlyPositive: {2}, value: {3}]", precision, scale, onlyPositive, value);
+			(new NumberValidator(precision, scale, onlyPositive)).IsValidNumber(value).Should().BeTrue(
+				"[precision: {0}, scale: {1}, onlyPositive: {2}, value: {3}]", precision, scale, onlyPositive, value);
+		}
+
+		
+		[TestCase(3, 2, true, "a.sd", TestName = "when wrong symbols in value")]
+		[TestCase(3, 1, true, ".0", TestName = "when empty int part")]
+		[TestCase(3, 1, true, "0.", TestName = "when empty fraction part")]
+		[TestCase(17, 2, true, "", TestName = "when value is empty")]
+		[TestCase(17, 2, true, null, TestName = "when value is null")]
+		[TestCase(17, 2, true, ".", TestName = "when only separator")]
+		[TestCase(3, 2, true, "00.00", TestName = "when Precision Overflow")]
+		[TestCase(5, 2, true, "9.111",  TestName = "when Scale Overflow")]
+		[TestCase(3, 2, true, "-0.2", TestName = "when Negative value and only-positive flag")]
+		public void ShouldBeInvalid(int precision, int scale, bool onlyPositive, string value)
+		{
+			(new NumberValidator(precision, scale, onlyPositive)).IsValidNumber(value).Should().BeFalse( 
+				"[precision: {0}, scale: {1}, onlyPositive: {2}, value: {3}]", precision, scale, onlyPositive, value);
 		}
 	}
 
