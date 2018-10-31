@@ -7,27 +7,51 @@ namespace HomeExercises
 {
 	public class NumberValidatorTests
 	{
-		[Test]
-		public void Test()
-		{
-			Assert.Throws<ArgumentException>(() => new NumberValidator(-1, 2, true));
-			Assert.DoesNotThrow(() => new NumberValidator(1, 0, true));
-			Assert.Throws<ArgumentException>(() => new NumberValidator(-1, 2, false));
-			Assert.DoesNotThrow(() => new NumberValidator(1, 0, true));
 
-			Assert.IsTrue(new NumberValidator(17, 2, true).IsValidNumber("0.0"));
-			Assert.IsTrue(new NumberValidator(17, 2, true).IsValidNumber("0"));
-			Assert.IsTrue(new NumberValidator(17, 2, true).IsValidNumber("0.0"));
-			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("00.00"));
-			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("-0.00"));
-			Assert.IsTrue(new NumberValidator(17, 2, true).IsValidNumber("0.0"));
-			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("+0.00"));
-			Assert.IsTrue(new NumberValidator(4, 2, true).IsValidNumber("+1.23"));
-			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("+1.23"));
-			Assert.IsFalse(new NumberValidator(17, 2, true).IsValidNumber("0.000"));
-			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("-1.23"));
-			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("a.sd"));
+		[TestCase(-1, 1, TestName = "less than zero")]
+		[TestCase(0, 1, TestName = "equal to zero")]
+		public void Constructor_ShouldThrowArgumentException_WhenPrecisionNotPositive
+			(int precision, int scale)
+		{
+			Assert.Throws<ArgumentException>(() => new NumberValidator(precision, scale),
+				"precision must be a positive number");
 		}
+
+		[TestCase(1, -1, TestName = "less than zero")]
+		[TestCase(1, 1, TestName = "equal to presicion")]
+		[TestCase(1, 2, TestName = "grater than presicion")]
+		public void Constructor_ShouldThrowArgumentException_WhenScaleIncorrect
+			(int precision, int scale)
+		{
+			Assert.Throws<ArgumentException>(() => new NumberValidator(precision, scale),
+				"precision must be a non-negative number less or equal than precision");
+		}
+
+		[TestCase(1, 0, TestName = "when scale equal to 0")]
+		[TestCase(10, 5, false, TestName = "when passed onlyPositive argument")]
+		public void Constructor_ShouldWorkCorrectly_When(int precision, int scale, 
+				bool onlyPositive = false) =>
+			// ReSharper disable once ObjectCreationAsStatement
+			new NumberValidator(precision, scale, onlyPositive);
+
+
+		[TestCase(3, 2, true, "00.00", TestName = "scale exceeded")]
+		[TestCase(4, 2, true, "-1.23", TestName = "onlyPositive set as true, but not positive number")]
+		[TestCase(17, 2, true,"0.000", TestName = "precision exceeded")]
+		[TestCase(3, 2, true, "a.sd", TestName = "not a number")]
+		[TestCase(7, 5, true, "", TestName = "value argument is empty")]
+		[TestCase(10, 6, true, null, TestName = "value argument is null")]
+		public void IsValidNumber_ShouldBeFalse_When(int presicion, int scale, bool onlyPositive,
+			string value) =>
+			new NumberValidator(presicion, scale, onlyPositive)
+				.IsValidNumber(value).Should().BeFalse();
+
+		[TestCase(17, 2, true, "0.0", TestName = "number is null")]
+		[TestCase(4, 2, true, "+1.23", TestName = "onlyPositive set as true and number positive")]
+		public void IsValidNumber_ShouldBeTrue_When(int presicion, int scale, bool onlyPositive,
+			string value) =>
+			new NumberValidator(presicion, scale, onlyPositive)
+				.IsValidNumber(value).Should().BeTrue();
 	}
 
 	public class NumberValidator
