@@ -18,9 +18,8 @@ namespace HomeExercises
 			var expectedTsar = new Person("Ivan IV The Terrible", 54, 170, 70,
 				new Person("Vasili III of Russia", 28, 170, 60, null));
 
-			expectedTsar.ShouldBeEquivalentTo(actualTsar,
-				options => options.Excluding(person => person.Id)
-					.Excluding(person => person.Parent.Id));
+			expectedTsar.ShouldBeEquivalentTo(actualTsar, option =>
+				option.Excluding(o => o.SelectedMemberPath.EndsWith("Id")));
 		}
 
 		[Test]
@@ -81,5 +80,5 @@ namespace HomeExercises
 			Weight = weight;
 			Parent = parent;
 		}
-	}
+    }
 }

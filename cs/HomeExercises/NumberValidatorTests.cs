@@ -17,7 +17,7 @@ namespace HomeExercises
 			public void test(int precision, int scale)
 			{
 				Assert.Throws<ArgumentException>(() => new NumberValidator(precision, scale));
-            }
+			}
 		}
 
 		[TestFixture(TestName = "NumberValidator_IsValidNumber_Should")]
@@ -28,36 +28,17 @@ namespace HomeExercises
 			[TestCase(2, 1, true, "testData", TestName = "Be false on incorrect value", ExpectedResult = false)]
 			[TestCase(2, 0, true, "111", TestName = "Be false when precision lower than value", ExpectedResult = false)]
 			[TestCase(3, 1, true, "1.11", TestName = "Be false when scale slwer than value", ExpectedResult = false)]
-			[TestCase(3, 0, true, "+111", TestName = "Be false when Precision Lower Than Value With Sign", ExpectedResult = false)]
-			[TestCase(2, 0, true, "-1", TestName = "Be false With Negative Value and Positive Flag", ExpectedResult = false)]		
-			[TestCase(2, 0, false, "-1", TestName = "Be true With Negative Value and Not positive Flag", ExpectedResult = true)]		
-			[TestCase(3, 2, false, "1.1", TestName = "Be true With Correct Value", ExpectedResult = true)]		
-            public bool test(int precision, int scale, bool flag, string value)
+			[TestCase(3, 0, true, "+111", TestName = "Be false when Precision Lower Than Value With Sign",
+				ExpectedResult = false)]
+			[TestCase(2, 0, true, "-1", TestName = "Be false With Negative Value and Positive Flag",
+				ExpectedResult = false)]
+			[TestCase(2, 0, false, "-1", TestName = "Be true With Negative Value and Not positive Flag",
+				ExpectedResult = true)]
+			[TestCase(3, 2, false, "1.1", TestName = "Be true With Correct Value", ExpectedResult = true)]
+			public bool test(int precision, int scale, bool flag, string value)
 			{
 				return new NumberValidator(precision, scale, flag).IsValidNumber(value);
 			}
-        }
-
-		[Test]
-		public void Test()
-		{
-			/*Assert.Throws<ArgumentException>(() => new NumberValidator(-1, 2, true));
-			Assert.DoesNotThrow(() => new NumberValidator(1, 0, true));
-			Assert.Throws<ArgumentException>(() => new NumberValidator(-1, 2, false));
-			Assert.DoesNotThrow(() => new NumberValidator(1, 0, true));*/
-
-			Assert.IsTrue(new NumberValidator(17, 2, true).IsValidNumber("0.0"));
-			Assert.IsTrue(new NumberValidator(17, 2, true).IsValidNumber("0"));
-			Assert.IsTrue(new NumberValidator(17, 2, true).IsValidNumber("0.0"));
-			//Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("00.00"));
-			//Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("-0.00"));
-			Assert.IsTrue(new NumberValidator(17, 2, true).IsValidNumber("0.0"));
-			//Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("+0.00"));
-			Assert.IsTrue(new NumberValidator(4, 2, true).IsValidNumber("+1.23"));
-			//Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("+1.23"));
-			//Assert.IsFalse(new NumberValidator(17, 2, true).IsValidNumber("0.000"));
-			//Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("-1.23"));
-			//Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("a.sd"));
 		}
 	}
 
