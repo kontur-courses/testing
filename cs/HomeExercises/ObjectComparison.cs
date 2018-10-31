@@ -7,23 +7,6 @@ namespace HomeExercises
 {
 	public class ObjectComparison
 	{
-		private void AreEqualByFields(Person actual, Person expected)
-		{
-			foreach (var field in actual.GetType().GetFields())
-			{
-				if (field.Name == "Id" || field.Name == "Parent" ||
-				    field.Name == "IdCounter")
-					continue;
-				var actualCurrentPropertyValue =
-					actual.GetType().GetField(field.Name).GetValue(actual);
-				var expectedCurrentPropertyValue =
-					expected.GetType().GetField(field.Name).GetValue(expected);
-
-				actualCurrentPropertyValue.Should()
-					.Be(expectedCurrentPropertyValue,
-						String.Format("Fields {0} should be equal", field.Name));
-			}
-        }
 
 		[Test]
 		[Description("Проверка текущего царя")]
@@ -35,19 +18,9 @@ namespace HomeExercises
 			var expectedTsar = new Person("Ivan IV The Terrible", 54, 170, 70,
 				new Person("Vasili III of Russia", 28, 170, 60, null));
 
-			AreEqualByFields(actualTsar, expectedTsar);
-			AreEqualByFields(actualTsar.Parent, expectedTsar.Parent);
-
-			// Перепишите код на ипользование Fluent Assertions.
-			/*Assert.AreEqual(actualTsar.Name, expectedTsar.Name);
-			Assert.AreEqual(actualTsar.Age, expectedTsar.Age);
-			Assert.AreEqual(actualTsar.Height, expectedTsar.Height);
-			Assert.AreEqual(actualTsar.Weight, expectedTsar.Weight);
-
-			Assert.AreEqual(expectedTsar.Parent.Name, actualTsar.Parent.Name);
-			Assert.AreEqual(expectedTsar.Parent.Age, actualTsar.Parent.Age);
-			Assert.AreEqual(expectedTsar.Parent.Height, actualTsar.Parent.Height);
-			Assert.AreEqual(expectedTsar.Parent.Parent, actualTsar.Parent.Parent);*/
+			expectedTsar.ShouldBeEquivalentTo(actualTsar,
+				options => options.Excluding(person => person.Id)
+					.Excluding(person => person.Parent.Id));
 		}
 
 		[Test]
@@ -60,13 +33,11 @@ namespace HomeExercises
 
 			// Какие недостатки у такого подхода? 
 			/*В этом случае будет не ясно какие именно поля не равны.
-			 Оба теста проверяют слишком много информации, что очень неудобно
-			 для понимания того, что именно пошло не так. Так же при подобной реализации
+			 Так же при подобной реализации
 			 будет необходимо переписывать метод AreEqual при добавлении нового поля 
 			 в класс Person. В моем решении метод сравнения сообщит об ошибке 
 			 в тот момент, когда она произойдет. Есть пояснение какие именно поля не 
-			 совпадают. При изменении класса Person нет необходимости менять что-либо,
-			 так как поля взяты с помощью рефлексии.*/
+			 совпадают. При изменении класса Person нет необходимости менять что-либо.*/
 			Assert.True(AreEqual(actualTsar, expectedTsar));
 		}
 

@@ -10,87 +10,32 @@ namespace HomeExercises
 		[TestFixture]
 		public class NumberValidatorConstructor_Should
 		{
-			[Test]
-			public void ThrowExtention_WithNegativePrecision()
+			[TestCase(-1, 2, TestName = "Throw Exteption With Negative Precision")]
+			[TestCase(0, 2, TestName = "Throw Exteption With Zero Precision")]
+			[TestCase(1, -2, TestName = "Throw Exteption With Negative Scale")]
+			[TestCase(1, 2, TestName = "Throw Exteption With Scale Greater Than Precision")]
+			public void test(int precision, int scale)
 			{
-				Assert.Throws<ArgumentException>(() => new NumberValidator(-1, 2));
-            }
-			[Test]
-			public void ThrowExtention_WithZeroPrecision()
-			{
-				Assert.Throws<ArgumentException>(() => new NumberValidator(0, 2));
-			}
-            [Test]
-			public void ThrowExtention_WithNegativeScale()
-			{
-				Assert.Throws<ArgumentException>(() => new NumberValidator(1, -2));
-			}
-			[Test]
-			public void ThrowExtention_WithScaleGreaterThanPrecision()
-			{
-				Assert.Throws<ArgumentException>(() => new NumberValidator(1, 2));
-			}
-
-			[Test]
-			public void DoesNotThrowExtention_WithCorrectArguments()
-			{
-				Assert.DoesNotThrow(() => new NumberValidator(1, 0, true));
+				Assert.Throws<ArgumentException>(() => new NumberValidator(precision, scale));
             }
 		}
 
-		[TestFixture]
+		[TestFixture(TestName = "NumberValidator_IsValidNumber_Should")]
 		public class NumberValidator_IsValidNumber_Should
 		{
-			[Test]
-			public void BeFalse_OnNullString()
+			[TestCase(2, 1, true, null, TestName = "Be false on null value", ExpectedResult = false)]
+			[TestCase(2, 1, true, "", TestName = "Be false on empty value", ExpectedResult = false)]
+			[TestCase(2, 1, true, "testData", TestName = "Be false on incorrect value", ExpectedResult = false)]
+			[TestCase(2, 0, true, "111", TestName = "Be false when precision lower than value", ExpectedResult = false)]
+			[TestCase(3, 1, true, "1.11", TestName = "Be false when scale slwer than value", ExpectedResult = false)]
+			[TestCase(3, 0, true, "+111", TestName = "Be false when Precision Lower Than Value With Sign", ExpectedResult = false)]
+			[TestCase(2, 0, true, "-1", TestName = "Be false With Negative Value and Positive Flag", ExpectedResult = false)]		
+			[TestCase(2, 0, false, "-1", TestName = "Be true With Negative Value and Not positive Flag", ExpectedResult = true)]		
+			[TestCase(3, 2, false, "1.1", TestName = "Be true With Correct Value", ExpectedResult = true)]		
+            public bool test(int precision, int scale, bool flag, string value)
 			{
-				Assert.IsFalse(new NumberValidator(2, 1, true).IsValidNumber(null));
+				return new NumberValidator(precision, scale, flag).IsValidNumber(value);
 			}
-
-			[Test]
-			public void BeFalse_OnEmptyString()
-			{
-				Assert.IsFalse(new NumberValidator(2, 1, true).IsValidNumber(""));
-            }
-
-			[Test]
-			public void BeFalse_OnIncorrectValue()
-			{
-				Assert.IsFalse(new NumberValidator(2, 1, true).IsValidNumber("testData"));
-			}
-
-			[Test]
-			public void BeFalse_PrecisionLowerThanValue()
-			{
-				Assert.IsFalse(new NumberValidator(2, 0, true).IsValidNumber("111"));
-            }
-
-			[Test]
-			public void BeFalse_ScaleLowerThanValue()
-			{
-				Assert.IsFalse(new NumberValidator(3, 1, true).IsValidNumber("1.11"));
-			}
-			[Test]
-			public void BeFalse_PrecisionLowerThanValueWithSign()
-			{
-				Assert.IsFalse(new NumberValidator(3, 0, true).IsValidNumber("+111"));
-			}
-			[Test]
-			public void BeFalse_WithNegativeValue_PositiveFlag()
-			{
-				Assert.IsFalse(new NumberValidator(2, 0, true).IsValidNumber("-1"));
-			}
-            [Test]
-			public void BeTrue_WithNegativeValue_NotPoritiveFlag()
-			{
-				Assert.IsTrue(new NumberValidator(2, 0, false).IsValidNumber("-1"));
-            }
-			[Test]
-			public void BeTrue_WithCorrectValue()
-			{
-				Assert.IsTrue(new NumberValidator(3, 2, false).IsValidNumber("1.1"));
-			}
-
         }
 
 		[Test]
