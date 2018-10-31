@@ -18,8 +18,8 @@ namespace HomeExercises
 		}
 
 		[TestCase(1, -1, TestName = "less than zero")]
-		[TestCase(1, 1, TestName = "equal to presicion")]
-		[TestCase(1, 2, TestName = "grater than presicion")]
+		[TestCase(1, 1, TestName = "equal to precision")]
+		[TestCase(1, 2, TestName = "grater than precision")]
 		public void Constructor_ShouldThrowArgumentException_WhenScaleIncorrect
 			(int precision, int scale)
 		{
@@ -27,8 +27,8 @@ namespace HomeExercises
 				"precision must be a non-negative number less or equal than precision");
 		}
 
-		[TestCase(1, 0, TestName = "when scale equal to 0")]
-		[TestCase(10, 5, false, TestName = "when passed onlyPositive argument")]
+		[TestCase(1, 0, TestName = "scale equal to 0")]
+		[TestCase(10, 5, false, TestName = "passed onlyPositive argument")]
 		public void Constructor_ShouldWorkCorrectly_When(int precision, int scale, 
 				bool onlyPositive = false) =>
 			// ReSharper disable once ObjectCreationAsStatement
@@ -41,16 +41,16 @@ namespace HomeExercises
 		[TestCase(3, 2, true, "a.sd", TestName = "not a number")]
 		[TestCase(7, 5, true, "", TestName = "value argument is empty")]
 		[TestCase(10, 6, true, null, TestName = "value argument is null")]
-		public void IsValidNumber_ShouldBeFalse_When(int presicion, int scale, bool onlyPositive,
+		public void IsValidNumber_ShouldBeFalse_When(int precision, int scale, bool onlyPositive,
 			string value) =>
-			new NumberValidator(presicion, scale, onlyPositive)
+			new NumberValidator(precision, scale, onlyPositive)
 				.IsValidNumber(value).Should().BeFalse();
 
 		[TestCase(17, 2, true, "0.0", TestName = "number is null")]
 		[TestCase(4, 2, true, "+1.23", TestName = "onlyPositive set as true and number positive")]
-		public void IsValidNumber_ShouldBeTrue_When(int presicion, int scale, bool onlyPositive,
+		public void IsValidNumber_ShouldBeTrue_When(int precision, int scale, bool onlyPositive,
 			string value) =>
-			new NumberValidator(presicion, scale, onlyPositive)
+			new NumberValidator(precision, scale, onlyPositive)
 				.IsValidNumber(value).Should().BeTrue();
 	}
 

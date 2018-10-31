@@ -1,4 +1,5 @@
 ﻿using FluentAssertions;
+using FluentAssertions.Equivalency;
 using NUnit.Framework;
 
 namespace HomeExercises
@@ -7,16 +8,15 @@ namespace HomeExercises
 	{
 		[Test]
 		[Description("Проверка текущего царя")]
-		[Category("ToRefactor")]
 		public void CheckCurrentTsar()
 		{
 			var actualTsar = TsarRegistry.GetCurrentTsar();
 
 			var expectedTsar = new Person("Ivan IV The Terrible", 54, 170, 70,
 				new Person("Vasili III of Russia", 28, 170, 60, null));
-			
+
 			actualTsar.ShouldBeEquivalentTo(expectedTsar, options =>
-				options.Excluding(person => person.SelectedMemberInfo.Name == "Id"));
+				options.ExcludingMember<Person, Person>(nameof(Person.Id)));
 		}
 
 		[Test]
@@ -28,14 +28,19 @@ namespace HomeExercises
 				new Person("Vasili III of Russia", 28, 170, 60, null));
 
 			/* Какие недостатки у такого подхода?
+
 			   При добавлении поля в класс, нужно не забыть добавить поле в AreEqual.
 			   Нужно следить, чтобы не появлялись "лишние" поля в сравнении.
 			   Из-за чего теряется расширяемость кода.
+
 			   Низкая читаемость: 
 				1) чтобы понять как происходит сравнение,
 					необходимо просмотреть не библиотечный метод;
 				2) True(AreEqual) вместо AreEqual
 				3) порядок аргументов expected и actual задается сигнатурой 
+
+				При падении теста непонятно, чем именно отличаются объекты:
+					expected: True, actual: False
 			*/
 			Assert.True(AreEqual(actualTsar, expectedTsar));
 		}
@@ -80,5 +85,15 @@ namespace HomeExercises
 			Weight = weight;
 			Parent = parent;
 		}
+	}
+
+	public static class EquivalencyAssertionOptionsExtension
+	{
+		public static EquivalencyAssertionOptions<TSubject> ExcludingMember<TSubject, TMember>(
+			this EquivalencyAssertionOptions<TSubject> options, string name) =>
+				options.Excluding(member => 
+					member.SelectedMemberInfo.Name == name &&
+					member.SelectedMemberInfo.DeclaringType == typeof(TMember)
+				);
 	}
 }
