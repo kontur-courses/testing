@@ -1,9 +1,21 @@
-﻿using FluentAssertions;
+﻿using System;
+using FluentAssertions;
 using NUnit.Framework;
-using System.Collections.Generic;
+using FluentAssertions.Equivalency;
 
 namespace HomeExercises
 {
+	public static class EquivalencyAssertionOptionsExcludeMemberExtension
+	{
+		public static EquivalencyAssertionOptions<T> ExcludeMember<T>(
+			this EquivalencyAssertionOptions<T> options, String memberName)
+		{
+			return options.Excluding(ctx => 
+				ctx.SelectedMemberInfo.Name == memberName &&
+			    ctx.SelectedMemberInfo.DeclaringType == typeof(T));
+		}
+	}
+
 	public class ObjectComparison
 	{
 		[Test]
@@ -15,11 +27,8 @@ namespace HomeExercises
             var expectedTsar = new Person("Ivan IV The Terrible", 54, 170, 70,
 				new Person("Vasili III of Russia", 28, 170, 60, null));
 
-            actualTsar.ShouldBeEquivalentTo(expectedTsar, 
-				options => options.Excluding(ctx =>  
-					ctx.SelectedMemberInfo.Name == "Id" &&
-					ctx.SelectedMemberInfo.DeclaringType == typeof(Person))
-					.AllowingInfiniteRecursion());
+			actualTsar.ShouldBeEquivalentTo(expectedTsar, 
+				options => options.ExcludeMember("Id"));
 		}
 
 		[Test]
