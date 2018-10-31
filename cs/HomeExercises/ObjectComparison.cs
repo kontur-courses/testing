@@ -50,7 +50,7 @@ namespace HomeExercises
 				&& AreEqual(actual.Parent, expected.Parent);
 		}
 	}
-
+	  
 	public class TsarRegistry
 	{
 		public static Person GetCurrentTsar()

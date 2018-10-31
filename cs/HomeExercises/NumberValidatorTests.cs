@@ -7,52 +7,61 @@ namespace HomeExercises
 {
     public class NumberValidatorTests
     {
-		[TestCase(-100,1, "precision must be a positive number", TestName = "PrecisionIsNegative")]
-		[TestCase(0, 1, "precision must be a positive number", TestName = "PrecisionIs0")]
-		[TestCase(1, -2, "scale must be a non-negative number less or equal than precision", TestName = "ScaleIsNegative")]
-		[TestCase(3, 5, "scale must be a non-negative number less or equal than precision", TestName = "ScaleLessPrecision")]
+        [TestCase(-100, 1, "precision must be a positive number", TestName = "PrecisionIsNegative")]
+        [TestCase(0, 1, "precision must be a positive number", TestName = "PrecisionIs0")]
+        [TestCase(1, -2, "scale must be a non-negative number less or equal than precision", TestName = "ScaleIsNegative")]
+        [TestCase(3, 5, "scale must be a non-negative number less or equal than precision", TestName = "ScaleLessPrecision")]
         public void NumberValidator_ShouldThrowArgumentException(int precision, int scale, string errorMessage)
-	    {
-		    Action create = () => new NumberValidator(precision, scale);
-		    create.ShouldThrow<ArgumentException>()
-			    .WithMessage(errorMessage);
+        {
+            Action create = () => new NumberValidator(precision, scale);
+            create.ShouldThrow<ArgumentException>()
+                .WithMessage(errorMessage);
         }
-	   	   
-		[TestCase(20, 1, true, "1.1", TestName = "NumberLengthLessPrecision")]
-		[TestCase(20, 19, true, "1.1", TestName = "FracPartLengthLessScale")]
-		[TestCase(2, 1, true, "1", TestName = "WhenFracPartIsEmpty")]
-		[TestCase(3, 1, false, "+1.1", TestName = "NumberWithPlus")]
-		
 
+        [TestCase(20, 1, true, "1.1", TestName = "NumberLengthLessPrecision")]
+        [TestCase(3, 2, true, "1.1", TestName = "FracPartLengthLessScale")]
+        [TestCase(3, 2, true, "1", TestName = "FracPartIsEmptyButScaleMore0")]
+        [TestCase(1, 0, true, "1", TestName = "NumberWithoutFracPart")]
+        [TestCase(3, 1, false, "-1.1", TestName = "NegativeNumber")]
+        [TestCase(3, 1, false, "+1.1", TestName = "PositiveNumber")]
+        [TestCase(2, 1, false, "1.1", TestName = "NumberWithoutSigh")]
+        [TestCase(2, 1, false, "1,1", TestName = "StringWithОtherSeparateSigh")]
+        [TestCase(3, 2, true, "1.00", TestName = "NumberWithZeroFracPart")]
         public void IsValidNumber_ShouldReturnTrue(int precision, int scale, bool onlyPositive, string testString)
-	    {
-		    new NumberValidator(precision, scale, onlyPositive).IsValidNumber(testString).Should().BeTrue(
-			    "because\nNumberValidator:\n" +
-				$"	precision {precision},\n" +
-			    $"	scale {scale},\n" +
-			    $"	onlyPositive {onlyPositive}.\n" +
-			    $"Test string is \"{testString}\"\n");
-	    }
+        {
+            new NumberValidator(precision, scale, onlyPositive).IsValidNumber(testString).Should().BeTrue(
+                $@"because
+NumberValidator:
+	precision {precision},
+	scale {scale},
+	onlyPositive {onlyPositive}.
+Test string is ""{testString}""");
+        }
 
-	    [TestCase(3,2,true, null, TestName = "NullString")]
-	    [TestCase(3, 2, true, "", TestName = "EmptyString")]
+        [TestCase(3, 2, true, null, TestName = "NullString")]
+        [TestCase(3, 2, true, "", TestName = "EmptyString")]
         [TestCase(3, 2, true, "abracadabra", TestName = "StringWithoutMatches")]
-	    [TestCase(3, 2, true, "11.23", TestName = "PrecisionLessNumberLength")]
-	    [TestCase(3, 2, true, "1.234", TestName = "ScaleLessFracPartLength")]
-	    [TestCase(3, 2, true, "-1.2", TestName = "StringWithMinusAndOnlyPositiveTrue")]
-	    [TestCase(3, 2, true, "-11.2", TestName = "NumberLengthWithSighMorePrecision")]
-	    [TestCase(4, 1, false, "+-1.1", TestName = "NumberWithBothSighs")]
-	    [TestCase(4, 1, false, "1.,1", TestName = "NumberWithBothSeparatorsSighs")]
-	    [TestCase(4, 1, false, "1..1", TestName = "NumberWithDuplicateSigh")]
-	    [TestCase(4, 1, false, " ", TestName = "StringWithWhiteSpace")]
+        [TestCase(3, 2, true, "11.23", TestName = "PrecisionLessNumberLength")]
+        [TestCase(3, 2, true, "1.234", TestName = "ScaleLessFracPartLength")]
+        [TestCase(3, 2, true, "-1.2", TestName = "StringWithMinusAndOnlyPositiveTrue")]
+        [TestCase(3, 2, true, "-11.2", TestName = "NumberLengthWithSighMorePrecision")]
+        [TestCase(3, 1, false, "***-1.1", TestName = "StringStartWithOtherSymbols")]
+        [TestCase(3, 1, false, "-1***.1", TestName = "StringWithOtherSymbols1")]
+        [TestCase(3, 1, false, "-1.***1", TestName = "StringWithOtherSymbols2")]
+        [TestCase(3, 1, false, "-***1.1", TestName = "StringWithOtherSymbols3")]
+        [TestCase(3, 1, false, "-1.1***", TestName = "StringEndWithOtherSymbols")]       
+        [TestCase(5, 1, false, "1.1.1", TestName = "StringWithDuplicateFracPart")]
+        [TestCase(10, 1, false, "1.", TestName = "StringWithoutFracPartButWithSeparateSigh")]
+        [TestCase(4, 3, false, ".897", TestName = "StringWithoutIntPart")]     
         public void IsValidNumber_ShouldReturnFalse(int precision, int scale, bool onlyPositive, string testString)
-	    {
-		    new NumberValidator(precision, scale, onlyPositive).IsValidNumber(testString).Should().BeFalse(
-			    "because\nNumberValidator:\n" +
-				$"	precision {precision},\n" +
-			    $"	scale {scale},\n" +
-			    $"	onlyPositive {onlyPositive}.\n" +
-			    $"Test string is \"{testString}\"\n");
+        {
+            new NumberValidator(precision, scale, onlyPositive).IsValidNumber(testString).Should().BeFalse(
+	           $@"because
+NumberValidator:
+	precision {precision},
+	scale {scale},
+	onlyPositive {onlyPositive}.
+Test string is ""{testString}""");
         }
     }
 
