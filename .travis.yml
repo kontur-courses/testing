@@ -6,5 +6,5 @@ install:
 script:
   - xbuild /p:Configuration=Release ./cs/testing.sln
   - mono ./testrunner/NUnit.Runners.2.6.4/tools/nunit-console.exe ./cs/HomeExercises/bin/Release/ObjectComparison.dll
-after_script:
-  - bash <(curl -s https://codecov.io/bash) -t 7edbeacc-0bd7-4298-b03c-d9d16180f24f
+after_success:
+    - bash <(curl -s https://codecov.io/bash)
