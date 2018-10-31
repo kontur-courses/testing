@@ -7,8 +7,6 @@ namespace HomeExercises
 {
 	public class NumberValidatorTests
 	{
-		private static readonly NumberValidator standardNonNegativeValidator = new NumberValidator(10, 5, true);
-
 		[TestCase(-10, TestName = "On negative precision")]
 		[TestCase(0, TestName = "On zero precision")]
 		[TestCase(10, -1, TestName = "On negative scale and correct precision")]
@@ -29,134 +27,39 @@ namespace HomeExercises
 			constructorCall.Should().NotThrow();
 		}
 
-		[Test]
-		public void IsValidNumber_FractionalAndIntPartEqualsPrecision_False()
+		[TestCase(10, 5, true, "123,4", TestName = "When number divided by comma")]
+		[TestCase(10, 5, true, "123.4", TestName = "When number divided by dot")]
+        [TestCase(11, 5, false, "+0.0", TestName = "On zero with \"plus\"")]
+		[TestCase(11, 5, false, "-0.0", TestName = "On zero with \"minus\"")]
+        [TestCase(11, 5, false, "-234567890.1", TestName = "When number length including \"minus\" equals precision")]
+        [TestCase(11, 5, false, "+234567890.1", TestName = "When number length including \"plus\" equals precision")]
+        [TestCase(10, 5, true, "123", TestName = "When number without fractional part")]
+		[TestCase(10, 5, true, "000.000", TestName = "When fractional and int parts consist only of zeros")]
+		[TestCase(10, 5, true, "000.123", TestName = "When number starts with zeros")]
+		[TestCase(10, 5, true, "1.000", TestName = "When number ends with zeros")]
+        [TestCase(10, 5, true, "12345.12345", TestName = "When fractional part length equal scale")]
+        [TestCase(10, 5, true, "123456.1234", TestName = "When fractional and int parts equal precision")]
+        public void IsValidNumber_ShouldReturnTrue(int precision, int scale, bool onlyPositive, string input)
 		{
-			standardNonNegativeValidator.IsValidNumber("12345.12345").Should().BeTrue();
-		}
-
-        [Test]
-		public void IsValidNumber_FractionalAndIntPartsAreMoreThenPrecision_True()
-		{
-			standardNonNegativeValidator.IsValidNumber("12345.123456").Should().BeFalse();
-		}
-
-		[Test]
-		public void IsValidNumber_NumberEndsWithZeros_True()
-		{
-			standardNonNegativeValidator.IsValidNumber("0.000").Should().BeTrue();
-		}
-
-		[Test]
-		public void IsValidNumber_FractionalPartLengthEqualsScale_True()
-		{
-			standardNonNegativeValidator.IsValidNumber("12345.12345").Should().BeTrue();
-		}
-
-		[Test]
-		public void IsValidNumber_FractionalPartLengthMoreThenScale_False()
-		{
-			standardNonNegativeValidator.IsValidNumber("12345.123456").Should().BeFalse();
-		}
-
-        [Test]
-		public void IsValidNumber_NumberWithoutFractionalPart_True()
-		{
-			standardNonNegativeValidator.IsValidNumber("123").Should().BeTrue();
-		}
-
-		[Test]
-		public void IsValidNumber_FractionalAndIntPartsConsistOnlyOfZeros_True()
-		{
-			standardNonNegativeValidator.IsValidNumber("000.000").Should().BeTrue();
-		}
-
-		[Test]
-		public void IsValidNumber_NumberStartsWithZeros_True()
-		{
-			standardNonNegativeValidator.IsValidNumber("000.123").Should().BeTrue();
-		}
-
-		[Test]
-		public void IsValidNumber_NegativeNumber_False_OnNonNegativeValidator()
-		{
-			standardNonNegativeValidator.IsValidNumber("-1.1").Should().BeFalse();
-		}
-
-		[Test]
-		public void IsValidNumber_NullInput_False()
-		{
-			standardNonNegativeValidator.IsValidNumber(null).Should().BeFalse();
+			var validator = new NumberValidator(precision, scale, onlyPositive);
+			validator.IsValidNumber(input).Should().BeTrue();
         }
 
-		[Test]
-		public void IsValidNumber_EmptyInput_False()
+		[TestCase(10, 5, true, "123.", TestName = "When number ends with divider")]
+		[TestCase(10, 5, true, ".123", TestName = "When number starts with divider")]
+        [TestCase(10, 5, true, "", TestName = "On empty input")]
+		[TestCase(10, 5, true, "abc.def", TestName = "On NaN")]
+        [TestCase(10, 5, true, null, TestName = "On null input")]
+		[TestCase(11, 5, false, "+234567890.12", TestName = "When number length including \"plus\" is more then precision")]
+		[TestCase(11, 5, false, "-234567890.12", TestName = "When number length including \"minus\" is more then precision")]
+        [TestCase(10, 5, true, "-1.1", TestName = "When negative number on non negative validator")]
+        [TestCase(10, 5, true, "12.123456", TestName = "When fractional part length more then scale")]
+        [TestCase(10, 5, true, "12345.123456", TestName = "When fractional and int parts are more then precision")]
+        public void IsValidNumber_ShouldReturnFalse(int precision, int scale, bool onlyPositive, string input)
 		{
-			standardNonNegativeValidator.IsValidNumber("").Should().BeFalse();
+			var validator = new NumberValidator(precision, scale, onlyPositive);
+			validator.IsValidNumber(input).Should().BeFalse();
         }
-
-		[Test]
-		public void IsValidNumber_IntNumberLengthEqualsPrecision_True()
-		{
-			standardNonNegativeValidator.IsValidNumber("1234567890").Should().BeTrue();
-		}
-
-		[Test]
-		public void IsValidNumber_NumberLengthIncludingSignIsMoreThenPrecision_False()
-		{
-			const string number = "234567890.12";
-			var currentValidator = new NumberValidator(11, 5);
-			currentValidator.IsValidNumber('-' + number).Should().BeFalse();
-			currentValidator.IsValidNumber('+' + number).Should().BeFalse();
-		}
-
-		[Test]
-		public void IsValidNumber_NumberLengthIncludingSignEqualsPrecision_True()
-		{
-			const string number = "234567890.1";
-			var currentValidator = new NumberValidator(11, 5);
-			currentValidator.IsValidNumber('-' + number).Should().BeTrue();
-			currentValidator.IsValidNumber('+' + number).Should().BeTrue();
-		}
-
-		[Test]
-		public void IsValidNumber_NaN_False()
-		{
-			standardNonNegativeValidator.IsValidNumber("abc.def").Should().BeFalse();
-		}
-
-		[Test]
-		public void IsValidNumber_SignedZero_True()
-		{
-			const string zero = "0.0";
-			var currentValidator = new NumberValidator(11, 5);
-			currentValidator.IsValidNumber('-' + zero).Should().BeTrue();
-			currentValidator.IsValidNumber('+' + zero).Should().BeTrue();
-		}
-
-		[Test]
-		public void IsValidNumber_NumberDividedByComma_True()
-		{
-			standardNonNegativeValidator.IsValidNumber("123,4").Should().BeTrue();
-		}
-
-		[Test]
-		public void IsValidNumber_NumberDividedByDot_True()
-		{
-			standardNonNegativeValidator.IsValidNumber("123.4").Should().BeTrue();
-		}
-
-		[Test]
-		public void IsValidNumber_NumberStartsWithDivider_False()
-		{
-			standardNonNegativeValidator.IsValidNumber(".123").Should().BeFalse();
-		}
-
-		[Test]
-		public void IsValidNumber_NumberEndsWithDivider_False()
-		{
-			standardNonNegativeValidator.IsValidNumber("123.").Should().BeFalse();
-		}
     }
 
 	public class NumberValidator

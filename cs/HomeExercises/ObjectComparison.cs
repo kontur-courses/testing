@@ -1,10 +1,21 @@
 ﻿using FluentAssertions;
+using FluentAssertions.Equivalency;
 using NUnit.Framework;
 
 namespace HomeExercises
 {
-	public class ObjectComparison
+	internal static class EquivalencyAssertionOptionsExtensions
+    {
+		public static EquivalencyAssertionOptions<T> ExcludingField<T>(
+			this EquivalencyAssertionOptions<T> options, string fieldName)
+		{
+			return options.Excluding(obj => obj.SelectedMemberInfo.Name == fieldName);
+		}
+	}
+
+    public class ObjectComparison
 	{
+
 		[Test]
 		[Description("Проверка текущего царя")]
 		[Category("ToRefactor")]
@@ -13,10 +24,10 @@ namespace HomeExercises
 			var actualTsar = TsarRegistry.GetCurrentTsar();
 
 			var expectedTsar = new Person("Ivan IV The Terrible", 54, 170, 70,
-				new Person("Vasili III of Russia", 28, 170, 60, null));
+				new Person("Vasili III of Russia", 28, 170, 60, null));	
 
 			actualTsar.Should().BeEquivalentTo(expectedTsar, options => 
-				options.Excluding(p => p.SelectedMemberPath.EndsWith("Id")));
+				options.ExcludingField(nameof(expectedTsar.Id)));
             // Плюсы такого подхода:
             // По сути, плюсами такого подхода является отсутствие перечисленных ниже минусов с:
             //
