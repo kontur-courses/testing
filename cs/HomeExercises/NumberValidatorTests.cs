@@ -18,6 +18,8 @@ namespace HomeExercises
 		[TestCase("0.12", TestName = "IntPartZeroFracPartTwoDigits")]
 		[TestCase("+2.12", 5, 3, true, TestName = "PositiveFractionWhenOnlyPositiveTrue")]
 		[TestCase("1234567890123", 13, 3, true, TestName = "LongInt")]
+		[TestCase("1234.56", 6, 3, TestName = "NumberOfAllDigitsEqualsPrecision")]
+		[TestCase("12.3456", 6, 4, TestName = "FracPartEqualsScale")]
 		public void IsValidNumber_ReturnTrue
 			(string input, int precision = 5, int scale = 3, bool onlyPositive = false)
 		{
