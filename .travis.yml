@@ -1,10 +1,10 @@
 language: csharp
-solution: ./сs/testing.sln
+solution: .\cs\testing.sln
 install:
-  - nuget restore ./сs/testing.sln
+  - nuget restore .\cs\testing.sln
   - nuget install NUnit.Runners -Version 2.6.4 -OutputDirectory testrunner
 script:
   - xbuild /p:Configuration=Release testing.sln
-  - mono ./testrunner/NUnit.Runners.2.6.4/tools/nunit-console.exe ./сs/HomeExercises/bin/Debug/ObjectComparison.dll
+  - mono ./testrunner/NUnit.Runners.2.6.4/tools/nunit-console.exe .\cs\HomeExercises\bin\Release\ObjectComparison.dll
 after_script:
   - bash <(curl -s https://codecov.io/bash)
