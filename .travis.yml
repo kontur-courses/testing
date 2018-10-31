@@ -2,9 +2,9 @@ language: csharp
 solution: ./cs/testing.sln
 install:
   - sudo apt-get install nunit-console
-  - nuget restore ./src/yoursolution.sln
+  - nuget restore ./cs/testing.sln
 script:
   - xbuild /p:Configuration=Release ./cs/testing.sln
-  - - nunit-console ./cs/HomeExercises/bin/Release/ObjectComparison.dll
+  - nunit-console ./cs/HomeExercises/bin/Release/ObjectComparison.dll
 after_script:
   - bash <(curl -s https://codecov.io/bash)
