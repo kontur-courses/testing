@@ -15,6 +15,10 @@ namespace HomeExercises
 			var expectedTsar = new Person("Ivan IV The Terrible", 54, 170, 70,
 				new Person("Vasili III of Russia", 28, 170, 60, null));
 
+			actualTsar.ShouldBeEquivalentTo(expectedTsar, options => options
+				.Excluding(t => t.SelectedMemberInfo.Name == nameof(Person.Id)));
+
+
 			// Перепишите код на использование Fluent Assertions.
 			Assert.AreEqual(actualTsar.Name, expectedTsar.Name);
 			Assert.AreEqual(actualTsar.Age, expectedTsar.Age);
@@ -36,6 +40,9 @@ namespace HomeExercises
 				new Person("Vasili III of Russia", 28, 170, 60, null));
 
 			// Какие недостатки у такого подхода? 
+			/* если тест провалится, мы не увидим, какие именно поля не соответствуют ожидаемым - придется разглядывать объекты
+			 нужно писать дополнительный метод и менять его каждый раз при изменении объекта
+			 */
 			Assert.True(AreEqual(actualTsar, expectedTsar));
 		}
 

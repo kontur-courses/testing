@@ -2,9 +2,56 @@
 using System.Text.RegularExpressions;
 using FluentAssertions;
 using NUnit.Framework;
+using NUnit.Framework.Internal.Filters;
 
 namespace HomeExercises
 {
+	[TestFixture]
+	public class NumberValidator_Should
+	{
+		[TestCase(-1, TestName = "precision is negative")]
+		[TestCase(0, TestName = "precision is zero")]
+		[TestCase(1, -1, TestName = "scale is negative")]
+		[TestCase(1, 2, TestName = "scale is higher than precision")]
+		[TestCase(1, 1, TestName = "scale is equal to precision")]
+		public void Constructor_ThrowsArgumentExceptionWhen(int precision, int scale = 0, bool onlyPositive = false)
+		{
+			Action createValidator = () => new NumberValidator(precision, scale, onlyPositive);
+			createValidator.ShouldThrow<ArgumentException>($"arguments are ({precision}, {scale}, {onlyPositive})");
+		}
+
+		[TestCase("1.23", TestName = "number has no sign")]
+		[TestCase("+1.2", TestName = "positive number has a sign")]
+		[TestCase("-1.2", TestName = "number is negative")]
+		[TestCase("1", 1, 0, false, TestName = "number is an integer")]
+		[TestCase("1,23", TestName = "number uses a comma separator")]
+		[TestCase("1.23", int.MaxValue, 2, false, TestName = "length is less than precision")]
+		[TestCase("1.23", int.MaxValue, int.MaxValue - 1, false, TestName = "fractional part shorter than scale")]
+		public void IsValidNumber_ReturnsTrueWhen(string value, int precision = 3, int scale = 2, bool onlyPositive = false)
+		{
+			new NumberValidator(precision, scale, onlyPositive).IsValidNumber(value).Should().BeTrue(
+				$"arguments are ({value}, {precision}, {scale}, {onlyPositive})");
+		}
+
+		[TestCase(null, TestName = "value is null")]
+		[TestCase("", TestName = "value is empty")]
+		[TestCase("-1.23", TestName = "precision is higher than allowed")]
+		[TestCase("1.234", TestName = "scale is higher than allowed")]
+		[TestCase("-1.2", 3, 2, true, TestName = "number is negative when only positive numbers are allowed")]
+		[TestCase(".12", TestName = "integer part is missing")]
+		[TestCase("+.12", TestName = "integer part is missing with sign")]
+		[TestCase("1.", TestName = "fractional part is missing")]
+		[TestCase("1.2.3", TestName = "two separators present")]
+		[TestCase("a1.2", TestName = "illegal characters present before number")]
+		[TestCase("1.2a", TestName = "illegal characters present after number")]
+		[TestCase("1a.2", TestName = "illegal characters present in integer part")]
+		[TestCase("1.a2", TestName = "illegal characters present in fractional part")]
+		public void IsValidNumber_ReturnsFalseWhen(string value, int precision = 3, int scale = 2, bool onlyPositive = false)
+		{
+			new NumberValidator(precision, scale, onlyPositive).IsValidNumber(value).Should().BeFalse(
+				$"arguments are ({value}, {precision}, {scale}, {onlyPositive})");
+		}
+	}
 	public class NumberValidatorTests
 	{
 		[Test]
@@ -17,7 +64,6 @@ namespace HomeExercises
 
 			Assert.IsTrue(new NumberValidator(17, 2, true).IsValidNumber("0.0"));
 			Assert.IsTrue(new NumberValidator(17, 2, true).IsValidNumber("0"));
-			Assert.IsTrue(new NumberValidator(17, 2, true).IsValidNumber("0.0"));
 			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("00.00"));
 			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("-0.00"));
 			Assert.IsTrue(new NumberValidator(17, 2, true).IsValidNumber("0.0"));
