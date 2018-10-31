@@ -11,12 +11,12 @@ namespace HomeExercises
 		public void CheckCurrentTsar()
 		{
 			var actualTsar = TsarRegistry.GetCurrentTsar();
-
 			var expectedTsar = new Person("Ivan IV The Terrible", 54, 170, 70,
 				new Person("Vasili III of Russia", 28, 170, 60, null));
 
-		    actualTsar.Should().BeEquivalentTo(expectedTsar,
-		        options => options.Excluding(m => m.SelectedMemberInfo.Name == "Id")
+			actualTsar.Should().BeOfType<Person>();
+			actualTsar.Should().BeEquivalentTo(expectedTsar,
+		        options => options.Excluding(m => m.SelectedMemberInfo.Name == nameof(Person.Id))
 		    );
 		}
 
@@ -30,10 +30,12 @@ namespace HomeExercises
 
 			// Какие недостатки у такого подхода? 
 			Assert.True(AreEqual(actualTsar, expectedTsar));
-		    //Переписывать метод AreEqual каждый раз при изменении класса(добавлении нового поля/св-ва) Person БОЛЬ
-		}
+            //1.Переписывать метод AreEqual каждый раз при изменении класса(добавлении нового поля/св-ва) Person БОЛЬ
+            //2.FluentAssertions даст однозначно более понятный ответ
+            //3.У BeEquivalentTo есть регулируемое ограничение по глубине, которое позволит избежать циклов
+        }
 
-		private bool AreEqual(Person actual, Person expected)
+        private bool AreEqual(Person actual, Person expected)
 		{
 			if (actual == expected) return true;
 			if (actual == null || expected == null) return false;

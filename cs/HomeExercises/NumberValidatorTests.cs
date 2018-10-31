@@ -8,157 +8,44 @@ namespace HomeExercises
     [TestFixture]
     public class NumberValidatorTests
     {
-        [TestFixture]
-        public class Constructor_Should
+
+        [TestCase(-1, 0, "precision must be a positive number", TestName = "When Precision is negative")]
+        [TestCase(0, 0, "precision must be a positive number", TestName = "When Precision is zero")]
+        [TestCase(1, -1, "scale must be a non-negative number less or equal than precision", TestName = "When scale is negative")]
+        [TestCase(1, 2, "scale must be a non-negative number less or equal than precision", TestName = "When scale is greater than precision")]
+        [TestCase(1, 1, "scale must be a non-negative number less or equal than precision", TestName = "When scale is equal to precision")]
+        public void Constructor_ThrowsArgumentException(int precision, int scale, string message)
         {
-            [Test]
-            public void ThrowsArgumentException_WhenPrecisionIsNegative()
-            {
-                Action constructor = () => new NumberValidator(-1);
+            Action constructor = () => new NumberValidator(precision, scale);
 
-                constructor.Should().Throw<ArgumentException>()
-                    .WithMessage("precision must be a positive number");
-            }
-
-            [Test]
-            public void ThrowsArgumentException_WhenPrecisionIsZero()
-            {
-                Action constructor = () => new NumberValidator(0);
-
-                constructor.Should().Throw<ArgumentException>()
-                    .WithMessage("precision must be a positive number");
-            }
-
-            [Test]
-            public void ThrowsArgumentException_WhenScaleIsNegative()
-            {
-                Action constructor = () => new NumberValidator(1, -1);
-
-                constructor.Should().Throw<ArgumentException>()
-                    .WithMessage("scale must be a non-negative number less or equal than precision");
-            }
-
-            [Test]
-            public void ThrowsArgumentException_WhenScaleIsGreaterPrecision()
-            {
-                Action constructor = () => new NumberValidator(1, 2);
-
-                constructor.Should().Throw<ArgumentException>()
-                    .WithMessage("scale must be a non-negative number less or equal than precision");
-            }
-
-            [Test]
-            public void ThrowsArgumentException_WhenScaleIsEqualToPrecision()
-            {
-                Action constructor = () => new NumberValidator(1, 1);
-
-                constructor.Should().Throw<ArgumentException>()
-                    .WithMessage("scale must be a non-negative number less or equal than precision");
-            }
-
-            [Test]
-            public void DoesNotThrowException_WhenPrecisionIsPositiveAndScaleIsNonNegativeAndLessThanPrecision()
-            {
-                Action constructor = () => new NumberValidator(1);
-
-                constructor.Should().NotThrow<Exception>();
-            }
+            constructor.Should().Throw<ArgumentException>()
+                .WithMessage(message);
         }
 
-        [TestFixture]
-        public class Method_IsValidNumber_Should
+        [TestCase(" ", TestName = "When input is empty")]
+        [TestCase(null, TestName = "When input is null")]
+        [TestCase("0.000", TestName = "When fractal part is greater than scale")]
+        [TestCase("1234567", TestName = "When int part is greater than precision")]
+        [TestCase("-1.-2", TestName = "When input isn't a number")]
+        [TestCase("-1", true, TestName = "When validator is only for positive and input is negative")]
+        public void IsValidNumber_ReturnFalse(string input, bool onlyPositive = false)
         {
-            [Test]
-            public void ReturnFalse_WhenInputIsEmpty()
-            {
-                var validator = new NumberValidator(6, 2);
+            var validator = new NumberValidator(6, 2, onlyPositive);
 
-                validator.IsValidNumber(" ").Should().BeFalse();
-            }
+            validator.IsValidNumber(input).Should().BeFalse();
+        }
 
-            [Test]
-            public void ReturnFalse_WhenInputIsNull()
-            {
-                var validator = new NumberValidator(6, 2);
+        [TestCase("-0", TestName = "When int part length less than precision")]
+        [TestCase("-12345", TestName = "When int part length is equal to precision")]
+        [TestCase("0", TestName = "When fractal part length is zero")]
+        [TestCase("-0.0", TestName = "When fractal part length less than scale")]
+        [TestCase("0.00", TestName = "When fractal part length is equal to scale")]
+        [TestCase("1", true, TestName = "When validator is only for positive and input is positive")]
+        public void IsValidNumber_ReturnTrue(string input, bool onlyPositive = false)
+        {
+            var validator = new NumberValidator(6, 2, onlyPositive);
 
-                validator.IsValidNumber(null).Should().BeFalse();
-            }
-
-            [Test]
-            public void ReturnFalse_WhenFractPartIsGreaterThanScale()
-            {
-                var validator = new NumberValidator(6, 2);
-
-                validator.IsValidNumber("1.002").Should().BeFalse();
-            }
-
-            [Test]
-            public void ReturnFalse_WhenIntPartIsGreaterThanPrecision()
-            {
-                var validator = new NumberValidator(6, 2);
-
-                validator.IsValidNumber("1234567").Should().BeFalse();
-            }
-
-            [Test]
-            public void ReturnTrue_WhenIntPartLessThanPrecision()
-            {
-                var validator = new NumberValidator(6, 2);
-
-                validator.IsValidNumber("-0").Should().BeTrue();
-            }
-
-            [Test]
-            public void ReturnTrue_WhenIntPartEqualToPrecision()
-            {
-                var validator = new NumberValidator(6, 2);
-
-                validator.IsValidNumber("-12345").Should().BeTrue();
-            }
-
-            [Test]
-            public void ReturnTrue_WhenFractPartIsZero()
-            {
-                var validator = new NumberValidator(6, 2);
-
-                validator.IsValidNumber("0").Should().BeTrue();
-            }
-
-            [Test]
-            public void ReturnTrue_WhenFractPartLessThanScale()
-            {
-                var validator = new NumberValidator(6, 2);
-
-                validator.IsValidNumber("-0.0").Should().BeTrue();
-            }
-
-            [Test]
-            public void ReturnTrue_WhenFractPartEqualToScale()
-            {
-                var validator = new NumberValidator(6, 2);
-
-                validator.IsValidNumber("0.00").Should().BeTrue();
-            }
-
-            [Test]
-            public void ReturnFalse_WhenInputIsNotNumber()
-            {
-                var validator = new NumberValidator(6, 2);
-
-                validator.IsValidNumber("-2.-1").Should().BeFalse();
-            }
-
-            [TestFixture]
-            public class WhenValidatorIsOnlyForPositive
-            {
-                [Test]
-                public void ReturnFalse_WhenInputIsNegative()
-                {
-                    var validator = new NumberValidator(6, 0, true);
-
-                    validator.IsValidNumber("-1").Should().BeFalse();
-                }
-            }
+            validator.IsValidNumber(input).Should().BeTrue();
         }
     }
 
