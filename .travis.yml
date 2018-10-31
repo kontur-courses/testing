@@ -1,0 +1,8 @@
+language: csharp
+solution: .cs/testing.sln
+install:
+  - nuget restore .cs/testing.sln
+  - nuget install NUnit.Runners -Version 2.6.4 -OutputDirectory testrunner
+script:
+  - xbuild /p:Configuration=Release .cs/testing.sln
+  - mono ./testrunner/NUnit.Runners.2.6.4/tools/nunit-console.exe .cs/HomeExercises/bin/Debug/ObjectComparison.dll
