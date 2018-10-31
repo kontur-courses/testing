@@ -44,7 +44,7 @@ namespace HomeExercises
 		[TestCase(3, 2, true, "-1.00", TestName = "When Int And Fraction Part With Sign Bigger Than Precision")]
 		[TestCase(17, 2, true, "0.000", TestName = "When Fraction Bigger Than Scale")]
 		[TestCase(3, 2, true, null, TestName = "When Null")]
-		[TestCase(3, 2, true, "abrakadabra", TestName = "When Abrakadabra")]
+		[TestCase(3, 2, true, "abrakadabra", TestName = "When Not A Number")]
 		[TestCase(17, 2, true, "-5.7", TestName = "When Negative If Only Positive")]
 		[TestCase(3, 2, true, "", TestName = "When Empty")]
 		[TestCase(17, 2, false, "--1", TestName = "When More Then One Leading Sign")]
