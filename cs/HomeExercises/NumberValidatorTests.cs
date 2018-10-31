@@ -16,7 +16,7 @@ namespace HomeExercises
 		}
 
 		[Test]
-		public void Constructor_CreatesNewValidator()
+		public void Constructor_ShouldCreateValidator_WhenArgsIsCorrect()
 		{
 			Action constructor = (() => new NumberValidator(2, 1, false));
 			constructor.ShouldNotThrow<ArgumentException>();
