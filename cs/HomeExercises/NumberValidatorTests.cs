@@ -7,28 +7,52 @@ namespace HomeExercises
 {
 	public class NumberValidatorTests
 	{
-		[Test]
-		public void Test()
+		[TestCase(17, 1, true, "0.0", ExpectedResult = true, TestName = "when value decimal length equals scale")]
+		[TestCase(17, 2, true, "0.0", ExpectedResult = true, TestName = "when value decimal length less than scale")]
+		[TestCase(17, 2, true, "0", ExpectedResult = true, TestName = "when value contains no decimals")]
+		[TestCase(17, 2, true, "0,0", ExpectedResult = true, TestName = "when value contains decimal comma")]
+		[TestCase(3, 2, false, "1.23", ExpectedResult = true, TestName = "when value length equals precision")]
+		[TestCase(4, 2, false, "1.23", ExpectedResult = true, TestName = "when value length less than precision")]
+		[TestCase(4, 2, false, "+1.23", ExpectedResult = true, TestName = "when value contains plus")]
+		[TestCase(4, 2, false, "-1.23", ExpectedResult = true, TestName = "when value contains minus")]
+		public bool IsValidNumber_True(int precision, int scale, bool onlyPositive, string entryValue)
 		{
-			Assert.Throws<ArgumentException>(() => new NumberValidator(-1, 2, true));
-			Assert.DoesNotThrow(() => new NumberValidator(1, 0, true));
-			Assert.Throws<ArgumentException>(() => new NumberValidator(-1, 2, false));
-			Assert.DoesNotThrow(() => new NumberValidator(1, 0, true));
-
-			Assert.IsTrue(new NumberValidator(17, 2, true).IsValidNumber("0.0"));
-			Assert.IsTrue(new NumberValidator(17, 2, true).IsValidNumber("0"));
-			Assert.IsTrue(new NumberValidator(17, 2, true).IsValidNumber("0.0"));
-			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("00.00"));
-			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("-0.00"));
-			Assert.IsTrue(new NumberValidator(17, 2, true).IsValidNumber("0.0"));
-			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("+0.00"));
-			Assert.IsTrue(new NumberValidator(4, 2, true).IsValidNumber("+1.23"));
-			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("+1.23"));
-			Assert.IsFalse(new NumberValidator(17, 2, true).IsValidNumber("0.000"));
-			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("-1.23"));
-			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("a.sd"));
+			return new NumberValidator(precision, scale, onlyPositive).IsValidNumber(entryValue);
 		}
-	}
+
+		[TestCase(3, 2, false, null, ExpectedResult = false, TestName = "when value is null")]
+		[TestCase(3, 2, false, "", ExpectedResult = false, TestName = "when value is empty string")]
+        [TestCase(3, 2, false, "00.00", ExpectedResult = false, TestName = "when value length more than precision")]
+		[TestCase(3, 2, false, "+1.23", ExpectedResult = false, TestName = "when value contains plus and value length bigger than precision")]
+		[TestCase(3, 2, false, "-1.23", ExpectedResult = false, TestName = "when value contains minus and value length bigger than precision")]
+		[TestCase(4, 2, true, "-0.00", ExpectedResult = false, TestName = "when value contains minus and onlyPositive=true")]
+        [TestCase(3, 2, false, "w.ш%", ExpectedResult = false, TestName = "when value contains non-digits")]
+		[TestCase(17, 2, false, "0.000", ExpectedResult = false, TestName = "when value decimal length more than scale")]
+		[TestCase(17, 8, false, "++0.00", ExpectedResult = false, TestName = "when value contains two signs")]
+		[TestCase(17, 8, false, "---0.00", ExpectedResult = false, TestName = "when value contains more than two signs")]
+		[TestCase(17, 8, false, "0.0.0", ExpectedResult = false, TestName = "when value contains more than one decimal separator")]
+        public bool IsValidNumber_False(int precision, int scale, bool onlyPositive, string entryValue)
+		{
+			return new NumberValidator(precision, scale, onlyPositive).IsValidNumber(entryValue);
+		}
+
+		[TestCase(17, 0, false, TestName = "when scale is zero")]
+		[TestCase(17, 2, false, TestName = "when scale is less than precision")]
+		public void Constructor_DoesNotThrow(int precision, int scale, bool onlyPositive)
+		{
+			Assert.DoesNotThrow(() => new NumberValidator(precision, scale, onlyPositive));
+		}
+
+		[TestCase(-1, 2, false, TestName = "when precision is negative")]
+		[TestCase(0, 2, false, TestName = "when precision is zero")]
+		[TestCase(17, -2, false, TestName = "when scale is negative")]
+		[TestCase(2, 3, false, TestName = "when scale is bigger than precision")]
+		[TestCase(17, 17, true, TestName = "when scale equals precision")]
+        public void Constructor_Throws_ArgumentException(int precision, int scale, bool onlyPositive)
+		{
+			Assert.Throws<ArgumentException>(() => new NumberValidator(precision, scale, onlyPositive));
+		}
+    }
 
 	public class NumberValidator
 	{
