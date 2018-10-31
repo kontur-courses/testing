@@ -40,24 +40,13 @@ namespace HomeExercises
 
 			var expectedTsar = new Person("Ivan IV The Terrible", 54, 170, 70,
 				new Person("Vasili III of Russia", 28, 170, 60, null));
+			
+			void AssertPersonEquals(Person actualPerson,Person expectedPerson)=>
+				actualPerson.Should().BeEquivalentTo(expectedPerson, opt => opt.Excluding(x => x.Id).Excluding(x => x.Parent));
 
-
-			//actualTsar.Age.Should().Be(expectedTsar.Age);
-			//actualTsar.Height.Should().Be(expectedTsar.Height);
-			//actualTsar.Name.Should().Be(expectedTsar.Name);
-			//actualTsar.Weight.Should().Be(expectedTsar.Weight);
-
-			//actualTsar.Parent.Age.Should().Be(expectedTsar.Parent.Age);
-			//actualTsar.Parent.Height.Should().Be(expectedTsar.Parent.Height);
-			//actualTsar.Parent.Name.Should().Be(expectedTsar.Parent.Name);
-			//actualTsar.Parent.Weight.Should().Be(expectedTsar.Parent.Weight);
-
-
-			//Reflexy are better then unDRY
-			var checkFields = new[] { "Age", "Name", "Weight", "Height" };
-			actualTsar.Should().HaveSameFieldsAs(expectedTsar, checkFields);
-			actualTsar.Parent.Should().HaveSameFieldsAs(expectedTsar.Parent, checkFields);
-
+			AssertPersonEquals(actualTsar,expectedTsar);
+			AssertPersonEquals(actualTsar.Parent, expectedTsar.Parent);
+			
 			// Перепишите код на использование Fluent Assertions.
 			//Assert.AreEqual(actualTsar.Name, expectedTsar.Name);
 			//Assert.AreEqual(actualTsar.Age, expectedTsar.Age);
