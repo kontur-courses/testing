@@ -1,4 +1,6 @@
-﻿using FluentAssertions;
+﻿using System.Reflection;
+using FluentAssertions;
+using FluentAssertions.Primitives;
 using NUnit.Framework;
 
 namespace HomeExercises
@@ -15,16 +17,9 @@ namespace HomeExercises
 			var expectedTsar = new Person("Ivan IV The Terrible", 54, 170, 70,
 				new Person("Vasili III of Russia", 28, 170, 60, null));
 
-			// Перепишите код на использование Fluent Assertions.
-			Assert.AreEqual(actualTsar.Name, expectedTsar.Name);
-			Assert.AreEqual(actualTsar.Age, expectedTsar.Age);
-			Assert.AreEqual(actualTsar.Height, expectedTsar.Height);
-			Assert.AreEqual(actualTsar.Weight, expectedTsar.Weight);
-
-			Assert.AreEqual(expectedTsar.Parent.Name, actualTsar.Parent.Name);
-			Assert.AreEqual(expectedTsar.Parent.Age, actualTsar.Parent.Age);
-			Assert.AreEqual(expectedTsar.Parent.Height, actualTsar.Parent.Height);
-			Assert.AreEqual(expectedTsar.Parent.Parent, actualTsar.Parent.Parent);
+			actualTsar.Should().BeEquivalentTo(expectedTsar, tsar => tsar
+				.Excluding(properties => properties
+					.SelectedMemberInfo.Name == "Id"));
 		}
 
 		[Test]
@@ -35,7 +30,11 @@ namespace HomeExercises
 			var expectedTsar = new Person("Ivan IV The Terrible", 54, 170, 70,
 				new Person("Vasili III of Russia", 28, 170, 60, null));
 
-			// Какие недостатки у такого подхода? 
+			// Какие недостатки у такого подхода?
+
+			// 1. В сообщении теста не будет говориться о том, какие именно поля не совпали в случае неудачи.
+			// 2. При добавлении новых полей в метод AreEqual придется добавлять новые проверки.
+			// 3. Немного затрудняет читаемость теста (проверяем, что AreEqual возвращает True вместо того, чтобы сразу проверить объекты на равенство).
 			Assert.True(AreEqual(actualTsar, expectedTsar));
 		}
 
