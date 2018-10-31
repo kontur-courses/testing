@@ -7,26 +7,94 @@ namespace HomeExercises
 {
 	public class NumberValidatorTests
 	{
-		[Test]
-		public void Test()
+		[TestCase(-1)]
+		[TestCase(0)]
+		[TestCase(-3)]
+		[TestCase(-100)]
+		public void NumberValidatorConstructorWillThrowExceptionIfPrecisionLessOrEqualZero(int precision)
 		{
-			Assert.Throws<ArgumentException>(() => new NumberValidator(-1, 2, true));
-			Assert.DoesNotThrow(() => new NumberValidator(1, 0, true));
-			Assert.Throws<ArgumentException>(() => new NumberValidator(-1, 2, false));
-			Assert.DoesNotThrow(() => new NumberValidator(1, 0, true));
+			Assert.Throws<ArgumentException>(() => new NumberValidator(precision, 2, true));
+		}
 
-			Assert.IsTrue(new NumberValidator(17, 2, true).IsValidNumber("0.0"));
-			Assert.IsTrue(new NumberValidator(17, 2, true).IsValidNumber("0"));
-			Assert.IsTrue(new NumberValidator(17, 2, true).IsValidNumber("0.0"));
-			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("00.00"));
-			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("-0.00"));
-			Assert.IsTrue(new NumberValidator(17, 2, true).IsValidNumber("0.0"));
-			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("+0.00"));
-			Assert.IsTrue(new NumberValidator(4, 2, true).IsValidNumber("+1.23"));
-			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("+1.23"));
-			Assert.IsFalse(new NumberValidator(17, 2, true).IsValidNumber("0.000"));
-			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("-1.23"));
-			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("a.sd"));
+		[TestCase(-1)]
+		[TestCase(-23)]
+		public void NumberValidatorConstructorWillThrowExceptionIfScaleLessThenZero(int scale)
+		{
+			Assert.Throws<ArgumentException>(() => new NumberValidator(10, scale, true));
+		}
+		
+		[Test]
+		public void NumberValidatorConstructorWillNotThrowExceptionIfScaleEqualsToZero()
+		{
+			Assert.DoesNotThrow(() => new NumberValidator(10,0,false));
+		}
+
+		[TestCase(10, 11)]
+		[TestCase(10, 10)]
+		[TestCase(1, 2)]
+		[TestCase(1, 10)]
+		public void NumberValidatorConstructorWillThrowExceptionIfScaleGraterThanPrecision(int precision, int scale)
+		{
+			Assert.Throws<ArgumentException>(() => new NumberValidator(precision, scale, true));
+		}
+
+		[TestCase(null)]
+		[TestCase("")]
+		[TestCase(" ")]
+		[TestCase("     ")]
+		public void NumberValidatorWillFailOnNullOrEmptyInput(string input)
+		{
+			Assert.IsFalse(new NumberValidator(10,9,false).IsValidNumber(input));
+		}
+		
+		[TestCase("-23.1")]
+		[TestCase("-10.1")]
+		[TestCase("-11.1")]
+		[TestCase("-123.23")]
+		public void PositiveNumberValidatorWillFailOnNegativeInput(string input)
+		{
+			Assert.IsFalse(new NumberValidator(10,9,true).IsValidNumber(input));
+		}
+
+		[TestCase("asd.ddt")]
+		[TestCase("WierdChinesSymbols.exe")]
+		[TestCase("1111a11.322")]
+		public void NumberValidatorWillFailOnNotNumberInput(string input)
+		{
+			Assert.IsFalse(new NumberValidator(100,99,false).IsValidNumber(input));
+		}
+
+		[TestCase("0.23")]
+		[TestCase("0.000")]
+		[TestCase("0.0")]
+		public void NumberValidatorWillFailWithScaleOverflow(string input)
+		{
+			Assert.IsFalse(new NumberValidator(10,0,false).IsValidNumber(input));
+		}
+		
+		[TestCase("0000")]
+		[TestCase("1234566")]
+		[TestCase("+1")]
+		public void NumberValidatorWillFailWithPrecisionOverflow(string input)
+		{
+			Assert.IsFalse(new NumberValidator(1,0,false).IsValidNumber(input));
+		}
+
+		[TestCase("+000")]
+		[TestCase("-000.0")]
+		[TestCase("+123.32")]
+		[TestCase("+222.23")]
+		public void NumberValidatorCountSignAsPrecision(string input)
+		{
+			Assert.IsFalse(new NumberValidator(3,2,false).IsValidNumber(input));
+		}
+
+		[TestCase("++32.0")]
+		[TestCase("+-32.0")]
+		[TestCase("-+32.0")]
+		public void NumberValidatorFailIfInputHasMoreThanTwoSigns(string input)
+		{
+			Assert.IsFalse(new NumberValidator(30,29).IsValidNumber(input));
 		}
 	}
 
