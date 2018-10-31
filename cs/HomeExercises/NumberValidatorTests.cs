@@ -31,7 +31,7 @@ namespace HomeExercises
 			TestName = "valid input with length equal to precision")]
 		[TestCase(17, 2, false, "᠕",
 			TestName = "valid input with mongolian digit")]
-		public void IsValidNumber_Validates(int precision, int scale, bool onlyPositive, string input)
+		public void IsValidNumber_Validates_When(int precision, int scale, bool onlyPositive, string input)
 		{
 			new NumberValidator(precision, scale, onlyPositive).IsValidNumber(input)
 				.Should()
@@ -68,7 +68,7 @@ namespace HomeExercises
 			TestName = "input with white space after number")]
 		[TestCase(17, 10, false, "1.1e1",
 			TestName = "input with scientific view")]
-		public void IsValidNumber_DoesNotValidate(int precision, int scale, bool onlyPositive, string input)
+		public void IsValidNumber_DoesNotValidate_When(int precision, int scale, bool onlyPositive, string input)
 		{
 			new NumberValidator(precision, scale, onlyPositive).IsValidNumber(input)
 				.Should()
@@ -86,7 +86,7 @@ namespace HomeExercises
 			TestName = "precision is equal to scale")]
 		[TestCase(2, 3, false, "precision must be a non-negative number*",
 			TestName = "precision less than scale")]
-		public void Constructor_Throws_ArgumentException_When
+		public void Constructor_ThrowsArgumentException_When
 			(int precision, int scale, bool onlyPositive, string expectedExceptionMessage)
 		{
 			Action ctorInvocation = () => new NumberValidator(precision, scale, onlyPositive);
