@@ -5,6 +5,17 @@ namespace HomeExercises
 {
 	public class ObjectComparison
 	{
+		/* Достоинства подхода ниже:
+		 *
+		 * + Отлично читается
+		 *
+		 * + Выдает информативные сообщение при непрохождении - а именно: какое поле не совпало
+		 *
+		 * + Легко расширяем. Например, достаточно написать допольнительные условия в .Excluding
+		 *
+		 * + Использует методы .Equals() соответствующих классов, которые уже где-то определены
+		 */
+
 		[Test]
 		[Description("Проверка текущего царя")]
 		[Category("ToRefactor")]
@@ -15,17 +26,26 @@ namespace HomeExercises
 			var expectedTsar = new Person("Ivan IV The Terrible", 54, 170, 70,
 				new Person("Vasili III of Russia", 28, 170, 60, null));
 
-			// Перепишите код на использование Fluent Assertions.
-			Assert.AreEqual(actualTsar.Name, expectedTsar.Name);
-			Assert.AreEqual(actualTsar.Age, expectedTsar.Age);
-			Assert.AreEqual(actualTsar.Height, expectedTsar.Height);
-			Assert.AreEqual(actualTsar.Weight, expectedTsar.Weight);
-
-			Assert.AreEqual(expectedTsar.Parent.Name, actualTsar.Parent.Name);
-			Assert.AreEqual(expectedTsar.Parent.Age, actualTsar.Parent.Age);
-			Assert.AreEqual(expectedTsar.Parent.Height, actualTsar.Parent.Height);
-			Assert.AreEqual(expectedTsar.Parent.Parent, actualTsar.Parent.Parent);
+			actualTsar.Should().BeEquivalentTo(
+				expectedTsar,
+				options => options
+					.AllowingInfiniteRecursion()  // ибо по дефолту 10 уровней вложенности
+					.Excluding(prop =>
+						prop.SelectedMemberInfo.DeclaringType == typeof(Person) &&
+						prop.SelectedMemberInfo.Name == "Id"));
 		}
+
+
+		/* Недостатки подхода ниже:
+		 *
+		 * + При непрохождении теста, на экран выведется Expected: True\n But was: False.
+		 * 	 Данное сообщение вообще неинформативно
+		 *
+		 * + По сути здесь реализован метод .Equals() класса Person. Но такие вещи надо реализовывать
+		 *   внутри класса Person. Далее AreEqual будет сам вызывать переопределенные методы
+		 *
+		 * + Каждый раз при добавлении поля необходимо добавлять новую строчку в метод AreEqual
+		 */
 
 		[Test]
 		[Description("Альтернативное решение. Какие у него недостатки?")]
@@ -52,6 +72,7 @@ namespace HomeExercises
 		}
 	}
 
+
 	public class TsarRegistry
 	{
 		public static Person GetCurrentTsar()
@@ -62,6 +83,7 @@ namespace HomeExercises
 		}
 	}
 
+
 	public class Person
 	{
 		public static int IdCounter = 0;
@@ -69,6 +91,7 @@ namespace HomeExercises
 		public string Name;
 		public Person Parent;
 		public int Id;
+
 
 		public Person(string name, int age, int height, int weight, Person parent)
 		{

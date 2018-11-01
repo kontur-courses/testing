@@ -7,26 +7,50 @@ namespace HomeExercises
 {
 	public class NumberValidatorTests
 	{
-		[Test]
-		public void Test()
+		[TestCase(-1, 2, true)]
+		[TestCase(-1, 2, false)]
+		[TestCase(0, 2, false)]
+		[TestCase(12, -12, false)]
+		[TestCase(12, 24, true)]
+		[TestCase(12, 12, false)]
+		public void ThrowsException_OnInvalidArguments(int precision, int scale, bool onlyPositive)
 		{
-			Assert.Throws<ArgumentException>(() => new NumberValidator(-1, 2, true));
-			Assert.DoesNotThrow(() => new NumberValidator(1, 0, true));
-			Assert.Throws<ArgumentException>(() => new NumberValidator(-1, 2, false));
-			Assert.DoesNotThrow(() => new NumberValidator(1, 0, true));
+			Action creation = () => new NumberValidator(precision, scale);
+			creation.Should().Throw<ArgumentException>();
+		}
 
-			Assert.IsTrue(new NumberValidator(17, 2, true).IsValidNumber("0.0"));
-			Assert.IsTrue(new NumberValidator(17, 2, true).IsValidNumber("0"));
-			Assert.IsTrue(new NumberValidator(17, 2, true).IsValidNumber("0.0"));
-			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("00.00"));
-			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("-0.00"));
-			Assert.IsTrue(new NumberValidator(17, 2, true).IsValidNumber("0.0"));
-			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("+0.00"));
-			Assert.IsTrue(new NumberValidator(4, 2, true).IsValidNumber("+1.23"));
-			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("+1.23"));
-			Assert.IsFalse(new NumberValidator(17, 2, true).IsValidNumber("0.000"));
-			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("-1.23"));
-			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("a.sd"));
+		[TestCase(1, 0, true)]
+		[TestCase(12, 11, false)]
+		public void DoesnotThrowException_OnValidArguments(int precision, int scale, bool onlyPositive)
+		{
+			Action creation = () => new NumberValidator(precision, scale);
+			creation.Should().NotThrow<ArgumentException>();
+		}
+
+		[TestCase(17, 2, true, "0.0")]
+		[TestCase(17, 2, true, "0")]
+		[TestCase(4, 2, true, "+1.23")]
+		[TestCase(4, 2, true, "+1,23")]
+		[TestCase(4, 2, false, "-1,23")]
+		public void ValidNumber_OnValidArguments(int precision, int scale, bool onlyPositive, string value)
+		{
+			var validator = new NumberValidator(precision, scale, onlyPositive);
+			validator.IsValidNumber(value).Should().BeTrue();
+		}
+
+		[TestCase(3, 2, true, null)]
+		[TestCase(3, 2, true, "")]
+		[TestCase(3, 2, true, "a.sd")]
+		[TestCase(3, 2, false, "12/2")]
+		[TestCase(3, 2, true, "00.00")]
+		[TestCase(3, 2, false, "-0.00")]
+		[TestCase(3, 2, true, "+0.00")]
+		[TestCase(17, 2, true, "0.000")]
+		[TestCase(10, 2, true, "-12.00")]
+		public void InvalidNumber_OnInvalidArguments(int precision, int scale, bool onlyPositive, string value)
+		{
+			var validator = new NumberValidator(precision, scale, onlyPositive);
+			validator.IsValidNumber(value).Should().BeFalse();
 		}
 	}
 
@@ -45,18 +69,12 @@ namespace HomeExercises
 			if (precision <= 0)
 				throw new ArgumentException("precision must be a positive number");
 			if (scale < 0 || scale >= precision)
-				throw new ArgumentException("precision must be a non-negative number less or equal than precision");
+				throw new ArgumentException("scale must be a non-negative number less than precision");
 			numberRegex = new Regex(@"^([+-]?)(\d+)([.,](\d+))?$", RegexOptions.IgnoreCase);
 		}
 
 		public bool IsValidNumber(string value)
 		{
-			// Проверяем соответствие входного значения формату N(m,k), в соответствии с правилом, 
-			// описанным в Формате описи документов, направляемых в налоговый орган в электронном виде по телекоммуникационным каналам связи:
-			// Формат числового значения указывается в виде N(m.к), где m – максимальное количество знаков в числе, включая знак (для отрицательного числа), 
-			// целую и дробную часть числа без разделяющей десятичной точки, k – максимальное число знаков дробной части числа. 
-			// Если число знаков дробной части числа равно 0 (т.е. число целое), то формат числового значения имеет вид N(m).
-
 			if (string.IsNullOrEmpty(value))
 				return false;
 

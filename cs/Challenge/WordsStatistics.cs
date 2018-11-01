@@ -12,6 +12,7 @@ namespace Challenge
 	 * При одинаковой частоте — в лексикографическом порядке.
 	 * </summary>
 	 */
+
 	public class WordsStatistics : IWordsStatistics
 	{
 		protected readonly IDictionary<string, int> statistics 

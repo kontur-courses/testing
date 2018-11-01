@@ -26,7 +26,8 @@ namespace Challenge.IncorrectImplementations
         {
             if (word == null) throw new ArgumentNullException(nameof(word));
             if (string.IsNullOrWhiteSpace(word)) return;
-            if (word.Length > 10) word = word.Substring(0, 10);
+            if (word.Length > 10)
+	            word = word.Substring(0, 10);
             else if (word.Length > 5) word = word.Substring(0, word.Length - 2);
             int count;
 			statistics[word.ToLower()] = 1 + (statistics.TryGetValue(word.ToLower(), out count) ? count : 0);
@@ -40,7 +41,7 @@ namespace Challenge.IncorrectImplementations
         {
             if (word == null) throw new ArgumentNullException(nameof(word));
             if (string.IsNullOrWhiteSpace(word)) return;
-            if (word.Length - 1 > 10) word = word.Substring(0, 10);
+            if (word.Length > 11) word = word.Substring(0, 10);
             int count;
 			statistics[word.ToLower()] = 1 + (statistics.TryGetValue(word.ToLower(), out count) ? count : 0);
 		}
@@ -179,6 +180,7 @@ namespace Challenge.IncorrectImplementations
     [IncorrectImplementation]
     public class WordsStatisticsSTA : IWordsStatistics
     {
+	    // на второй раз сделает новый словарь
         private static readonly IDictionary<string, int> statistics = new Dictionary<string, int>();
 
         public WordsStatisticsSTA()
@@ -190,7 +192,8 @@ namespace Challenge.IncorrectImplementations
         {
             if (word == null) throw new ArgumentNullException(nameof(word));
             if (string.IsNullOrWhiteSpace(word)) return;
-            if (word.Length > 10) word = word.Substring(0, 10);
+            if (word.Length > 10)
+	            word = word.Substring(0, 10);
             int count;
 			statistics[word.ToLower()] = 1 + (statistics.TryGetValue(word.ToLower(), out count) ? count : 0);
 		}
@@ -278,7 +281,8 @@ namespace Challenge.IncorrectImplementations
         {
             if (word == null) throw new ArgumentNullException(nameof(word));
             if (string.IsNullOrWhiteSpace(word)) return;
-            if (word.Length > 10) word = word.Substring(0, 10);
+            if (word.Length > 10)
+	            word = word.Substring(0, 10);
 	        var lowerCaseWord = word.ToLower();
 	        var wordCount = statistics.FirstOrDefault(s => s.Word == lowerCaseWord);
             if (wordCount.Word != null)
