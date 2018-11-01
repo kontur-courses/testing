@@ -12,8 +12,8 @@ namespace HomeExercises
 		{
 			var actualTsar = TsarRegistry.GetCurrentTsar();
 
-			var expectedTsar = new Person("Ivan IV The Terrible", 54, 170, 70,
-				new Person("Vasili III of Russia", 28, 170, 60, null));
+			var expectedTsar = new Person("Ivan IV The Terrible", age: 54, height: 170, weight: 70,
+				parent: new Person("Vasili III of Russia", age: 28, height: 170, weight: 60, parent: null));
 
 			// Перепишите код на использование Fluent Assertions.
 			actualTsar.Should().BeEquivalentTo(expectedTsar,
@@ -27,8 +27,8 @@ namespace HomeExercises
 		public void CheckCurrentTsar_WithCustomEquality()
 		{
 			var actualTsar = TsarRegistry.GetCurrentTsar();
-			var expectedTsar = new Person("Ivan IV The Terrible", 54, 170, 70,
-				new Person("Vasili III of Russia", 28, 146, 60, null));
+			var expectedTsar = new Person("Ivan IV The Terrible", age: 54, height: 170, weight: 70,
+				parent: new Person("Vasili III of Russia", age: 28, height: 146, weight: 60, parent: null));
 
 			// Какие недостатки у такого подхода? 
 			Assert.True(AreEqual(actualTsar, expectedTsar));
