@@ -55,7 +55,7 @@
   <ItemGroup>
     <Compile Include="ObjectComparison.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="NumberValidatorTests.cs" />
+    <Compile Include="NumberValidator_Should.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

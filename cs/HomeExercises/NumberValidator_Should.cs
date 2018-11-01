@@ -6,7 +6,7 @@ using NUnit.Framework;
 
 namespace HomeExercises
 {
-	public class NumberValidatorTests
+	public class NumberValidator_Should
 	{
 		[Test]
 		public void Test()
@@ -38,7 +38,7 @@ namespace HomeExercises
 		[TestCase("1.23", 1000)]
 		[TestCase("-1.23", 4, 2, false)]
 		[TestCase("-1.23", 1000, 2,false)]
-		public void TestValid(string value, int precision = 17, int scale = 2, bool onlyPositive = true)=>
+		public void BeValid_With(string value, int precision = 17, int scale = 2, bool onlyPositive = true)=>
 			new NumberValidator(precision,scale,onlyPositive).IsValidNumber(value).Should().BeTrue();
 
 		[TestCase("00.00")]
@@ -47,11 +47,16 @@ namespace HomeExercises
 		[TestCase("+1.23")]
 		[TestCase("1.2345")]
 		[TestCase("0.000",17)]
-		[TestCase("-1.23")]
+		[TestCase("-1.23")] 
+		[TestCase("-1.23",4)]
 		[TestCase("a.sd")]
 		[TestCase("a.0")]
 		[TestCase("0.sd")]
-		public void TestInvalid(string value, int precision = 3, int scale = 2, bool onlyPositive = true) =>
+		[TestCase("0sd")]
+		[TestCase("123123")]
+		[TestCase("")]
+		[TestCase(null)]
+		public void BeInvalid_With(string value, int precision = 3, int scale = 2, bool onlyPositive = true) =>
 			new NumberValidator(precision, scale, onlyPositive).IsValidNumber(value).Should().BeFalse();
 
 		[TestCase(typeof(ArgumentException),-1,2)]
@@ -60,16 +65,12 @@ namespace HomeExercises
 		[TestCase(typeof(ArgumentException), -1, 2, false)]
 		[TestCase(typeof(ArgumentException), 2, 2, false)]
 		[TestCase(typeof(ArgumentException), 2, -2, false)]
-		[TestCase(null,1,0)]
-		public void TestThrows(Type exceptionType, int precision , int scale , bool onlyPositive = true)
-		{
-			void Deleg() => new NumberValidator(precision, scale, onlyPositive);
-			if (exceptionType == null)
-				Assert.DoesNotThrow(Deleg);
-			else
-				Assert.Throws(exceptionType, Deleg);
-				// typeof(Assert).GetMethod("Throws", BindingFlags.Public | BindingFlags.Static).MakeGenericMethod(exceptionType).Invoke(null, new Action[] { Deleg });
-		}
+		public void ThrowException(Type exceptionType, int precision, int scale, bool onlyPositive = true)=>
+				Assert.Throws(exceptionType, () => new NumberValidator(precision, scale, onlyPositive));
+
+		[TestCase(1, 0)]	
+		public void DoesNotThrow(int precision, int scale, bool onlyPositive = true)=>
+				Assert.DoesNotThrow(() => new NumberValidator(precision, scale, onlyPositive));
 	}
 
 	public class NumberValidator
@@ -116,6 +117,7 @@ namespace HomeExercises
 
 			if (onlyPositive && match.Groups[1].Value == "-")
 				return false;
+
 			return true;
 		}
 	}

@@ -47,16 +47,6 @@ namespace HomeExercises
 			AssertPersonEquals(actualTsar,expectedTsar);
 			AssertPersonEquals(actualTsar.Parent, expectedTsar.Parent);
 			
-			// Перепишите код на использование Fluent Assertions.
-			//Assert.AreEqual(actualTsar.Name, expectedTsar.Name);
-			//Assert.AreEqual(actualTsar.Age, expectedTsar.Age);
-			//Assert.AreEqual(actualTsar.Height, expectedTsar.Height);
-			//Assert.AreEqual(actualTsar.Weight, expectedTsar.Weight);
-
-			//Assert.AreEqual(expectedTsar.Parent.Name, actualTsar.Parent.Name);
-			//Assert.AreEqual(expectedTsar.Parent.Age, actualTsar.Parent.Age);
-			//Assert.AreEqual(expectedTsar.Parent.Height, actualTsar.Parent.Height);
-			//Assert.AreEqual(expectedTsar.Parent.Parent, actualTsar.Parent.Parent);
 		}
 
 		[Test]
@@ -88,7 +78,6 @@ namespace HomeExercises
 
 	public static class FluentAssertionExtenstion
 	{
-		//I tried to generalized it to using MemberInfo, but it has no succsess(
 		public static void HaveSamePropertiesAs(this FluentAssertions.Primitives.ObjectAssertions actual, object expexted, IEnumerable<string> properties = null)
 		{
 			var type = actual.Subject.GetType();
