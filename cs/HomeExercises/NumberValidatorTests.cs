@@ -1,24 +1,33 @@
 ﻿using System;
+using System.Dynamic;
 using System.Text.RegularExpressions;
+using System.Xml.Serialization;
 using FluentAssertions;
 using NUnit.Framework;
+using NUnit.Framework.Internal.Filters;
 
 namespace HomeExercises
 {
 	public class NumberValidatorTests
 	{
+
+		private NumberValidator CreateNumberValidator(int prec, int scale, bool onlyPositive = false)
+		{
+			return new NumberValidator(prec,scale,onlyPositive);
+		}
+		
 		[TestCase(-1)]
 		[TestCase(0)]
 		[TestCase(-3)]
 		[TestCase(-100)]
-		public void NumberValidatorConstructorWillThrowExceptionIfPrecisionLessOrEqualZero(int precision)
+		public void ConstructorWillThrowExceptionIfPrecisionLessOrEqualZero(int precision)
 		{
 			Assert.Throws<ArgumentException>(() => new NumberValidator(precision, 2, true));
 		}
 
 		[TestCase(-1)]
 		[TestCase(-23)]
-		public void NumberValidatorConstructorWillThrowExceptionIfScaleLessThenZero(int scale)
+		public void ConstructorWillThrowExceptionIfScaleLessThenZero(int scale)
 		{
 			Assert.Throws<ArgumentException>(() => new NumberValidator(10, scale, true));
 		}
@@ -33,69 +42,78 @@ namespace HomeExercises
 		[TestCase(10, 10)]
 		[TestCase(1, 2)]
 		[TestCase(1, 10)]
-		public void NumberValidatorConstructorWillThrowExceptionIfScaleGraterThanPrecision(int precision, int scale)
+		public void  ConstructorWillThrowExceptionIfScaleGraterThanPrecision(int precision, int scale)
 		{
 			Assert.Throws<ArgumentException>(() => new NumberValidator(precision, scale, true));
 		}
 
-		[TestCase(null)]
-		[TestCase("")]
-		[TestCase(" ")]
-		[TestCase("     ")]
-		public void NumberValidatorWillFailOnNullOrEmptyInput(string input)
+		[Description("Проверяем , что NumberValidator ")]
+		[TestCase(10,9,null)]
+		[TestCase(10,9,"")]
+		[TestCase(10,9," ")]
+		[TestCase(10,9,"     ")]
+		public void WillFailOnNullOrEmptyInput(int prec, int scale, string input)
 		{
-			Assert.IsFalse(new NumberValidator(10,9,false).IsValidNumber(input));
+			CreateNumberValidator(prec,scale).IsValidNumber(input).Should().BeFalse();
 		}
 		
-		[TestCase("-23.1")]
-		[TestCase("-10.1")]
-		[TestCase("-11.1")]
-		[TestCase("-123.23")]
-		public void PositiveNumberValidatorWillFailOnNegativeInput(string input)
+		[Description("Проверяем, что положительный NumberValidator работает корректно.")]
+		[TestCase(10,9,"-23.1",false)]
+		[TestCase(10,9,"10.1",true)]
+		[TestCase(10,9,"+11.1",true)]
+		[TestCase(10,9,"-123.23",false)]
+		public void PositiveNumberValidatorTest(int prec, int scale, string input,bool expected)
 		{
-			Assert.IsFalse(new NumberValidator(10,9,true).IsValidNumber(input));
+			CreateNumberValidator(prec,scale, true).IsValidNumber(input).Should().Be(expected);
 		}
 
+		[Description("Проверяем, что RegExp работает корректно.")]
 		[TestCase("asd.ddt")]
 		[TestCase("WierdChinesSymbols.exe")]
 		[TestCase("1111a11.322")]
-		public void NumberValidatorWillFailOnNotNumberInput(string input)
+		public void WillFailOnNotNumberInput(string input)
 		{
-			Assert.IsFalse(new NumberValidator(100,99,false).IsValidNumber(input));
+			CreateNumberValidator(100, 99, false).IsValidNumber(input).Should().BeFalse();
 		}
 
-		[TestCase("0.23")]
-		[TestCase("0.000")]
-		[TestCase("0.0")]
-		public void NumberValidatorWillFailWithScaleOverflow(string input)
+		[Description("Проверяем переполнение дробной части.")]
+		[TestCase(10,3,"23.1000",false)]
+		[TestCase(10,4,"-23.10000",false)]
+		[TestCase(10,1,"0.011",false)]
+		[TestCase(10,3,"0,123",true)]
+		public void ScaleOverflowTest(int prec, int scale, string input,bool expected)
 		{
-			Assert.IsFalse(new NumberValidator(10,0,false).IsValidNumber(input));
+			CreateNumberValidator(prec, scale, false).IsValidNumber(input).Should().Be(expected);
 		}
-		
-		[TestCase("0000")]
-		[TestCase("1234566")]
-		[TestCase("+1")]
-		public void NumberValidatorWillFailWithPrecisionOverflow(string input)
+		[Description("Проверяем перполнение precision.")]
+		[TestCase(5,3,"230.10",true)]
+		[TestCase(5,3,"+230.10",false)]
+		[TestCase(3,2,"000",true)]
+		[TestCase(3,2,"0000",false)]
+		public void PrecisionOverflowTest(int prec, int scale, string input,bool expected)
 		{
-			Assert.IsFalse(new NumberValidator(1,0,false).IsValidNumber(input));
-		}
-
-		[TestCase("+000")]
-		[TestCase("-000.0")]
-		[TestCase("+123.32")]
-		[TestCase("+222.23")]
-		public void NumberValidatorCountSignAsPrecision(string input)
-		{
-			Assert.IsFalse(new NumberValidator(3,2,false).IsValidNumber(input));
+			CreateNumberValidator(prec, scale, false).IsValidNumber(input).Should().Be(expected);
 		}
 
+		[Description("Проверяем, что более чем 1 знак недопустим")]
 		[TestCase("++32.0")]
 		[TestCase("+-32.0")]
 		[TestCase("-+32.0")]
+		[TestCase("--32.0")]
 		public void NumberValidatorFailIfInputHasMoreThanTwoSigns(string input)
 		{
-			Assert.IsFalse(new NumberValidator(30,29).IsValidNumber(input));
+			CreateNumberValidator(100, 99).IsValidNumber(input).Should().BeFalse();
 		}
+		
+		[Description("....")]
+		[TestCase(100,99,"+.000",false)]
+		[TestCase(5,3,"+0.",false)]
+		[TestCase(3,2,"+.",false)]
+		public void SomeWierdTests(int prec, int scale, string input,bool expected)
+		{
+			CreateNumberValidator(prec, scale, false).IsValidNumber(input).Should().Be(expected);
+		}
+		
 	}
 
 	public class NumberValidator

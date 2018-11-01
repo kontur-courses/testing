@@ -15,14 +15,17 @@ namespace HomeExercises
 			var expectedTsar = new Person("Ivan IV The Terrible", 54, 170, 70,
 				new Person("Vasili III of Russia", 28, 170, 60, null));
 			
-			expectedTsar.ShouldBeEquivalentTo(actualTsar, options => options
+			expectedTsar.Should().BeEquivalentTo(actualTsar, options => options
 				.Excluding(info => info.Parent.Id)
 				.Excluding(info => info.Id));
+			
 		}
 		/* 1) Решение в тесте ниже не предоставит информации где объекты не равны
 		   2) Ещё один недостаток второго теста состоит в том , что при добавлении нового поля нам придётся переписывать 
 			метод AreEqual, который используется в других тестах, где это поле не играет значение.Так что первый подход 
 			более правильный, т.к. тест очень легко изменяется.
+		   3)Should().AllBeEquivalentTo(Obj) - Проверяет что все объекты данного класса равны заданному объекту.Не особо
+		   подходит к нашему тесту если мы захотим создать двух разных царей.
 		*/
 		[Test]
 		[Description("Альтернативное решение. Какие у него недостатки?")]
