@@ -19,8 +19,8 @@ namespace HomeExercises
 			var expectedTsar = new Person("Ivan IV The Terrible", 54, 170, 70,
 				new Person("Vasili III of Russia", 28, 170, 60, null));
 			actualTsar.ShouldBeEquivalentTo(expectedTsar, option =>
-				option.Excluding(o => o.SelectedMemberInfo.DeclaringType == actualTsar.GetType() &&
-					o.SelectedMemberInfo.Name == nameof(actualTsar.Id)));
+				option.Excluding(o => o.SelectedMemberInfo.DeclaringType == typeof(Person) &&
+					o.SelectedMemberInfo.Name == nameof(Person.Id)));
 		}
 
         [Test]

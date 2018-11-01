@@ -35,9 +35,9 @@ namespace HomeExercises
 			[TestCase(2, 0, false, "-1", TestName = "Be true With Negative Value and Not positive Flag",
 				ExpectedResult = true)]
 			[TestCase(3, 2, false, "1.1", TestName = "Be true With Correct Value", ExpectedResult = true)]
-			public bool test(int precision, int scale, bool onlyPositiveFlag, string value)
+			public bool test(int precision, int scale, bool onlyPositive, string value)
 			{
-				return new NumberValidator(precision, scale, onlyPositiveFlag).IsValidNumber(value);
+				return new NumberValidator(precision, scale, onlyPositive).IsValidNumber(value);
 			}
 		}
 	}
