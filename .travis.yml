@@ -5,6 +5,6 @@ install:
   - nuget install NUnit.ConsoleRunner -Version 3.9.0 -OutputDirectory testrunner
 script:
   - xbuild /p:Configuration=Release ./cs/testing.sln
-  - mono ./testing/testrunner/NUnit.ConsoleRunner.3.9.0/tools/nunit3-console.exe ./cs/HomeExercises/bin/Release/ObjectComparison.dll
+  - mono ./testrunner/NUnit.ConsoleRunner.3.9.0/tools/nunit3-console.exe ./cs/HomeExercises/bin/Release/ObjectComparison.dll
 after_success:
     - bash <(curl -s https://codecov.io/bash)
