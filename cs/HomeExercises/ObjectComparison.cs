@@ -5,59 +5,38 @@ namespace HomeExercises
 {
 
     [TestFixture]
-	public class ObjectComparison
-	{
+    public class ObjectComparison
+    {
+        private Person actualTsar;
 
-		private Person actualTsar;
-
-		[SetUp]
-		public void SetUp()
-		{
-			actualTsar = TsarRegistry.GetCurrentTsar();
+        [SetUp]
+        public void SetUp()
+        {
+            actualTsar = TsarRegistry.GetCurrentTsar();
         }
 
-		[TearDown]
-		public void TearDown() { }
+        [Test]
+        [Description("Проверка текущего царя")]
+        [Category("ToRefactor")]
+        public void CheckCurrentTsar()
+        {
+	        var expectedTsar = new Person("Ivan IV The Terrible", 54, 170, 70,
+		        new Person("Vasili III of Russia", 28, 170, 60, null));
 
+            actualTsar.Should().BeEquivalentTo(expectedTsar, options => options
+                .Excluding(s => s.SelectedMemberInfo.DeclaringType == typeof(Person) &&
+                                s.SelectedMemberInfo.Name == "Id"));
+        }
 
         [Test]
-		[Description("Проверка текущего царя")]
-		[Category("ToRefactor")]
-		public void CheckCurrentTsar()
-		{
-			//добавлен билдер для класса
-			//поэтому изменения в конструкторе в классе Person не сломют тесты.
-			//Изменения нужно будет внести только в билдере. 
-			var parent = TestPersonBuilder.APerson()
-				.WithName("Vasili III of Russia")
-				.WithAge(28)
-				.WithHeight(170)
-				.WithWeight(60).Build();
+        [Description("Альтернативное решение. Какие у него недостатки?")]
+        public void CheckCurrentTsar_WithCustomEquality()
+        {
+            var expectedTsar = new Person("Ivan IV The Terrible", 54, 170, 70,
+                new Person("Vasili III of Russia", 28, 170, 60, null));
 
-            var expectedTsar = TestPersonBuilder.APerson()
-	            .WithName("Ivan IV The Terrible")
-	            .WithAge(54)
-	            .WithHeight(170)
-                .WithWeight(70)
-	            .WithParent(parent)
-	            .Build();
-
-			//тест переписан на Fluent Assertions
-            actualTsar.Should().BeEquivalentTo(expectedTsar, options => options
-				.Excluding(s => s.SelectedMemberInfo.DeclaringType == typeof(Person) &&
-				                s.SelectedMemberInfo.Name == "Id"));
-		}
-
-		[Test]
-		[NUnit.Framework.Description("Альтернативное решение. Какие у него недостатки?")]
-		public void CheckCurrentTsar_WithCustomEquality()
-		{
-
-			var expectedTsar = new Person("Ivan IV The Terrible", 54, 170, 70,
-				new Person("Vasili III of Russia", 28, 170, 60, null));
-
-			// Какие недостатки у такого подхода? 
-			Assert.True(AreEqual(actualTsar, expectedTsar));
+            // Какие недостатки у такого подхода? 
+            Assert.True(AreEqual(actualTsar, expectedTsar));
 
             /*
 			 Недостатки метода выше:
@@ -77,101 +56,44 @@ namespace HomeExercises
         }
 
         private bool AreEqual(Person actual, Person expected)
-		{
-			if (actual == expected) return true;
-			if (actual == null || expected == null) return false;
-			return
-				actual.Name == expected.Name
-				&& actual.Age == expected.Age
-				&& actual.Height == expected.Height
-				&& actual.Weight == expected.Weight
-				&& AreEqual(actual.Parent, expected.Parent);
-		}
-	}
+        {
+            if (actual == expected) return true;
+            if (actual == null || expected == null) return false;
+            return
+                actual.Name == expected.Name
+                && actual.Age == expected.Age
+                && actual.Height == expected.Height
+                && actual.Weight == expected.Weight
+                && AreEqual(actual.Parent, expected.Parent);
+        }
+    }
 
-	public class TsarRegistry
-	{
-		public static Person GetCurrentTsar()
-		{
-			return new Person(
-				"Ivan IV The Terrible", 54, 170, 70,
-				new Person("Vasili III of Russia", 28, 170, 60, null));
-		}
-	}
+    public class TsarRegistry
+    {
+        public static Person GetCurrentTsar()
+        {
+            return new Person(
+                "Ivan IV The Terrible", 54, 170, 70,
+                new Person("Vasili III of Russia", 28, 170, 60, null));
+        }
+    }
 
-	public class Person
-	{
-		public static int IdCounter = 0;
-		public int Age, Height, Weight;
-		public string Name;
-		public Person Parent;
-		public int Id;
+    public class Person
+    {
+        public static int IdCounter = 0;
+        public int Age, Height, Weight;
+        public string Name;
+        public Person Parent;
+        public int Id;
 
-		public Person(string name, int age, int height, int weight, Person parent)
-		{
-			Id = IdCounter++;
-			Name = name;
-			Age = age;
-			Height = height;
-			Weight = weight;
-			Parent = parent;
-		}
-	}
-
-
-	public class TestPersonBuilder
-	{
-		public const string DEFAULT_NAME = "John Smith";
-		public const int DEFAULT_AGE = 42;
-		public const int DEFAULT_HEIGHT = 175;
-		public const int DEFAULT_WEIGHT = 175;
-
-		private string name = DEFAULT_NAME;
-		private int age = DEFAULT_AGE;
-		private int height = DEFAULT_HEIGHT;
-		private int weight = DEFAULT_WEIGHT;
-		private Person parent;
-
-		private TestPersonBuilder()
-		{
-
-		}
-
-		public static TestPersonBuilder APerson()
-		{
-			return new TestPersonBuilder();
-		}
-
-		public TestPersonBuilder WithName(string name)
-		{
-			this.name = name;
-			return this;
-		}
-		
-		public TestPersonBuilder WithAge(int age)
-		{
-			this.age = age;
-			return this;
-		}
-		public TestPersonBuilder WithHeight(int height)
-		{
-			this.height = height;
-			return this;
-		}
-
-		public TestPersonBuilder WithWeight(int weight)
-		{
-			this.weight = weight;
-			return this;
-		}
-
-		public TestPersonBuilder WithParent(Person parent)
-		{
-			this.parent = parent;
-			return this;
-		}
-
-        public Person Build() => new Person(name, age, height, weight, parent);
-
+        public Person(string name, int age, int height, int weight, Person parent)
+        {
+            Id = IdCounter++;
+            Name = name;
+            Age = age;
+            Height = height;
+            Weight = weight;
+            Parent = parent;
+        }
     }
 }
