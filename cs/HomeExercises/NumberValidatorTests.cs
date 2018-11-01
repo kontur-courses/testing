@@ -38,7 +38,7 @@ namespace HomeExercises
 
 		[Test]
         [TestCase(1, 0, true)]
-        public void Constructor_DoesNotThrowExeption_WhenArgsIsCorrect(int precision, int scale, bool onlyPositive)
+        public void Constructor_DoesNotThrowException_WhenArgsIsCorrect(int precision, int scale, bool onlyPositive)
 		{
 			Assert.That(() => new NumberValidator(precision, scale, onlyPositive),
 				Throws.Nothing);
