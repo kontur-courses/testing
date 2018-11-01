@@ -18,10 +18,9 @@ namespace HomeExercises
 
 			var expectedTsar = new Person("Ivan IV The Terrible", 54, 170, 70,
 				new Person("Vasili III of Russia", 28, 170, 60, null));
-			actualTsar.Should().BeOfType<Person>();
-			actualTsar.GetType().GetField("Id").Should().NotBeNull();
 			actualTsar.ShouldBeEquivalentTo(expectedTsar, option =>
-				option.Excluding(o => o.SelectedMemberInfo.Name == nameof(actualTsar.Id)));
+				option.Excluding(o => o.SelectedMemberInfo.DeclaringType == actualTsar.GetType() &&
+					o.SelectedMemberInfo.Name == nameof(actualTsar.Id)));
 		}
 
         [Test]
