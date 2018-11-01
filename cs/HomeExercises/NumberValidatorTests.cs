@@ -53,21 +53,21 @@ namespace HomeExercises
             numberValidator.IsValidNumber(number).Should().BeTrue();
         }
 
-		[TestCase("-1.12", TestName = "Negative decimal number")]
-		[TestCase("-1", TestName = "Negative integer number")]
+        [TestCase("-1.12", TestName = "Negative decimal number")]
+        [TestCase("-1", TestName = "Negative integer number")]
         public void PositiveNumberValidator_ReturnFalse(string number)
         {
             positiveNumberValidator.IsValidNumber(number).Should().BeFalse();
         }
 
-	    [TestCase("1.12", TestName = "Positive Decimal number")]
-	    [TestCase("1", TestName = "Positive integer number")]
-		[TestCase("+1.12", TestName = "Decimal number with plus sign")]
-	    [TestCase("+1", TestName = "Integer number with plus sign")]
+        [TestCase("1.12", TestName = "Positive Decimal number")]
+        [TestCase("1", TestName = "Positive integer number")]
+        [TestCase("+1.12", TestName = "Decimal number with plus sign")]
+        [TestCase("+1", TestName = "Integer number with plus sign")]
         public void PositiveNumberValidator_ReturnTrue(string number)
-	    {
-		    positiveNumberValidator.IsValidNumber(number).Should().BeTrue();
-	    }
+        {
+            positiveNumberValidator.IsValidNumber(number).Should().BeTrue();
+        }
     }
 
     public class NumberValidator
