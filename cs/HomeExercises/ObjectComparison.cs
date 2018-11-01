@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using FluentAssertions;
 using NUnit.Framework;
 using NUnit.Framework.Constraints;
@@ -17,12 +18,13 @@ namespace HomeExercises
 
 			var expectedTsar = new Person("Ivan IV The Terrible", 54, 170, 70,
 				new Person("Vasili III of Russia", 28, 170, 60, null));
-
-			expectedTsar.ShouldBeEquivalentTo(actualTsar, option =>
-				option.Excluding(o => o.SelectedMemberPath.EndsWith("Id")));
+			actualTsar.Should().BeOfType<Person>();
+			actualTsar.GetType().GetField("Id").Should().NotBeNull();
+			actualTsar.ShouldBeEquivalentTo(expectedTsar, option =>
+				option.Excluding(o => o.SelectedMemberInfo.Name == nameof(actualTsar.Id)));
 		}
 
-		[Test]
+        [Test]
 		[Description("Альтернативное решение. Какие у него недостатки?")]
 		public void CheckCurrentTsar_WithCustomEquality()
 		{
