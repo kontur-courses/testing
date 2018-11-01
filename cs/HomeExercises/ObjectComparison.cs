@@ -17,9 +17,8 @@ namespace HomeExercises
 			// Перепишите код на использование Fluent Assertions.
 			
 			actualTsar.ShouldBeEquivalentTo(expectedTsar, options => 
-				options.Excluding(o =>
-					o.SelectedMemberInfo.Name.Equals("Id") || 
-					(o.SelectedMemberInfo.Name.Equals("Parent") && o.SelectedMemberInfo.MemberType == null)));
+				options.Excluding(o => o.SelectedMemberInfo.Name.Equals("Id"))
+					.ExcludingMissingMembers());
 		}
 
 		[Test]
