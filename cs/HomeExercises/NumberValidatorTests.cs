@@ -20,14 +20,14 @@ namespace HomeExercises
 		[TestCase(1, -1, TestName = "less than zero")]
 		[TestCase(1, 1, TestName = "equal to precision")]
 		[TestCase(1, 2, TestName = "grater than precision")]
-		public void Constructor_ShouldThrowArgumentException_WhenScaleIncorrect
+		public void Constructor_ShouldThrowArgumentException_WhenScale
 			(int precision, int scale)
 		{
 			Assert.Throws<ArgumentException>(() => new NumberValidator(precision, scale),
 				"precision must be a non-negative number less or equal than precision");
 		}
 
-		[TestCase(1, 0, TestName = "scale equal to 0")]
+		[TestCase(1, 0, TestName = "scale equal to zero")]
 		[TestCase(10, 5, false, TestName = "passed onlyPositive argument")]
 		public void Constructor_ShouldWorkCorrectly_When(int precision, int scale, 
 				bool onlyPositive = false) =>
@@ -38,16 +38,23 @@ namespace HomeExercises
 		[TestCase(3, 2, true, "00.00", TestName = "scale exceeded")]
 		[TestCase(4, 2, true, "-1.23", TestName = "onlyPositive set as true, but not positive number")]
 		[TestCase(17, 2, true,"0.000", TestName = "precision exceeded")]
-		[TestCase(3, 2, true, "a.sd", TestName = "not a number")]
+		[TestCase(3, 2, true, "a.sd", TestName = "string without digits")]
 		[TestCase(7, 5, true, "", TestName = "value argument is empty")]
 		[TestCase(10, 6, true, null, TestName = "value argument is null")]
+		[TestCase(3, 2, true, "1.", TestName = "number without fraction part")] 
+		[TestCase(3, 2, true, ".1", TestName = "number without integer part")]
+		[TestCase(3, 2, true, ".", TestName = "only comma without number")]
+		[TestCase(4, 2, true, "1..2", TestName = "more than one comma")]
 		public void IsValidNumber_ShouldBeFalse_When(int precision, int scale, bool onlyPositive,
 			string value) =>
 			new NumberValidator(precision, scale, onlyPositive)
 				.IsValidNumber(value).Should().BeFalse();
 
-		[TestCase(17, 2, true, "0.0", TestName = "number is null")]
+		[TestCase(17, 2, true, "0.0", TestName = "number is zero")]
 		[TestCase(4, 2, true, "+1.23", TestName = "onlyPositive set as true and number positive")]
+		[TestCase(4, 2, false, "-2.35", TestName = "negative number")]
+		[TestCase(3, 2, true, "1,1", TestName = "comma is ','")]
+		[TestCase(3, 2, true, "1\u0C66.\u0C68", TestName = "telugu digits")]
 		public void IsValidNumber_ShouldBeTrue_When(int precision, int scale, bool onlyPositive,
 			string value) =>
 			new NumberValidator(precision, scale, onlyPositive)
