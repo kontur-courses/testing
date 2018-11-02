@@ -32,7 +32,7 @@ namespace HomeExercises
 					.AllowingInfiniteRecursion()  // ибо по дефолту 10 уровней вложенности
 					.Excluding(prop =>
 						prop.SelectedMemberInfo.DeclaringType == typeof(Person) &&
-						prop.SelectedMemberInfo.Name == "Id"));
+						prop.SelectedMemberInfo.Name == nameof(Person.Id)));
 		}
 
 
