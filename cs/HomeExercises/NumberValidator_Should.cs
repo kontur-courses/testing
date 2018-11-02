@@ -59,17 +59,17 @@ namespace HomeExercises
 		public void BeInvalid_With(string value, int precision = 3, int scale = 2, bool onlyPositive = true) =>
 			new NumberValidator(precision, scale, onlyPositive).IsValidNumber(value).Should().BeFalse();
 
-		[TestCase(typeof(ArgumentException),-1,2)]
-		[TestCase(typeof(ArgumentException), 2, 2)]
-		[TestCase(typeof(ArgumentException), 2, -2)]
-		[TestCase(typeof(ArgumentException), -1, 2, false)]
-		[TestCase(typeof(ArgumentException), 2, 2, false)]
-		[TestCase(typeof(ArgumentException), 2, -2, false)]
-		public void ThrowException(Type exceptionType, int precision, int scale, bool onlyPositive = true)=>
-				Assert.Throws(exceptionType, () => new NumberValidator(precision, scale, onlyPositive));
+		[TestCase(-1,2)]
+		[TestCase(2, 2)]
+		[TestCase(2, -2)]
+		[TestCase(-1, 2, false)]
+		[TestCase(2, 2, false)]
+		[TestCase( 2, -2, false)]
+		public void ThrowArgumentException_With(int precision, int scale, bool onlyPositive = true)=>
+				Assert.Throws(typeof(ArgumentException), () => new NumberValidator(precision, scale, onlyPositive));
 
 		[TestCase(1, 0)]	
-		public void DoesNotThrow(int precision, int scale, bool onlyPositive = true)=>
+		public void DoesNotThrow_With(int precision, int scale, bool onlyPositive = true)=>
 				Assert.DoesNotThrow(() => new NumberValidator(precision, scale, onlyPositive));
 	}
 

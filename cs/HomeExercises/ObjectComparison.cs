@@ -44,7 +44,7 @@ namespace HomeExercises
 			void AssertPersonEquals(Person actualPerson,Person expectedPerson)=>
 				actualPerson.Should().BeEquivalentTo(expectedPerson, opt => opt.Excluding(x => x.Id).Excluding(x => x.Parent));
 
-			AssertPersonEquals(actualTsar,expectedTsar);
+			AssertPersonEquals(actualTsar, expectedTsar);
 			AssertPersonEquals(actualTsar.Parent, expectedTsar.Parent);
 			
 		}
