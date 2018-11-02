@@ -16,7 +16,7 @@ namespace HomeExercises
 				new Person("Vasili III of Russia", 28, 170, 60, null));
 
 			actualTsar.ShouldBeEquivalentTo(expectedTsar, options =>
-				options.ExcludingMember<Person, Person>(nameof(Person.Id)));
+				options.ExcludingMember(nameof(Person.Id)));
 		}
 
 		[Test]
@@ -89,11 +89,11 @@ namespace HomeExercises
 
 	public static class EquivalencyAssertionOptionsExtension
 	{
-		public static EquivalencyAssertionOptions<TSubject> ExcludingMember<TSubject, TMember>(
+		public static EquivalencyAssertionOptions<TSubject> ExcludingMember<TSubject>(
 			this EquivalencyAssertionOptions<TSubject> options, string name) =>
 				options.Excluding(member => 
 					member.SelectedMemberInfo.Name == name &&
-					member.SelectedMemberInfo.DeclaringType == typeof(TMember)
+					member.SelectedMemberInfo.DeclaringType == typeof(TSubject)
 				);
 	}
 }

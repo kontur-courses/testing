@@ -52,9 +52,10 @@ namespace HomeExercises
 
 		[TestCase(17, 2, true, "0.0", TestName = "number is zero")]
 		[TestCase(4, 2, true, "+1.23", TestName = "onlyPositive set as true and number positive")]
-		[TestCase(4, 2, false, "-2.35", TestName = "negative number")]
+		[TestCase(4, 2, false, "-2.35", TestName = "number is negative")]
 		[TestCase(3, 2, true, "1,1", TestName = "comma is ','")]
 		[TestCase(3, 2, true, "1\u0C66.\u0C68", TestName = "telugu digits")]
+		[TestCase(3, 2, true, "15", TestName = "number without comma")]
 		public void IsValidNumber_ShouldBeTrue_When(int precision, int scale, bool onlyPositive,
 			string value) =>
 			new NumberValidator(precision, scale, onlyPositive)
