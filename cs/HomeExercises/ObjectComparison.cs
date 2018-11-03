@@ -1,5 +1,4 @@
-﻿using System.Data;
-using FluentAssertions;
+﻿using FluentAssertions;
 using NUnit.Framework;
 
 namespace HomeExercises
@@ -7,85 +6,20 @@ namespace HomeExercises
     [TestFixture]
     public class TsarInitializingTester
     {
-        private Person actualTsar;
-        private Person expectedTsar;
-
-        [OneTimeSetUp]
-        public void Init_Tsars()
-        {
-            actualTsar = TsarRegistry.GetCurrentTsar();
-
-            expectedTsar = new Person("Ivan IV The Terrible", 54, 170, 70,
-                new Person("Vasili III of Russia", 28, 170, 60, null));
-        }
-
-        [Test]
-        public void GetCurrentTsar_NamesShouldBeEqual()
-        {
-            actualTsar.Name.Should().Be(expectedTsar.Name);
-        }
-
-        [Test]
-        public void GetCurrentTsar_AgesShouldBeEqual()
-        {
-            actualTsar.Age.Should().Be(expectedTsar.Age);
-        }
-
-        [Test]
-        public void GetCurrentTsar_HeightsShouldBeEqual()
-        {
-            actualTsar.Height.Should().Be(expectedTsar.Height);
-        }
-
-        [Test]
-        public void GetCurrentTsar_WeightsShouldBeEqual()
-        {
-            actualTsar.Weight.Should().Be(expectedTsar.Weight);
-        }
-
-        [Test]
-        public void GetCurrentTsar_ParentsNamesShouldBeEqual()
-        {
-            actualTsar.Parent.Name.Should().Be(expectedTsar.Parent.Name);
-        }
-
-
-
-        [Test]
-        public void GetCurrentTsar_ParentsHeightsShouldBeEqual()
-        {
-            actualTsar.Parent.Height.Should().Be(expectedTsar.Parent.Height);
-        }
-
-        [Test]
-        public void GetCurrentTsar_ParentsWeightsShouldBeEqual()
-        {
-            actualTsar.Parent.Weight.Should().Be(expectedTsar.Parent.Weight);
-        }
-
-        // Но как быть с предком?
-
-        [OneTimeTearDown]
-        public void Clear()
-        {
-            actualTsar = null;
-            expectedTsar = null;
-        }
-
-    }
-    public class ObjectComparison
-    {
-
 	    [Test]
-	    public void CheckCurrentTsar_Fixed()
+	    public void CheckCurrentTsar()
 	    {
 		    var actualTsar = TsarRegistry.GetCurrentTsar();
 		    var expectedTsar = new Person("Ivan IV The Terrible", 54, 170, 70,
 			    new Person("Vasili III of Russia", 28, 170, 60, null));
 
-			actualTsar.ShouldBeEquivalentTo(expectedTsar, options => 
-				options.ExcludingNestedObjects());
+		    actualTsar.ShouldBeEquivalentTo(expectedTsar, options =>
+			    options.Excluding(x => x.Id)
+				       .Excluding(x => x.Parent.Id));
 	    }
+    }
+    public class ObjectComparison
+    {
         [Test]
         [Description("Альтернативное решение. Какие у него недостатки?")]
         public void CheckCurrentTsar_WithCustomEquality()
@@ -94,11 +28,6 @@ namespace HomeExercises
             var expectedTsar = new Person("Ivan IV The Terrible", 54, 170, 70,
                 new Person("Vasili III of Russia", 28, 170, 60, null));
 
-            // Анти-паттерн The-One.
-            // Единовременно тестируется множество различных характеристик
-            // Плохая читаемость кода, неочевидность тестируемых свойств объекта
-            // При изменении объекта Person неудобно вносить изменения в тест
-            // Одна упавшая проверка в начале блокирует проверку остальных свойств
             Assert.True(AreEqual(actualTsar, expectedTsar));
         }
 
