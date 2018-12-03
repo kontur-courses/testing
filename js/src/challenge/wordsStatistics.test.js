@@ -1,4 +1,4 @@
-import chai from "chai";
+import chai, {expect} from "chai";
 chai.should();
 
 import WordsStatistics from "./wordsStatistics";
