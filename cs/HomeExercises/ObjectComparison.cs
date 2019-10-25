@@ -15,17 +15,31 @@ namespace HomeExercises
 			var expectedTsar = new Person("Ivan IV The Terrible", 54, 170, 70,
 				new Person("Vasili III of Russia", 28, 170, 60, null));
 
-			// Перепишите код на использование Fluent Assertions.
-			Assert.AreEqual(actualTsar.Name, expectedTsar.Name);
-			Assert.AreEqual(actualTsar.Age, expectedTsar.Age);
-			Assert.AreEqual(actualTsar.Height, expectedTsar.Height);
-			Assert.AreEqual(actualTsar.Weight, expectedTsar.Weight);
+            bool ShouldCheckPersons(Person expected, Person actual)
+            {
+                var check = actual != null && expected != null;
+                var dontCheck = actual == null && expected == null;
+                (check || dontCheck).Should().BeTrue(
+                    $"because actual and expected {nameof(Person)}s must either exist or not exist both");
+                return check;
+            }
 
-			Assert.AreEqual(expectedTsar.Parent.Name, actualTsar.Parent.Name);
-			Assert.AreEqual(expectedTsar.Parent.Age, actualTsar.Parent.Age);
-			Assert.AreEqual(expectedTsar.Parent.Height, actualTsar.Parent.Height);
-			Assert.AreEqual(expectedTsar.Parent.Parent, actualTsar.Parent.Parent);
-		}
+            void CheckPersons(Person expected, Person actual)
+            {
+                if (!ShouldCheckPersons(expected, actual))
+                    return;
+
+                string shouldBe = " should be like that";
+                actual.Name.Should().Be(expected.Name, nameof(expected.Name) + shouldBe);
+                actual.Age.Should().Be(expected.Age, nameof(expected.Age) + shouldBe);
+                actual.Height.Should().Be(expected.Height, nameof(expected.Height) + shouldBe);
+                actual.Weight.Should().Be(expected.Weight, nameof(expected.Weight) + shouldBe);
+
+                CheckPersons(expected.Parent, actual.Parent);
+            }
+
+            CheckPersons(expectedTsar, actualTsar);
+        }
 
 		[Test]
 		[Description("Альтернативное решение. Какие у него недостатки?")]
@@ -35,8 +49,13 @@ namespace HomeExercises
 			var expectedTsar = new Person("Ivan IV The Terrible", 54, 170, 70,
 				new Person("Vasili III of Russia", 28, 170, 60, null));
 
-			// Какие недостатки у такого подхода? 
-			Assert.True(AreEqual(actualTsar, expectedTsar));
+            // Какие недостатки у такого подхода?
+            // Главный недостаток этого подхода: если тест упадет, то БЕЗ ДЕБАГА не понятно
+            // на чем он упал - может быть на сравнении имен, а может на сравнении возрастов и т.д.
+            // Мой подход лучше, потому что если тест упадет, то НЕ ЗАГЛЯДЫВАЯ в код теста, можно
+            // понять при сравнении каких полей тест упал и посмотреть значения этих полей,
+            // возможно этой информации хватит, чтобы исправить ошибку в коде
+            Assert.True(AreEqual(actualTsar, expectedTsar));
 		}
 
 		private bool AreEqual(Person actual, Person expected)
