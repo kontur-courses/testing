@@ -2,15 +2,18 @@
 using System.Text.RegularExpressions;
 using FluentAssertions;
 using NUnit.Framework;
+using NUnit.Framework.Internal;
 
 namespace HomeExercises
 {
 	public class NumberValidatorTests
 	{
-		[Test]
-		public void NumberValidator_PrecisionIsNegative_ThrowException()
+		[TestCase(-1, 2, true, TestName = "PrecisionIsNegative")]
+		[TestCase(5, -5, true, TestName = "ScaleIsNegative")]
+		[TestCase(3, 5, true, TestName = "ScaleGreaterPrecision")]
+		public void NumberValidator_ThrowException(int precision, int scale, bool onlyPositive)
 		{
-			Action act = () => new NumberValidator(-1, 2, true);
+			Action act = () => new NumberValidator(precision, scale, onlyPositive);
 			act.ShouldThrow<ArgumentException>();
 		}
 		
@@ -21,109 +24,30 @@ namespace HomeExercises
 			act.ShouldNotThrow();
 		}
 		
-		[Test]
-		public void NumberValidator_ScaleIsNegative_ThrowException()
-		{
-			Action act = () => new NumberValidator(5, -5, true);
-			act.ShouldThrow<ArgumentException>();
-		}
 		
-		[Test]
-		public void NumberValidator_ScaleGreaterPrecision_ThrowException()
+		[TestCase(10, 2, true, null, TestName = "Null")]
+		[TestCase(10, 2, true, "", TestName = "EmptyLine")]
+		[TestCase(17, 2, true, "-1.0", TestName = "FloatNegativeNumberOnlyPositive")]
+		[TestCase(17, 2, true, "-5", TestName = "IntNegativeNumberOnlyPositive")]
+		[TestCase(3, 2, true, "a.sd", TestName = "LineWithLetters")]
+		[TestCase(3, 2, true, "00.00", TestName = "LengthGreaterPrecision")]
+		[TestCase(3, 2, false, "-0.00", TestName = "LengthWitMinusGreaterPrecision")]
+		[TestCase(3, 2, true, "+0.00", TestName = "LengthWithPlusGreaterPrecision")]
+		[TestCase(17, 2, true, "0.000", TestName = "LengthFractionalPartGreaterScale")]
+		[TestCase(3, 2, false, "-1.23", TestName = "LengthFloatNumberWithMinusGreaterPrecision")]
+		public void IsValidNumber_IsFalse(int precision, int scale, bool onlyPositive, string value)
 		{
-			Action act = () => new NumberValidator(3, 5, true);
-			act.ShouldThrow<ArgumentException>();
-		}
-
-		[Test] //my
-		public void IsValidNumber_Null_IsFalse()
-		{
-			var isValidNumber = new NumberValidator(10, 2, true).IsValidNumber(null);
+			var isValidNumber = new NumberValidator(precision, scale, onlyPositive).IsValidNumber(value);
 			isValidNumber.Should().BeFalse();
 		}
 		
-		[Test] //my
-		public void IsValidNumber_EmptyLine_IsFalse()
+		[TestCase(17, 2, true, "0.0", TestName = "FloatPositiveNumberOnlyPositive")]
+		[TestCase(17, 2, true, "0", TestName = "_IntPositiveNumberOnlyPositive")]
+		[TestCase(4, 2, true, "+1.23", TestName = "FloatWithPlusOnlyPositive")]
+		public void IsValidNumber_IsTrue(int precision, int scale, bool onlyPositive, string value)
 		{
-			var isValidNumber = new NumberValidator(10, 2, true).IsValidNumber("");
-			isValidNumber.Should().BeFalse();
-		}
-		
-		[Test]
-		public void IsValidNumber_FloatPositiveNumberOnlyPositive_IsTrue()
-		{
-			var isValidNumber = new NumberValidator(17, 2, true).IsValidNumber("0.0");
+			var isValidNumber = new NumberValidator(precision, scale, onlyPositive).IsValidNumber(value);
 			isValidNumber.Should().BeTrue();
-		}
-		
-		[Test]//my
-		public void IsValidNumber_FloatNegativeNumberOnlyPositive_IsFalse()
-		{
-			var isValidNumber = new NumberValidator(17, 2, true).IsValidNumber("-1.0");
-			isValidNumber.Should().BeFalse();
-		}
-		
-		[Test]
-		public void IsValidNumber_FloatWithPlusOnlyPositive_IsTrue()
-		{
-			var isValidValue = new NumberValidator(4, 2, true).IsValidNumber("+1.23");
-			isValidValue.Should().BeTrue();
-		}
-		
-		[Test]
-		public void IsValidNumber_IntPositiveNumberOnlyPositive_IsTrue()
-		{
-			var isValidNumber = new NumberValidator(17, 2, true).IsValidNumber("0");
-			isValidNumber.Should().BeTrue();
-		}
-		
-		[Test] //my
-		public void IsValidNumber_IntNegativeNumberOnlyPositive_IsFalse()
-		{
-			var isValidNumber = new NumberValidator(17, 2, true).IsValidNumber("-5");
-			isValidNumber.Should().BeFalse();
-		}
-		
-		[Test]
-		public void IsValidNumber_LineWithLetters_IsFalse()
-		{
-			var isValidValue = new NumberValidator(3, 2, true).IsValidNumber("a.sd");
-			isValidValue.Should().BeFalse();
-		}
-		
-		[Test]
-		public void IsValidNumber_LengthGreaterPrecision_IsFalse()
-		{
-			var isValidValue = new NumberValidator(3, 2, true).IsValidNumber("00.00");
-			isValidValue.Should().BeFalse();
-		}
-		
-		[Test]
-		public void IsValidNumber_LengthWitMinusGreaterPrecision_IsFalse()
-		{
-			var isValidValue = new NumberValidator(3, 2, true).IsValidNumber("-0.00");
-			isValidValue.Should().BeFalse();
-		}
-		
-		[Test]
-		public void IsValidNumber_LengthWithPlusGreaterPrecision_IsFalse()
-		{
-			var isValidValue = new NumberValidator(3, 2, true).IsValidNumber("+0.00");
-			isValidValue.Should().BeFalse();
-		}
-
-		[Test]
-		public void IsValidNumber_LengthFractionalPartGreaterScale_IsFalse()
-		{
-			var isValidValue = new NumberValidator(17, 2, true).IsValidNumber("0.000");
-			isValidValue.Should().BeFalse();
-		}
-		
-		[Test]
-		public void IsValidNumber_LengthFloatNumberWithMinusGreaterPrecision_IsFalse()
-		{
-			var isValidValue = new NumberValidator(3, 2, true).IsValidNumber("-1.23");
-			isValidValue.Should().BeFalse();
 		}
 		
 		[Test]
