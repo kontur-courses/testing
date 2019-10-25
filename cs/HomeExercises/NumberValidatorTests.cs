@@ -7,26 +7,166 @@ namespace HomeExercises
 {
 	public class NumberValidatorTests
 	{
-		[Test]
-		public void Test()
+		private NumberValidator positiveNumberValidator;
+		private NumberValidator numberValidator;
+		
+		[SetUp]
+		public void SetUp()
 		{
-			Assert.Throws<ArgumentException>(() => new NumberValidator(-1, 2, true));
-			Assert.DoesNotThrow(() => new NumberValidator(1, 0, true));
-			Assert.Throws<ArgumentException>(() => new NumberValidator(-1, 2, false));
-			Assert.DoesNotThrow(() => new NumberValidator(1, 0, true));
+			positiveNumberValidator = new NumberValidator(6, 2, true);
+			numberValidator = new NumberValidator(6, 2);
+		}
+		
+		[Test]
+		public void NumberValidator_EmptyString_False()
+		{
+			positiveNumberValidator.IsValidNumber("").Should().BeFalse();
+			numberValidator.IsValidNumber("").Should().BeFalse();
+		}
+		
+		[Test]
+		public void NumberValidator_NullString_False()
+		{
+			positiveNumberValidator.IsValidNumber(null).Should().BeFalse();
+			numberValidator.IsValidNumber(null).Should().BeFalse();
+		}
+		
+		[Test]
+		public void NumberValidator_NotNumberString_False()
+		{
+			var str1 = "abs";
+			var str2 = "a.sd";
 
-			Assert.IsTrue(new NumberValidator(17, 2, true).IsValidNumber("0.0"));
-			Assert.IsTrue(new NumberValidator(17, 2, true).IsValidNumber("0"));
-			Assert.IsTrue(new NumberValidator(17, 2, true).IsValidNumber("0.0"));
-			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("00.00"));
-			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("-0.00"));
-			Assert.IsTrue(new NumberValidator(17, 2, true).IsValidNumber("0.0"));
-			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("+0.00"));
-			Assert.IsTrue(new NumberValidator(4, 2, true).IsValidNumber("+1.23"));
-			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("+1.23"));
-			Assert.IsFalse(new NumberValidator(17, 2, true).IsValidNumber("0.000"));
-			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("-1.23"));
-			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("a.sd"));
+			numberValidator.IsValidNumber(str1).Should().BeFalse();
+			positiveNumberValidator.IsValidNumber(str2).Should().BeFalse();
+		}
+		
+		[Test]
+		public void PositiveNumberValidator_NegativeNumber_False()
+		{
+			var number1 = "-1.1";
+			var number2 = "-1123";
+
+			positiveNumberValidator.IsValidNumber(number1).Should().BeFalse();
+			positiveNumberValidator.IsValidNumber(number2).Should().BeFalse();
+		}
+		
+		[Test]
+		public void NumberValidator_NumberScaleLongerThanValidatorScale_False()
+		{
+			var number1 = "1.123";
+			var number2 = "-1.123";
+
+			numberValidator.IsValidNumber(number1).Should().BeFalse();
+			numberValidator.IsValidNumber(number2).Should().BeFalse();
+		}
+		
+		[Test]
+		public void NumberValidator_NumberWithSignLongerThanPrecision_False()
+		{
+			var number1 = "-12345.6";
+			var number2 = "+12345.6";
+
+			numberValidator.IsValidNumber(number1).Should().BeFalse();
+			numberValidator.IsValidNumber(number2).Should().BeFalse();
+		}
+		
+		[Test]
+		public void NumberValidator_NumberLongerThanPrecision_False()
+		{
+			var number1 = "123456.7";
+			var number2 = "00000.00";
+
+			numberValidator.IsValidNumber(number1).Should().BeFalse();
+			numberValidator.IsValidNumber(number2).Should().BeFalse();
+		}
+		
+		[Test]
+		public void NumberValidator_CorrectNegativeNumber_True()
+		{
+			var number1 = "-3.2";
+			var number2 = "22.1";
+			var number3 = "-0.0";
+			var number4 = "-0";
+
+			numberValidator.IsValidNumber(number1).Should().BeTrue();
+			numberValidator.IsValidNumber(number2).Should().BeTrue();
+			numberValidator.IsValidNumber(number3).Should().BeTrue();
+			numberValidator.IsValidNumber(number4).Should().BeTrue();
+		}
+		
+		[Test]
+		public void PositiveNumberValidator_CorrectPositiveNumber_True()
+		{
+			var number1 = "+3.2";
+			var number2 = "22.1";
+			var number3 = "+0.0";
+			var number4 = "0";
+
+			positiveNumberValidator.IsValidNumber(number1).Should().BeTrue();
+			positiveNumberValidator.IsValidNumber(number2).Should().BeTrue();
+			positiveNumberValidator.IsValidNumber(number3).Should().BeTrue();
+			positiveNumberValidator.IsValidNumber(number4).Should().BeTrue();
+		}
+		
+		[Test]
+		public void ArgumentException_NumberValidatorBuilder_PrecisionLessThan1()
+		{
+			Action action = () => new NumberValidator(-1, 1, true);
+			Action action1 = () => new NumberValidator(0, 1, true);
+			Action action2 = () => new NumberValidator(-222222, 1, true);
+
+			action.ShouldThrow<ArgumentException>();
+			action1.ShouldThrow<ArgumentException>();
+			action2.ShouldThrow<ArgumentException>();
+		}
+		
+		[Test]
+		public void ArgumentException_NumberValidatorBuilder_NegativeScale()
+		{
+			Action action = () => new NumberValidator(1, -1, true);
+			Action action1 = () => new NumberValidator(1, -128, true);
+
+			action.ShouldThrow<ArgumentException>();
+			action1.ShouldThrow<ArgumentException>();
+		}
+		
+		[Test]
+		public void ArgumentException_NumberValidatorBuilder_PrecisionLessThanScale()
+		{
+			Action action = () => new NumberValidator(1, 2, true);
+
+			action.ShouldThrow<ArgumentException>();
+		}
+		
+		[Test]
+		public void ArgumentException_NumberValidatorBuilder_PrecisionEqualToScale()
+		{
+			Action action = () => new NumberValidator(1, 1, true);
+
+			action.ShouldThrow<ArgumentException>();
+		}
+		
+		[Test]
+		[Category("Не уверен что это нужно")]
+		public void CorrectNumberValidatorBuilder_WithoutScale()
+		{
+			Action action = () => new NumberValidator(1,  onlyPositive:true);
+			Action action1 = () => new NumberValidator(1, onlyPositive: false);
+			
+			action.ShouldNotThrow<ArgumentException>();
+			action1.ShouldNotThrow<ArgumentException>();
+		}
+		
+		[Test]
+		[Category("Не уверен что это нужно")]
+		public void CorrectNumberValidatorBuilder_WithoutSign()
+		{
+			Action action = () => new NumberValidator(2,  1);
+			Action action1 = () => new NumberValidator(2, scale: 1);
+			
+			action.ShouldNotThrow<ArgumentException>();
+			action1.ShouldNotThrow<ArgumentException>();
 		}
 	}
 
