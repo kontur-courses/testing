@@ -15,8 +15,11 @@ namespace HomeExercises
 			var expectedTsar = new Person("Ivan IV The Terrible", 54, 170, 70,
 				new Person("Vasili III of Russia", 28, 170, 60, null));
 
+			actualTsar.ShouldBeEquivalentTo(expectedTsar, options => options
+				.Excluding(tsar => tsar.Id)
+				.Excluding(tsar => tsar.Parent.Id));
 			// Перепишите код на использование Fluent Assertions.
-			Assert.AreEqual(actualTsar.Name, expectedTsar.Name);
+			/*Assert.AreEqual(actualTsar.Name, expectedTsar.Name);
 			Assert.AreEqual(actualTsar.Age, expectedTsar.Age);
 			Assert.AreEqual(actualTsar.Height, expectedTsar.Height);
 			Assert.AreEqual(actualTsar.Weight, expectedTsar.Weight);
@@ -24,7 +27,7 @@ namespace HomeExercises
 			Assert.AreEqual(expectedTsar.Parent.Name, actualTsar.Parent.Name);
 			Assert.AreEqual(expectedTsar.Parent.Age, actualTsar.Parent.Age);
 			Assert.AreEqual(expectedTsar.Parent.Height, actualTsar.Parent.Height);
-			Assert.AreEqual(expectedTsar.Parent.Parent, actualTsar.Parent.Parent);
+			Assert.AreEqual(expectedTsar.Parent.Parent, actualTsar.Parent.Parent);*/
 		}
 
 		[Test]
@@ -36,6 +39,12 @@ namespace HomeExercises
 				new Person("Vasili III of Russia", 28, 170, 60, null));
 
 			// Какие недостатки у такого подхода? 
+			/*
+			 * AreEqual сравнивает все указанные поля переданных ему объектов:
+			 * Если внутри Person что-то изменится, то нужно не забыть сделать изменения в AreEqual;
+			 * Еще, если тест провалится, то непонятно что именно пошло не так, какие конкретно поля отличаются.
+			 * ShouldBeEquivalentTo решает эту проблему + делает код лаконичнее
+			 */
 			Assert.True(AreEqual(actualTsar, expectedTsar));
 		}
 
