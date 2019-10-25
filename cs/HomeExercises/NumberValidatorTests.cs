@@ -31,14 +31,12 @@ namespace HomeExercises
 			numberValidator.IsValidNumber(null).Should().BeFalse();
 		}
 		
-		[Test]
-		public void NumberValidator_NotNumberString_False()
+		[TestCase("abs")]
+		[TestCase("a.sd")]
+		public void NumberValidator_NotNumberString_False(string input)
 		{
-			var str1 = "abs";
-			var str2 = "a.sd";
-
-			numberValidator.IsValidNumber(str1).Should().BeFalse();
-			positiveNumberValidator.IsValidNumber(str2).Should().BeFalse();
+			numberValidator.IsValidNumber(input).Should().BeFalse();
+			positiveNumberValidator.IsValidNumber(input).Should().BeFalse();
 		}
 		
 		[Test]
@@ -51,84 +49,62 @@ namespace HomeExercises
 			positiveNumberValidator.IsValidNumber(number2).Should().BeFalse();
 		}
 		
-		[Test]
-		public void NumberValidator_NumberScaleLongerThanValidatorScale_False()
+		[TestCase("1.123")]
+		[TestCase("-1.123")]
+		public void NumberValidator_NumberScaleLongerThanValidatorScale_False(string number)
 		{
-			var number1 = "1.123";
-			var number2 = "-1.123";
-
-			numberValidator.IsValidNumber(number1).Should().BeFalse();
-			numberValidator.IsValidNumber(number2).Should().BeFalse();
+			numberValidator.IsValidNumber(number).Should().BeFalse();
 		}
 		
-		[Test]
-		public void NumberValidator_NumberWithSignLongerThanPrecision_False()
+		[TestCase("-12345.6")]
+		[TestCase("+12345.6")]
+		public void NumberValidator_NumberWithSignLongerThanPrecision_False(string number)
 		{
-			var number1 = "-12345.6";
-			var number2 = "+12345.6";
-
-			numberValidator.IsValidNumber(number1).Should().BeFalse();
-			numberValidator.IsValidNumber(number2).Should().BeFalse();
+			numberValidator.IsValidNumber(number).Should().BeFalse();
 		}
 		
-		[Test]
-		public void NumberValidator_NumberLongerThanPrecision_False()
+		[TestCase("123456.7")]
+		[TestCase("00000.00")]
+		public void NumberValidator_NumberLongerThanPrecision_False(string number)
 		{
-			var number1 = "123456.7";
-			var number2 = "00000.00";
-
-			numberValidator.IsValidNumber(number1).Should().BeFalse();
-			numberValidator.IsValidNumber(number2).Should().BeFalse();
+			numberValidator.IsValidNumber(number).Should().BeFalse();
 		}
 		
-		[Test]
-		public void NumberValidator_CorrectNegativeNumber_True()
+		[TestCase("-3.2")]
+		[TestCase("22.1")]
+		[TestCase("-0.0")]
+		[TestCase("-0")]
+		public void NumberValidator_CorrectNegativeNumber_True(string number)
 		{
-			var number1 = "-3.2";
-			var number2 = "22.1";
-			var number3 = "-0.0";
-			var number4 = "-0";
-
-			numberValidator.IsValidNumber(number1).Should().BeTrue();
-			numberValidator.IsValidNumber(number2).Should().BeTrue();
-			numberValidator.IsValidNumber(number3).Should().BeTrue();
-			numberValidator.IsValidNumber(number4).Should().BeTrue();
+			numberValidator.IsValidNumber(number).Should().BeTrue();
 		}
 		
-		[Test]
-		public void PositiveNumberValidator_CorrectPositiveNumber_True()
+		[TestCase("+3.2")]
+		[TestCase("22.1")]
+		[TestCase("+0.0")]
+		[TestCase("0")]
+		public void PositiveNumberValidator_CorrectPositiveNumber_True(string number)
 		{
-			var number1 = "+3.2";
-			var number2 = "22.1";
-			var number3 = "+0.0";
-			var number4 = "0";
-
-			positiveNumberValidator.IsValidNumber(number1).Should().BeTrue();
-			positiveNumberValidator.IsValidNumber(number2).Should().BeTrue();
-			positiveNumberValidator.IsValidNumber(number3).Should().BeTrue();
-			positiveNumberValidator.IsValidNumber(number4).Should().BeTrue();
+			positiveNumberValidator.IsValidNumber(number).Should().BeTrue();
 		}
 		
-		[Test]
-		public void ArgumentException_NumberValidatorBuilder_PrecisionLessThan1()
+		[TestCase(-1)]
+		[TestCase(0)]
+		[TestCase(-22222)]
+		public void ArgumentException_NumberValidatorBuilder_PrecisionLessThan1(int precision)
 		{
-			Action action = () => new NumberValidator(-1, 1, true);
-			Action action1 = () => new NumberValidator(0, 1, true);
-			Action action2 = () => new NumberValidator(-222222, 1, true);
+			Action action = () => new NumberValidator(precision, 1, true);
+			
+			action.ShouldThrow<ArgumentException>();
+		}
+		
+		[TestCase(-1)]
+		[TestCase(-128)]
+		public void ArgumentException_NumberValidatorBuilder_NegativeScale(int scale)
+		{
+			Action action = () => new NumberValidator(1, scale, true);
 
 			action.ShouldThrow<ArgumentException>();
-			action1.ShouldThrow<ArgumentException>();
-			action2.ShouldThrow<ArgumentException>();
-		}
-		
-		[Test]
-		public void ArgumentException_NumberValidatorBuilder_NegativeScale()
-		{
-			Action action = () => new NumberValidator(1, -1, true);
-			Action action1 = () => new NumberValidator(1, -128, true);
-
-			action.ShouldThrow<ArgumentException>();
-			action1.ShouldThrow<ArgumentException>();
 		}
 		
 		[Test]
