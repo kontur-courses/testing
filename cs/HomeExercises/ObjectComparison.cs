@@ -16,15 +16,23 @@ namespace HomeExercises
 				new Person("Vasili III of Russia", 28, 170, 60, null));
 
 			// Перепишите код на использование Fluent Assertions.
-			Assert.AreEqual(actualTsar.Name, expectedTsar.Name);
-			Assert.AreEqual(actualTsar.Age, expectedTsar.Age);
-			Assert.AreEqual(actualTsar.Height, expectedTsar.Height);
-			Assert.AreEqual(actualTsar.Weight, expectedTsar.Weight);
-
-			Assert.AreEqual(expectedTsar.Parent.Name, actualTsar.Parent.Name);
-			Assert.AreEqual(expectedTsar.Parent.Age, actualTsar.Parent.Age);
-			Assert.AreEqual(expectedTsar.Parent.Height, actualTsar.Parent.Height);
-			Assert.AreEqual(expectedTsar.Parent.Parent, actualTsar.Parent.Parent);
+			/*
+			 * 1) Теперь, при возникновении ошибок, будет явно видно,
+			 * в каком из полей идёт расхождение с образцом.
+			 * 2) Благодаря because мы сразу же можем увидеть,
+			 * почему требуется равенство свойств. В данном случае,
+			 * потому что текущий царь (по версии теста) - Иван IV Грозный
+			 * 3) Благодаря опции ExcludingMissingMembers, мы можем принимать
+			 * различные классы, наследующиеся от Person, но, при этом,
+			 * сравнивать их лишь по свойствам Person. Например, если создать класс
+			 * Tsar, унаследовать его от Person и добавить ему новые свойства, например,
+			 * года правления, то этот тест всё равно будет работать корректно. 
+			 */
+			actualTsar.ShouldBeEquivalentTo(expectedTsar, options =>
+				options.ExcludingMissingMembers()
+					.Excluding(o => o.Id)
+					.Excluding(o => o.Parent.Id),
+			"Ivan IV The Terrible is current tsar");
 		}
 
 		[Test]
@@ -34,8 +42,16 @@ namespace HomeExercises
 			var actualTsar = TsarRegistry.GetCurrentTsar();
 			var expectedTsar = new Person("Ivan IV The Terrible", 54, 170, 70,
 				new Person("Vasili III of Russia", 28, 170, 60, null));
+			
+			
 
-			// Какие недостатки у такого подхода? 
+			// Какие недостатки у такого подхода?
+			/*
+			 * 1) Невозможно определить конкретную причину ошибки теста - мы лишь знаем,
+			 * что объекты не одинаковы, но такой информации не достаточно.
+			 * 2) При возникновении новых свойств придётся постоянно дополнять метод AreEqual,
+			 * что приводит к дополнительной трате времени. 
+			 */
 			Assert.True(AreEqual(actualTsar, expectedTsar));
 		}
 
