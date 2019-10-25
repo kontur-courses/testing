@@ -16,110 +16,55 @@ namespace HomeExercises
 			positiveNumberValidator = new NumberValidator(6, 2, true);
 			numberValidator = new NumberValidator(6, 2);
 		}
-		
-		[Test]
-		public void NumberValidator_EmptyString_False()
-		{
-			positiveNumberValidator.IsValidNumber("").Should().BeFalse();
-			numberValidator.IsValidNumber("").Should().BeFalse();
-		}
-		
-		[Test]
-		public void NumberValidator_NullString_False()
-		{
-			positiveNumberValidator.IsValidNumber(null).Should().BeFalse();
-			numberValidator.IsValidNumber(null).Should().BeFalse();
-		}
-		
-		[TestCase("abs")]
-		[TestCase("a.sd")]
-		public void NumberValidator_NotNumberString_False(string input)
-		{
-			numberValidator.IsValidNumber(input).Should().BeFalse();
-			positiveNumberValidator.IsValidNumber(input).Should().BeFalse();
-		}
-		
-		[Test]
-		public void PositiveNumberValidator_NegativeNumber_False()
-		{
-			var number1 = "-1.1";
-			var number2 = "-1123";
 
-			positiveNumberValidator.IsValidNumber(number1).Should().BeFalse();
-			positiveNumberValidator.IsValidNumber(number2).Should().BeFalse();
+		[TestCase("", false, Description = "EmptyStringMustReturnFalse")]
+		[TestCase(null, false, Description = "NullStringReturnFalse")]
+		[TestCase("abs", false, Description = "NotNumberStringReturnFalse")]
+		[TestCase("a.sd", false, Description = "NotNumberStringReturnFalse")]
+		[TestCase("-12345.6", false, Description = "Число, которое длинне максимального размера из-за знака," +
+		                                           " не должно проходить по критериям")]
+		[TestCase("+12345.6", false,  Description = "Число, которое длинне максимального размера из-за знака," +
+		                                            "не должно проходить по критериям")]
+		[TestCase("123456.7", false,  Description = "Число, которое длинне максимального размера," +
+		                                            "не должно проходить по критериям")]
+		[TestCase("000000.00", false, Description = "Число, которое длинне максимального размера," +
+		                                            "не должно проходить по критериям")]
+		[TestCase("-3.2", true, Description = "Правильное число, которое проходит по всем условиям")]
+		[TestCase("-0.0", true, Description = "Правильное число, которое проходит по всем условиям")]
+		[TestCase("-0", true, Description = "Правильное число, которое проходит по всем условиям")]
+		[TestCase("22.1", true, Description = "Правильное число, которое проходит по всем условиям")]
+		
+		public void IsValidNumberChecker(string input, bool exceptedAnswer)
+		{
+			numberValidator.IsValidNumber(input).Should().Be(exceptedAnswer);
 		}
 		
-		[TestCase("1.123")]
-		[TestCase("-1.123")]
-		public void NumberValidator_NumberScaleLongerThanValidatorScale_False(string number)
+		[TestCase("", false, Description = "EmptyStringMustReturnFalse")]
+		[TestCase(null, false, Description = "NullStringReturnFalse")]
+		[TestCase("abs", false, Description = "NotNumberStringReturnFalse")]
+		[TestCase("a.sd", false, Description = "NotNumberStringReturnFalse")]
+		[TestCase("-1.1", false, Description = "PositiveValidatorFalseOnNegativeNumber")]
+		[TestCase("-1123", false, Description = "PositiveValidatorFalseOnNegativeNumber")]
+		[TestCase("+3.2", true, Description = "CorrectPositiveNumber_True")]
+		[TestCase("22.1", true, Description = "CorrectPositiveNumber_True")]
+		[TestCase("+0.0", true, Description = "CorrectPositiveNumber_True")]
+		[TestCase("0", true, Description = "CorrectPositiveNumber_True")]
+		public void IsValidNumberCheckerOnlyPositive(string input, bool exceptedAnswer)
 		{
-			numberValidator.IsValidNumber(number).Should().BeFalse();
+			positiveNumberValidator.IsValidNumber(input).Should().Be(exceptedAnswer);
 		}
-		
-		[TestCase("-12345.6")]
-		[TestCase("+12345.6")]
-		public void NumberValidator_NumberWithSignLongerThanPrecision_False(string number)
+
+		[TestCase(-1, 1, Description = "Вызов конструктора с отрицательным precision должен выбрасывать ArgumentException")]
+		[TestCase(0, 1, Description = "Вызов конструктора с precision = 0 должен выбрасывать ArgumentException")]
+		[TestCase(-222222, 1, Description = "Вызов конструктора с отрицательным precision должен выбрасывать ArgumentException")]
+		[TestCase(1, -1, Description = "Вызов конструктора с отрицательным scale должен выбрасывать ArgumentException")]
+		[TestCase(1, -128, Description = "Вызов конструктора с отрицательным scale должен выбрасывать ArgumentException")]
+		[TestCase(1, 2, Description = "Вызов конструктора с scale большим precision должен выбрасывать ArgumentException")]
+		[TestCase(1, 1, Description = "Вызов конструктора с scale == precision должен выбрасывать ArgumentException")]
+		public void TestNumberValidatorConstructor(int precision, int scale)
 		{
-			numberValidator.IsValidNumber(number).Should().BeFalse();
-		}
-		
-		[TestCase("123456.7")]
-		[TestCase("00000.00")]
-		public void NumberValidator_NumberLongerThanPrecision_False(string number)
-		{
-			numberValidator.IsValidNumber(number).Should().BeFalse();
-		}
-		
-		[TestCase("-3.2")]
-		[TestCase("22.1")]
-		[TestCase("-0.0")]
-		[TestCase("-0")]
-		public void NumberValidator_CorrectNegativeNumber_True(string number)
-		{
-			numberValidator.IsValidNumber(number).Should().BeTrue();
-		}
-		
-		[TestCase("+3.2")]
-		[TestCase("22.1")]
-		[TestCase("+0.0")]
-		[TestCase("0")]
-		public void PositiveNumberValidator_CorrectPositiveNumber_True(string number)
-		{
-			positiveNumberValidator.IsValidNumber(number).Should().BeTrue();
-		}
-		
-		[TestCase(-1)]
-		[TestCase(0)]
-		[TestCase(-22222)]
-		public void ArgumentException_NumberValidatorBuilder_PrecisionLessThan1(int precision)
-		{
-			Action action = () => new NumberValidator(precision, 1, true);
+			Action action = () => new NumberValidator(precision, scale);
 			
-			action.ShouldThrow<ArgumentException>();
-		}
-		
-		[TestCase(-1)]
-		[TestCase(-128)]
-		public void ArgumentException_NumberValidatorBuilder_NegativeScale(int scale)
-		{
-			Action action = () => new NumberValidator(1, scale, true);
-
-			action.ShouldThrow<ArgumentException>();
-		}
-		
-		[Test]
-		public void ArgumentException_NumberValidatorBuilder_PrecisionLessThanScale()
-		{
-			Action action = () => new NumberValidator(1, 2, true);
-
-			action.ShouldThrow<ArgumentException>();
-		}
-		
-		[Test]
-		public void ArgumentException_NumberValidatorBuilder_PrecisionEqualToScale()
-		{
-			Action action = () => new NumberValidator(1, 1, true);
-
 			action.ShouldThrow<ArgumentException>();
 		}
 		
