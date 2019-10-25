@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Text.RegularExpressions;
 using FluentAssertions;
 using NUnit.Framework;
@@ -7,26 +8,78 @@ namespace HomeExercises
 {
 	public class NumberValidatorTests
 	{
-		[Test]
-		public void Test()
+		[TestCase(-1, TestName = "precision is negative")]
+		[TestCase(0, TestName = "precision is zero")]
+		public void Should_ThrowArgumentException_When_PrecisionIsLessThanOrEqualToZero(int precision)
 		{
-			Assert.Throws<ArgumentException>(() => new NumberValidator(-1, 2, true));
-			Assert.DoesNotThrow(() => new NumberValidator(1, 0, true));
-			Assert.Throws<ArgumentException>(() => new NumberValidator(-1, 2, false));
-			Assert.DoesNotThrow(() => new NumberValidator(1, 0, true));
+			Action action = () =>
+			{
+				new NumberValidator(precision);
+			};
+			action.ShouldThrow<ArgumentException>("precision is incorrect");
+		}
+		
+		[TestCase(7, TestName = "scale is equal to precision")]
+		[TestCase(8, TestName = "scale is greater than precision")]
+		public void Should_ThrowArgumentException_When_ScaleIsGreaterThanOrEqualToPrecision(int scale)
+		{
+			Action action = () =>
+			{
+				new NumberValidator(7, scale);
+			};
+			action.ShouldThrow<ArgumentException>("scale is incorrect");
+		}
+		
+		[Test]
+		public void Should_ThrowArgumentException_When_ScaleIsNegative()
+		{
+			Action action = () =>
+			{
+				new NumberValidator(7, -1);
+			};
+			action.ShouldThrow<ArgumentException>("scale is negative");
+		}
 
-			Assert.IsTrue(new NumberValidator(17, 2, true).IsValidNumber("0.0"));
-			Assert.IsTrue(new NumberValidator(17, 2, true).IsValidNumber("0"));
-			Assert.IsTrue(new NumberValidator(17, 2, true).IsValidNumber("0.0"));
-			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("00.00"));
-			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("-0.00"));
-			Assert.IsTrue(new NumberValidator(17, 2, true).IsValidNumber("0.0"));
-			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("+0.00"));
-			Assert.IsTrue(new NumberValidator(4, 2, true).IsValidNumber("+1.23"));
-			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("+1.23"));
-			Assert.IsFalse(new NumberValidator(17, 2, true).IsValidNumber("0.000"));
-			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("-1.23"));
-			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("a.sd"));
+		[Test, TestCaseSource(nameof(ValidTestCases))]
+		public void IsValidNumber_Should_ReturnTrue_When_NumberIsValid(int precision, int scale, bool onlyPositive, string number)
+		{
+			var numberValidator = new NumberValidator(precision, scale, onlyPositive);
+			numberValidator.IsValidNumber(number).Should().BeTrue("all input data is correct");
+		}
+
+		[Test, TestCaseSource(nameof(InvalidTestCases))]
+		public void IsValidNumber_Should_ReturnFalse_When_NumberIsInvalid(int precision, int scale, bool onlyPositive, string number)
+		{
+			var numberValidator = new NumberValidator(precision, scale, onlyPositive);
+			numberValidator.IsValidNumber(number).Should().BeFalse("all input data is incorrect");
+		}
+
+		private static IEnumerable ValidTestCases
+		{
+			get
+			{
+				yield return new TestCaseData(2, 1, true, "0.0");
+				yield return new TestCaseData(17, 2, true, "0");
+				yield return new TestCaseData(2, 1, true, "0,0");
+				yield return new TestCaseData(17, 2, false, "-1.0");
+				yield return new TestCaseData(9, 4, true, "12345.6789");
+				yield return new TestCaseData(17, 2, true, "900000000000000.01");
+				yield return new TestCaseData(3, 1, true, "+5.0");
+			}
+		}
+		
+		private static IEnumerable InvalidTestCases
+		{
+			get
+			{
+				yield return new TestCaseData(3, 2, true, "00.00");
+				yield return new TestCaseData(3, 1, true, "-1.0");
+				yield return new TestCaseData(2, 1, true, "");
+				yield return new TestCaseData(2, 1, true, null);
+				yield return new TestCaseData(17, 2, true, "100.001");
+				yield return new TestCaseData(17, 2, true, "100 01");
+				yield return new TestCaseData(2, 1, true, "qwerty");
+			}
 		}
 	}
 
