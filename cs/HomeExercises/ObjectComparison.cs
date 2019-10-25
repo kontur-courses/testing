@@ -1,4 +1,6 @@
-﻿using FluentAssertions;
+﻿using System;
+using System.Linq;
+using FluentAssertions;
 using NUnit.Framework;
 
 namespace HomeExercises
@@ -8,7 +10,7 @@ namespace HomeExercises
 		[Test]
 		[Description("Проверка текущего царя")]
 		[Category("ToRefactor")]
-		public void CheckCurrentTsar()
+		public void CheckCurrentTsar_ShouldBeEqual()
 		{
 			var actualTsar = TsarRegistry.GetCurrentTsar();
 
@@ -16,17 +18,19 @@ namespace HomeExercises
 				new Person("Vasili III of Russia", 28, 170, 60, null));
 
 			// Перепишите код на использование Fluent Assertions.
-			Assert.AreEqual(actualTsar.Name, expectedTsar.Name);
-			Assert.AreEqual(actualTsar.Age, expectedTsar.Age);
-			Assert.AreEqual(actualTsar.Height, expectedTsar.Height);
-			Assert.AreEqual(actualTsar.Weight, expectedTsar.Weight);
-
-			Assert.AreEqual(expectedTsar.Parent.Name, actualTsar.Parent.Name);
-			Assert.AreEqual(expectedTsar.Parent.Age, actualTsar.Parent.Age);
-			Assert.AreEqual(expectedTsar.Parent.Height, actualTsar.Parent.Height);
-			Assert.AreEqual(expectedTsar.Parent.Parent, actualTsar.Parent.Parent);
+			CheckPersonsByFields(expectedTsar, actualTsar);
 		}
 
+		private void CheckPersonsByFields(Person expectedPerson, Person actualPerson)
+		{
+			if(expectedPerson == null || actualPerson == null) return;
+			actualPerson.Age.Should().Be(expectedPerson.Age);
+			actualPerson.Name.Should().Be(expectedPerson.Name);
+			actualPerson.Height.Should().Be(expectedPerson.Height);
+			actualPerson.Weight.Should().Be(expectedPerson.Weight);
+			CheckPersonsByFields(expectedPerson.Parent, actualPerson.Parent);
+		}
+		
 		[Test]
 		[Description("Альтернативное решение. Какие у него недостатки?")]
 		public void CheckCurrentTsar_WithCustomEquality()
@@ -37,6 +41,12 @@ namespace HomeExercises
 
 			// Какие недостатки у такого подхода? 
 			Assert.True(AreEqual(actualTsar, expectedTsar));
+			
+			/* Если упадет данный тест, то разработчик сможет увидеть только лишь то, что
+			 эти два объекта просто неравны.
+			 В то время как в моем решении будет видно в каком свойстве разница и какие были значения 
+			 этих свойств на момент выполнения теста.
+			 Сам тест стал читабельнее*/
 		}
 
 		private bool AreEqual(Person actual, Person expected)
