@@ -8,41 +8,77 @@ namespace HomeExercises
 	public class NumberValidatorTests
 	{
 		[Test]
-		public void Test()
+		[TestCase(1, 0, true, TestName = "DoesNotThrow_IfPositivePrecisionZeroScaleOnlyPositive")]
+		[TestCase(1, 0, false, TestName = "DoesNotThrow_IfPositivePrecisionZeroScale")]
+		[TestCase(2, 1, true, TestName = "DoesNotThrow_IfPositivePrecisionPositiveScaleOnlyPositive")]
+		[TestCase(2, 1, false, TestName = "DoesNotThrow_IfPositivePrecisionPositiveScale")]
+        public void DoesNotThrow_WithCorrectArguments(int precision, int scale, bool onlyPositive)
 		{
-			Assert.Multiple(() =>
-			{
-				Assert.Throws<ArgumentException>(() => new NumberValidator(-1, 2, true));
-				Assert.Throws<ArgumentException>(() => new NumberValidator(-1, 2, false));
-				Assert.Throws<ArgumentException>(() => new NumberValidator(0, 2, true));
-				Assert.Throws<ArgumentException>(() => new NumberValidator(0, 2, false));
-                Assert.DoesNotThrow(() => new NumberValidator(1, 0, true));
-
-
-                Assert.Throws<ArgumentException>(() => new NumberValidator(1, -1, true));
-                Assert.Throws<ArgumentException>(() => new NumberValidator(1, -1, false));
-                Assert.Throws<ArgumentException>(() => new NumberValidator(1, 1, true));
-                Assert.Throws<ArgumentException>(() => new NumberValidator(1, 1, false));
-                Assert.Throws<ArgumentException>(() => new NumberValidator(1, 2, true));
-                Assert.Throws<ArgumentException>(() => new NumberValidator(1, 2, false));
-                Assert.DoesNotThrow(() => new NumberValidator(2, 0, true));
-                Assert.DoesNotThrow(() => new NumberValidator(2, 0, false));
-                Assert.DoesNotThrow(() => new NumberValidator(2, 1, true));
-                Assert.DoesNotThrow(() => new NumberValidator(2, 1, false));
-
-                Assert.IsTrue(new NumberValidator(17, 2, true).IsValidNumber("0.0"));
-				Assert.IsTrue(new NumberValidator(17, 2, true).IsValidNumber("0"));
-				Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("00.00"));
-				Assert.IsTrue(new NumberValidator(3, 2, false).IsValidNumber("-0.00"));
-				Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("-0.00"));
-				Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("+0.00"));
-				Assert.IsTrue(new NumberValidator(4, 2, true).IsValidNumber("+1.23"));
-				Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("+1.23"));
-				Assert.IsFalse(new NumberValidator(17, 2, true).IsValidNumber("0.000"));
-				Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("-1.23"));
-				Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("a.sd"));
-            });
+			Assert.DoesNotThrow(() => new NumberValidator(precision, scale, onlyPositive));
 		}
+
+        [Test]
+		[TestCase(-1, 2, TestName = "Throws_IfNegativePrecision")]
+		[TestCase(0, 2, TestName = "Throws_IfZeroPrecision")]
+		[TestCase(0, -1, TestName = "Throws_IfNegativeScale")]
+		[TestCase(1, 1, TestName = "Throws_IfScaleAndPrecisionAreEqual")]
+		[TestCase(1, 2, TestName = "Throws_IfScaleGreaterThanPrecision")]
+        public void ThrowsArgumentException_WithIncorrectArguments(int precision, int scale)
+        {
+	        Assert.Throws<ArgumentException>(() => new NumberValidator(precision, scale, true));
+	        Assert.Throws<ArgumentException>(() => new NumberValidator(precision, scale, false));
+        }
+
+        [Test]
+		[TestCase(17, 2, true, "0", TestName = "IsValidNumber_Integer_Valid")]
+		[TestCase(17, 2, false, "0", TestName = "OnlyPositive_IsValidNumber_Integer_Valid")]
+		[TestCase(17, 2, false, "-0", TestName = "IsValidNumber_NegativeInteger_Valid")]
+		[TestCase(17, 2, true, "+0", TestName = "OnlyPositive_IsValidNumber_PlusInteger_Valid")]
+		[TestCase(17, 2, false, "+0", TestName = "IsValidNumber_PlusInteger_Valid")]
+
+        [TestCase(17, 2, true, "0.00", TestName = "IsValidNumber_Fraction_Valid")]
+        [TestCase(17, 2, false, "0.00", TestName = "OnlyPositive_IsValidNumber_Fraction_Valid")]
+        [TestCase(17, 2, false, "-0.00", TestName = "IsValidNumber_NegativeFraction_Valid")]
+        [TestCase(17, 2, true, "+0.00", TestName = "OnlyPositive_IsValidNumber_PlusFraction_Valid")]
+        [TestCase(17, 2, false, "+0.00", TestName = "IsValidNumber_PlusFraction_Valid")]
+        public void IsValidNumber_Valid(int precision, int scale, bool onlyPositive, string value)
+        {
+			Assert.IsTrue(new NumberValidator(precision, scale, onlyPositive).IsValidNumber(value));
+        }
+
+		[Test]
+		[TestCase(17, 2, false, "", TestName = "IsValidNumber_Empty_IsNotValid")]
+		[TestCase(17, 2, false, null, TestName = "IsValidNumber_Null_IsNotValid")]
+		[TestCase(17, 2, true, "", TestName = "OnlyPositive_IsValidNumber_Empty_IsNotValid")]
+		[TestCase(17, 2, true, null, TestName = "OnlyPositive_IsValidNumber_Null_IsNotValid")]
+
+		[TestCase(17, 2, false, "a.bc", TestName = "IsValidNumber_NonNumber_IsNotValid")]
+		[TestCase(17, 2, true, "a.bc", TestName = "OnlyPositive_IsValidNumber_NonNumber_IsNotValid")]
+
+        [TestCase(17, 2, true, "-0", TestName = "OnlyPositive_IsValidNumber_NegativeInteger_IsNotValid")]
+		[TestCase(17, 2, true, "-0.00", TestName = "OnlyPositive_IsValidNumber_NegativeFraction_IsNotValid")]
+
+		[TestCase(3, 2, false, "-0.00", TestName = "IsValidNumber_NegativeFraction_ExceededPrecision_IsNotValid")]
+		[TestCase(3, 2, false, "+0.00", TestName = "IsValidNumber_PlusFraction_ExceededPrecision_IsNotValid")]
+		[TestCase(3, 2, false, "00.00", TestName = "IsValidNumber_Fraction_ExceededPrecision_IsNotValid")]
+		[TestCase(3, 2, false, "0000", TestName = "IsValidNumber_Integer_ExceededPrecision_IsNotValid")]
+		[TestCase(3, 2, false, "-000", TestName = "IsValidNumber_NegativeInteger_ExceededPrecision_IsNotValid")]
+		[TestCase(3, 2, false, "+000", TestName = "IsValidNumber_PlusInteger_ExceededPrecision_IsNotValid")]
+
+		[TestCase(3, 2, true, "-0.00", TestName = "OnlyPositive_IsValidNumber_NegativeFraction_ExceededPrecision_IsNotValid")]
+		[TestCase(3, 2, true, "+0.00", TestName = "OnlyPositive_IsValidNumber_PlusFraction_ExceededPrecision_IsNotValid")]
+		[TestCase(3, 2, true, "00.00", TestName = "OnlyPositive_IsValidNumber_Fraction_ExceededPrecision_IsNotValid")]
+		[TestCase(3, 2, true, "0000", TestName = "OnlyPositive_IsValidNumber_Integer_ExceededPrecision_IsNotValid")]
+		[TestCase(3, 2, true, "-000", TestName = "OnlyPositive_IsValidNumber_NegativeInteger_ExceededPrecision_IsNotValid")]
+		[TestCase(3, 2, true, "+000", TestName = "OnlyPositive_IsValidNumber_PlusInteger_ExceededPrecision_IsNotValid")]
+
+        [TestCase(17, 2, false, "0.000", TestName = "IsValidNumber_ExceededScale_IsNotValid")]
+        [TestCase(17, 2, false, "-0.000", TestName = "IsValidNumber_Negative_ExceededScale_IsNotValid")]
+        [TestCase(17, 2, false, "+0.000", TestName = "IsValidNumber_Plus_ExceededScale_IsNotValid")]
+		public void IsValidNumber_IsNotValid(int precision, int scale, bool onlyPositive, string value)
+        {
+	        Assert.IsFalse(new NumberValidator(precision, scale, onlyPositive).IsValidNumber(value));
+        }
 	}
 
 	public class NumberValidator
