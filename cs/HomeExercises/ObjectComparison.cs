@@ -1,4 +1,7 @@
-﻿using FluentAssertions;
+﻿//using FluentAssertions;
+
+using System.Collections.Generic;
+using FluentAssertions;
 using NUnit.Framework;
 
 namespace HomeExercises
@@ -16,15 +19,8 @@ namespace HomeExercises
 				new Person("Vasili III of Russia", 28, 170, 60, null));
 
 			// Перепишите код на использование Fluent Assertions.
-			Assert.AreEqual(actualTsar.Name, expectedTsar.Name);
-			Assert.AreEqual(actualTsar.Age, expectedTsar.Age);
-			Assert.AreEqual(actualTsar.Height, expectedTsar.Height);
-			Assert.AreEqual(actualTsar.Weight, expectedTsar.Weight);
-
-			Assert.AreEqual(expectedTsar.Parent.Name, actualTsar.Parent.Name);
-			Assert.AreEqual(expectedTsar.Parent.Age, actualTsar.Parent.Age);
-			Assert.AreEqual(expectedTsar.Parent.Height, actualTsar.Parent.Height);
-			Assert.AreEqual(expectedTsar.Parent.Parent, actualTsar.Parent.Parent);
+			expectedTsar.ShouldBeEquivalentTo(actualTsar, 
+				options => options.Excluding(o => o.Id).Excluding(o => o.Parent.Id));
 		}
 
 		[Test]
@@ -36,6 +32,14 @@ namespace HomeExercises
 				new Person("Vasili III of Russia", 28, 170, 60, null));
 
 			// Какие недостатки у такого подхода? 
+			/*
+			 * 1. Если тест перестанет проходить, мы не узнаем точного места, из-за которого тест не проходит.
+			 * Это все потому, что объекты сравниваются методом, который возвращает true или false - без
+			 * информативного сообщения, почему false
+			 *
+			 * 2. При добавлении новых полей или свойств или удалении старых нам придется обновлять
+			 * ObjectCOmparison.AreEqual, а об этом можно забыть и долго ломать голову, почему же не проходят тесты.
+			 */
 			Assert.True(AreEqual(actualTsar, expectedTsar));
 		}
 
