@@ -14,17 +14,26 @@ namespace HomeExercises
 
 			var expectedTsar = new Person("Ivan IV The Terrible", 54, 170, 70,
 				new Person("Vasili III of Russia", 28, 170, 60, null));
+			// Перепишите код на использование Fluent Assertio
+            actualTsar.Name.Should().Be(expectedTsar.Name);
+            actualTsar.Age.Should().Be(expectedTsar.Age);
+            actualTsar.Height.Should().Be(expectedTsar.Height);
+            actualTsar.Weight.Should().Be(expectedTsar.Weight);
 
-			// Перепишите код на использование Fluent Assertions.
-			Assert.AreEqual(actualTsar.Name, expectedTsar.Name);
-			Assert.AreEqual(actualTsar.Age, expectedTsar.Age);
-			Assert.AreEqual(actualTsar.Height, expectedTsar.Height);
-			Assert.AreEqual(actualTsar.Weight, expectedTsar.Weight);
+            //Assert.AreEqual(actualTsar.Name, expectedTsar.Name);
+            //Assert.AreEqual(actualTsar.Age, expectedTsar.Age);
+            //Assert.AreEqual(actualTsar.Height, expectedTsar.Height);
+            //Assert.AreEqual(actualTsar.Weight, expectedTsar.Weight);
 
-			Assert.AreEqual(expectedTsar.Parent.Name, actualTsar.Parent.Name);
-			Assert.AreEqual(expectedTsar.Parent.Age, actualTsar.Parent.Age);
-			Assert.AreEqual(expectedTsar.Parent.Height, actualTsar.Parent.Height);
-			Assert.AreEqual(expectedTsar.Parent.Parent, actualTsar.Parent.Parent);
+            expectedTsar.Parent.Name.Should().Be(actualTsar.Parent.Name);
+            expectedTsar.Parent.Age.Should().Be(actualTsar.Parent.Age);
+            expectedTsar.Parent.Height.Should().Be(actualTsar.Parent.Height);
+            expectedTsar.Parent.Parent.Should().Be(actualTsar.Parent.Parent);
+
+            //Assert.AreEqual(expectedTsar.Parent.Name, actualTsar.Parent.Name);
+			//Assert.AreEqual(expectedTsar.Parent.Age, actualTsar.Parent.Age);
+			//Assert.AreEqual(expectedTsar.Parent.Height, actualTsar.Parent.Height);
+			//Assert.AreEqual(expectedTsar.Parent.Parent, actualTsar.Parent.Parent);
 		}
 
 		[Test]
@@ -37,7 +46,11 @@ namespace HomeExercises
 
 			// Какие недостатки у такого подхода? 
 			Assert.True(AreEqual(actualTsar, expectedTsar));
-		}
+			//В таком подходе в независимости от количества полей класса person можно сравнивать объекты этого класса по всем возможным полям
+			//Так же можно указать те поля, которые сравнивать не нужно
+			//Пишется намного меньше кода, однако читаемость у него такая себе
+			actualTsar.ShouldBeEquivalentTo(expectedTsar, opitons => opitons.Excluding(x => x.SelectedMemberPath.EndsWith("Id")));
+        }
 
 		private bool AreEqual(Person actual, Person expected)
 		{

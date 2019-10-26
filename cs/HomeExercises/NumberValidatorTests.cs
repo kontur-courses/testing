@@ -5,30 +5,111 @@ using NUnit.Framework;
 
 namespace HomeExercises
 {
-	public class NumberValidatorTests
+	[TestFixture]
+    public class NumberValidatorTests
 	{
-		[Test]
-		public void Test()
-		{
-			Assert.Throws<ArgumentException>(() => new NumberValidator(-1, 2, true));
-			Assert.DoesNotThrow(() => new NumberValidator(1, 0, true));
-			Assert.Throws<ArgumentException>(() => new NumberValidator(-1, 2, false));
-			Assert.DoesNotThrow(() => new NumberValidator(1, 0, true));
 
-			Assert.IsTrue(new NumberValidator(17, 2, true).IsValidNumber("0.0"));
-			Assert.IsTrue(new NumberValidator(17, 2, true).IsValidNumber("0"));
-			Assert.IsTrue(new NumberValidator(17, 2, true).IsValidNumber("0.0"));
-			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("00.00"));
-			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("-0.00"));
-			Assert.IsTrue(new NumberValidator(17, 2, true).IsValidNumber("0.0"));
-			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("+0.00"));
-			Assert.IsTrue(new NumberValidator(4, 2, true).IsValidNumber("+1.23"));
-			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("+1.23"));
-			Assert.IsFalse(new NumberValidator(17, 2, true).IsValidNumber("0.000"));
-			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("-1.23"));
-			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("a.sd"));
+		[Test]
+		public void ShouldThrowArgumentExeption_When_PresisionIsNegative()
+		{
+			Assert.Throws<ArgumentException>(() => new NumberValidator(-1, 2));
+        }
+		[Test]
+        public void ShouldThrowArgumentExeption_When_ScaleIsNegative()
+		{
+			Assert.Throws<ArgumentException>(() => new NumberValidator(1, -2));
+        }
+        [Test]
+        public void ShouldThrowArgumentExeption_When_ScaleIsBiggerThanPresision()
+        {
+	        Assert.Throws<ArgumentException>(() => new NumberValidator(1, 3));
+        }
+        [Test]
+        public void ShouldNotBeValid_When_ExpectedPresisionMoreThanActual()
+        {
+	        Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("0.001"));
+        }
+
+        [Test]
+        public void ShouldNotBeValid_When_ExpectePositiveNumberButActualIsNegative()
+        {
+	        Assert.IsFalse(new NumberValidator(2, 0, true).IsValidNumber("-0"));
+        }
+
+        [Test]
+        public void ShouldBeValid_When_ExpecteNegativeNumberButActualIsPositive()
+        {
+	        Assert.IsTrue(new NumberValidator(2, 0, false).IsValidNumber("0"));
+        }
+
+        [Test]
+        public void ShouldBeValid_When_ExpectNegativeNumberAndActualIsNegative()
+        {
+	        Assert.IsTrue(new NumberValidator(2, 0, false).IsValidNumber("-0"));
+        }
+
+        [Test]
+		public void ShouldBeValid_When_ExpectPositiveNumberAndActualIsPositive()
+        {
+	        Assert.IsTrue(new NumberValidator(2, 0, true).IsValidNumber("0"));
+        }
+
+		[Test]
+		public void ShouldNotBeValid_When_ExpectPresisionLessThanActual()
+		{
+			Assert.IsFalse(new NumberValidator(3, 0, true).IsValidNumber("-123"));
 		}
-	}
+
+		[Test]
+        public void ShouldNotBeValid_When_ExpectScaleLessThanActual()
+		{
+			Assert.IsFalse(new NumberValidator(4, 2, true).IsValidNumber("1.234"));
+		}
+
+        [Test]
+        public void ShouldNotBeValid_When_ValueIsEmpty()
+        {
+	        Assert.IsFalse(new NumberValidator(4, 2, true).IsValidNumber(""));
+        }
+
+        [Test]
+        public void ShouldNotBeValid_When_NoNumberInValue()
+        {
+            Assert.IsFalse(new NumberValidator(4, 2, true).IsValidNumber("$$$$$"));
+        }
+
+        [Test]
+        public void ShouldBeValid_When_UseCommaInNumber()
+        {
+	        Assert.IsTrue(new NumberValidator(4, 2, true).IsValidNumber("2,24"));
+        }
+
+        [Test]
+        public void ShouldNotBeValid_When_NumbersAndNoNumbersInValue()
+        {
+	        Assert.IsFalse(new NumberValidator(4, 2, true).IsValidNumber("2,24$"));
+        }
+
+
+        //[Test]
+        //      public void Test()
+        //{
+        //	Assert.Throws<ArgumentException>(() => new NumberValidator(-1, 2));
+        //	Assert.DoesNotThrow(() => new NumberValidator(1, 0));
+
+        //	Assert.IsTrue(new NumberValidator(17, 2, true).IsValidNumber("0.0"));
+        //	Assert.IsTrue(new NumberValidator(17, 2, true).IsValidNumber("0"));
+        //	Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("00.00"));
+        //	Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("-0.00"));
+        //	Assert.IsTrue(new NumberValidator(17, 2, true).IsValidNumber("0.0"));
+        //	Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("+0.00"));
+        //	Assert.IsTrue(new NumberValidator(4, 2, true).IsValidNumber("+1.23"));
+        //	Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("+1.23"));
+        //	Assert.IsFalse(new NumberValidator(17, 2, true).IsValidNumber("0.000"));
+        //	Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("-1.23"));
+        //	Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("a.sd"));
+        //}
+    }
 
 	public class NumberValidator
 	{
