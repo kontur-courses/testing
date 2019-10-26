@@ -37,6 +37,7 @@ namespace HomeExercises
 		[TestCase(17, 2, false, "+0", TestName = "IsValidNumber_PlusInteger_Valid")]
 
         [TestCase(17, 2, true, "0.00", TestName = "IsValidNumber_Fraction_Valid")]
+        [TestCase(17, 2, true, "0.00", TestName = "IsValidNumber_CommaFraction_Valid")]
         [TestCase(17, 2, false, "0.00", TestName = "OnlyPositive_IsValidNumber_Fraction_Valid")]
         [TestCase(17, 2, false, "-0.00", TestName = "IsValidNumber_NegativeFraction_Valid")]
         [TestCase(17, 2, true, "+0.00", TestName = "OnlyPositive_IsValidNumber_PlusFraction_Valid")]
