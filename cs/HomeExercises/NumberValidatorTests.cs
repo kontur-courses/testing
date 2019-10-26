@@ -22,7 +22,7 @@ namespace HomeExercises
 			act.ShouldThrow<ArgumentException>();
 		}
 
-        [Test]
+		[Test]
 		public void IsValidNumber_NonNumericString_ReturnsFalse()
 		{
 			var nv = new NumberValidator(3);
@@ -96,13 +96,13 @@ namespace HomeExercises
 		[Test]
 		public void IsValidNumber_MoreThanOneSeparators_ReturnsFalse()
 		{
-			var nv = new NumberValidator(10,5);
+			var nv = new NumberValidator(10, 5);
 			nv.IsValidNumber("12..3").Should().BeFalse();
 			nv.IsValidNumber("12.,3").Should().BeFalse();
 			nv.IsValidNumber("12.3.4").Should().BeFalse();
-        }
+		}
 
-        [TestCase(10)]
+		[TestCase(10)]
 		[TestCase(100)]
 		[TestCase(1000)]
 		public void IsValidNumber_Perfomance_IsTimePermissible(int numberPrecision)
