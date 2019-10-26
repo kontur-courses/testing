@@ -43,8 +43,8 @@ namespace HomeExercises
 		{
 			get
 			{
-				yield return new TestCaseData(1, 0, true).SetName("correct on (1, 0, true)");
-				yield return new TestCaseData(7, 5, false).SetName("correct on (7, 5, false)");
+				yield return new TestCaseData(1, 0, true).SetName("correct on correct data");
+				yield return new TestCaseData(7, 5, false).SetName("correct on correct data with non-zero scale");
 			}
 		}
 		
@@ -52,26 +52,26 @@ namespace HomeExercises
 		{
 			get
 			{
-				yield return new TestCaseData(-1, 0).SetName("precision is negative: -1");
+				yield return new TestCaseData(-1, 0).SetName("precision is negative");
 				yield return new TestCaseData(0, 0).SetName("precision is zero");
 				yield return new TestCaseData(7, 7).SetName("scale is equal to precision");
 				yield return new TestCaseData(7, 8).SetName("scale is greater than precision");
-				yield return new TestCaseData(7, -1).SetName("scale is negative: -1");
+				yield return new TestCaseData(7, -1).SetName("scale is negative");
 			}
 		}
 		private static IEnumerable ValidTestCases
 		{
 			get
 			{
-				yield return new TestCaseData(2, 1, true, "0.0").SetName("valid on (2, 1, true) and value \"0.0\"");
-				yield return new TestCaseData(17, 2, true, "0").SetName("valid on (17, 2, true) and value \"0\"");
-				yield return new TestCaseData(2, 1, true, "0,0").SetName("valid on (2, 1, true) and value \"0,0\"");
-				yield return new TestCaseData(17, 2, false, "-1.0").SetName("valid on (17, 2, false) and value \"-1.0\"");
-				yield return new TestCaseData(9, 4, true, "12345.6789").SetName("valid on (9, 4, true) and value \"12345.6789\"");
-				yield return new TestCaseData(9, 4, false, "+145.69").SetName("valid on (9, 4, false) and value \"+145.69\"");
-				yield return new TestCaseData(10, 0, true, int.MaxValue.ToString()).SetName("valid on (10, 0, true) and value int.MaxValue");
-				yield return new TestCaseData(11, 0, false, int.MinValue.ToString()).SetName("valid on (11, 0, false) and value int.MinValue");
-				yield return new TestCaseData(3, 1, true, "+5.0").SetName("valid on (3, 1, true) and value \"+5.0\"");
+				yield return new TestCaseData(2, 1, true, "0.0").SetName("when zero with decimal point");
+				yield return new TestCaseData(17, 2, true, "0").SetName("when zero without decimal point");
+				yield return new TestCaseData(2, 1, true, "0,0").SetName("when zero with comma");
+				yield return new TestCaseData(4, 2, true, "00.00").SetName("when additional zeros");
+				yield return new TestCaseData(17, 2, false, "-1.0").SetName("when negative value");
+				yield return new TestCaseData(9, 4, true, "12345.6789").SetName("when value with all digits");
+				yield return new TestCaseData(9, 4, false, "+145.69").SetName("when value with plus sign");
+				yield return new TestCaseData(10, 0, true, int.MaxValue.ToString()).SetName("when value is int.MaxValue");
+				yield return new TestCaseData(11, 0, false, int.MinValue.ToString()).SetName("when value is int.MinValue");
 			}
 		}
 		
@@ -79,19 +79,19 @@ namespace HomeExercises
 		{
 			get
 			{
-				yield return new TestCaseData(3, 2, true, "00.00").SetName("invalid on (3, 2, true) and value \"00.00\"");
-				yield return new TestCaseData(3, 2, true, ".0").SetName("invalid on (3, 2, true) and value \".0\"");
-				yield return new TestCaseData(3, 2, true, "0.").SetName("invalid on (3, 2, true) and value \"0.\"");
-				yield return new TestCaseData(17, 2, true, "125.001").SetName("invalid on (17, 2, true) and value \"125.001\"");
-				yield return new TestCaseData(17, 2, true, "100 01").SetName("invalid on (17, 2, true) and value \"100 01\"");
-				yield return new TestCaseData(3, 1, true, "-1.0").SetName("invalid on (3, 1, true) and value \"-1.0\"");
-				yield return new TestCaseData(3, 1, false, "-.0").SetName("invalid on (3, 1, true) and value \"-.0\"");
-				yield return new TestCaseData(3, 1, false, "-").SetName("invalid on (3, 1, true) and value \"-\"");
-				yield return new TestCaseData(3, 1, true, "+").SetName("invalid on (3, 1, true) and value \"+\"");
-				yield return new TestCaseData(2, 1, true, "").SetName("invalid on (2, 1, true) and value empty string");
-				yield return new TestCaseData(2, 1, true, "    ").SetName("invalid on (2, 1, true) and value whitespace string");
-				yield return new TestCaseData(2, 1, true, null).SetName("invalid on (2, 1, true) and value null");
-				yield return new TestCaseData(2, 1, true, "qwerty").SetName("invalid on (2, 1, true) and value \"qwerty\"");
+				yield return new TestCaseData(3, 2, true, ".0").SetName("when point is on the left from zero");
+				yield return new TestCaseData(3, 2, true, "0.").SetName("when point is on the right from zero");
+				yield return new TestCaseData(17, 2, true, "125.001").SetName("when fractional part length is bigger than scale");
+				yield return new TestCaseData(17, 2, true, "100 01").SetName("when whitespace is between digits");
+				yield return new TestCaseData(3, 1, true, "-1.0").SetName("when value is negative and onlyPositive is true");
+				yield return new TestCaseData(3, 1, false, "1!.3").SetName("when unexpected symbol");
+				yield return new TestCaseData(3, 1, false, "-.0").SetName("when minus before point");
+				yield return new TestCaseData(3, 1, false, "-").SetName("when minus without digits");
+				yield return new TestCaseData(3, 1, true, "+").SetName("when plus without digits");
+				yield return new TestCaseData(2, 1, true, "").SetName("when value is empty");
+				yield return new TestCaseData(2, 1, true, "    ").SetName("when value is whitespaces");
+				yield return new TestCaseData(2, 1, true, null).SetName("when value is null");
+				yield return new TestCaseData(2, 1, true, "qwerty").SetName("when value is letters");
 			}
 		}
 	}
