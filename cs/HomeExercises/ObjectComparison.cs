@@ -18,19 +18,11 @@ namespace HomeExercises
 				new Person("Vasili III of Russia", 28, 170, 60, null));
 
 			// Перепишите код на использование Fluent Assertions.
-			CheckPersonsByFields(expectedTsar, actualTsar);
+			actualTsar.ShouldBeEquivalentTo(expectedTsar, options => options
+				.Excluding(person => person.Id)
+				.Excluding(person => person.Parent));
 		}
 
-		private void CheckPersonsByFields(Person expectedPerson, Person actualPerson)
-		{
-			if(expectedPerson == null || actualPerson == null) return;
-			actualPerson.Age.Should().Be(expectedPerson.Age);
-			actualPerson.Name.Should().Be(expectedPerson.Name);
-			actualPerson.Height.Should().Be(expectedPerson.Height);
-			actualPerson.Weight.Should().Be(expectedPerson.Weight);
-			CheckPersonsByFields(expectedPerson.Parent, actualPerson.Parent);
-		}
-		
 		[Test]
 		[Description("Альтернативное решение. Какие у него недостатки?")]
 		public void CheckCurrentTsar_WithCustomEquality()
@@ -46,6 +38,7 @@ namespace HomeExercises
 			 эти два объекта просто неравны.
 			 В то время как в моем решении будет видно в каком свойстве разница и какие были значения 
 			 этих свойств на момент выполнения теста.
+			 Изменения свойств в классе не приведут к большим изменениям в тестах.
 			 Сам тест стал читабельнее*/
 		}
 

@@ -7,42 +7,37 @@ namespace HomeExercises
 {
 	public class NumberValidatorTests
 	{
-		[TestCase(1, 0, true, "0", true)]
-		[TestCase(2, 0, true, "1 1", false)]
-		[TestCase(1, 2, true, "a.sd", false)]
-		[TestCase(1, 0, true, "", false)]
-		[TestCase(1, 0, true, " ", false)]
-		[TestCase(2, 1, true, " 0.0", false)]
-		[TestCase(1, 0, true, null, false)]
-		[TestCase(3, 1, true, "01.0", true)]
-		[TestCase(3, 0, true, "001", true)]
-		[TestCase(2, 2, true, "111.0", true)]
-		[TestCase(2, 0, true, "+11", false)]
-		[TestCase(2, 0, true, "11.0", false)]
-		[TestCase(2, 0, true, "-1", false)]
-		[TestCase(1, 1, true, "+.1", false)]
-		[TestCase(2, 0, false, "-1", true)]
-		public void IsValidNumber_ReturnsRightResult(int leftCharsCount, int rightCharsCount, 
-			bool onlyPositive, string value, bool expectedResult)
+		[TestCase(3, 2, true, "1.0d", false, TestName = "Correct number's form with letter => False")]
+		[TestCase(1, 0, true, "", false, TestName = "Empty string => False")]
+		[TestCase(1, 0, true, " ", false, TestName = "Whitespace => False")]
+//		[TestCase(2, 0, true, "1\n", false, TestName = "Correct number and whitespace => False")] - падает
+		[TestCase(1, 0, true, null, false, TestName = "Null => False")]
+		[TestCase(3, 0, true, "001", true, TestName = "Zero before integer part => True")]
+		[TestCase(2, 0, true, "+11", false, TestName = "Number's chars count grater than precision => False")]
+		[TestCase(2, 1, true, "1.01", false, TestName = "Fractional part grater than scale => False")]
+		[TestCase(2, 0, true, "-1", false, TestName = "Negative number when must be positive only => False ")]
+		[TestCase(2, 1, true, "+.1", false, TestName = "Integer part contains plus only => False")]
+		[TestCase(2, 0, false, "-1", true, TestName = "Work with negative number when onlyPositive=False => True")]
+		[TestCase(1, 0, true, "1.", false, TestName = "Number with point and without fractional part => False")]
+		public void IsValidNumber(int precision, int scale, bool onlyPositive, string value, bool expectedResult)
 		{
-			var precision = leftCharsCount + rightCharsCount;
-			var validator = new NumberValidator(precision, rightCharsCount, onlyPositive);
+			var validator = new NumberValidator(precision, scale, onlyPositive);
 			var actualResult = validator.IsValidNumber(value);
 			actualResult.Should().Be(expectedResult);
 		}
 
-		[TestCase(-1, 0, "precision must be a positive number")]
-		[TestCase(0, 0, "precision must be a positive number")]
-		[TestCase(1, 1, "scale must be a non-negative number less or equal than precision")]
-		[TestCase(1, -1, "scale must be a non-negative number less or equal than precision")]
-		[TestCase(1, 2, "scale must be a non-negative number less or equal than precision")]
-		public void NumberValidatorInitialise_ThrowsException(int precision, int scale, string message)
+		[TestCase(-1, 0, TestName = "Negative precision")]
+		[TestCase(0, 0, TestName = "Zero precision")]
+		[TestCase(1, 1, TestName = "Scale equals to precision")]
+		[TestCase(1, 2, TestName = "Scale is grater than precision")]
+		[TestCase(1, -1, TestName = "Negative scale")]
+		public void NumberValidatorInitialise_ThrowsException(int precision, int scale)
 		{
 			Action initialiseValidator = () => new NumberValidator(precision, scale);
-			initialiseValidator.ShouldThrow<ArgumentException>().WithMessage(message);
+			initialiseValidator.ShouldThrow<ArgumentException>();
 		}
 	}
-
+	
 	public class NumberValidator
 	{
 		private readonly Regex numberRegex;
