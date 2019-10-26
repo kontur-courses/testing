@@ -1,4 +1,6 @@
-﻿using NUnit.Framework;
+﻿using FluentAssertions;
+using FluentAssertions.Equivalency;
+using NUnit.Framework;
 
 namespace HomeExercises
 {
@@ -14,19 +16,23 @@ namespace HomeExercises
 			var expectedTsar = new Person("Ivan IV The Terrible", 54, 170, 70,
 				new Person("Vasili III of Russia", 28, 170, 60, null));
 
-			// Перепишите код на использование Fluent Assertions.
-			Assert.AreEqual(actualTsar.Name, expectedTsar.Name);
-			Assert.AreEqual(actualTsar.Age, expectedTsar.Age);
-			Assert.AreEqual(actualTsar.Height, expectedTsar.Height);
-			Assert.AreEqual(actualTsar.Weight, expectedTsar.Weight);
-
-			Assert.AreEqual(expectedTsar.Parent.Name, actualTsar.Parent.Name);
-			Assert.AreEqual(expectedTsar.Parent.Age, actualTsar.Parent.Age);
-			Assert.AreEqual(expectedTsar.Parent.Height, actualTsar.Parent.Height);
-			Assert.AreEqual(expectedTsar.Parent.Parent, actualTsar.Parent.Parent);
+            // Перепишите код на использование Fluent Assertions.
+            actualTsar.ShouldBeEquivalentTo(expectedTsar, PersonEquivalencyOptions);
+            actualTsar.Parent.ShouldBeEquivalentTo(expectedTsar.Parent, PersonEquivalencyOptions);            
+            /// Решение с использованием Fluent Assertions более краткое и более "человекочитаемое",
+            /// в нем легче разобраться, меньше вероятность того, что делая тесты на равенство всех
+            /// полей объектов сделаешь ошибку из-за копипаста, или какое-то поле пропустишь.
+            /// И оно лучше расширяется: при появлении в классе Person новых полей - в тесте ничего 
+            /// менять не надо. Кроме указания полей, которые не нужно сравнивать. Но это легче, т.к.
+            /// они "всплывут" при падении теста.
 		}
 
-		[Test]
+        private EquivalencyAssertionOptions<Person> PersonEquivalencyOptions(EquivalencyAssertionOptions<Person> arg)
+        {
+            return arg.Excluding(p => p.Id).Excluding(p => p.Parent);
+        }
+
+        [Test]
 		[Description("Альтернативное решение. Какие у него недостатки?")]
 		public void CheckCurrentTsar_WithCustomEquality()
 		{
@@ -36,9 +42,12 @@ namespace HomeExercises
 
 			// Какие недостатки у такого подхода? 
 			Assert.True(AreEqual(actualTsar, expectedTsar));
+            /// Более громоздкое (за счет проверки всех полей в методе AreEqual),
+            /// хуже при расширении, т.е. при добавлении или изменении полей - 
+            /// надо будет и AreEqual править.
 		}
 
-		private bool AreEqual(Person actual, Person expected)
+        private bool AreEqual(Person actual, Person expected)
 		{
 			if (actual == expected) return true;
 			if (actual == null || expected == null) return false;

@@ -1,34 +1,54 @@
-﻿using System;
-using System.Text.RegularExpressions;
-using FluentAssertions;
+﻿using FluentAssertions;
 using NUnit.Framework;
+using System;
+using System.Text.RegularExpressions;
 
 namespace HomeExercises
 {
-	public class NumberValidatorTests
-	{
-		[Test]
-		public void Test()
-		{
-			Assert.Throws<ArgumentException>(() => new NumberValidator(-1, 2, true));
-			Assert.DoesNotThrow(() => new NumberValidator(1, 0, true));
-			Assert.Throws<ArgumentException>(() => new NumberValidator(-1, 2, false));
-			Assert.DoesNotThrow(() => new NumberValidator(1, 0, true));
+    public class NumberValidatorTests
+    {
+        [TestCase(-1, 2, true, Description = "if Precision < 0")]
+        [TestCase(0, 2, true, Description = "if Precision == 0")]
+        [TestCase(1, -1, false, Description = "if Scale < 0")]
+        [TestCase(2, 2, false, Description = "if Scale == Precision")]
+        [TestCase(2, 3, false, Description = "if Scale > Precision")]
+        public void NumberValidator_ShouldThrow(int precision, int scale, bool onlyPositive)
+        {
+            Assert.Throws<ArgumentException>(() => new NumberValidator(precision, scale, onlyPositive));
+        }
 
-			Assert.IsTrue(new NumberValidator(17, 2, true).IsValidNumber("0.0"));
-			Assert.IsTrue(new NumberValidator(17, 2, true).IsValidNumber("0"));
-			Assert.IsTrue(new NumberValidator(17, 2, true).IsValidNumber("0.0"));
-			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("00.00"));
-			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("-0.00"));
-			Assert.IsTrue(new NumberValidator(17, 2, true).IsValidNumber("0.0"));
-			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("+0.00"));
-			Assert.IsTrue(new NumberValidator(4, 2, true).IsValidNumber("+1.23"));
-			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("+1.23"));
-			Assert.IsFalse(new NumberValidator(17, 2, true).IsValidNumber("0.000"));
-			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("-1.23"));
-			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("a.sd"));
-		}
-	}
+        [TestCase(1, 0, true)]
+        [TestCase(1, 0, false)]
+        public void NumberValidator_ShouldntThrow(int precision, int scale, bool onlyPositive)
+        {
+            Assert.DoesNotThrow(() => new NumberValidator(precision, scale, onlyPositive));
+        }
+
+        [TestCase(2, 1, false, null, Description = "if value IsNullOrEmpty")]
+        [TestCase(2, 1, false, "", Description = "if value IsNullOrEmpty")]
+        [TestCase(3, 2, false, "00.00", Description = "if m > precision")]
+        [TestCase(3, 2, false, "-0.00", Description = "if m > precision")]
+        [TestCase(3, 2, false, "+0.00", Description = "if m > precision")]
+        [TestCase(17, 2, false, "0.000", Description = "if k > scale")]
+        [TestCase(17, 2, false, "0.", Description = "if value without frac and has dot")]
+        [TestCase(17, 2, false, ".0", Description = "if value without int and has dot")]
+        [TestCase(3, 2, false, "a.00", Description = "if value is not number")]
+        [TestCase(3, 2, false, "0.aa", Description = "if value is not number")]
+        [TestCase(1, 0, false, " ", Description = "if value is whitespace")]
+        [TestCase(4, 2, true, "-5.00", Description = "if value is negative but must be positive")]
+        public void IsValidNumber_MustReturnFalse(int precision, int scale, bool onlyPositive, string value)
+        {
+            new NumberValidator(precision, scale, onlyPositive).IsValidNumber(value).Should().BeFalse();
+        }
+
+        [TestCase(2, 1, true, "0.0")]
+        [TestCase(2, 1, true, "+1", Description = "The value may be with '+' and without frac")]
+        [TestCase(4, 2, false, "-5,25", Description = "The value may be with '-' and with ','")]
+        public void IsValidNumber_MustReturnTrue(int precision, int scale, bool onlyPositive, string value)
+        {
+            new NumberValidator(precision, scale, onlyPositive).IsValidNumber(value).Should().BeTrue();
+        }
+    }
 
 	public class NumberValidator
 	{
@@ -44,6 +64,14 @@ namespace HomeExercises
 			this.onlyPositive = onlyPositive;
 			if (precision <= 0)
 				throw new ArgumentException("precision must be a positive number");
+            /// ниже, видимо, ошибка, которую можно выявить только при code review:
+            /// по идее, scale (k – максимальное число знаков дробной части) 
+            /// не может быть равен precision (m – максимальное количество знаков в числе)
+            /// потому что кроме дробной части в любом случае будет как минимум одна цифра целой части.
+            /// В таком случае выбрасывается исключение. И правильно, что выбрасывается, но
+            /// в сообщении этого исключения написано "or equal than precision".
+            /// Т.е. при запуске например new NumberValidator(2, 2 ....
+            /// выбросится исключение, но в сообщении будет написано, что так можно!..
 			if (scale < 0 || scale >= precision)
 				throw new ArgumentException("precision must be a non-negative number less or equal than precision");
 			numberRegex = new Regex(@"^([+-]?)(\d+)([.,](\d+))?$", RegexOptions.IgnoreCase);
