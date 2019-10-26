@@ -1,6 +1,5 @@
 ﻿using FluentAssertions;
 using NUnit.Framework;
-using System.Linq;
 
 namespace Challenge
 {
@@ -42,14 +41,7 @@ namespace Challenge
 			wordsStatistics.GetStatistics().Should().HaveCount(2);
 		}
 
-        [Test]
 
-        public void AddWord_wordsInDiffrentRegistersAreTheSame()
-        {
-            wordsStatistics.AddWord("aAa");
-            wordsStatistics.AddWord("AaA");
-            Assert.AreEqual(wordsStatistics.GetStatistics().Count(), 1);
-        }
 		// Документация по FluentAssertions с примерами : https://github.com/fluentassertions/fluentassertions/wiki
 	}
 }
