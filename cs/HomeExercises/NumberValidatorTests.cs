@@ -7,26 +7,96 @@ namespace HomeExercises
 {
 	public class NumberValidatorTests
 	{
-		[Test]
-		public void Test()
+		[Test, Category("ConstructorTests")]
+		public void Constructor_Smokie()
 		{
-			Assert.Throws<ArgumentException>(() => new NumberValidator(-1, 2, true));
-			Assert.DoesNotThrow(() => new NumberValidator(1, 0, true));
-			Assert.Throws<ArgumentException>(() => new NumberValidator(-1, 2, false));
-			Assert.DoesNotThrow(() => new NumberValidator(1, 0, true));
+			Action action = () => new NumberValidator(2, 1, true);
+			action.ShouldNotThrow<ArgumentException>();
+		}
+		[Test, Category("ConstructorTests")]
+		public void Constructor_ShouldThrowArgumentException_OnNegativeOrZeroPrecision()
+		{
+			Action action1 = () => new NumberValidator(-1, 2, true);
+			action1.ShouldThrow<ArgumentException>();
+			Action action2 = () => new NumberValidator(0, 2, true);
+			action2.ShouldThrow<ArgumentException>();
+		}
+		
+		[Test, Category("ConstructorTests")]
+		public void Constructor_ShouldThrowArgumentException_OnNegativeScale()
+		{
+			Action action = () => new NumberValidator(1, -1, true);
+			action.ShouldThrow<ArgumentException>();
+		}
 
-			Assert.IsTrue(new NumberValidator(17, 2, true).IsValidNumber("0.0"));
-			Assert.IsTrue(new NumberValidator(17, 2, true).IsValidNumber("0"));
-			Assert.IsTrue(new NumberValidator(17, 2, true).IsValidNumber("0.0"));
-			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("00.00"));
-			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("-0.00"));
-			Assert.IsTrue(new NumberValidator(17, 2, true).IsValidNumber("0.0"));
-			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("+0.00"));
-			Assert.IsTrue(new NumberValidator(4, 2, true).IsValidNumber("+1.23"));
-			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("+1.23"));
-			Assert.IsFalse(new NumberValidator(17, 2, true).IsValidNumber("0.000"));
-			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("-1.23"));
-			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("a.sd"));
+		[Test, Category("ConstructorTests")]
+		public void Constructor_ShouldThrowArgumentException_OnPrecisionBiggerThanScale()
+		{
+			Action action = () => new NumberValidator(1, 2, true);
+			action.ShouldThrow<ArgumentException>();
+		}
+
+		[Test, Category("IsValidNumberTests")]
+		public void IsValidNumber_ReturnsFalse_OnNotNumberArgument()
+		{
+			var nv = new NumberValidator(3, 2, true);
+			nv.IsValidNumber("a.sd").Should().Be(false);
+		}
+
+		[Test, Category("IsValidNumberTests")]
+		public void IsValidNumber_ReturnsFalse_OnOnlyPositiveAndNegativeArgument()
+		{
+			var nv = new NumberValidator(3, 2, true);
+            nv.IsValidNumber("-1.23").Should().Be(false);
+		}
+
+		[Test, Category("IsValidNumberTests")]
+		public void IsValidNumber_SameResult_OnPositiveWithPlusOrNot()
+		{
+			var nv = new NumberValidator(17, 10, true);
+            nv.IsValidNumber("+1.23").Should().Be(nv.IsValidNumber("1.23"));
+		}
+
+		[Test, Category("IsValidNumberTests")]
+		public void IsValidNumber_ReturnsFalse_OnNumberBiggerThanPrecision()
+		{
+			var nv = new NumberValidator(3, 2, true);
+            nv.IsValidNumber("00.00").Should().Be(false);
+		}
+		
+		[Test, Category("IsValidNumberTests")]
+		public void IsValidNumber_ReturnsFalse_OnNumberFractionalPartBiggerThanScale()
+		{
+			var nv = new NumberValidator(17, 2, true);
+			nv.IsValidNumber("0.000").Should().Be(false);
+		}
+		
+		[Test, Category("IsValidNumberTests")]
+		public void IsValidNumber_ReturnsFalse_OnNumberWithSignBiggerThanPrecision()
+		{
+			var nv = new NumberValidator(3, 2, true);
+			nv.IsValidNumber("+0.00").Should().Be(false);
+		}
+		
+		[Test, Category("IsValidNumberTests")]
+		public void IsValidNumber_ReturnsTrue_OnValidNumberWithFractionalPart()
+		{
+			var nv = new NumberValidator(4, 2, true);
+			nv.IsValidNumber("+0.00").Should().Be(true);
+		}
+
+		[Test, Category("IsValidNumberTests")]
+		public void IsValidNumber_ReturnsTrue_OnValidNumberWithoutFractionalPart()
+		{
+			var nv = new NumberValidator(4, 2, true);
+			nv.IsValidNumber("0").Should().Be(true);
+		}
+		
+		[Test, Category("IsValidNumberTests")]
+		public void IsValidNumber_WorksWithPointAndComma()
+		{
+			var nv = new NumberValidator(4, 2, true);
+			nv.IsValidNumber("0.01").Should().Be(nv.IsValidNumber("0,01"));
 		}
 	}
 
