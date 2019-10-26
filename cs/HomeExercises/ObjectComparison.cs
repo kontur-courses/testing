@@ -1,9 +1,8 @@
-﻿using FluentAssertions;
-using NUnit.Framework;
+﻿using NUnit.Framework;
 
 namespace HomeExercises
 {
-	public class ObjectComparison
+    public class ObjectComparison
 	{
 		[Test]
 		[Description("Проверка текущего царя")]
