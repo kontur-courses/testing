@@ -17,10 +17,10 @@ namespace HomeExercises
 			numberValidator = new NumberValidator(6, 2);
 		}
 
-		[TestCase("", false, Description = "EmptyStringMustReturnFalse")]
-		[TestCase(null, false, Description = "NullStringReturnFalse")]
-		[TestCase("abs", false, Description = "NotNumberStringReturnFalse")]
-		[TestCase("a.sd", false, Description = "NotNumberStringReturnFalse")]
+		[TestCase("", false, Description = "Пустая строка не проходит проверку")]
+		[TestCase(null, false, Description = "Null не проходит проверку ")]
+		[TestCase("abs", false, Description = "Строка не из цифр не проходит проверку")]
+		[TestCase("a.sd", false, Description = "Строка не из цифр не проходит проверку")]
 		[TestCase("-12345.6", false, Description = "Число, которое длинне максимального размера из-за знака," +
 		                                           " не должно проходить по критериям")]
 		[TestCase("+12345.6", false,  Description = "Число, которое длинне максимального размера из-за знака," +
@@ -39,16 +39,16 @@ namespace HomeExercises
 			numberValidator.IsValidNumber(input).Should().Be(exceptedAnswer);
 		}
 		
-		[TestCase("", false, Description = "EmptyStringMustReturnFalse")]
-		[TestCase(null, false, Description = "NullStringReturnFalse")]
-		[TestCase("abs", false, Description = "NotNumberStringReturnFalse")]
-		[TestCase("a.sd", false, Description = "NotNumberStringReturnFalse")]
-		[TestCase("-1.1", false, Description = "PositiveValidatorFalseOnNegativeNumber")]
-		[TestCase("-1123", false, Description = "PositiveValidatorFalseOnNegativeNumber")]
-		[TestCase("+3.2", true, Description = "CorrectPositiveNumber_True")]
-		[TestCase("22.1", true, Description = "CorrectPositiveNumber_True")]
-		[TestCase("+0.0", true, Description = "CorrectPositiveNumber_True")]
-		[TestCase("0", true, Description = "CorrectPositiveNumber_True")]
+		[TestCase("", false, Description = "Пустая строка не проходит проверку")]
+		[TestCase(null, false, Description = "Null не проходит проверку ")]
+		[TestCase("abs", false, Description = "Строка не из цифр не проходит проверку")]
+		[TestCase("a.sd", false, Description = "Строка не из цифр не проходит проверку")]
+		[TestCase("-1.1", false, Description = "Отрицательное число в OnlyPositiveValidator не проходит проверку")]
+		[TestCase("-1123", false, Description = "Отрицательное число в OnlyPositiveValidator не проходит проверку")]
+		[TestCase("+3.2", true, Description = "Хорошое число, которое должно проходить проверку")]
+		[TestCase("22.1", true, Description =  "Хорошое число, которое должно проходить проверку")]
+		[TestCase("+0.0", true, Description =  "Хорошое число, которое должно проходить проверку")]
+		[TestCase("0", true, Description =  "Хорошое число, которое должно проходить проверку")]
 		public void IsValidNumberCheckerOnlyPositive(string input, bool exceptedAnswer)
 		{
 			positiveNumberValidator.IsValidNumber(input).Should().Be(exceptedAnswer);
