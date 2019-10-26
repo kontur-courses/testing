@@ -15,16 +15,13 @@ namespace HomeExercises
 			var expectedTsar = new Person("Ivan IV The Terrible", 54, 170, 70,
 				new Person("Vasili III of Russia", 28, 170, 60, null));
 
-			// Перепишите код на использование Fluent Assertions.
-			Assert.AreEqual(actualTsar.Name, expectedTsar.Name);
-			Assert.AreEqual(actualTsar.Age, expectedTsar.Age);
-			Assert.AreEqual(actualTsar.Height, expectedTsar.Height);
-			Assert.AreEqual(actualTsar.Weight, expectedTsar.Weight);
-
-			Assert.AreEqual(expectedTsar.Parent.Name, actualTsar.Parent.Name);
-			Assert.AreEqual(expectedTsar.Parent.Age, actualTsar.Parent.Age);
-			Assert.AreEqual(expectedTsar.Parent.Height, actualTsar.Parent.Height);
-			Assert.AreEqual(expectedTsar.Parent.Parent, actualTsar.Parent.Parent);
+			actualTsar.ShouldBeEquivalentTo(expectedTsar, options => options.IncludingFields()
+				.Excluding(o => o.SelectedMemberPath.EndsWith("Id")));
+			/*
+			Чем такое решение лучше:
+			1)Тест стал более читаемым и ёмким
+			2)При добавлении новых полей класса не придётся писать код на проверку их равенства
+			*/
 		}
 
 		[Test]
@@ -37,6 +34,13 @@ namespace HomeExercises
 
 			// Какие недостатки у такого подхода? 
 			Assert.True(AreEqual(actualTsar, expectedTsar));
+			/*
+			Недостатки:
+			1)Из теста непонятно, как именно сравниваются объекты
+			2)Сравнение выносится из теста в другую часть кода (ненужное разделение)
+			3)"Написание велосипеда" - сравнение можно произвести без написания собственных методов, 
+			а с использованием библиотеки.
+			*/
 		}
 
 		private bool AreEqual(Person actual, Person expected)
