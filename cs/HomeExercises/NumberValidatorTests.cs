@@ -67,28 +67,6 @@ namespace HomeExercises
 			
 			action.ShouldThrow<ArgumentException>();
 		}
-		
-		[Test]
-		[Category("Не уверен что это нужно")]
-		public void CorrectNumberValidatorBuilder_WithoutScale()
-		{
-			Action action = () => new NumberValidator(1,  onlyPositive:true);
-			Action action1 = () => new NumberValidator(1, onlyPositive: false);
-			
-			action.ShouldNotThrow<ArgumentException>();
-			action1.ShouldNotThrow<ArgumentException>();
-		}
-		
-		[Test]
-		[Category("Не уверен что это нужно")]
-		public void CorrectNumberValidatorBuilder_WithoutSign()
-		{
-			Action action = () => new NumberValidator(2,  1);
-			Action action1 = () => new NumberValidator(2, scale: 1);
-			
-			action.ShouldNotThrow<ArgumentException>();
-			action1.ShouldNotThrow<ArgumentException>();
-		}
 	}
 
 	public class NumberValidator
