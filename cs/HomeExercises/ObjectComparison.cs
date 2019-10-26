@@ -3,81 +3,87 @@ using NUnit.Framework;
 
 namespace HomeExercises
 {
-	public class ObjectComparison
-	{
-		[Test]
-		[Description("Проверка текущего царя")]
-		[Category("ToRefactor")]
-		public void CheckCurrentTsar()
-		{
-			var actualTsar = TsarRegistry.GetCurrentTsar();
+    public class ObjectComparison
+    {
+        [Test]
+        [Description("Проверка текущего царя")]
+        [Category("ToRefactor")]
+        public void CheckCurrentTsar()
+        {
+            var actualTsar = TsarRegistry.GetCurrentTsar();
 
-			var expectedTsar = new Person("Ivan IV The Terrible", 54, 170, 70,
-				new Person("Vasili III of Russia", 28, 170, 60, null));
+            var expectedTsar = new Person("Ivan IV The Terrible", 54, 170, 70,
+                new Person("Vasili III of Russia", 28, 170, 60, null));
 
-			// Перепишите код на использование Fluent Assertions.
-			Assert.AreEqual(actualTsar.Name, expectedTsar.Name);
-			Assert.AreEqual(actualTsar.Age, expectedTsar.Age);
-			Assert.AreEqual(actualTsar.Height, expectedTsar.Height);
-			Assert.AreEqual(actualTsar.Weight, expectedTsar.Weight);
+            /* Если нужно увеличить глубину проверки, можно создать цикл,
+             * но в данном случае код лишь разрастётся и станет менее понятным
+             */
+            actualTsar.ShouldBeEquivalentTo(expectedTsar, options => options
+                .Excluding(ts => ts.Id)
+                .Excluding(ts => ts.Parent));
 
-			Assert.AreEqual(expectedTsar.Parent.Name, actualTsar.Parent.Name);
-			Assert.AreEqual(expectedTsar.Parent.Age, actualTsar.Parent.Age);
-			Assert.AreEqual(expectedTsar.Parent.Height, actualTsar.Parent.Height);
-			Assert.AreEqual(expectedTsar.Parent.Parent, actualTsar.Parent.Parent);
-		}
+            actualTsar.Parent.ShouldBeEquivalentTo(expectedTsar.Parent, options => options
+                .Excluding(ts => ts.Id));
 
-		[Test]
-		[Description("Альтернативное решение. Какие у него недостатки?")]
-		public void CheckCurrentTsar_WithCustomEquality()
-		{
-			var actualTsar = TsarRegistry.GetCurrentTsar();
-			var expectedTsar = new Person("Ivan IV The Terrible", 54, 170, 70,
-				new Person("Vasili III of Russia", 28, 170, 60, null));
+        }
 
-			// Какие недостатки у такого подхода? 
-			Assert.True(AreEqual(actualTsar, expectedTsar));
-		}
+        [Test]
+        [Description("Альтернативное решение. Какие у него недостатки?")]
+        public void CheckCurrentTsar_WithCustomEquality()
+        {
+            var actualTsar = TsarRegistry.GetCurrentTsar();
+            var expectedTsar = new Person("Ivan IV The Terrible", 54, 170, 70,
+                new Person("Vasili III of Russia", 28, 170, 60, null));
 
-		private bool AreEqual(Person actual, Person expected)
-		{
-			if (actual == expected) return true;
-			if (actual == null || expected == null) return false;
-			return
-				actual.Name == expected.Name
-				&& actual.Age == expected.Age
-				&& actual.Height == expected.Height
-				&& actual.Weight == expected.Weight
-				&& AreEqual(actual.Parent, expected.Parent);
-		}
-	}
+            // Какие недостатки у такого подхода?
 
-	public class TsarRegistry
-	{
-		public static Person GetCurrentTsar()
-		{
-			return new Person(
-				"Ivan IV The Terrible", 54, 170, 70,
-				new Person("Vasili III of Russia", 28, 170, 60, null));
-		}
-	}
+            /* 1. Если Assert завершился неудачей, непонятно, из-за какого именно из полей
+             * провалилось условие: само сообщение о неудаче не сообщает никакой
+             * полезной информации, а только то, что тест "зафэйлился".
+             * 2. При добавлении новых полей в Person можно забыть поменять метод AreEqual.
+             */
+            Assert.True(AreEqual(actualTsar, expectedTsar));
+        }
 
-	public class Person
-	{
-		public static int IdCounter = 0;
-		public int Age, Height, Weight;
-		public string Name;
-		public Person Parent;
-		public int Id;
+        private bool AreEqual(Person actual, Person expected)
+        {
+            if (actual == expected) return true;
+            if (actual == null || expected == null) return false;
+            return
+                actual.Name == expected.Name
+                && actual.Age == expected.Age
+                && actual.Height == expected.Height
+                && actual.Weight == expected.Weight
+                && AreEqual(actual.Parent, expected.Parent);
+        }
+    }
 
-		public Person(string name, int age, int height, int weight, Person parent)
-		{
-			Id = IdCounter++;
-			Name = name;
-			Age = age;
-			Height = height;
-			Weight = weight;
-			Parent = parent;
-		}
-	}
+    public class TsarRegistry
+    {
+        public static Person GetCurrentTsar()
+        {
+            return new Person(
+                "Ivan IV The Terrible", 54, 170, 70,
+                new Person("Vasili III of Russia", 28, 170, 60, null));
+        }
+    }
+
+    public class Person
+    {
+        public static int IdCounter = 0;
+        public int Age, Height, Weight;
+        public string Name;
+        public Person Parent;
+        public int Id;
+
+        public Person(string name, int age, int height, int weight, Person parent)
+        {
+            Id = IdCounter++;
+            Name = name;
+            Age = age;
+            Height = height;
+            Weight = weight;
+            Parent = parent;
+        }
+    }
 }
