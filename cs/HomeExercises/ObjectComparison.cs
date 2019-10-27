@@ -19,25 +19,8 @@ namespace HomeExercises
 				new Person("Vasili III of Russia", 28, 170, 60, null));
 
 			// Перепишите код на использование Fluent Assertions.
-			//Ты прав. Здесь я забыл, что изначально код повторялся 2 раза(для person и для person.Parent)
 			actualTsar.ShouldBeEquivalentTo(expectedTsar, options => options
-				.Excluding(person => person.Id)
-				.Excluding(person => person.Parent.Id));
-			//Но в таком случае, если person.Parent.Parent будет != null, то родитель родителя не будет проверяться
-			
-//			CheckPersonsByFields(actualTsar, expectedTsar);
-			//Так будет исправленно. Но тогда, если несовпадение произошло в свойстве person.Parent,
-			//в сообщении будет сказано только название свойства, но не то, что оно в родителе
-			//Что важнее ?
-		}
-
-		private static void CheckPersonsByFields(Person actualPerson, Person expectedPerson)
-		{
-			if(actualPerson == null || expectedPerson == null) return;
-			actualPerson.ShouldBeEquivalentTo(expectedPerson, options => options
-				.Excluding(person => person.Id)
-				.Excluding(person => person.Parent));
-			CheckPersonsByFields(actualPerson.Parent, expectedPerson.Parent);
+				.Excluding(person => person.SelectedMemberPath.EndsWith("Id")));
 		}
 
 		[Test]

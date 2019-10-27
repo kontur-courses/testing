@@ -19,6 +19,9 @@ namespace HomeExercises
 		[TestCase(2, 1, true, "+.1", false, TestName = "Integer part contains plus only => False")]
 		[TestCase(2, 0, false, "-1", true, TestName = "Work with negative number when onlyPositive=False => True")]
 		[TestCase(1, 0, true, "1.", false, TestName = "Number with point and without fractional part => False")]
+		[TestCase(3, 2, true, "1.23", true, TestName = "Valid decimal number => True")]
+		[TestCase(4, 0, true, "+123", true, TestName = "Valid number with plus => True")]
+		[TestCase(4, 0, true, "1234", true, TestName = "Valid integer number => True")]
 		public void IsValidNumber(int precision, int scale, bool onlyPositive, string value, bool expectedResult)
 		{
 			var validator = new NumberValidator(precision, scale, onlyPositive);
