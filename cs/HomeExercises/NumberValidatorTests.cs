@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Collections;
-using System.Dynamic;
 using System.Text.RegularExpressions;
 using FluentAssertions;
-
 using NUnit.Framework;
 
 namespace HomeExercises
@@ -13,15 +11,17 @@ namespace HomeExercises
 		[Test, TestCaseSource(nameof(IncorrectArgumentsTestCases))]
 		public void NumberValidator_Should_ThrowArgumentException_When_IncorrectArguments(int precision, int scale)
 		{
-			Action action = () => { new NumberValidator(precision, scale); };
-			action.ShouldThrow<ArgumentException>("arguments are incorrect");
+			Following
+				.Code(() => new NumberValidator(precision, scale))
+				.ShouldThrow<ArgumentException>("arguments are incorrect");
 		}
 		
 		[Test, TestCaseSource(nameof(CorrectArgumentsTestCases))]
 		public void NumberValidator_Should_NotThrowExceptions_When_CorrectArguments(int precision, int scale, bool onlyPositive)
 		{
-			Action action = () => { new NumberValidator(precision, scale, onlyPositive); };
-			action.ShouldNotThrow("arguments are correct");
+			Following
+				.Code(() => new NumberValidator(precision, scale, onlyPositive))
+				.ShouldNotThrow("arguments are correct");
 		}
 		
 		[Test, TestCaseSource(nameof(ValidTestCases))]
@@ -93,6 +93,14 @@ namespace HomeExercises
 				yield return new TestCaseData(2, 1, true, null).SetName("when value is null");
 				yield return new TestCaseData(2, 1, true, "qwerty").SetName("when value is letters");
 			}
+		}
+	}
+
+	public static class Following
+	{
+		public static Action Code(Action action)
+		{
+			return action;
 		}
 	}
 
