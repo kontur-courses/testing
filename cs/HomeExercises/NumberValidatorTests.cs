@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Text.RegularExpressions;
 using FluentAssertions;
-using FluentAssertions.Execution;
 using NUnit.Framework;
 
 namespace HomeExercises
@@ -70,7 +69,7 @@ namespace HomeExercises
         }
     }
 
-	public class NumberValidator
+    public class NumberValidator
 	{
 		private readonly Regex numberRegex;
 		private readonly bool onlyPositive;

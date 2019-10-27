@@ -1,6 +1,5 @@
 ﻿using FluentAssertions;
 using NUnit.Framework;
-using System;
 
 namespace HomeExercises
 {
@@ -19,9 +18,9 @@ namespace HomeExercises
             actualTsar.Should().BeEquivalentTo(expectedTsar,
                 option => option
                 .Excluding((FluentAssertions.Equivalency.IMemberInfo o) => o.SelectedMemberPath.Contains("Id")));
-        }
+		}
 
-        [Test]
+		[Test]
 		[Description("Альтернативное решение. Какие у него недостатки?")]
 		public void CheckCurrentTsar_WithCustomEquality()
 		{
@@ -29,14 +28,15 @@ namespace HomeExercises
 			var expectedTsar = new Person("Ivan IV The Terrible", 54, 170, 70,
 				new Person("Vasili III of Russia", 28, 170, 60, null));
 
-			// Какие недостатки у такого подхода? 
+            // Какие недостатки у такого подхода?
             // Так как метод AreEqual возращает значение типа bool,
             // то в случае неравенства объектов, тест сообщит о том что ожидал true, а получил false,
             // при этом не указав какие именно поля не совпадали у объектов.
             // Из-за этого может понадовиться вручную дебажить тест чтобы узнать положение несовпадающего поля.
             // К тому же нельзя узнать было ли несовпадающее поле только одно или их было несколько,
             // что затруднит исправление, так как ты не узнаешь правильно ли исправил одно значения, пока не исправишь остальные.
-			Assert.True(AreEqual(actualTsar, expectedTsar));
+
+            Assert.True(AreEqual(actualTsar, expectedTsar));
 		}
 
 		private bool AreEqual(Person actual, Person expected)
