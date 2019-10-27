@@ -1,7 +1,4 @@
-﻿using System;
-using System.Linq;
-using FluentAssertions;
-using FluentAssertions.Common;
+﻿using FluentAssertions;
 using NUnit.Framework;
 
 namespace HomeExercises
@@ -20,7 +17,8 @@ namespace HomeExercises
 
 			// Перепишите код на использование Fluent Assertions.
 			actualTsar.ShouldBeEquivalentTo(expectedTsar, options => options
-				.Excluding(person => person.SelectedMemberPath.EndsWith("Id")));
+				.Excluding(person => person.SelectedMemberInfo.Name == nameof(Person.Id)
+				                     && person.SelectedMemberInfo.DeclaringType == typeof(Person)));
 		}
 
 		[Test]
