@@ -57,6 +57,8 @@ namespace HomeExercises
         [Description("Проверка корректных значений")]
         [TestCase(17, 2, true, "0.0", ExpectedResult = true)]
         [TestCase(4, 2, false, "-1.23", ExpectedResult = true)]
+        [TestCase(4, 2, true, "1", ExpectedResult = true)]
+        [TestCase(5, 2, false, "+33.23", ExpectedResult = true)]
         public bool Correct_Input(int precision, int scale, bool onlyPositive, string value)
         {
             return new NumberValidator(precision, scale, onlyPositive).IsValidNumber(value);
