@@ -17,7 +17,7 @@ namespace HomeExercises
 				new Person("Vasili III of Russia", 28, 170, 60, null));
 
             // Перепишите код на использование Fluent Assertions.
-            actualTsar.ShouldBeEquivalentTo(expectedTsar, config => config.Excluding(x => x.SelectedMemberInfo.Name == "Id"));
+            actualTsar.ShouldBeEquivalentTo(expectedTsar, config => config.Excluding(x => x.SelectedMemberInfo. Name == nameof(Person.Id)));
             /// Решение с использованием Fluent Assertions более краткое и более "человекочитаемое",
             /// в нем легче разобраться, меньше вероятность того, что делая тесты на равенство всех
             /// полей объектов сделаешь ошибку из-за копипаста, или какое-то поле пропустишь.
