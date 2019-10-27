@@ -39,7 +39,13 @@ namespace HomeExercises
 		[TestCase(17, 2, false, "-0.00", TestName = "IsValidNumber_NegativeFraction_Valid")]
 		[TestCase(17, 2, true, "+0.00", TestName = "OnlyPositive_IsValidNumber_PlusFraction_Valid")]
 		[TestCase(17, 2, false, "+0.00", TestName = "IsValidNumber_PlusFraction_Valid")]
-		public void IsValidNumber_Valid(int precision, int scale, bool onlyPositive, string value)
+
+		[TestCase(17, 0, true, "0", TestName = "ZeroScale_IsValidNumber_Integer_Valid")]
+		[TestCase(17, 0, false, "0", TestName = "OnlyPositiveZeroScale_IsValidNumber_Integer_Valid")]
+		[TestCase(17, 0, false, "-0", TestName = "ZeroScale_IsValidNumber_NegativeInteger_Valid")]
+		[TestCase(17, 0, true, "+0", TestName = "OnlyPositiveZeroScale_IsValidNumber_PlusInteger_Valid")]
+		[TestCase(17, 0, false, "+0", TestName = "ZeroScale_IsValidNumber_PlusInteger_Valid")]
+        public void IsValidNumber_Valid(int precision, int scale, bool onlyPositive, string value)
 		{
 			Assert.IsTrue(new NumberValidator(precision, scale, onlyPositive).IsValidNumber(value));
 		}
