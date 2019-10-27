@@ -45,7 +45,7 @@ namespace HomeExercises
 		[TestCase(17, 0, false, "-0", TestName = "ZeroScale_IsValidNumber_NegativeInteger_Valid")]
 		[TestCase(17, 0, true, "+0", TestName = "OnlyPositiveZeroScale_IsValidNumber_PlusInteger_Valid")]
 		[TestCase(17, 0, false, "+0", TestName = "ZeroScale_IsValidNumber_PlusInteger_Valid")]
-        public void IsValidNumber_Valid(int precision, int scale, bool onlyPositive, string value)
+		public void IsValidNumber_Valid(int precision, int scale, bool onlyPositive, string value)
 		{
 			Assert.IsTrue(new NumberValidator(precision, scale, onlyPositive).IsValidNumber(value));
 		}
