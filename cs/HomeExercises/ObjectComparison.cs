@@ -11,34 +11,12 @@ namespace HomeExercises
 		public void CheckCurrentTsar()
 		{
 			var actualTsar = TsarRegistry.GetCurrentTsar();
-
 			var expectedTsar = new Person("Ivan IV The Terrible", 54, 170, 70,
 				new Person("Vasili III of Russia", 28, 170, 60, null));
 
-            bool ShouldCheckPersons(Person expected, Person actual)
-            {
-                var check = actual != null && expected != null;
-                var dontCheck = actual == null && expected == null;
-                (check || dontCheck).Should().BeTrue(
-                    $"because actual and expected {nameof(Person)}s must either exist or not exist both");
-                return check;
-            }
-
-            void CheckPersons(Person expected, Person actual)
-            {
-                if (!ShouldCheckPersons(expected, actual))
-                    return;
-
-                string shouldBe = " should be like that";
-                actual.Name.Should().Be(expected.Name, nameof(expected.Name) + shouldBe);
-                actual.Age.Should().Be(expected.Age, nameof(expected.Age) + shouldBe);
-                actual.Height.Should().Be(expected.Height, nameof(expected.Height) + shouldBe);
-                actual.Weight.Should().Be(expected.Weight, nameof(expected.Weight) + shouldBe);
-
-                CheckPersons(expected.Parent, actual.Parent);
-            }
-
-            CheckPersons(expectedTsar, actualTsar);
+            actualTsar.Should().BeEquivalentTo(
+                expectedTsar,
+                options => options.Excluding(member => member.SelectedMemberInfo.Name == nameof(actualTsar.Id)));
         }
 
 		[Test]
@@ -49,12 +27,18 @@ namespace HomeExercises
 			var expectedTsar = new Person("Ivan IV The Terrible", 54, 170, 70,
 				new Person("Vasili III of Russia", 28, 170, 60, null));
 
-            // Какие недостатки у такого подхода?
+            // Какие недостатки у такого подхода? 
             // Главный недостаток этого подхода: если тест упадет, то БЕЗ ДЕБАГА не понятно
             // на чем он упал - может быть на сравнении имен, а может на сравнении возрастов и т.д.
+            // Еще один недостаток этого подхода: при добавлении новых полей/свойств к объектам
+            // сравниваемого класса (класс Person), в тест также придется добавить проверку на равенство
+            // новых полей/свойств
             // Мой подход лучше, потому что если тест упадет, то НЕ ЗАГЛЯДЫВАЯ в код теста, можно
             // понять при сравнении каких полей тест упал и посмотреть значения этих полей,
             // возможно этой информации хватит, чтобы исправить ошибку в коде
+            // Также при добавлении новых полей/свойств в моем подходе придется менять код теста,
+            // только если добавленные новые поля/свойства не должны сравниваться. Эта ситуация
+            // происходит как правило реже, чем добавление сравниваемых полей/свойств
             Assert.True(AreEqual(actualTsar, expectedTsar));
 		}
 
