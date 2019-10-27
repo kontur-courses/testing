@@ -39,7 +39,7 @@ namespace HomeExercises
             return new NumberValidator(precision, scale, onlyPositive).IsValidNumber(value);
         }
 
-        [Description("Фэйл, когда scale < 0 || scale >= precision")]
+        [Description("Фэйл, когда intPart + fracPart > precision || fracPart > scale")]
         [TestCase(17, 2, true, "0.000", ExpectedResult = false)]
         [TestCase(3, 2, true, "+1.23", ExpectedResult = false)]
         public bool Incorrect_Input_Lenght(int precision, int scale, bool onlyPositive, string value)
