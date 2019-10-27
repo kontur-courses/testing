@@ -1,4 +1,7 @@
-﻿using FluentAssertions;
+﻿using System.Threading.Tasks;
+using FluentAssertions;
+using FluentAssertions.Equivalency;
+using FluentAssertions.Types;
 using NUnit.Framework;
 
 namespace HomeExercises
@@ -15,16 +18,11 @@ namespace HomeExercises
 			var expectedTsar = new Person("Ivan IV The Terrible", 54, 170, 70,
 				new Person("Vasili III of Russia", 28, 170, 60, null));
 
-			// Перепишите код на использование Fluent Assertions.
-			Assert.AreEqual(actualTsar.Name, expectedTsar.Name);
-			Assert.AreEqual(actualTsar.Age, expectedTsar.Age);
-			Assert.AreEqual(actualTsar.Height, expectedTsar.Height);
-			Assert.AreEqual(actualTsar.Weight, expectedTsar.Weight);
-
-			Assert.AreEqual(expectedTsar.Parent.Name, actualTsar.Parent.Name);
-			Assert.AreEqual(expectedTsar.Parent.Age, actualTsar.Parent.Age);
-			Assert.AreEqual(expectedTsar.Parent.Height, actualTsar.Parent.Height);
-			Assert.AreEqual(expectedTsar.Parent.Parent, actualTsar.Parent.Parent);
+			actualTsar.ShouldBeEquivalentTo(expectedTsar,
+				assertionOptions =>
+					assertionOptions.Excluding(subjectInfo =>
+						subjectInfo.SelectedMemberInfo.DeclaringType.Name == nameof(Person) &&
+						subjectInfo.SelectedMemberInfo.Name == nameof(Person.Id)));
 		}
 
 		[Test]
@@ -36,6 +34,20 @@ namespace HomeExercises
 				new Person("Vasili III of Russia", 28, 170, 60, null));
 
 			// Какие недостатки у такого подхода? 
+			/*
+			 * 1) Необходимость писать собственную реализацию проверки на равенство объектов класса Person
+			 *    (в данном случае AreEqual)
+			 *
+			 * 2) Тест не расширяем: в случае изменения класса Person (удаления/добавления свойств)
+			 * 		придется вносить изменения в метод AreEqual
+			 *
+			 * 3) Assert менее читаем, чем Should. Из названия метода AreEqual не ясно,
+			 * 		что он предназначен только для сравнения объектов класса Person.
+			 *
+			 * 4) Неинформативный вывод. Если тест упадет, то мы не сможем узнать,
+			 * 		где произошла ошибка (в отличие от моего решения).
+			 * 		Выведется лишь, что метод AreEqual вернул false вместо ожидаемого true.
+			 */
 			Assert.True(AreEqual(actualTsar, expectedTsar));
 		}
 
