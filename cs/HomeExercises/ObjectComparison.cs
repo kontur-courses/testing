@@ -1,7 +1,4 @@
-﻿//using FluentAssertions;
-
-using System.Collections.Generic;
-using FluentAssertions;
+﻿using FluentAssertions;
 using NUnit.Framework;
 
 namespace HomeExercises
@@ -10,7 +7,6 @@ namespace HomeExercises
 	{
 		[Test]
 		[Description("Проверка текущего царя")]
-		[Category("ToRefactor")]
 		public void CheckCurrentTsar()
 		{
 			var actualTsar = TsarRegistry.GetCurrentTsar();
@@ -19,7 +15,7 @@ namespace HomeExercises
 				new Person("Vasili III of Russia", 28, 170, 60, null));
 
 			// Перепишите код на использование Fluent Assertions.
-			expectedTsar.ShouldBeEquivalentTo(actualTsar, 
+			expectedTsar.Should().BeEquivalentTo(actualTsar, 
 				options => options.Excluding(o => o.Id).Excluding(o => o.Parent.Id));
 		}
 
