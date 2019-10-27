@@ -1,5 +1,6 @@
 ﻿using FluentAssertions;
 using NUnit.Framework;
+using System;
 
 namespace HomeExercises
 {
@@ -15,19 +16,12 @@ namespace HomeExercises
 			var expectedTsar = new Person("Ivan IV The Terrible", 54, 170, 70,
 				new Person("Vasili III of Russia", 28, 170, 60, null));
 
-			// Перепишите код на использование Fluent Assertions.
-			Assert.AreEqual(actualTsar.Name, expectedTsar.Name);
-			Assert.AreEqual(actualTsar.Age, expectedTsar.Age);
-			Assert.AreEqual(actualTsar.Height, expectedTsar.Height);
-			Assert.AreEqual(actualTsar.Weight, expectedTsar.Weight);
+            actualTsar.Should().BeEquivalentTo(expectedTsar,
+                option => option
+                .Excluding((FluentAssertions.Equivalency.IMemberInfo o) => o.SelectedMemberPath.Contains("Id")));
+        }
 
-			Assert.AreEqual(expectedTsar.Parent.Name, actualTsar.Parent.Name);
-			Assert.AreEqual(expectedTsar.Parent.Age, actualTsar.Parent.Age);
-			Assert.AreEqual(expectedTsar.Parent.Height, actualTsar.Parent.Height);
-			Assert.AreEqual(expectedTsar.Parent.Parent, actualTsar.Parent.Parent);
-		}
-
-		[Test]
+        [Test]
 		[Description("Альтернативное решение. Какие у него недостатки?")]
 		public void CheckCurrentTsar_WithCustomEquality()
 		{
@@ -36,6 +30,12 @@ namespace HomeExercises
 				new Person("Vasili III of Russia", 28, 170, 60, null));
 
 			// Какие недостатки у такого подхода? 
+            // Так как метод AreEqual возращает значение типа bool,
+            // то в случае неравенства объектов, тест сообщит о том что ожидал true, а получил false,
+            // при этом не указав какие именно поля не совпадали у объектов.
+            // Из-за этого может понадовиться вручную дебажить тест чтобы узнать положение несовпадающего поля.
+            // К тому же нельзя узнать было ли несовпадающее поле только одно или их было несколько,
+            // что затруднит исправление, так как ты не узнаешь правильно ли исправил одно значения, пока не исправишь остальные.
 			Assert.True(AreEqual(actualTsar, expectedTsar));
 		}
 
