@@ -104,7 +104,7 @@ namespace HomeExercises
 				throw new ArgumentException("precision must be a positive number");
 			if (scale < 0 || scale >= precision)
 				throw new ArgumentException("precision must be a non-negative number less or equal than precision");
-			numberRegex = new Regex(@"^([+-]?)0*(\d+)([.,](\d+))?$", RegexOptions.IgnoreCase);
+			numberRegex = new Regex(@"^([+-]?)0*?(\d+)([.,](\d+))?$", RegexOptions.IgnoreCase);
 		}
 
 		public bool IsValidNumber(string value)
