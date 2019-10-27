@@ -17,8 +17,7 @@ namespace HomeExercises
 				new Person("Vasili III of Russia", 28, 170, 60, null));
 
             // Перепишите код на использование Fluent Assertions.
-            actualTsar.ShouldBeEquivalentTo(expectedTsar, PersonEquivalencyOptions);
-            actualTsar.Parent.ShouldBeEquivalentTo(expectedTsar.Parent, PersonEquivalencyOptions);            
+            actualTsar.ShouldBeEquivalentTo(expectedTsar, config => config.Excluding(x => x.SelectedMemberInfo.Name == "Id"));
             /// Решение с использованием Fluent Assertions более краткое и более "человекочитаемое",
             /// в нем легче разобраться, меньше вероятность того, что делая тесты на равенство всех
             /// полей объектов сделаешь ошибку из-за копипаста, или какое-то поле пропустишь.
@@ -26,11 +25,6 @@ namespace HomeExercises
             /// менять не надо. Кроме указания полей, которые не нужно сравнивать. Но это легче, т.к.
             /// они "всплывут" при падении теста.
 		}
-
-        private EquivalencyAssertionOptions<Person> PersonEquivalencyOptions(EquivalencyAssertionOptions<Person> arg)
-        {
-            return arg.Excluding(p => p.Id).Excluding(p => p.Parent);
-        }
 
         [Test]
 		[Description("Альтернативное решение. Какие у него недостатки?")]
