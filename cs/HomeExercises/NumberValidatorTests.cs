@@ -28,7 +28,7 @@ namespace HomeExercises
 
 		[Test]
 		public void IsValidNumber_NotUsesStaticFields()
-        {
+		{
 			NumberValidator numberValidator1 = new NumberValidator(5, 2, false);
 			NumberValidator numberValidator2 = new NumberValidator(3, 0, true);
 			Assert.IsTrue(numberValidator1.IsValidNumber("-0"));
@@ -37,7 +37,7 @@ namespace HomeExercises
 			Assert.IsFalse(numberValidator2.IsValidNumber("-0"));
 			Assert.IsFalse(numberValidator2.IsValidNumber("0.00"));
 			Assert.IsFalse(numberValidator2.IsValidNumber("00000"));
-        }
+		}
 
 		[TestCase("0", TestName = "IsValidNumber_Integer_True")]
 		[TestCase("-0", true, TestName = "IsValidNumber_NegativeInteger_True")]
@@ -47,16 +47,16 @@ namespace HomeExercises
 			NumberValidator numberValidator = new NumberValidator(17, 2, false);
 			NumberValidator zeroScaleNumberValidator = new NumberValidator(17, 0, false);
 
-            Assert.IsTrue(numberValidator.IsValidNumber(value), "should return true with positive scale");
+			Assert.IsTrue(numberValidator.IsValidNumber(value), "should return true with positive scale");
 			Assert.IsTrue(zeroScaleNumberValidator.IsValidNumber(value), "should return true with zero scale");
 
 			if (!negative)
 			{
 				NumberValidator onlyPositiveNumberValidator = new NumberValidator(17, 2, true);
-	            NumberValidator zeroScaleOnlyPositiveNumberValidator = new NumberValidator(17, 0, true);
-	            
-	            Assert.IsTrue(onlyPositiveNumberValidator.IsValidNumber(value), "should return true when onlyPositive with positive scale");
-	            Assert.IsTrue(zeroScaleOnlyPositiveNumberValidator.IsValidNumber(value), "should return true when onlyPositive with zero scale");
+				NumberValidator zeroScaleOnlyPositiveNumberValidator = new NumberValidator(17, 0, true);
+				
+				Assert.IsTrue(onlyPositiveNumberValidator.IsValidNumber(value), "should return true when onlyPositive with positive scale");
+				Assert.IsTrue(zeroScaleOnlyPositiveNumberValidator.IsValidNumber(value), "should return true when onlyPositive with zero scale");
 			}
 		}
 
@@ -86,7 +86,7 @@ namespace HomeExercises
 			Assert.IsFalse(new NumberValidator(17, 2, true).IsValidNumber(value));
 			Assert.IsFalse(new NumberValidator(17, 0, false).IsValidNumber(value));
 			Assert.IsFalse(new NumberValidator(17, 0, true).IsValidNumber(value));
-        }
+		}
 
 		[TestCase("abcdefg", TestName = "IsValidNumber_NonNumberString_False")]
 		[TestCase("a.bc", TestName = "IsValidNumber_NonNumberStringWithPoint_False")]
@@ -96,7 +96,7 @@ namespace HomeExercises
 			Assert.IsFalse(new NumberValidator(17, 2, true).IsValidNumber(value));
 			Assert.IsFalse(new NumberValidator(17, 0, false).IsValidNumber(value));
 			Assert.IsFalse(new NumberValidator(17, 0, true).IsValidNumber(value));
-        }
+		}
 
 
 		[TestCase("-0.00", TestName = "IsValidNumber_NegativeFractionExceededPrecision_False")]
@@ -131,8 +131,8 @@ namespace HomeExercises
 		[Test]
 		public void IsValidNumber_IntegerWithPoint_False()
 		{
-            Assert.IsFalse(new NumberValidator(17, 2, false).IsValidNumber("0."));
-            Assert.IsFalse(new NumberValidator(17, 2, true).IsValidNumber("0."));
+			Assert.IsFalse(new NumberValidator(17, 2, false).IsValidNumber("0."));
+			Assert.IsFalse(new NumberValidator(17, 2, true).IsValidNumber("0."));
 		}
 	}
 
