@@ -11,14 +11,14 @@ namespace HomeExercises
 		[TestCase(-1, 2, true, TestName = "PrecisionIsNegative")]
 		[TestCase(5, -5, true, TestName = "ScaleIsNegative")]
 		[TestCase(3, 5, true, TestName = "ScaleGreaterPrecision")]
-		public void NumberValidator_ThrowException(int precision, int scale, bool onlyPositive)
+		public void NumberValidatorCtor_InvalidValues_ThrowsException(int precision, int scale, bool onlyPositive)
 		{
 			Action act = () => new NumberValidator(precision, scale, onlyPositive);
 			act.ShouldThrow<ArgumentException>();
 		}
 		
 		[Test] 
-		public void NumberValidator_ValidValues_WithoutException()
+		public void NumberValidatorCtor_ValidValues_DoesNotThrowException()
 		{
 			Action act = () => new NumberValidator(1, 0, true);
 			act.ShouldNotThrow();
@@ -34,7 +34,7 @@ namespace HomeExercises
 		[TestCase(3, 2, false, "-0.00", TestName = "LengthWitMinusGreaterPrecision")]
 		[TestCase(3, 2, true, "+0.00", TestName = "LengthWithPlusGreaterPrecision")]
 		[TestCase(17, 2, true, "0.000", TestName = "LengthFractionalPartGreaterScale")]
-		public void IsValidNumber_IsFalse(int precision, int scale, bool onlyPositive, string value)
+		public void IsValidNumber_InvalidValues_IsFalse(int precision, int scale, bool onlyPositive, string value)
 		{
 			var isValidNumber = new NumberValidator(precision, scale, onlyPositive).IsValidNumber(value);
 			isValidNumber.Should().BeFalse();
@@ -46,7 +46,10 @@ namespace HomeExercises
 		[TestCase(4, 2, true, "+1", TestName = "IntWithPlusOnlyPositive")]
 		[TestCase(17, 2, false, "-1.5", TestName = "FloatNegativeNumberNotOnlyPositive")]
 		[TestCase(17, 2, false, "-123", TestName = "IntNegativeNumberNotOnlyPositive")]
-		public void IsValidNumber_IsTrue(int precision, int scale, bool onlyPositive, string value)
+		[TestCase(17, 2, false, "1.5", TestName = "FloatPositiveNumberNotOnlyPositive")]
+		[TestCase(17, 2, false, "123", TestName = "IntPositiveNumberNotOnlyPositive")]
+		[TestCase(17, 2, true, "3,45", TestName = "FloatNumberWithComma")]
+		public void IsValidNumber_ValidValues_IsTrue(int precision, int scale, bool onlyPositive, string value)
 		{
 			var isValidNumber = new NumberValidator(precision, scale, onlyPositive).IsValidNumber(value);
 			isValidNumber.Should().BeTrue();
