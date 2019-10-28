@@ -7,14 +7,12 @@ namespace HomeExercises
 	{
 		[Test]
 		[Description("Проверка текущего царя")]
-		[Category("ToRefactor")]
-		public void CheckCurrentTsar()
+		public void GetCurrentTsar_IvanIV()
 		{
 			var actualTsar = TsarRegistry.GetCurrentTsar();
 
 			var expectedTsar = new Person("Ivan IV The Terrible", 54, 170, 70,
 				new Person("Vasili III of Russia", 28, 170, 60, null));
-
 
 			actualTsar.ShouldBeEquivalentTo(expectedTsar, options => options.Excluding(ctx => ctx.SelectedMemberInfo.Name == nameof(Person.Id)));
 		}
