@@ -8,25 +8,136 @@ namespace HomeExercises
 	public class NumberValidatorTests
 	{
 		[Test]
-		public void Test()
+		public void Constructor_ThrowArgumentException_WhenPrecisionIsNegative()
 		{
-			Assert.Throws<ArgumentException>(() => new NumberValidator(-1, 2, true));
-			Assert.DoesNotThrow(() => new NumberValidator(1, 0, true));
-			Assert.Throws<ArgumentException>(() => new NumberValidator(-1, 2, false));
-			Assert.DoesNotThrow(() => new NumberValidator(1, 0, true));
+			Action act = () => new NumberValidator(-1, 2);
+			act.ShouldThrow<ArgumentException>();
+		}
 
-			Assert.IsTrue(new NumberValidator(17, 2, true).IsValidNumber("0.0"));
-			Assert.IsTrue(new NumberValidator(17, 2, true).IsValidNumber("0"));
-			Assert.IsTrue(new NumberValidator(17, 2, true).IsValidNumber("0.0"));
-			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("00.00"));
-			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("-0.00"));
-			Assert.IsTrue(new NumberValidator(17, 2, true).IsValidNumber("0.0"));
-			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("+0.00"));
-			Assert.IsTrue(new NumberValidator(4, 2, true).IsValidNumber("+1.23"));
-			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("+1.23"));
-			Assert.IsFalse(new NumberValidator(17, 2, true).IsValidNumber("0.000"));
-			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("-1.23"));
-			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("a.sd"));
+		[Test]
+		public void Constructor_ThrowArgumentException_WhenPrecisionIsZero()
+		{
+			Action act = () => new NumberValidator(0, 2);
+			act.ShouldThrow<ArgumentException>();
+		}
+
+		[Test]
+		public void Constructor_DoesNotThrow_WhenPrecisionIsPositive()
+		{
+			Action act = () => new NumberValidator(1, 0);
+			act.ShouldNotThrow();
+		}
+
+		[Test]
+		public void Constructor_ThrowArgumentException_WhenScaleIsNegative()
+		{
+			Action act = () => new NumberValidator(1, -1);
+			act.ShouldThrow<ArgumentException>();
+		}
+
+		[Test]
+		public void Constructor_ThrowArgumentException_WhenScaleGreaterThanPrecision()
+		{
+			Action act = () => new NumberValidator(1, 2);
+            act.ShouldThrow<ArgumentException>();
+		}
+		
+		[Test]
+		public void Constructor_ThrowArgumentException_WhenScaleEqualsPrecision()
+		{
+			Action act = () => new NumberValidator(1, 1);
+			act.ShouldThrow<ArgumentException>();
+		}
+
+		[Test]
+		public void Constructor_DoesNotThrow_WhenScaleLessThanPrecisionAndPositive()
+		{
+			Action act = () => new NumberValidator(2, 1);
+			act.ShouldNotThrow();
+		}
+		
+		[Test]
+		public void Constructor_DoesNotThrow_WhenPrecisionPositiveAndScaleIsZero()
+		{
+			Action act = () => new NumberValidator(1, 0);
+			act.ShouldNotThrow();
+		}
+
+		[Test]
+		public void IsValidNumber_ReturnFalse_WhenValueIsNull()
+		{
+			var numberValidator = new NumberValidator(1);
+			numberValidator.IsValidNumber(null).Should().BeFalse();
+		}
+		
+		[Test]
+		public void IsValidNumber_ReturnFalse_WhenValueIsEmpty()
+		{
+			var numberValidator = new NumberValidator(1);
+			numberValidator.IsValidNumber("").Should().BeFalse();
+		}
+
+		[Test]
+		public void IsValidNumber_ReturnFalse_WhenValueIsNotRepresentationOfNumber()
+		{
+			var numberValidator = new NumberValidator(3, 2);
+			numberValidator.IsValidNumber("a.sd").Should().BeFalse();
+		}
+
+		[Test]
+		public void IsValidNumber_ReturnFalse_WhenIntPartAndFracPartGreaterThanPrecision()
+		{
+			var numberValidator = new NumberValidator(3, 2);
+			numberValidator.IsValidNumber("00.00").Should().BeFalse();
+		}
+
+		[Test]
+		public void IsValidNumber_ReturnFalse_WhenSignAndIntPartAndFracPartGreaterThanPrecision()
+		{
+			var numberValidator = new NumberValidator(3, 2, true);
+			numberValidator.IsValidNumber("+1.23").Should().BeFalse();	
+		}
+		
+		[Test]
+		public void IsValidNumber_ReturnFalse_WhenFracPartGreaterThanScale()
+		{
+			var numberValidator = new NumberValidator(17, 1);
+			numberValidator.IsValidNumber("0.00").Should().BeFalse();
+		}
+
+		[Test]
+		public void IsValidNumber_ReturnFalse_WhenOnlyPositiveAndHaveNegativeSign()
+		{
+			var numberValidator = new NumberValidator(17, 2, true);
+			numberValidator.IsValidNumber("-1.23").Should().BeFalse();
+		}
+
+		[Test]
+		public void IsValidNumber_ReturnTrue_WhenValueValidAndHavePositiveSign()
+		{
+			var numberValidator = new NumberValidator(17, 2);
+			numberValidator.IsValidNumber("+1.23").Should().BeTrue();
+		}
+		
+		[Test]
+		public void IsValidNumber_ReturnTrue_WhenOnlyPositiveAndValueValidAndHavePositiveSign()
+		{
+			var numberValidator = new NumberValidator(17, 2, true);
+			numberValidator.IsValidNumber("+1.23").Should().BeTrue();
+		}
+
+		[Test]
+		public void IsValidNumber_ReturnTrue_WhenValueValidWithoutFracPart()
+		{
+			var numberValidator = new NumberValidator(17);
+			numberValidator.IsValidNumber("0").Should().BeTrue();
+		}
+
+		[Test]
+		public void IsValidNumber_ReturnTrue_WhenValueValidWithCommaDelimiter()
+		{
+			var numberValidator = new NumberValidator(17, 2);
+			numberValidator.IsValidNumber("98765432,1").Should().BeTrue();
 		}
 	}
 
@@ -45,7 +156,7 @@ namespace HomeExercises
 			if (precision <= 0)
 				throw new ArgumentException("precision must be a positive number");
 			if (scale < 0 || scale >= precision)
-				throw new ArgumentException("precision must be a non-negative number less or equal than precision");
+				throw new ArgumentException("scale must be a non-negative number less than precision");
 			numberRegex = new Regex(@"^([+-]?)(\d+)([.,](\d+))?$", RegexOptions.IgnoreCase);
 		}
 
