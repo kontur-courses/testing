@@ -78,10 +78,13 @@ namespace HomeExercises
 			}
 		}
 
-		[TestCase(17, 2, false, "", TestName = "IsValidNumber_Empty_IsNotValid")]
-		[TestCase(17, 2, false, null, TestName = "IsValidNumber_Null_IsNotValid")]
-		[TestCase(17, 2, true, "", TestName = "OnlyPositive_IsValidNumber_Empty_IsNotValid")]
-		[TestCase(17, 2, true, null, TestName = "OnlyPositive_IsValidNumber_Null_IsNotValid")]
+		[TestCase("", TestName = "IsValidNumber_EmptyString_False")]
+		[TestCase(null, TestName = "IsValidNumber_Null_False")]
+		public void IsValidNumber_NullOrEmpty_False(string value)
+		{
+			Assert.IsFalse(new NumberValidator(17, 2, false).IsValidNumber(value));
+			Assert.IsFalse(new NumberValidator(17, 2, true).IsValidNumber(value));
+		}
 
 		[TestCase(17, 2, false, "a.bc", TestName = "IsValidNumber_NonNumber_IsNotValid")]
 		[TestCase(17, 2, true, "a.bc", TestName = "OnlyPositive_IsValidNumber_NonNumber_IsNotValid")]
