@@ -5,53 +5,6 @@ namespace HomeExercises
 {
 	public class ObjectComparison
 	{
-        [Test]
-        [Description("Проверка текущего царя")]
-        [Category("ToRefactor")]
-        public void CheckCurrentTsar()
-        {
-            var actualTsar = TsarRegistry.GetCurrentTsar();
-
-            var expectedTsar = new Person("Ivan IV The Terrible", 54, 170, 70,
-                new Person("Vasili III of Russia", 28, 170, 60, null));
-
-            // Перепишите код на использование Fluent Assertions.
-            Assert.AreEqual(actualTsar.Name, expectedTsar.Name);
-            Assert.AreEqual(actualTsar.Age, expectedTsar.Age);
-            Assert.AreEqual(actualTsar.Height, expectedTsar.Height);
-            Assert.AreEqual(actualTsar.Weight, expectedTsar.Weight);
-
-            Assert.AreEqual(expectedTsar.Parent.Name, actualTsar.Parent.Name);
-            Assert.AreEqual(expectedTsar.Parent.Age, actualTsar.Parent.Age);
-            Assert.AreEqual(expectedTsar.Parent.Height, actualTsar.Parent.Height);
-            Assert.AreEqual(expectedTsar.Parent.Parent, actualTsar.Parent.Parent);
-        }
-
-        [Test]
-        [Description("Альтернативное решение. Какие у него недостатки?")]
-        public void CheckCurrentTsar_WithCustomEquality()
-        {
-            var actualTsar = TsarRegistry.GetCurrentTsar();
-            var expectedTsar = new Person("Ivan IV The Terrible", 54, 170, 70,
-                new Person("Vasili III of Russia", 28, 170, 60, null));
-
-            // Какие недостатки у такого подхода? 
-            Assert.True(AreEqual(actualTsar, expectedTsar));
-        }
-
-        private bool AreEqual(Person actual, Person expected)
-        {
-            if (actual == expected) return true;
-            if (actual == null || expected == null) return false;
-            return
-                actual.Name == expected.Name
-                && actual.Age == expected.Age
-                && actual.Height == expected.Height
-                && actual.Weight == expected.Weight
-                && AreEqual(actual.Parent, expected.Parent);
-        }
-
-
         /* 
          * Чем были плохи исходные тесты?
          *      1) Трудно читать
@@ -67,18 +20,51 @@ namespace HomeExercises
          * 
          */
         [Test]
-        [Description("FluentAssertionsTest")]
-        public void TestGetCurrentTsar()
+        [Description("Проверка текущего царя")]
+        [Category("ToRefactor")]
+        public void CheckCurrentTsar()
         {
+            var actualTsar = TsarRegistry.GetCurrentTsar();
+
             var expectedTsar = new Person("Ivan IV The Terrible", 54, 170, 70,
                 new Person("Vasili III of Russia", 28, 170, 60, null));
 
-            var actualTsar = TsarRegistry.GetCurrentTsar();
-            
 
-            actualTsar.Should().BeEquivalentTo(expectedTsar, options => options.Excluding((person) => person.Id)
-                                                                               .Excluding((person) => person.Parent.Id));
+            actualTsar.Should()
+                      .BeEquivalentTo(expectedTsar, options => options.Excluding(info => info.SelectedMemberInfo.Name.Equals(nameof(Person.Id))));
         }
+
+        [Test]
+        [Description("Альтернативное решение. Какие у него недостатки?")]
+        public void CheckCurrentTsar_WithCustomEquality()
+        {
+            var actualTsar = TsarRegistry.GetCurrentTsar();
+            var expectedTsar = new Person("Ivan IV The Terrible", 54, 170, 70,
+                new Person("Vasili III of Russia", 28, 170, 60, null));
+
+            /* Какие недостатки у такого подхода? 
+             * 
+             * Будет непоняно в чем ошибка, 
+             * сложно читать
+             * неочевидно, что тест написан правильно
+             * легко ошибиться в написании такого теста
+             * 
+             */
+            Assert.True(AreEqual(actualTsar, expectedTsar));
+        }
+
+        private bool AreEqual(Person actual, Person expected)
+        {
+            if (actual == expected) return true;
+            if (actual == null || expected == null) return false;
+            return
+                actual.Name == expected.Name
+                && actual.Age == expected.Age
+                && actual.Height == expected.Height
+                && actual.Weight == expected.Weight
+                && AreEqual(actual.Parent, expected.Parent);
+        }
+
 	}
 
 	public class TsarRegistry
