@@ -1,5 +1,8 @@
 ﻿using FluentAssertions;
 using NUnit.Framework;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace Challenge
 {
@@ -33,15 +36,73 @@ namespace Challenge
 			wordsStatistics.GetStatistics().Should().Equal(new WordCount("abc", 1));
 		}
 
+		//[Test]
+		//public void GetStatistics_ContainsManyItems_AfterAdditionOfDifferentWords()
+		//{
+		//	wordsStatistics.AddWord("abc");
+		//	wordsStatistics.AddWord("def");
+		//	wordsStatistics.GetStatistics().Should().HaveCount(2);
+		//}
+
 		[Test]
-		public void GetStatistics_ContainsManyItems_AfterAdditionOfDifferentWords()
+		public void GetStatistics_ContainsSameItem_AfterLowerCaseAddition()
 		{
 			wordsStatistics.AddWord("abc");
-			wordsStatistics.AddWord("def");
-			wordsStatistics.GetStatistics().Should().HaveCount(2);
+			wordsStatistics.AddWord("ABC");
+			wordsStatistics.GetStatistics().Should().Equal(new WordCount("abc", 2));
 		}
 
+		[Test]
+		public void GetStatistics_ThrowsArgumentNullException_IfNull()
+		{
+			Action action = () =>
+			{
+				wordsStatistics.AddWord(null);
+			};
+			action.ShouldThrow<ArgumentNullException>();
+		}
 
-		// Документация по FluentAssertions с примерами : https://github.com/fluentassertions/fluentassertions/wiki
-	}
+		[Test]
+		public void GetStatistics_NoItems_IfWhitespace()
+		{
+			wordsStatistics.AddWord(" ");
+			wordsStatistics.GetStatistics().Should().BeEmpty();
+		}
+
+		[Test]
+		public void GetStatistics_ContainsTwoWords_IfTheyAreLong()
+		{
+			wordsStatistics.AddWord("qwertyuiopa");
+			wordsStatistics.AddWord("qwertyuiopz");
+			wordsStatistics.GetStatistics().Should().HaveCount(1);
+		}
+
+		[Test]
+		public void GetStatistics_LexicographicalOrder_IfSameFrequency()
+		{
+			wordsStatistics.AddWord("efd");
+			wordsStatistics.AddWord("efd");
+            wordsStatistics.AddWord("abc");
+			wordsStatistics.AddWord("abc");
+			wordsStatistics.GetStatistics().ShouldAllBeEquivalentTo(
+				new[] { new WordCount("abc", 2), new WordCount("efd", 2) }, options => options.WithStrictOrdering());
+		}
+
+        [Test]
+		public void GetStatistics_StorageAllElements_IfBigAmount()
+		{
+			for (var i = 0; i < 1000; i++)
+				wordsStatistics.AddWord(i.ToString());
+			wordsStatistics.GetStatistics().Should().HaveCount(1000);
+		}
+
+		[Test]
+		public void GetStatistics_NotContain_RussianWords()
+		{
+			wordsStatistics.AddWord("Хай");
+			wordsStatistics.GetStatistics().Should().NotContain(new WordCount("Хай", 1));
+		}
+
+        // Документация по FluentAssertions с примерами : https://github.com/fluentassertions/fluentassertions/wiki
+    }
 }

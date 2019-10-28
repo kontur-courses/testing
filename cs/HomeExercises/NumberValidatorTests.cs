@@ -1,33 +1,67 @@
 ﻿using System;
+using System.Collections;
 using System.Text.RegularExpressions;
 using FluentAssertions;
 using NUnit.Framework;
+using NUnit.Framework.Internal;
+
 
 namespace HomeExercises
 {
 	public class NumberValidatorTests
 	{
-		[Test]
-		public void Test()
+		[Test, TestCaseSource(nameof(IsValidNumber_CheckErrors_TestCases))]
+		public void IsValidNumber_IncorrectInput_ThrowsException(int precision, int scale, bool isOnlyPositive)
 		{
-			Assert.Throws<ArgumentException>(() => new NumberValidator(-1, 2, true));
-			Assert.DoesNotThrow(() => new NumberValidator(1, 0, true));
-			Assert.Throws<ArgumentException>(() => new NumberValidator(-1, 2, false));
-			Assert.DoesNotThrow(() => new NumberValidator(1, 0, true));
+			Assert.Throws<ArgumentException>(() => new NumberValidator(precision, scale, isOnlyPositive));
+        }
 
-			Assert.IsTrue(new NumberValidator(17, 2, true).IsValidNumber("0.0"));
-			Assert.IsTrue(new NumberValidator(17, 2, true).IsValidNumber("0"));
-			Assert.IsTrue(new NumberValidator(17, 2, true).IsValidNumber("0.0"));
-			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("00.00"));
-			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("-0.00"));
-			Assert.IsTrue(new NumberValidator(17, 2, true).IsValidNumber("0.0"));
-			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("+0.00"));
-			Assert.IsTrue(new NumberValidator(4, 2, true).IsValidNumber("+1.23"));
-			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("+1.23"));
-			Assert.IsFalse(new NumberValidator(17, 2, true).IsValidNumber("0.000"));
-			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("-1.23"));
-			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("a.sd"));
+		public static IEnumerable IsValidNumber_CheckErrors_TestCases
+		{
+			get
+			{
+				yield return new TestCaseData(-1, 2, true);
+				yield return new TestCaseData(1, -1, true);
+                yield return new TestCaseData(1, 2, true);
+				yield return new TestCaseData(-1, 2, false);
+				yield return new TestCaseData(1, 2, false);
+            }
 		}
+
+
+        [Test, TestCaseSource(nameof(IsValidNumber_CheckFunctionality_TestCases))]
+        public bool IsValidNumber(int precision, int scale, bool isOnlyPositive, string inp)
+		{
+			if (scale != 0)
+				return new NumberValidator(precision, scale, isOnlyPositive).IsValidNumber(inp);
+			else
+				return new NumberValidator(precision, onlyPositive:isOnlyPositive).IsValidNumber(inp);
+        }
+
+        public static IEnumerable IsValidNumber_CheckFunctionality_TestCases
+        {
+	        get
+	        {
+		        yield return new TestCaseData(17, 2, true, "0.0").Returns(true);
+                yield return new TestCaseData(2, 1, true, "0.0").Returns(true);
+				yield return new TestCaseData(2, 1, true, "00.0").Returns(false);
+				yield return new TestCaseData(4, 1, true, "0.00").Returns(false);
+				yield return new TestCaseData(4, 1, true, "000.00").Returns(false);
+				yield return new TestCaseData(17, 4, true, "-0.0").Returns(false);
+				yield return new TestCaseData(17, 4, false, "-0.0").Returns(true);
+				yield return new TestCaseData(17, 4, false, "+0.0").Returns(true);
+                yield return new TestCaseData(4, 2, false, "-00.00").Returns(false);
+				yield return new TestCaseData(17, 5, true, "123.ac").Returns(false);
+				yield return new TestCaseData(17, 5, true, "ac").Returns(false);
+                yield return new TestCaseData(17, 5, true, "").Returns(false);
+                yield return new TestCaseData(17, 5, true, null).Returns(false);
+                yield return new TestCaseData(5, 0, true, "12345").Returns(true);
+				yield return new TestCaseData(5, 0, false, "-12345").Returns(false);
+				yield return new TestCaseData(5, 2, true, "+123.12").Returns(true); //Почему на этот тест выдает false?
+																				  //Знак же учитывается только для отрицательных чисел
+				yield return new TestCaseData(6, 3, false, "1.1.1").Returns(false);
+	        }
+        }
 	}
 
 	public class NumberValidator
