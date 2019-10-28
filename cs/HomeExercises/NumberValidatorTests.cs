@@ -60,15 +60,22 @@ namespace HomeExercises
 			}
 		}
 
-		[TestCase(17, 2, true, "0.00", TestName = "IsValidNumber_Fraction_Valid")]
-		[TestCase(17, 2, true, "0,00", TestName = "IsValidNumber_CommaFraction_Valid")]
-		[TestCase(17, 2, false, "0.00", TestName = "OnlyPositive_IsValidNumber_Fraction_Valid")]
-		[TestCase(17, 2, false, "-0.00", TestName = "IsValidNumber_NegativeFraction_Valid")]
-		[TestCase(17, 2, true, "+0.00", TestName = "OnlyPositive_IsValidNumber_PlusFraction_Valid")]
-		[TestCase(17, 2, false, "+0.00", TestName = "IsValidNumber_PlusFraction_Valid")]
-		public void IsValidNumber_Valid(int precision, int scale, bool onlyPositive, string value)
+		[TestCase("0.00", TestName = "IsValidNumber_Fraction_True")]
+		[TestCase("0,00", TestName = "IsValidNumber_CommaFraction_True")]
+		[TestCase("-0.00", true, TestName = "IsValidNumber_NegativeFraction_True")]
+		[TestCase("+0.00", TestName = "IsValidNumber_FractionWithPlus_True")]
+		public void IsValidNumber_ValidFractions_True(string value, bool negative = false)
 		{
-			Assert.IsTrue(new NumberValidator(precision, scale, onlyPositive).IsValidNumber(value));
+			NumberValidator numberValidator = new NumberValidator(17, 2, false);
+
+			Assert.IsTrue(numberValidator.IsValidNumber(value), "fraction is valid when precision and scale aren't exceeded");
+
+			if (!negative)
+			{
+				NumberValidator onlyPositiveNumberValidator = new NumberValidator(17, 2, true);
+				
+				Assert.IsTrue(onlyPositiveNumberValidator.IsValidNumber(value), "non-negative fraction is valid on onlyPositive validator when precision and scale aren't exceeded");
+			}
 		}
 
 		[TestCase(17, 2, false, "", TestName = "IsValidNumber_Empty_IsNotValid")]
