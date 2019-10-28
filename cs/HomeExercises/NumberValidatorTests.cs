@@ -9,7 +9,7 @@ namespace HomeExercises
     public class NumberValidatorTests
     {
         [Test]
-        [Category("Исключения")]
+        [Category("Exeptions")]
         public void ArgumentException_If_PrecisionIsNegative()
         {
             Action action = () => new NumberValidator(-1, 2);
@@ -17,7 +17,7 @@ namespace HomeExercises
         }
 
         [Test]
-        [Category("Исключения")]
+        [Category("Exeptions")]
         public void ArgumentException_If_ScaleIsNegative()
         {
             Action action = () => new NumberValidator(1, -2);
@@ -25,14 +25,14 @@ namespace HomeExercises
         }
 
         [Test]
-        [Category("Исключения")]
+        [Category("Exeptions")]
         public void ArgumentException_If_PrecisionLessThanScale()
         {
             Action action = () => new NumberValidator(1, 2);
             action.Should().Throw<ArgumentException>();
         }
 
-        [Category("Не коректные строки")]
+        [Category("Invalid strings")]
         [TestCase("", ExpectedResult = false, TestName = "EmptyString")]
         [TestCase(null, ExpectedResult = false, TestName = "InputNull")]
         [TestCase("aaa", ExpectedResult = false, TestName = "StringWithLetters")]
@@ -48,14 +48,23 @@ namespace HomeExercises
         }
 
         [Test]
-        [Category("Не коректные строки")]
+        [Category("Invalid strings")]
         public void FractionalPartMoreThanScale()
         {
             var numberValidator = new NumberValidator(4, 2);
             numberValidator.IsValidNumber("0.000").Should().BeFalse();
         }
 
-        [Category("Коректные строки")]
+        [Test]
+        [Category("Invalid strings")]
+        public void NegativeNumber_When_NumberValidatorIsOnlyPositive()
+        {
+            var numberValidator = new NumberValidator(5, 1, true);
+            numberValidator.IsValidNumber("1").Should().BeTrue();
+            numberValidator.IsValidNumber("-1").Should().BeFalse();
+        }
+
+        [Category("Valid strings")]
         [TestCase("-12.00", ExpectedResult = true, TestName = "StringWithMinusSymbol")]
         [TestCase("+12.00", ExpectedResult = true, TestName = "StringWithPlusSymbol")]
         [TestCase("12.00", ExpectedResult = true, TestName = "DotIsSeparator")]
@@ -63,12 +72,12 @@ namespace HomeExercises
         [TestCase("12", ExpectedResult = true, TestName = "IntegerNumber")]
         public bool CorrrectStrings(string input)
         {
-            var numberValidator = new NumberValidator(6, 3);
+            var numberValidator = new NumberValidator(6, 3, false);
             return numberValidator.IsValidNumber(input);
         }
 
         [Test]
-        [Category("Коректные строки")]
+        [Category("Valid strings")]
         public void FractionalPartLessThanScale()
         {
             var numberValidator = new NumberValidator(4, 2);
@@ -76,16 +85,7 @@ namespace HomeExercises
         }
 
         [Test]
-        [Category("Граничные случаи")]
-        public void BigNumber()
-        {
-            var stringBigNumber = long.MaxValue.ToString();
-            var numberValidator = new NumberValidator(stringBigNumber.Length);
-            numberValidator.IsValidNumber(stringBigNumber).Should().BeTrue();
-        }
-
-        [Test]
-        [Category("Граничные случаи")]
+        [Category("Extreme case")]
         public void PlusSymbolsIncludeInPrecisionValue()
         {
             var numberValidator = new NumberValidator(4, 2);
@@ -94,16 +94,16 @@ namespace HomeExercises
         }
 
         [Test]
-        [Category("Граничные случаи")]
+        [Category("Extreme case")]
         public void MinusSymbolsIncludeInPrecisionValue()
         {
-            var numberValidator = new NumberValidator(4, 2);
+            var numberValidator = new NumberValidator(4, 2, false);
             numberValidator.IsValidNumber("-1.23").Should().BeTrue();
             numberValidator.IsValidNumber("-12.23").Should().BeFalse();
         }
 
         [Test]
-        [Category("Граничные случаи")]
+        [Category("Extreme case")]
         public void NumberLengthEqualPrecision()
         {
             var numberValidator = new NumberValidator(4);
@@ -111,7 +111,7 @@ namespace HomeExercises
         }
 
         [Test]
-        [Category("Конструктор NumberValidator")]
+        [Category("Сonstructor NumberValidator")]
         public void ScaleDefaultValueIsZero()
         {
             var numberValidator = new NumberValidator(5);
@@ -120,21 +120,12 @@ namespace HomeExercises
         }
 
         [Test]
-        [Category("Конструктор NumberValidator")]
+        [Category("Сonstructor NumberValidator")]
         public void DefaultNumberValidatorIsNotOnlyPositive()
         {
             var numberValidator = new NumberValidator(5, 1);
             numberValidator.IsValidNumber("1").Should().BeTrue();
             numberValidator.IsValidNumber("-1").Should().BeTrue();
-        }
-
-        [Test]
-        [Category("Не коректные строки")]
-        public void NegativeNumber_When_NumberValidatorIsOnlyPositive()
-        {
-            var numberValidator = new NumberValidator(5, 1, true);
-            numberValidator.IsValidNumber("1").Should().BeTrue();
-            numberValidator.IsValidNumber("-1").Should().BeFalse();
         }
     }
 
@@ -159,30 +150,30 @@ namespace HomeExercises
 
 		public bool IsValidNumber(string value)
 		{
-			// Проверяем соответствие входного значения формату N(m,k), в соответствии с правилом, 
-			// описанным в Формате описи документов, направляемых в налоговый орган в электронном виде по телекоммуникационным каналам связи:
-			// Формат числового значения указывается в виде N(m.к), где m – максимальное количество знаков в числе, включая знак (для отрицательного числа), 
-			// целую и дробную часть числа без разделяющей десятичной точки, k – максимальное число знаков дробной части числа. 
-			// Если число знаков дробной части числа равно 0 (т.е. число целое), то формат числового значения имеет вид N(m).
+            // Проверяем соответствие входного значения формату N(m,k), в соответствии с правилом, 
+            // описанным в Формате описи документов, направляемых в налоговый орган в электронном виде по телекоммуникационным каналам связи:
+            // Формат числового значения указывается в виде N(m.к), где m – максимальное количество знаков в числе, включая знак (для отрицательного числа), 
+            // целую и дробную часть числа без разделяющей десятичной точки, k – максимальное число знаков дробной части числа. 
+            // Если число знаков дробной части числа равно 0 (т.е. число целое), то формат числового значения имеет вид N(m).
 
-			if (string.IsNullOrEmpty(value))
-				return false;
+            if (string.IsNullOrEmpty(value))
+                return false;
 
-			var match = numberRegex.Match(value);
-			if (!match.Success)
-				return false;
+            var match = numberRegex.Match(value);
+            if (!match.Success)
+                return false;
 
-			// Знак и целая часть
-			var intPart = match.Groups[1].Value.Length + match.Groups[2].Value.Length;
+            // Знак и целая часть
+            var intPart = match.Groups[1].Value.Length + match.Groups[2].Value.Length;
 			// Дробная часть
 			var fracPart = match.Groups[4].Value.Length;
 
-			if (intPart + fracPart > precision || fracPart > scale)
-				return false;
+            if (intPart + fracPart > precision || fracPart > scale)
+                return false;
 
-			if (onlyPositive && match.Groups[1].Value == "-")
-				return false;
-			return true;
+            if (onlyPositive && match.Groups[1].Value == "-")
+                return false;
+            return true;
 		}
 	}
 }
