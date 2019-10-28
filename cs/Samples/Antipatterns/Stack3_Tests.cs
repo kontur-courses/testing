@@ -4,8 +4,9 @@ using NUnit.Framework;
 
 namespace Samples.Antipatterns
 {
-    [TestFixture, Explicit]
-    public class Stack3_Tests
+	[TestFixture]
+	[Explicit]
+	public class Stack3_Tests
 	{
 		[Test]
 		public void Test()
@@ -30,6 +31,7 @@ namespace Samples.Antipatterns
 		}
 
 		#region Почему этот тест плохой?
+
 		/*
 		## Антипаттерн Freeride
 
@@ -47,6 +49,7 @@ namespace Samples.Antipatterns
 		Каждый тест должен тестировать одно конкретное требование. Это требование должно отражаться в названии теста.
 		Если вы не можете придумать название теста, у вас Free Ride!
 		*/
+
 		#endregion
 	}
 }

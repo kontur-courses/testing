@@ -3,89 +3,33 @@ using System.Linq;
 using System.Reflection;
 using FluentAssertions;
 using NUnit.Framework;
+using static System.Reflection.BindingFlags;
 
 namespace HomeExercises
 {
 	public class ObjectComparison
 	{
-		Person actualTsar = TsarRegistry.GetCurrentTsar();
+		private static readonly Person parentTsar = new Person("Vasili III of Russia", 28, 170, 60, null);
 
-		Person expectedTsar = new Person("Ivan IV The Terrible", 54, 170, 70,
-			new Person("Vasili III of Russia", 28, 170, 60, null));
+		private readonly Person actualTsar = TsarRegistry.GetCurrentTsar();
 
-		[Test]
-		public void CheckCurrentTsar_NameShouldBeTheSame()
-		{
-			actualTsar.Name.Should().Be(expectedTsar.Name);
-		}
+		private readonly Person expectedTsar = new Person("Ivan IV The Terrible", 54, 170, 70,
+			parentTsar);
 
 		[Test]
-		public void CheckCurrentTsar_AgeShouldBeTheSame()
+		public void CheckCurrentTsar_WithTheSameTsars_GoesOK()
 		{
-			actualTsar.Age.Should().Be(expectedTsar.Age);
-		}
-
-		[Test]
-		public void CheckCurrentTsar_HeightShouldBeTheSame()
-		{
-			actualTsar.Height.Should().Be(expectedTsar.Height);
-		}
-
-		[Test]
-		public void CheckCurrentTsar_WeightShouldBeTheSame()
-		{
-			actualTsar.Weight.Should().Be(expectedTsar.Weight);
-		}
-
-		[Test]
-		public void CheckCurrentTsar_ParentShouldBeTheSame()
-		{
-			actualTsar.Parent.Name.Should().Be(expectedTsar.Parent.Name);
-			actualTsar.Parent.Age.Should().Be(expectedTsar.Parent.Age);
-			actualTsar.Parent.Height.Should().Be(expectedTsar.Parent.Height);
-			actualTsar.Parent.Parent.Should().Be(expectedTsar.Parent.Parent);
-		}
-
-		[Test]
-		[Description("Проверка текущего царя через рефлексию типов")]
-		public void CheckCurrentTsar_WithReflectionOfTypes()
-		{
-			var actualTsar = TsarRegistry.GetCurrentTsar();
-			
-			var expectedTsar = new Person("Ivan IV The Terrible", 54, 170, 70,
-				new Person("Vasili III of Russia", 28, 170, 60, null));
-
-			CompareTsars(actualTsar, expectedTsar);
-		}
-
-		private bool CompareTsars(Person actual, Person expected)
-		{
-			var personFields =
-				typeof(Person).GetFields(BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
-			foreach (var field in personFields)
-			{
-				if (field.Name.Equals("Id")) continue;
-				if (field.FieldType == typeof(Person))
-				{
-					if (!CompareTsars(actual.Parent, expected.Parent))
-						return false;
-				}
-				else if (field.GetValue(actual) != (field.GetValue(expected))) return false;
-			}
-
-			return true;
+			actualTsar.Should().BeEquivalentTo(expectedTsar,
+				opts => opts.Excluding(field => field.SelectedMemberInfo.Name.Equals("Id")));
 		}
 
 		[Test]
 		[Description("Альтернативное решение. Какие у него недостатки?")]
-		// Необходимость при каждом добавлении поля в тестируемый класс вносить изменения в переопределенный метод AreEqual
+		// Необходимость при каждом добавлении поля в тестируемый класс вносить изменения в метод AreEqual
+		// При упавшем тесте нам самим придется искать причину, нет ни стак трейса, ни конкретной инфы в самом названии
 		public void CheckCurrentTsar_WithCustomEquality()
 		{
-			var actualTsar = TsarRegistry.GetCurrentTsar();
-			var expectedTsar = new Person("Ivan IV The Terrible", 54, 170, 70,
-				new Person("Vasili III of Russia", 28, 170, 60, null));
-
-			// Какие недостатки у такого подхода? 
+			// Какие недостатки у такого подхода?
 			Assert.True(AreEqual(actualTsar, expectedTsar));
 		}
 

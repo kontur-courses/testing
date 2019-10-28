@@ -5,7 +5,8 @@ using NUnit.Framework;
 
 namespace Samples.Antipatterns
 {
-    [TestFixture, Explicit]
+	[TestFixture]
+	[Explicit]
 	public class Stack1_Tests
 	{
 		[Test]
@@ -13,19 +14,18 @@ namespace Samples.Antipatterns
 		{
 			var lines = File.ReadAllLines(@"C:\work\edu\testing-course\Patterns\bin\Debug\data.txt")
 				.Select(line => line.Split(' '))
-				.Select(line => new { command = line[0], value = line[1] });
+				.Select(line => new {command = line[0], value = line[1]});
 
 			var stack = new Stack<string>();
 			foreach (var line in lines)
-			{
 				if (line.command == "push")
 					stack.Push(line.value);
 				else
 					Assert.AreEqual(line.value, stack.Pop());
-			}
 		}
 
 		#region Почему это плохо?
+
 		/*
 		## Антипаттерн Local Hero
 
@@ -41,6 +41,7 @@ namespace Samples.Antipatterns
 		var lines = File.ReadAllLines(@"data.txt")
 		var lines = Resources.data.Split(new []{"\r\n"}, StringSplitOptions.RemoveEmptyEntries)
 		*/
+
 		#endregion
 	}
 }

@@ -7,7 +7,8 @@ namespace Samples.Parametrized
 	[TestFixture]
 	public class Double_Should
 	{
-		[Test, TestCaseSource(nameof(DivideTestCases))]
+		[Test]
+		[TestCaseSource(nameof(DivideTestCases))]
 		public double Divide(double a, double b)
 		{
 			return a / b;

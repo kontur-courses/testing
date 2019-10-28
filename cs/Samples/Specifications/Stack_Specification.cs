@@ -19,7 +19,7 @@ namespace Samples.Specifications
 		[Test]
 		public void Constructor_PushesItemsToEmptyStack()
 		{
-			var stack = new Stack<int>(new[] { 1, 2, 3 });
+			var stack = new Stack<int>(new[] {1, 2, 3});
 
 			Assert.AreEqual(3, stack.Count);
 			Assert.AreEqual(3, stack.Pop());
@@ -31,19 +31,19 @@ namespace Samples.Specifications
 		[Test]
 		public void ToArray_ReturnsItemsInPopOrder()
 		{
-			var stack = new Stack<int>(new[] { 1, 2, 3 });
+			var stack = new Stack<int>(new[] {1, 2, 3});
 
-			Assert.AreEqual(new[] { 3, 2, 1 }, stack.ToArray());
+			Assert.AreEqual(new[] {3, 2, 1}, stack.ToArray());
 		}
 
 		[Test]
 		public void Push_AddsItemToStackTop()
 		{
-			var stack = new Stack<int>(new[] { 1, 2, 3 });
+			var stack = new Stack<int>(new[] {1, 2, 3});
 
 			stack.Push(42);
 
-			CollectionAssert.AreEqual(new[] { 42, 3, 2, 1 }, stack.ToArray());
+			CollectionAssert.AreEqual(new[] {42, 3, 2, 1}, stack.ToArray());
 		}
 
 		[Test]
@@ -53,11 +53,11 @@ namespace Samples.Specifications
 
 			Assert.Throws<InvalidOperationException>(() => stack.Pop());
 		}
-		
+
 		[Test]
 		public void Pop_ReturnsLastPushedItem()
 		{
-			var stack = new Stack<int>(new[] { 1, 2, 3 });
+			var stack = new Stack<int>(new[] {1, 2, 3});
 
 			stack.Push(42);
 

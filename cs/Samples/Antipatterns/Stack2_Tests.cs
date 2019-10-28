@@ -5,8 +5,9 @@ using NUnit.Framework;
 
 namespace Samples.Antipatterns
 {
-    [TestFixture, Explicit]
-    public class Stack2_Tests
+	[TestFixture]
+	[Explicit]
+	public class Stack2_Tests
 	{
 		[Test]
 		public void TestPushPop()
@@ -20,6 +21,7 @@ namespace Samples.Antipatterns
 		}
 
 		#region Почему это плохо?
+
 		/*
 		## Антипаттерн Loudmouth
 
@@ -29,6 +31,7 @@ namespace Samples.Antipatterns
 
 		Вместо вывода на консоль, используйте Assert-ы.
 		*/
+
 		#endregion
 	}
 }

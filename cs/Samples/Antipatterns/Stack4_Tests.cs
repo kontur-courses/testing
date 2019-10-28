@@ -4,22 +4,24 @@ using NUnit.Framework;
 
 namespace Samples.Antipatterns
 {
-    [TestFixture, Explicit]
-    public class Stack4_Tests
+	[TestFixture]
+	[Explicit]
+	public class Stack4_Tests
 	{
 		[Test]
 		public void TestPop()
 		{
-			var stack = new Stack<int>(new[] { 1, 2, 3, 4, 5 });
+			var stack = new Stack<int>(new[] {1, 2, 3, 4, 5});
 			var result = stack.Pop();
 			Assert.AreEqual(5, result);
 			Assert.IsTrue(stack.Any());
 			Assert.AreEqual(4, stack.Count);
 			Assert.AreEqual(4, stack.Peek());
-			Assert.AreEqual(new[] { 4, 3, 2, 1 }, stack.ToArray());
+			Assert.AreEqual(new[] {4, 3, 2, 1}, stack.ToArray());
 		}
 
 		#region Почему это плохо?
+
 		/*	
 		## Антипаттерн Overspecification
 
@@ -37,6 +39,7 @@ namespace Samples.Antipatterns
 
 		Признак возможной проблемы — более одного Assert на метод.
 		*/
+
 		#endregion
 	}
 }

@@ -14,7 +14,7 @@ namespace Challenge
 	 */
 	public class WordsStatistics : IWordsStatistics
 	{
-		protected readonly IDictionary<string, int> statistics 
+		protected readonly IDictionary<string, int> statistics
 			= new Dictionary<string, int>();
 
 		public virtual void AddWord(string word)

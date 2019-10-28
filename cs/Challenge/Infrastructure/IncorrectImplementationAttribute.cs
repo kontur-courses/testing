@@ -2,7 +2,7 @@
 
 namespace Challenge.Infrastructure
 {
-    public class IncorrectImplementationAttribute : Attribute
-    {
-    }
+	public class IncorrectImplementationAttribute : Attribute
+	{
+	}
 }

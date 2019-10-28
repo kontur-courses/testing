@@ -43,31 +43,48 @@
 			return this;
 		}
 
-		public TestUserBuilder InUserRole() => InRole("ROLE_USER");
+		public TestUserBuilder InUserRole()
+		{
+			return InRole("ROLE_USER");
+		}
 
-		public TestUserBuilder InAdminRole() => InRole("ROLE_ADMIN");
+		public TestUserBuilder InAdminRole()
+		{
+			return InRole("ROLE_ADMIN");
+		}
 
 		public TestUserBuilder InRole(string newRole)
 		{
-			this.role = newRole;
+			role = newRole;
 			return this;
 		}
 
-		public TestUserBuilder But() => 
-			AUser()
+		public TestUserBuilder But()
+		{
+			return AUser()
 				.InRole(role)
 				.WithName(name)
 				.WithPassword(password)
 				.WithLogin(login);
+		}
 
-		public User Build() => new User(name, login, password, role);
+		public User Build()
+		{
+			return new User(name, login, password, role);
+		}
 
-		public static User ARegularUser() => AUser().Build();
-		
-		public static User AnAdmin() => AUser()
-			.WithName("Neo")
-			.WithLogin("neo")
-			.InAdminRole()
-			.Build();
+		public static User ARegularUser()
+		{
+			return AUser().Build();
+		}
+
+		public static User AnAdmin()
+		{
+			return AUser()
+				.WithName("Neo")
+				.WithLogin("neo")
+				.InAdminRole()
+				.Build();
+		}
 	}
 }

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Runtime.InteropServices.ComTypes;
 using System.Text.RegularExpressions;
 using FluentAssertions;
 using NUnit.Framework;
@@ -8,87 +9,107 @@ namespace HomeExercises
 {
 	public class NumberValidatorTests
 	{
-
 		[Test]
-		public void NumberValidator_PrecisionShouldBePositive()
+		public void NumberValidator_PrecisionIsZero_ThrowsException()
 		{
 			Action action = () => new NumberValidator(0);
-			action.Should().Throw<ArgumentException>();
-			action = () => new NumberValidator(-1);
 			action.Should().Throw<ArgumentException>();
 		}
 
 		[Test]
-		public void NumberValidator_ScaleShouldBeNonNegative()
+		public void NumberValidator_PrecisionIsNegative_ThrowsException()
+		{
+			Action action = () => new NumberValidator(-1);
+			action.Should().Throw<ArgumentException>();
+		}
+
+		[Test]
+		public void NumberValidator_ScaleIsNegative_ThrowsException()
 		{
 			Action action = () => new NumberValidator(2, -1);
 			action.Should().Throw<ArgumentException>();
 		}
 
 		[Test]
-		public void NumberValidator_ScaleShouldBeLessThanPrecision()
+		public void NumberValidator_ScaleEqualToPrecision_ThrowsException()
+		{
+			Action action = () => new NumberValidator(1, 1);
+			action.Should().Throw<ArgumentException>();
+		}
+
+		[Test]
+		public void NumberValidator_ScaleBiggerThanPrecision_ThrowsException()
 		{
 			Action action = () => new NumberValidator(1, 5);
 			action.Should().Throw<ArgumentException>();
-			Action action1 = () => new NumberValidator(1, 1);
-			action1.Should().Throw<ArgumentException>();
 		}
 
 		[Test]
 		public void NumberValidator_PositiveScaleLessThanPrecision_GoesOK()
 		{
-			Action action2 = () => new NumberValidator(1, 0);
+			Action action2 = () => new NumberValidator(2, 1);
 			action2.Should().NotThrow();
 		}
 
 		[Test]
-		public void IsValidNumber_FalseWithNullInput()
+		public void IsValidNumber_NullInput_ReturnsFalse()
 		{
 			new NumberValidator(2).IsValidNumber(null).Should().BeFalse();
 		}
 
 		[Test]
-		public void IsValidNumber_FalseWithNonNumberInput()
+		public void IsValidNumber_NonNumberInput_ReturnsFalse()
 		{
-			new NumberValidator(20).IsValidNumber("kajsdn.ajnqwk").Should().BeFalse();
+			new NumberValidator(20).IsValidNumber("this is number(no)").Should().BeFalse();
 		}
 
 		[Test]
-		public void IsValidNumber_FalseWithPrecisionNumberLessThanActual()
+		public void IsValidNumber_PrecisionNumberLessThanActual_ReturnsFalse()
 		{
-			new NumberValidator(2).IsValidNumber("0.000").Should().BeFalse();
-			new NumberValidator(3, 2, true).IsValidNumber("+1.23").Should().BeFalse();
+			new NumberValidator(3, 2, true).IsValidNumber("+4.20").Should().BeFalse();
 		}
 
 		[Test]
-		public void IsValidNumber_FalseWithIncorrectSign()
+		public void IsValidNumber_NumberWithIncorrectSign_ReturnsFalse()
 		{
-			new NumberValidator(2, 0, true).IsValidNumber("-0.00").Should().BeFalse();
+			new NumberValidator(17, 0, true).IsValidNumber("-4.20").Should().BeFalse();
 		}
 
 		[Test]
-		public void IsValidNumber_FalseWithScaleLessThanActual()
+		public void IsValidNumber_ScaleLessThanActual_ReturnsFalse()
 		{
 			new NumberValidator(17, 2, true).IsValidNumber("0.000").Should().BeFalse();
 		}
 
 		[Test]
-		public void IsValidNumber_IntegerNumberGoesOK()
+		public void IsValidNumber_PositiveIntegerNumber_ReturnsTrue()
 		{
-			new NumberValidator(17, 2, true).IsValidNumber("0").Should().BeTrue();
+			new NumberValidator(17, 0, true).IsValidNumber("42").Should().BeTrue();
 		}
 
 		[Test]
-		public void IsValidNumber_SimpleFloatNumberGoesOK()
+		public void IsValidNumber_NegativeIntegerNumber_ReturnsTrue()
+		{
+			new NumberValidator(17, 0).IsValidNumber("-42").Should().BeTrue();
+		}
+
+		[Test]
+		public void IsValidNumber_PositiveFloatNumber_ReturnsTrue()
 		{
 			new NumberValidator(4, 2, true).IsValidNumber("+1.23").Should().BeTrue();
+		}
+
+		[Test]
+		public void IsValidNumber_NegativeFloatNumber_ReturnsTrue()
+		{
 			new NumberValidator(4, 2).IsValidNumber("-1.23").Should().BeTrue();
 		}
 
-		[Test, Timeout(20)]
+		[Test]
+		[Timeout(20)]
 		public void IsValidNumber_PerformanceIsOK()
 		{
-			for (int i = 0; i < 500; i++)
+			for (var i = 0; i < 500; i++)
 				new NumberValidator(17, 2, true).IsValidNumber("42");
 		}
 	}
@@ -108,7 +129,7 @@ namespace HomeExercises
 			if (precision <= 0)
 				throw new ArgumentException("precision must be a positive number");
 			if (scale < 0 || scale >= precision)
-				throw new ArgumentException("precision must be a non-negative number less than precision");
+				throw new ArgumentException("scale must be a non-negative number less than precision");
 			numberRegex = new Regex(@"^([+-]?)(\d+)([.,](\d+))?$", RegexOptions.IgnoreCase);
 		}
 
@@ -119,9 +140,7 @@ namespace HomeExercises
 			// Формат числового значения указывается в виде N(m.к), где m – максимальное количество знаков в числе, включая знак (для отрицательного числа), 
 			// целую и дробную часть числа без разделяющей десятичной точки, k – максимальное число знаков дробной части числа. 
 			// Если число знаков дробной части числа равно 0 (т.е. число целое), то формат числового значения имеет вид N(m).
-			
-			// EnableToFailPerformanceTest();
-			
+
 			if (string.IsNullOrEmpty(value))
 				return false;
 
@@ -140,13 +159,6 @@ namespace HomeExercises
 			if (onlyPositive && match.Groups[1].Value == "-")
 				return false;
 			return true;
-		}
-
-		private void EnableToFailPerformanceTest()
-		{
-			var performanceAnchor = new LinkedList<int>();
-			for(int i=0;i<50000;i++)
-				performanceAnchor.AddLast(i);
 		}
 	}
 }

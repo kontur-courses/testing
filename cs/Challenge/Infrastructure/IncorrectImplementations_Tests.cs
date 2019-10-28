@@ -4,57 +4,115 @@ using NUnit.Framework;
 
 namespace Challenge.Infrastructure
 {
-    [TestFixture]
-    public class GenerateIncorrectTests
-    {
-        [Test]
-        public void Generate()
-        {
-            var impls = ChallengeHelpers.GetIncorrectImplementationTypes();
-            var code = string.Join(Environment.NewLine,
-                impls.Select(imp => $"public class {imp.Name}_Tests : {nameof(IncorrectImplementation_TestsBase)} {{}}")
-                );
-            Console.WriteLine(code);
-        }
+	[TestFixture]
+	public class GenerateIncorrectTests
+	{
+		[Test]
+		public void Generate()
+		{
+			var impls = ChallengeHelpers.GetIncorrectImplementationTypes();
+			var code = string.Join(Environment.NewLine,
+				impls.Select(imp => $"public class {imp.Name}_Tests : {nameof(IncorrectImplementation_TestsBase)} {{}}")
+			);
+			Console.WriteLine(code);
+		}
 
-        [Test]
-        public void CheckAllTestsAreInPlace()
-        {
-            var implTypes = ChallengeHelpers.GetIncorrectImplementationTypes();
-            var testedImpls = ChallengeHelpers.GetIncorrectImplementationTests()
-                .Select(t => t.CreateStatistics())
-                .ToArray();
+		[Test]
+		public void CheckAllTestsAreInPlace()
+		{
+			var implTypes = ChallengeHelpers.GetIncorrectImplementationTypes();
+			var testedImpls = ChallengeHelpers.GetIncorrectImplementationTests()
+				.Select(t => t.CreateStatistics())
+				.ToArray();
 
-            foreach (var impl in implTypes)
-            {
-                Assert.NotNull(testedImpls.SingleOrDefault(t => t.GetType().FullName == impl.FullName),
-                    "Single implementation of tests for {0} not found. Regenerate tests with test above!", impl.FullName);
-            }
-        }
-    }
+			foreach (var impl in implTypes)
+				Assert.NotNull(testedImpls.SingleOrDefault(t => t.GetType().FullName == impl.FullName),
+					"Single implementation of tests for {0} not found. Regenerate tests with test above!",
+					impl.FullName);
+		}
+	}
 
-    #region Generated with test above
+	#region Generated with test above
 
-    public class WordsStatisticsC_Tests : IncorrectImplementation_TestsBase { }
-    public class WordsStatisticsE_Tests : IncorrectImplementation_TestsBase { }
-    public class WordsStatisticsCR_Tests : IncorrectImplementation_TestsBase { }
-    public class WordsStatisticsE2_Tests : IncorrectImplementation_TestsBase { }
-    public class WordsStatisticsE3_Tests : IncorrectImplementation_TestsBase { }
-    public class WordsStatisticsE4_Tests : IncorrectImplementation_TestsBase { }
-    public class WordsStatisticsL2_Tests : IncorrectImplementation_TestsBase { }
-    public class WordsStatisticsL3_Tests : IncorrectImplementation_TestsBase { }
-    public class WordsStatisticsL4_Tests : IncorrectImplementation_TestsBase { }
-    public class WordsStatisticsO1_Tests : IncorrectImplementation_TestsBase { }
-    public class WordsStatisticsO2_Tests : IncorrectImplementation_TestsBase { }
-    public class WordsStatisticsO3_Tests : IncorrectImplementation_TestsBase { }
-    public class WordsStatisticsO4_Tests : IncorrectImplementation_TestsBase { }
-    public class WordsStatistics123_Tests : IncorrectImplementation_TestsBase { }
-    public class WordsStatistics998_Tests : IncorrectImplementation_TestsBase { }
-    public class WordsStatistics999_Tests : IncorrectImplementation_TestsBase { }
-    public class WordsStatisticsEN1_Tests : IncorrectImplementation_TestsBase { }
-    public class WordsStatisticsEN2_Tests : IncorrectImplementation_TestsBase { }
-    public class WordsStatisticsQWE_Tests : IncorrectImplementation_TestsBase { }
-    public class WordsStatisticsSTA_Tests : IncorrectImplementation_TestsBase { }
+	public class WordsStatisticsC_Tests : IncorrectImplementation_TestsBase
+	{
+	}
 
-    #endregion
+	public class WordsStatisticsE_Tests : IncorrectImplementation_TestsBase
+	{
+	}
+
+	public class WordsStatisticsCR_Tests : IncorrectImplementation_TestsBase
+	{
+	}
+
+	public class WordsStatisticsE2_Tests : IncorrectImplementation_TestsBase
+	{
+	}
+
+	public class WordsStatisticsE3_Tests : IncorrectImplementation_TestsBase
+	{
+	}
+
+	public class WordsStatisticsE4_Tests : IncorrectImplementation_TestsBase
+	{
+	}
+
+	public class WordsStatisticsL2_Tests : IncorrectImplementation_TestsBase
+	{
+	}
+
+	public class WordsStatisticsL3_Tests : IncorrectImplementation_TestsBase
+	{
+	}
+
+	public class WordsStatisticsL4_Tests : IncorrectImplementation_TestsBase
+	{
+	}
+
+	public class WordsStatisticsO1_Tests : IncorrectImplementation_TestsBase
+	{
+	}
+
+	public class WordsStatisticsO2_Tests : IncorrectImplementation_TestsBase
+	{
+	}
+
+	public class WordsStatisticsO3_Tests : IncorrectImplementation_TestsBase
+	{
+	}
+
+	public class WordsStatisticsO4_Tests : IncorrectImplementation_TestsBase
+	{
+	}
+
+	public class WordsStatistics123_Tests : IncorrectImplementation_TestsBase
+	{
+	}
+
+	public class WordsStatistics998_Tests : IncorrectImplementation_TestsBase
+	{
+	}
+
+	public class WordsStatistics999_Tests : IncorrectImplementation_TestsBase
+	{
+	}
+
+	public class WordsStatisticsEN1_Tests : IncorrectImplementation_TestsBase
+	{
+	}
+
+	public class WordsStatisticsEN2_Tests : IncorrectImplementation_TestsBase
+	{
+	}
+
+	public class WordsStatisticsQWE_Tests : IncorrectImplementation_TestsBase
+	{
+	}
+
+	public class WordsStatisticsSTA_Tests : IncorrectImplementation_TestsBase
+	{
+	}
+
+	#endregion
 }
