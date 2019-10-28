@@ -50,6 +50,77 @@ namespace HomeExercises
                 create.Should().NotThrow();
             }
         }
+
+        [TestFixture]
+        public class IsValidNumberShould
+        {
+            private NumberValidator basicValidator;
+
+            private NumberValidator CreateBasicNumberValidator()
+            {
+                return new NumberValidator(10, 2);
+            }
+
+            [SetUp]
+            public void BaseSetUp()
+            {
+                basicValidator = CreateBasicNumberValidator();
+            }
+
+            [Test]
+            public void ReturnFalse_OnNull()
+            {
+                basicValidator.IsValidNumber(null).Should().BeFalse();
+            }
+
+            [Test]
+            public void ReturnFalse_OnEmpty()
+            {
+                basicValidator.IsValidNumber("").Should().BeFalse();
+            }
+
+            [Test]
+            public void ReturnFalse_OnIncorrectNumberFormat()
+            {
+                var numbers = new string[] { "asd", ".11", "9.", "10,", "12.1e", "-a.89", "12. 4", "+\n" };
+                foreach (var number in numbers)
+                {
+                    basicValidator.IsValidNumber(number).Should().BeFalse();
+                }
+            }
+
+            [Test]
+            public void ReturnFalse_OnPrecisionLessThanNumberLength()
+            {
+                var validator = new NumberValidator(2, 1);
+                validator.IsValidNumber("21.3").Should().BeFalse();
+                validator.IsValidNumber("+10").Should().BeFalse();
+                validator.IsValidNumber("100").Should().BeFalse();
+            }
+
+            [Test]
+            public void ReturnFalse_OnFracPartBiggerThanScale()
+            {
+                new NumberValidator(4, 2).IsValidNumber("1.444").Should().BeFalse();
+            }
+
+            [Test]
+            public void ReturnFalse_OnNegativeNumberWhenValidatorOnlyPositive()
+            {
+                new NumberValidator(10, 2, true).IsValidNumber("-10").Should().BeFalse();
+            }
+
+            [Test]
+            public void ReturnTrue_OnCorrectNumbers()
+            {
+                var numbers = new string[] {"55", "0.00", "10.13", "10,13", "-20", "+20",
+                "-177.6", "+46,68", "1000000000"};
+                foreach (var number in numbers)
+                {
+                    basicValidator.IsValidNumber(number).Should().BeTrue();
+                }
+            }
+        }
     }
 
         public class NumberValidator
@@ -67,7 +138,7 @@ namespace HomeExercises
 			if (precision <= 0)
 				throw new ArgumentException("precision must be a positive number");
 			if (scale < 0 || scale >= precision)
-				throw new ArgumentException("precision must be a non-negative number less or equal than precision");
+				throw new ArgumentException("scale must be a non-negative number less or equal than precision");
 			numberRegex = new Regex(@"^([+-]?)(\d+)([.,](\d+))?$", RegexOptions.IgnoreCase);
 		}
 
