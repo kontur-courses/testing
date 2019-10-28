@@ -27,8 +27,14 @@ namespace HomeExercises
 			var expectedTsar = new Person("Ivan IV The Terrible", 54, 170, 70,
 				new Person("Vasili III of Russia", 28, 170, 60, null));
 
-			// Какие недостатки у такого подхода? 
-			Assert.True(AreEqual(actualTsar, expectedTsar));
+            // В: Какие недостатки у такого подхода?
+            // О: Во-первых, если в AreEqual будет несовпадение, то ошибку кинут на весь метод,
+            // а это плохо, потому что нам нужно знать, что именно не так. Во-вторых, при расширении
+            // класса Person придётся расширять и метод AreEqual. Мое решение лучше тем, что тест
+            // с Fluent Assertions даст знать, какие поля не совпадают; при расширении класса Person,
+            // не нужно будет ничего добавлять в сам тест (только если мы не добавим поле, которое нужно
+            // будет игнорировать, как поле Id, например)
+            Assert.True(AreEqual(actualTsar, expectedTsar));
 		}
 
 		private bool AreEqual(Person actual, Person expected)
