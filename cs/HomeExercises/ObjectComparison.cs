@@ -1,4 +1,5 @@
-﻿using FluentAssertions;
+﻿using System.Text.RegularExpressions;
+using FluentAssertions;
 using FluentAssertions.Execution;
 using NUnit.Framework;
 
@@ -13,10 +14,11 @@ namespace HomeExercises
             var actualTsar = TsarRegistry.GetCurrentTsar();
             var expectedTsar = new Person("Ivan IV The Terrible", 54, 170, 70,
                 new Person("Vasili III of Russia", 28, 170, 60,null));
-
+            
             actualTsar.Should().BeEquivalentTo(expectedTsar,
                 options => options
-                    .Excluding(tsar => tsar.SelectedMemberPath.EndsWith("Id")));
+                    .Excluding(t => Regex.IsMatch(t.SelectedMemberPath,"^(Parent.)*Id$")
+                     ));
         }
         
         /// <summary>
