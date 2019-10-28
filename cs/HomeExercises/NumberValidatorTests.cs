@@ -8,84 +8,130 @@ namespace HomeExercises
 {
     public class NumberValidatorTests
     {
-        [Test]
-        public void Test()
+        private static class NumberValidatorBuilder
         {
-            var exceptionDescriptionFormat = "for {0} number validator {1}";
-            Action makingPrecisionNonPositive = () => new NumberValidator(-1, 1);
-            Action makingScaleNegative = () => new NumberValidator(1, -1);
-            Action makingScaleGreaterThanPrecision = () => new NumberValidator(1, 2);
-            Action makingScaleZero = () => new NumberValidator(1, 0);
+            public const int simpleValidatorPrecision = 3;
+            public const int simpleValidatorScale = 2;
+            public const int integerValidatorPrecision = 3;
+            public const int positiveValidatorPrecision = 3;
+            public const int positiveValidatorScale = 2;
 
-            var descriptionFormat = "{2} (on {0} validator for \"{1}\")";
-            var simpleNumberValidator = new NumberValidator(3, 2, false);
-            var integerOnlyNumberValidator = new NumberValidator(3, 0, false);
-            var positiveOnlyNumberValidator = new NumberValidator(3, 2, true);
-            using (new AssertionScope())
+            public static NumberValidator GetSimpleValidator()
             {
-                makingPrecisionNonPositive.ShouldThrow<ArgumentException>(
-                    exceptionDescriptionFormat, "N(-1,1)",
-                    "non-positive precision doesn't make sense");
-                makingScaleNegative.ShouldThrow<ArgumentException>(
-                    exceptionDescriptionFormat, "N(1,-1)",
-                    "negative fraction part length doesn't make sense");
-                makingScaleGreaterThanPrecision.ShouldThrow<ArgumentException>(
-                    exceptionDescriptionFormat, "N(1,2)",
-                    "length of fraction part can not be greater than total number length");
-                makingScaleZero.ShouldNotThrow<ArgumentException>(
-                    exceptionDescriptionFormat, "N(1,0)",
-                    "some numbers can have zero-length fraction part (i.e. integers)");
-
-                simpleNumberValidator.IsValidNumber("0").Should().BeTrue(
-                    descriptionFormat, "N(3,2)", "0",
-                    "it's a valid number");
-                simpleNumberValidator.IsValidNumber("0.0").Should().BeTrue(
-                    descriptionFormat, "N(3,2)", "0.0",
-                    "it's a valid number");
-                simpleNumberValidator.IsValidNumber("0,0").Should().BeTrue(
-                    descriptionFormat, "N(3,2)", "0,0",
-                    "fraction can also be denoted as ,");
-                simpleNumberValidator.IsValidNumber("00.00").Should().BeFalse(
-                    descriptionFormat, "N(3,2)", "00.00",
-                    "number string length must be less or equal to validator precision");
-                simpleNumberValidator.IsValidNumber("0.000").Should().BeFalse(
-                    descriptionFormat, "N(3,2)", "0.000",
-                    "fraction part length must be less or equal to validator fraction part precision");
-                simpleNumberValidator.IsValidNumber("-0.00").Should().BeFalse(
-                    descriptionFormat, "N(3,2)", "-0.00",
-                    "minus sign must be accounted for when checking number precision");
-
-                /* хоть в комментариях к методу IsValidNumber сказано, что знак должен влиять на
-                 * длину числа лишь для отрицательных чисел,  
-                 * но в оригинальных тестах данная проверка должна была выдавать False             
-                 */
-                simpleNumberValidator.IsValidNumber("+0.00").Should().BeFalse(
-                    descriptionFormat, "N(3,2)", "+0.00",
-                    "plus sign must not be accounted for when checking number precision");
-                simpleNumberValidator.IsValidNumber("a.sd").Should().BeFalse(
-                    descriptionFormat, "N(3,2)", "a.sd",
-                    "number string must not consist of letters");
-                simpleNumberValidator.IsValidNumber(" 0.0").Should().BeFalse(
-                    descriptionFormat, "N(3,2)", " 0.0",
-                    "number strings must not start with whitespace(s) or any other characters");
-                simpleNumberValidator.IsValidNumber("0.0 ").Should().BeFalse(
-                    descriptionFormat, "N(3,2)", "0.0 ",
-                    "number strings must not end with whitespace(s) or any other characters");
-                simpleNumberValidator.IsValidNumber(".1").Should().BeFalse(
-                    descriptionFormat, "N(3,2)", ".1",
-                    "integer part must be present");
-                simpleNumberValidator.IsValidNumber("0.").Should().BeFalse(
-                    descriptionFormat, "N(3,2)", "0.",
-                    "fraction part must be present if there's a dot or comma");
-
-                integerOnlyNumberValidator.IsValidNumber("0.1").Should().BeFalse(
-                    descriptionFormat, "N(3)", "0.1",
-                    "number with fraction part should not be validated");
-
-                positiveOnlyNumberValidator.IsValidNumber("-1").Should().BeFalse(
-                    descriptionFormat, "positive-only N(3,2)", "-1",
-                    "negative number should not be validated");
+                return new NumberValidator(simpleValidatorPrecision, simpleValidatorScale);
             }
+
+            public static string GetSimpleValidatorString()
+            {
+                return $"N({simpleValidatorPrecision},{simpleValidatorScale})";
+            }
+
+            public static NumberValidator GetIntegerValidator()
+            {
+                return new NumberValidator(integerValidatorPrecision, 0);
+            }
+
+            public static string GetIntegerValidatorString()
+            {
+                return $"N({integerValidatorPrecision})";
+            }
+
+            public static NumberValidator GetPositiveValidator()
+            {
+                return new NumberValidator(
+                    positiveValidatorPrecision, positiveValidatorScale, true);
+            }
+
+            public static string GetPositiveValidatorString()
+            {
+                return $"positive-only N({positiveValidatorPrecision},{positiveValidatorScale})";
+            }
+        }
+
+        [TestCase(-1, 1, "non-positive precision doesn't make sense")]
+        [TestCase(1, -1, "negative fraction part length doesn't make sense")]
+        [TestCase(1, 2, "length of fraction part can not be greater than total number length")]
+        public void IsThrowingException_OnIncorrectConstructorArguments(
+            int precision, int scale, string message)
+        {
+            Action act = () => new NumberValidator(precision, scale);
+            act.ShouldThrow<ArgumentException>($"{message} (N({precision}, {scale}))");
+        }
+
+        [TestCase(1, 0, "some numbers can have zero-length fraction part (i.e. integers)")]
+        public void IsWorkingProperly_OnCorrectConstructorArguments(
+            int precision, int scale, string message)
+        {
+            Action act = () => new NumberValidator(precision, scale);
+            act.ShouldNotThrow<ArgumentException>($"{message} (N({precision}, {scale}))");
+        }
+
+        [TestCase("0", "it's a valid number")]
+        [TestCase("0.0", "numbers can have fraction part")]
+        [TestCase("+0.0", "plus sign is an acceptable starting symbol")]
+        [TestCase("-0.0", "minus sign is an acceptable starting symbol")]
+        [TestCase("0,0", "fraction can also be denoted as ,")]
+        public void IsValidating_ProperNumberFormats(string number, string message)
+        {
+            CheckAssertionOnSimpleValidator(number, message, true);
+        }
+
+        [TestCase(null, "null must not be validated")]
+        [TestCase("", "empty string is not a number string")]
+        [TestCase(" ", "whitespace is not a number string")]
+        [TestCase("a.sd", "number string must not consist of letters")]
+        [TestCase(" 0.0", 
+            "number strings must not start with whitespace(s) or any other characters")]
+        [TestCase("0.0 ", 
+            "number strings must not end with whitespace(s) or any other characters")]
+        [TestCase("++0", "number string must not have more than one sign symbol")]
+        [TestCase("0.0.0", "number string must not have more than one dot/comma")]
+        [TestCase(".1", "integer part must be present")]
+        [TestCase("0.", "fraction part must be present if there's a dot or comma")]
+        public void IsNotValidating_IncorrectNumberFormats(string number, string message)
+        {
+            CheckAssertionOnSimpleValidator(number, message, false);
+        }
+
+        [TestCase("00.00", "number string length must be less or equal to validator precision")]
+        [TestCase("0.000", 
+            "fraction part length must be less or equal to validator fraction part precision")]
+        [TestCase("-0.00", "minus sign must be accounted for when checking number precision")]
+        [TestCase("+0.00", "plus sign must be accounted for when checking number precision")]
+        public void IsNotValidatingNumbers_WithLargerPrecisionOrScale(
+            string number, string message)
+        {
+            CheckAssertionOnSimpleValidator(number, message, false);
+        }
+
+        public void CheckAssertionOnSimpleValidator(
+            string number, string message, bool expectedValidity)
+        {
+            var validator = NumberValidatorBuilder.GetSimpleValidator();
+            var validatorStr = NumberValidatorBuilder.GetSimpleValidatorString();
+            validator.IsValidNumber(number).Should().Be(expectedValidity,
+               $"{message} (on {validatorStr} validator for \"{number}\")");
+        }
+
+        [TestCase("0.1", "non-integer number should not be validated")]
+        [TestCase("1.0", "integer numbers with fraction part present must not be validated")]
+        public void IsIntegerNumberValidator_DeclinesNonIntegerNumbers(
+            string number, string message)
+        {
+            var validator = NumberValidatorBuilder.GetIntegerValidator();
+            var validatorStr = NumberValidatorBuilder.GetIntegerValidatorString();
+            validator.IsValidNumber(number).Should().BeFalse(
+               $"{message} (on {validatorStr} validator for \"{number}\")");
+        }
+
+        [TestCase("-1", "negative number should not be validated")]
+        public void IsPositiveNumberValidator_DeclinesNegativeNumbers(
+            string number, string message)
+        {
+            var validator = NumberValidatorBuilder.GetPositiveValidator();
+            var validatorStr = NumberValidatorBuilder.GetPositiveValidatorString();
+            validator.IsValidNumber(number).Should().BeFalse(
+               $"{message} (on {validatorStr} validator for \"{number}\")");
         }
     }
 
@@ -136,4 +182,4 @@ namespace HomeExercises
             return true;
         }
     }
-}
+}  

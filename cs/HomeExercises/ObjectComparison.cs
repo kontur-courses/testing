@@ -1,5 +1,6 @@
 ﻿using FluentAssertions;
 using NUnit.Framework;
+using System.Windows;
 
 namespace HomeExercises
 {
@@ -15,16 +16,9 @@ namespace HomeExercises
             var expectedTsar = new Person("Ivan IV The Terrible", 54, 170, 70,
                 new Person("Vasili III of Russia", 28, 170, 60, null));
 
-            /* Если нужно увеличить глубину проверки, можно создать цикл,
-             * но в данном случае код лишь разрастётся и станет менее понятным
-             */
             actualTsar.ShouldBeEquivalentTo(expectedTsar, options => options
                 .Excluding(ts => ts.Id)
-                .Excluding(ts => ts.Parent));
-
-            actualTsar.Parent.ShouldBeEquivalentTo(expectedTsar.Parent, options => options
-                .Excluding(ts => ts.Id));
-
+                .Excluding(ts => ts.SelectedMemberPath.EndsWith("Parent.Id")));
         }
 
         [Test]
@@ -41,6 +35,13 @@ namespace HomeExercises
              * провалилось условие: само сообщение о неудаче не сообщает никакой
              * полезной информации, а только то, что тест "зафэйлился".
              * 2. При добавлении новых полей в Person можно забыть поменять метод AreEqual.
+             * 3. В методе AreEqual нет защиты от рекурсивной зависимости объектов: 
+             * если у двух объектов Parent - это они сами, то мы словим
+             * StackOverflowException.
+             * 4. Если появятся какие-либо сложные поля с отличающимися от основного класса
+             * внутренней структурой и/или правилами определения равенства, придётся либо
+             * нагромождать новыми проверками существующий метод AreEqual, либо
+             * писать ещё один.
              */
             Assert.True(AreEqual(actualTsar, expectedTsar));
         }
