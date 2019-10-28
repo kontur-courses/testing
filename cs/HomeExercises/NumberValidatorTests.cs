@@ -5,30 +5,120 @@ using NUnit.Framework;
 
 namespace HomeExercises
 {
-	public class NumberValidatorTests
+    [TestFixture]
+    public class NumberValidatorTests
 	{
 		[Test]
-		public void Test()
-		{
-			Assert.Throws<ArgumentException>(() => new NumberValidator(-1, 2, true));
-			Assert.DoesNotThrow(() => new NumberValidator(1, 0, true));
-			Assert.Throws<ArgumentException>(() => new NumberValidator(-1, 2, false));
-			Assert.DoesNotThrow(() => new NumberValidator(1, 0, true));
+        public void NumberValidator_ThrowsArgumentException_IfScaleLessThanZero()
+        {
+            Action action = () => new NumberValidator(17, -1, true);
 
-			Assert.IsTrue(new NumberValidator(17, 2, true).IsValidNumber("0.0"));
-			Assert.IsTrue(new NumberValidator(17, 2, true).IsValidNumber("0"));
-			Assert.IsTrue(new NumberValidator(17, 2, true).IsValidNumber("0.0"));
-			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("00.00"));
-			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("-0.00"));
-			Assert.IsTrue(new NumberValidator(17, 2, true).IsValidNumber("0.0"));
-			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("+0.00"));
-			Assert.IsTrue(new NumberValidator(4, 2, true).IsValidNumber("+1.23"));
-			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("+1.23"));
-			Assert.IsFalse(new NumberValidator(17, 2, true).IsValidNumber("0.000"));
-			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("-1.23"));
-			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("a.sd"));
-		}
-	}
+            action
+                .ShouldThrow<ArgumentException>()
+                .WithMessage("scale must be a non-negative number less than precision");
+        }
+
+        [Test]
+        public void NumberValidator_ThrowsArgumentException_IfPrecisionLessOrEqualToZero()
+        {
+            Action action = () => new NumberValidator(0, 0, true);
+
+            action
+                .ShouldThrow<ArgumentException>()
+                .WithMessage("precision must be a positive number");
+        }
+
+        [Test]
+        public void NumberValidator_NotThrowsArgumentException_IfScaleLessThanPrecision()
+        {
+            Action action = () => new NumberValidator(17, 16, true);
+
+            action
+                .ShouldNotThrow<ArgumentException>();
+        }
+
+        [Test]
+        public void NumberValidator_ThrowsArgumentException_IfScaleIsEqualToPrecision()
+        {
+            Action action = () => new NumberValidator(17, 17, true);
+
+            action
+                .ShouldThrow<ArgumentException>()
+                .WithMessage("scale must be a non-negative number less than precision");
+        }
+
+        [Test]
+        public void IsValidNumber_ShouldBeTrue_IfNumberScaleIsZero()
+        {
+            new NumberValidator(17, 2, true).IsValidNumber("123").Should().BeTrue();
+        }
+
+        [Test]
+        public void IsValidNumber_ShouldBeTrue_IfNumberScaleLessThanValidatorScale()
+        {
+            new NumberValidator(17, 2, true).IsValidNumber("123.1").Should().BeTrue();
+        }
+
+        [Test]
+        public void IsValidNumber_ShouldBeTrue_IfNumberScaleIsEqualToValidatorScale()
+        {
+            new NumberValidator(17, 2, true).IsValidNumber("123.12").Should().BeTrue();
+        }
+
+        [Test]
+        public void IsValidNumber_ShouldBeFalse_IfNumberScaleBiggerThanValidatorScale()
+        {
+            new NumberValidator(17, 2, true).IsValidNumber("123.123").Should().BeFalse();
+        }
+
+        [Test]
+        public void IsValidNumber_IntegerPartShouldIncreasePrecision()
+        {
+            new NumberValidator(5, 2, true).IsValidNumber("123.12").Should().BeTrue();
+            new NumberValidator(5, 2, true).IsValidNumber("1234.12").Should().BeFalse();
+        }
+
+        [Test]
+        public void IsValidNumber_FractionalPartShouldIncreasePrecision()
+        {
+            new NumberValidator(5, 2, true).IsValidNumber("123.12").Should().BeTrue();
+            new NumberValidator(5, 2, true).IsValidNumber("123.123").Should().BeFalse();
+        }
+
+        [Test]
+        public void IsValidNumber_SignShouldIncreasePrecision()
+        {
+            new NumberValidator(5, 2, true).IsValidNumber("123.12").Should().BeTrue();
+            new NumberValidator(5, 2).IsValidNumber("-123.12").Should().BeFalse();
+            new NumberValidator(5, 2, true).IsValidNumber("+123.12").Should().BeFalse();
+        }
+
+        [Test]
+        public void IsValidNumber_ShouldBeFalse_IfValueIsNotNumber()
+        {
+            new NumberValidator(5, 2, true).IsValidNumber("aaa.12").Should().BeFalse();
+            new NumberValidator(5, 2, true).IsValidNumber("123.aa").Should().BeFalse();
+            new NumberValidator(5, 2, true).IsValidNumber("123a12").Should().BeFalse();
+        }
+
+        [Test]
+        public void IsValidNumber_ShouldBeTrue_IfSeparatorIsСomma()
+        {
+            new NumberValidator(5, 2, true).IsValidNumber("123,12").Should().BeTrue();
+        }
+
+        [Test]
+        public void IsValidNumber_ShouldBeFalse_IfNegativeNumberAndOnlyPositiveValidator()
+        {
+            new NumberValidator(5, 2, true).IsValidNumber("-12.12").Should().BeFalse();
+        }
+
+        [Test]
+        public void IsValidNumber_ShouldBeTrue_IfNegativeNumberAndNotOnlyPositiveValidator()
+        {
+            new NumberValidator(5, 2).IsValidNumber("-12.12").Should().BeTrue();
+        }
+    }
 
 	public class NumberValidator
 	{
@@ -44,8 +134,8 @@ namespace HomeExercises
 			this.onlyPositive = onlyPositive;
 			if (precision <= 0)
 				throw new ArgumentException("precision must be a positive number");
-			if (scale < 0 || scale >= precision)
-				throw new ArgumentException("precision must be a non-negative number less or equal than precision");
+            if (scale < 0 || scale >= precision)
+				throw new ArgumentException("scale must be a non-negative number less than precision");
 			numberRegex = new Regex(@"^([+-]?)(\d+)([.,](\d+))?$", RegexOptions.IgnoreCase);
 		}
 

@@ -3,11 +3,11 @@ using NUnit.Framework;
 
 namespace HomeExercises
 {
-	public class ObjectComparison
+    [TestFixture]
+    public class ObjectComparison
 	{
 		[Test]
 		[Description("Проверка текущего царя")]
-		[Category("ToRefactor")]
 		public void CheckCurrentTsar()
 		{
 			var actualTsar = TsarRegistry.GetCurrentTsar();
@@ -15,19 +15,11 @@ namespace HomeExercises
 			var expectedTsar = new Person("Ivan IV The Terrible", 54, 170, 70,
 				new Person("Vasili III of Russia", 28, 170, 60, null));
 
-			// Перепишите код на использование Fluent Assertions.
-			Assert.AreEqual(actualTsar.Name, expectedTsar.Name);
-			Assert.AreEqual(actualTsar.Age, expectedTsar.Age);
-			Assert.AreEqual(actualTsar.Height, expectedTsar.Height);
-			Assert.AreEqual(actualTsar.Weight, expectedTsar.Weight);
+			actualTsar.ShouldBeEquivalentTo(expectedTsar, options => options.Excluding(
+             subjectInfo => subjectInfo.SelectedMemberInfo.Name == nameof(Person.Id)));
+        }
 
-			Assert.AreEqual(expectedTsar.Parent.Name, actualTsar.Parent.Name);
-			Assert.AreEqual(expectedTsar.Parent.Age, actualTsar.Parent.Age);
-			Assert.AreEqual(expectedTsar.Parent.Height, actualTsar.Parent.Height);
-			Assert.AreEqual(expectedTsar.Parent.Parent, actualTsar.Parent.Parent);
-		}
-
-		[Test]
+        [Test]
 		[Description("Альтернативное решение. Какие у него недостатки?")]
 		public void CheckCurrentTsar_WithCustomEquality()
 		{
@@ -36,6 +28,14 @@ namespace HomeExercises
 				new Person("Vasili III of Russia", 28, 170, 60, null));
 
 			// Какие недостатки у такого подхода? 
+			/*
+			 *	Если добавить новые поля к классу Person, то эти поля придется также проверять в методе AreEqual(тест нерасширяемый)
+			 *
+			 *	Если тест упадет, то сообщение будет неинформативным
+			 *
+			 *	Из самого теста непонятно как сравнивает объекты метод AreEqual
+			 *
+			 */
 			Assert.True(AreEqual(actualTsar, expectedTsar));
 		}
 
