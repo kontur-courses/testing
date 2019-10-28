@@ -1,7 +1,4 @@
-﻿using System.Threading.Tasks;
-using FluentAssertions;
-using FluentAssertions.Equivalency;
-using FluentAssertions.Types;
+﻿using FluentAssertions;
 using NUnit.Framework;
 
 namespace HomeExercises
@@ -10,7 +7,6 @@ namespace HomeExercises
 	{
 		[Test]
 		[Description("Проверка текущего царя")]
-		[Category("ToRefactor")]
 		public void CheckCurrentTsar()
 		{
 			var actualTsar = TsarRegistry.GetCurrentTsar();
