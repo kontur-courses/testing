@@ -10,34 +10,46 @@ namespace HomeExercises
     {
 
         [Test]
-        public void ShouldThrowArgumentExeption_When_PresisionIsNegative()
+		// исправил опечатку
+        public void ShouldThrowArgumentException_When_PrecisionIsNegative()
         {
             Assert.Throws<ArgumentException>(() => new NumberValidator(-1, 2));
         }
         [Test]
-        public void ShouldThrowArgumentExeption_When_ScaleIsNegative()
+        // исправил опечатку
+        public void ShouldThrowArgumentException_When_ScaleIsNegative()
         {
             Assert.Throws<ArgumentException>(() => new NumberValidator(1, -2));
         }
         [Test]
-        public void ShouldThrowArgumentExeption_When_ScaleIsBiggerThanPresision()
+        // исправил опечатку
+        public void ShouldThrowArgumentException_When_ScaleIsBiggerThanPrecision()
         {
             Assert.Throws<ArgumentException>(() => new NumberValidator(1, 3));
         }
+
         [Test]
-        public void ShouldNotBeValid_When_ExpectedPresisionMoreThanActual()
+        // добавил еще один случай с ArgumentException
+        public void ShouldThrowArgumentException_When_ScaleIsEqualToPrecision()
+        {
+	        Assert.Throws<ArgumentException>(() => new NumberValidator(1, 1));
+        }
+        [Test]
+        // исправил опечатку
+        public void ShouldNotBeValid_When_ExpectedPrecisionMoreThanActual()
         {
             Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("0.001"));
         }
 
         [Test]
-        public void ShouldNotBeValid_When_ExpectePositiveNumberButActualIsNegative()
+        // исправил опечатку
+        public void ShouldNotBeValid_When_ExpectPositiveNumberButActualIsNegative()
         {
             Assert.IsFalse(new NumberValidator(2, 0, true).IsValidNumber("-0"));
         }
 
         [Test]
-        public void ShouldBeValid_When_ExpecteNegativeNumberButActualIsPositive()
+        public void ShouldBeValid_When_ExpectNegativeNumberButActualIsPositive()
         {
             Assert.IsTrue(new NumberValidator(2, 0, false).IsValidNumber("0"));
         }
@@ -53,9 +65,9 @@ namespace HomeExercises
         {
             Assert.IsTrue(new NumberValidator(2, 0, true).IsValidNumber("0"));
         }
-
+		//думаю следующие 2 теста нельзя объеденить т.к один валится на условии Precision а другой на Scale
         [Test]
-        public void ShouldNotBeValid_When_ExpectPresisionLessThanActual()
+        public void ShouldNotBeValid_When_ExpectPrecisionLessThanActual()
         {
             Assert.IsFalse(new NumberValidator(3, 0, true).IsValidNumber("-123"));
         }
@@ -67,9 +79,10 @@ namespace HomeExercises
         }
 
         [Test]
+		//исправил на string.Empty
         public void ShouldNotBeValid_When_ValueIsEmpty()
         {
-            Assert.IsFalse(new NumberValidator(4, 2, true).IsValidNumber(""));
+	        Assert.IsFalse(new NumberValidator(4, 2, true).IsValidNumber(string.Empty));
         }
 
         [Test]
@@ -91,21 +104,30 @@ namespace HomeExercises
         }
 
         [Test]
+		//тест на null
+        public void ShouldNotBeValid_When_ActualNumberIsNull()
+        {
+	        Assert.IsFalse(new NumberValidator(4, 2, true).IsValidNumber(null));
+        }
+
+        [Test]
         public void ShouldBeValid_When_TwoZeroInIntPart()
         {
             Assert.IsTrue(new NumberValidator(2, 0, true).IsValidNumber("00"));
         }
 
         [Test]
-        public void ShouldBeValid_When_BigNumber()
+		//исправил на new String(char,count), самый большой тип целочисленных данных занимает 18 знаков с + или 19 знаков с -
+        public void ShouldBeValid_When_BigIntNumber()
         {
-            Assert.IsTrue(new NumberValidator(50, 0, true).IsValidNumber("11111111111111111111111111111111111111111111111111"));
+            Assert.IsTrue(new NumberValidator(50, 0, true).IsValidNumber(new String('1',50)));
         }
 
         [Test]
+        // соответсвует самому большому double в записи цифрами
         public void ShouldBeValid_When_BigScale()
         {
-            Assert.IsTrue(new NumberValidator(51, 50, true).IsValidNumber("0,11111111111111111111111111111111111111111111111111"));
+	        Assert.IsTrue(new NumberValidator(325, 320, true).IsValidNumber(String.Format("0,{0}", new String('1', 320))));
         }
     }
 
