@@ -76,8 +76,6 @@ namespace HomeExercises
 		[TestCase(3, 2, true, "+000", TestName = "OnlyPositive_IsValidNumber_PlusInteger_ExceededPrecision_IsNotValid")]
 
 		[TestCase(17, 2, false, "0.000", TestName = "IsValidNumber_ExceededScale_IsNotValid")]
-		[TestCase(17, 2, false, "-0.000", TestName = "IsValidNumber_Negative_ExceededScale_IsNotValid")]
-		[TestCase(17, 2, false, "+0.000", TestName = "IsValidNumber_Plus_ExceededScale_IsNotValid")]
 
 		[TestCase(17, 0, true, "0.", TestName = "ZeroScale_IsValidNumber_IntegerWithPoint_IsNotValid")]
 		[TestCase(17, 0, false, "0.", TestName = "OnlyPositiveZeroScale_IsValidNumber_IntegerWithPoint_IsNotValid")]
