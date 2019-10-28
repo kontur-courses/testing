@@ -39,11 +39,26 @@ namespace HomeExercises
 			Assert.IsFalse(numberValidator2.IsValidNumber("00000"));
         }
 
-		[TestCase(17, 2, true, "0", TestName = "IsValidNumber_Integer_Valid")]
-		[TestCase(17, 2, false, "0", TestName = "OnlyPositive_IsValidNumber_Integer_Valid")]
-		[TestCase(17, 2, false, "-0", TestName = "IsValidNumber_NegativeInteger_Valid")]
-		[TestCase(17, 2, true, "+0", TestName = "OnlyPositive_IsValidNumber_PlusInteger_Valid")]
-		[TestCase(17, 2, false, "+0", TestName = "IsValidNumber_PlusInteger_Valid")]
+		[TestCase("0", TestName = "IsValidNumber_Integer_True")]
+		[TestCase("-0", true, TestName = "IsValidNumber_NegativeInteger_True")]
+		[TestCase("+0", TestName = "IsValidNumber_IntegerWithPlus_True")]
+		public void IsValidNumber_ValidIntegers_True(string value, bool negative = false)
+		{
+			NumberValidator numberValidator = new NumberValidator(17, 2, false);
+			NumberValidator zeroScaleNumberValidator = new NumberValidator(17, 0, false);
+
+            Assert.IsTrue(numberValidator.IsValidNumber(value), "should return true with positive scale");
+			Assert.IsTrue(zeroScaleNumberValidator.IsValidNumber(value), "should return true with zero scale");
+
+			if (!negative)
+			{
+				NumberValidator onlyPositiveNumberValidator = new NumberValidator(17, 2, true);
+	            NumberValidator zeroScaleOnlyPositiveNumberValidator = new NumberValidator(17, 0, true);
+	            
+	            Assert.IsTrue(onlyPositiveNumberValidator.IsValidNumber(value), "should return true when onlyPositive with positive scale");
+	            Assert.IsTrue(zeroScaleOnlyPositiveNumberValidator.IsValidNumber(value), "should return true when onlyPositive with zero scale");
+			}
+		}
 
 		[TestCase(17, 2, true, "0.00", TestName = "IsValidNumber_Fraction_Valid")]
 		[TestCase(17, 2, true, "0,00", TestName = "IsValidNumber_CommaFraction_Valid")]
@@ -51,12 +66,6 @@ namespace HomeExercises
 		[TestCase(17, 2, false, "-0.00", TestName = "IsValidNumber_NegativeFraction_Valid")]
 		[TestCase(17, 2, true, "+0.00", TestName = "OnlyPositive_IsValidNumber_PlusFraction_Valid")]
 		[TestCase(17, 2, false, "+0.00", TestName = "IsValidNumber_PlusFraction_Valid")]
-
-		[TestCase(17, 0, true, "0", TestName = "ZeroScale_IsValidNumber_Integer_Valid")]
-		[TestCase(17, 0, false, "0", TestName = "OnlyPositiveZeroScale_IsValidNumber_Integer_Valid")]
-		[TestCase(17, 0, false, "-0", TestName = "ZeroScale_IsValidNumber_NegativeInteger_Valid")]
-		[TestCase(17, 0, true, "+0", TestName = "OnlyPositiveZeroScale_IsValidNumber_PlusInteger_Valid")]
-		[TestCase(17, 0, false, "+0", TestName = "ZeroScale_IsValidNumber_PlusInteger_Valid")]
 		public void IsValidNumber_Valid(int precision, int scale, bool onlyPositive, string value)
 		{
 			Assert.IsTrue(new NumberValidator(precision, scale, onlyPositive).IsValidNumber(value));
