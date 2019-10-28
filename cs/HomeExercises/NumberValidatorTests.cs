@@ -81,6 +81,8 @@ namespace HomeExercises
 
 		[TestCase(17, 0, true, "0.", TestName = "ZeroScale_IsValidNumber_IntegerWithPoint_IsNotValid")]
 		[TestCase(17, 0, false, "0.", TestName = "OnlyPositiveZeroScale_IsValidNumber_IntegerWithPoint_IsNotValid")]
+		[TestCase(17, 0, true, "0.0", TestName = "ZeroScale_IsValidNumber_Fraction_IsNotValid")]
+		[TestCase(17, 0, false, "0.0", TestName = "OnlyPositiveZeroScale_IsValidNumber_Fraction_IsNotValid")]
 		public void IsValidNumber_IsNotValid(int precision, int scale, bool onlyPositive, string value)
 		{
 			Assert.IsFalse(new NumberValidator(precision, scale, onlyPositive).IsValidNumber(value));
