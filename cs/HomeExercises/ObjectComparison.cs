@@ -15,9 +15,10 @@ namespace HomeExercises
 			var expectedTsar = new Person("Ivan IV The Terrible", 54, 170, 70,
 				new Person("Vasili III of Russia", 28, 170, 60, null));
 
+			var nameOfIdField = nameof(expectedTsar.Id);
+
 			TsarRegistry.GetCurrentTsar().Should().BeEquivalentTo(expectedTsar, options => options
-			.Excluding(Tsar => Tsar.SelectedMemberPath.Equals("Id"))
-			.Excluding(Tsar => Tsar.SelectedMemberPath.EndsWith("Parent.Id")));
+			.Excluding(Tsar => Tsar.SelectedMemberInfo.Name == nameOfIdField));
 		}
 
 		[Test]

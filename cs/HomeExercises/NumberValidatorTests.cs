@@ -16,10 +16,50 @@ namespace HomeExercises
 			numberValidator = new NumberValidator(4, 2, true);
 		}
 
-		[Test]
-		public void ThrowException_WhenPrecisionNegativeNumber()
+		[Category("InvalidInput")]
+		[TestCase("12.345", TestName = "False_WhenNumberLongerThenPrecision")]
+		[TestCase("1.234",  TestName = "False_WhenFractionalPartNumberLongerThanScale")]
+		[TestCase("a.b",    TestName = "False_WhenNumberHaveNotDigitOrSignChar")]
+		[TestCase(".1",     TestName = "False_WhenStartWithDot")]
+		[TestCase("1.", TestName = "False_WhenEndWithDot")]
+		[TestCase("-1.2", TestName = "False_WhenNumberValidatorOnlyForPositiveNumberButTakeNegative")]
+		[TestCase("--1.2", TestName = "False_WhenHaveTwoSign")]
+		[TestCase("-", TestName = "False_WhenHaveOnlySign")]
+		[TestCase(null, TestName = "False_WhenStringNull")]
+		[TestCase("", TestName = "False_WhenStringEmpty")]
+		[TestCase("1..2", TestName = "False_WhenHaveOneMoreDot")]
+		public void False_WhenValue(string value)
 		{
-			Action init = (() => new NumberValidator(-1, 2, false));
+			numberValidator.IsValidNumber(value).Should().Be(false);
+		}
+
+		[Category("ValidNumber")]
+		[TestCase("1", TestName = "True_WhenNumberHaveCorrectFormatWithoutFractalPart")]
+		[TestCase("1.23", TestName = "True_WhenNumberHaveCorrectFormatWithFractalPart")]
+		[TestCase("+1.23", TestName = "True_WhenNumberWithSign")]
+		[TestCase("+1,23", TestName = "True_WhenComma")]
+		public void True_WhenValue(string value)
+		{
+			numberValidator.IsValidNumber(value).Should().Be(true);
+		}
+
+		[Test]
+		[Category("ValidNumber")]
+		public void True_WhenNumberValidatorNotOnlyForPositiveNumberButTakeNegative()
+		{
+			var numberValidatorWithNegativeNumber = new NumberValidator(4, 2, false);
+			numberValidatorWithNegativeNumber.IsValidNumber("-1.23").Should().Be(true);
+		}
+
+		[Category("InvalidInitialization")]
+		[TestCase(2, 3, TestName = "ThrowException_WhenScaleMorePrecision")]
+		[TestCase(-1, TestName = "ThrowException_WhenScalePrecisionLessZero")]
+		[TestCase(0, TestName = "ThrowException_PrecisionEqualZero")]
+		[TestCase(3, -1, TestName = "ThrowException_ScaleLessZero")]
+		[TestCase(3, 3, TestName = "ThrowException_ScaleEqualPrecision")]
+		public void ThrowException_WhenSomething(int precision, int scale = 0, bool onlyPositive = false)
+		{
+			Action init = (() => new NumberValidator(precision, scale, onlyPositive));
 			init.Should().Throw<ArgumentException>();
 		}
 
@@ -28,80 +68,6 @@ namespace HomeExercises
 		{
 			Action init = (() => new NumberValidator(1, 0, false));
 			init.Should().NotThrow();
-		}
-
-		[Test]
-		public void ThrowException_WhenScaleMorePrecision()
-		{
-			Action init = (() => new NumberValidator(2, 3, false));
-			init.Should().Throw<ArgumentException>();
-		}
-
-		[Test]
-		public void False_WhenNumberLongerThenPrecision()
-		{
-			numberValidator.IsValidNumber("12.345").Should().Be(false);
-		}
-
-		[Test]
-		public void False_WhenFractionalPartNumberLongerThanScale()
-		{
-			numberValidator.IsValidNumber("1.234").Should().Be(false);
-		}
-
-		[Test]
-		public void False_WhenNumberValidatorOnlyForPositiveNumberButTakeNegative()
-		{
-			numberValidator.IsValidNumber("-1.2").Should().Be(false);
-		}
-
-		[Test]
-		public void False_WhenNumberHaveNotDigitOrSignChar()
-		{
-			numberValidator.IsValidNumber("a.b").Should().Be(false);
-		}
-
-		[Test]
-		public void False_WhenIncorrectFormatNumber()
-		{
-			numberValidator.IsValidNumber(".1").Should().Be(false);
-		}
-
-		[Test]
-		public void True_WhenNumberHaveCorrectFormatWithoutFractalPart()
-		{
-			numberValidator.IsValidNumber("1").Should().Be(true);
-		}
-
-		[Test]
-		public void True_WhenNumberHaveCorrectFormatWithFractalPart()
-		{
-			numberValidator.IsValidNumber("1.23").Should().Be(true);
-		}
-
-		[Test]
-		public void True_WhenNumberWithSign()
-		{
-			numberValidator.IsValidNumber("+1.23").Should().Be(true);
-		}
-
-		[Test]
-		public void True_WhenNumberValidatorNotOnlyForPositiveNumberButTakeNegative()
-		{
-			var numberValidatorWithNegativeNumber = new NumberValidator(4, 2, false);
-			numberValidatorWithNegativeNumber.IsValidNumber("-1.23").Should().Be(true);
-		}
-
-		[Test]
-		public void False_WhenStringNull()
-		{
-			numberValidator.IsValidNumber(null).Should().Be(false);
-		}
-
-		[Test]
-		public void False_WhenStringEmpty()
-		{
-			numberValidator.IsValidNumber(string.Empty).Should().Be(false);
 		}
 	}
 
