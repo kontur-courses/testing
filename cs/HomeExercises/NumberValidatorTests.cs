@@ -98,22 +98,21 @@ namespace HomeExercises
 			Assert.IsFalse(new NumberValidator(17, 0, true).IsValidNumber(value));
         }
 
-		[TestCase(17, 2, true, "-0", TestName = "OnlyPositive_IsValidNumber_NegativeInteger_IsNotValid")]
+
+		[TestCase("-0.00", TestName = "IsValidNumber_NegativeFractionExceededPrecision_False")]
+		[TestCase("+0.00", TestName = "IsValidNumber_FractionWithPlusExceededPrecision_False")]
+		[TestCase("00.00", TestName = "IsValidNumber_FractionExceededPrecision_False")]
+		[TestCase("0000", TestName = "IsValidNumber_IntegerExceededPrecision_False")]
+		[TestCase("-000", TestName = "IsValidNumber_NegativeIntegerExceededPrecision_False")]
+		[TestCase("+000", TestName = "IsValidNumber_IntegerWithPlusExceededPrecision_False")]
+		public void IsValidNumber_NumbersExceededPrecision_False(string value)
+		{
+			Assert.IsFalse(new NumberValidator(3, 2, false).IsValidNumber(value));
+			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber(value));
+		}
+
+        [TestCase(17, 2, true, "-0", TestName = "OnlyPositive_IsValidNumber_NegativeInteger_IsNotValid")]
 		[TestCase(17, 2, true, "-0.00", TestName = "OnlyPositive_IsValidNumber_NegativeFraction_IsNotValid")]
-
-		[TestCase(3, 2, false, "-0.00", TestName = "IsValidNumber_NegativeFraction_ExceededPrecision_IsNotValid")]
-		[TestCase(3, 2, false, "+0.00", TestName = "IsValidNumber_PlusFraction_ExceededPrecision_IsNotValid")]
-		[TestCase(3, 2, false, "00.00", TestName = "IsValidNumber_Fraction_ExceededPrecision_IsNotValid")]
-		[TestCase(3, 2, false, "0000", TestName = "IsValidNumber_Integer_ExceededPrecision_IsNotValid")]
-		[TestCase(3, 2, false, "-000", TestName = "IsValidNumber_NegativeInteger_ExceededPrecision_IsNotValid")]
-		[TestCase(3, 2, false, "+000", TestName = "IsValidNumber_PlusInteger_ExceededPrecision_IsNotValid")]
-
-		[TestCase(3, 2, true, "-0.00", TestName = "OnlyPositive_IsValidNumber_NegativeFraction_ExceededPrecision_IsNotValid")]
-		[TestCase(3, 2, true, "+0.00", TestName = "OnlyPositive_IsValidNumber_PlusFraction_ExceededPrecision_IsNotValid")]
-		[TestCase(3, 2, true, "00.00", TestName = "OnlyPositive_IsValidNumber_Fraction_ExceededPrecision_IsNotValid")]
-		[TestCase(3, 2, true, "0000", TestName = "OnlyPositive_IsValidNumber_Integer_ExceededPrecision_IsNotValid")]
-		[TestCase(3, 2, true, "-000", TestName = "OnlyPositive_IsValidNumber_NegativeInteger_ExceededPrecision_IsNotValid")]
-		[TestCase(3, 2, true, "+000", TestName = "OnlyPositive_IsValidNumber_PlusInteger_ExceededPrecision_IsNotValid")]
 
 		[TestCase(17, 2, false, "0.000", TestName = "IsValidNumber_ExceededScale_IsNotValid")]
 
