@@ -3,8 +3,8 @@ using NUnit.Framework;
 
 namespace HomeExercises
 {
-    [TestFixture]
-    public class ObjectComparison
+	[TestFixture]
+	public class ObjectComparison
 	{
 		[Test]
 		[Description("Проверка текущего царя")]
@@ -16,10 +16,10 @@ namespace HomeExercises
 				new Person("Vasili III of Russia", 28, 170, 60, null));
 
 			actualTsar.ShouldBeEquivalentTo(expectedTsar, options => options.Excluding(
-             subjectInfo => subjectInfo.SelectedMemberInfo.Name == nameof(Person.Id)));
+				subjectInfo => subjectInfo.SelectedMemberInfo.Name == nameof(Person.Id)));
         }
 
-        [Test]
+		[Test]
 		[Description("Альтернативное решение. Какие у него недостатки?")]
 		public void CheckCurrentTsar_WithCustomEquality()
 		{
