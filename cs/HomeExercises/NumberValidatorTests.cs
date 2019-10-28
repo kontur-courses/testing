@@ -26,6 +26,19 @@ namespace HomeExercises
 			Assert.Throws<ArgumentException>(() => new NumberValidator(precision, scale, false));
 		}
 
+		[Test]
+		public void IsValidNumber_NotUsesStaticFields()
+        {
+			NumberValidator numberValidator1 = new NumberValidator(5, 2, false);
+			NumberValidator numberValidator2 = new NumberValidator(3, 0, true);
+			Assert.IsTrue(numberValidator1.IsValidNumber("-0"));
+			Assert.IsTrue(numberValidator1.IsValidNumber("0.00"));
+			Assert.IsTrue(numberValidator1.IsValidNumber("00000"));
+			Assert.IsFalse(numberValidator2.IsValidNumber("-0"));
+			Assert.IsFalse(numberValidator2.IsValidNumber("0.00"));
+			Assert.IsFalse(numberValidator2.IsValidNumber("00000"));
+        }
+
 		[TestCase(17, 2, true, "0", TestName = "IsValidNumber_Integer_Valid")]
 		[TestCase(17, 2, false, "0", TestName = "OnlyPositive_IsValidNumber_Integer_Valid")]
 		[TestCase(17, 2, false, "-0", TestName = "IsValidNumber_NegativeInteger_Valid")]
