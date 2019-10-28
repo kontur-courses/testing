@@ -7,8 +7,7 @@ namespace HomeExercises
 	{
 		[Test]
 		[Description("Проверка текущего царя")]
-		[Category("ToRefactor")]
-		public void CheckCurrentTsar()
+		public void GetCurrentTsar_ReturnsExpectedTsar()
 		{
 			var actualTsar = TsarRegistry.GetCurrentTsar();
 
@@ -16,15 +15,8 @@ namespace HomeExercises
 				new Person("Vasili III of Russia", 28, 170, 60, null));
 
 			// Перепишите код на использование Fluent Assertions.
-			Assert.AreEqual(actualTsar.Name, expectedTsar.Name);
-			Assert.AreEqual(actualTsar.Age, expectedTsar.Age);
-			Assert.AreEqual(actualTsar.Height, expectedTsar.Height);
-			Assert.AreEqual(actualTsar.Weight, expectedTsar.Weight);
-
-			Assert.AreEqual(expectedTsar.Parent.Name, actualTsar.Parent.Name);
-			Assert.AreEqual(expectedTsar.Parent.Age, actualTsar.Parent.Age);
-			Assert.AreEqual(expectedTsar.Parent.Height, actualTsar.Parent.Height);
-			Assert.AreEqual(expectedTsar.Parent.Parent, actualTsar.Parent.Parent);
+			actualTsar.ShouldBeEquivalentTo(expectedTsar,
+				options => options.Excluding(info => info.SelectedMemberInfo.Name == "Id"));
 		}
 
 		[Test]
@@ -36,6 +28,9 @@ namespace HomeExercises
 				new Person("Vasili III of Russia", 28, 170, 60, null));
 
 			// Какие недостатки у такого подхода? 
+			// При добавлении полей/свойств в класс Person, можно забыть их добавить в метод AreEqual.
+			// Когда тест валится, то он не показывает достаточно информации о том, что пошло не так.
+			// При большом количестве атрибутов у класса Person, метод AreEqual будет огромным.
 			Assert.True(AreEqual(actualTsar, expectedTsar));
 		}
 
