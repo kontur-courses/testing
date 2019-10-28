@@ -7,21 +7,21 @@ namespace HomeExercises
 {
 	public class NumberValidatorTests
 	{
-		[TestCase(1, 0, true, TestName = "DoesNotThrow_IfPositivePrecisionZeroScaleOnlyPositive")]
-		[TestCase(1, 0, false, TestName = "DoesNotThrow_IfPositivePrecisionZeroScale")]
-		[TestCase(2, 1, true, TestName = "DoesNotThrow_IfPositivePrecisionPositiveScaleOnlyPositive")]
-		[TestCase(2, 1, false, TestName = "DoesNotThrow_IfPositivePrecisionPositiveScale")]
-		public void DoesNotThrow_WithCorrectArguments(int precision, int scale, bool onlyPositive)
+		[TestCase(1, 0, true, TestName = "Constructor_PositivePrecisionZeroScaleOnlyPositive_Succeeds")]
+		[TestCase(1, 0, false, TestName = "Constructor_PositivePrecisionZeroScale_Succeeds")]
+		[TestCase(2, 1, true, TestName = "Constructor_PositivePrecisionPositiveScaleOnlyPositive_Succeeds")]
+		[TestCase(2, 1, false, TestName = "Constructor_PositivePrecisionPositiveScale_Succeeds")]
+		public void Constructor_CorrectArguments_Succeeds(int precision, int scale, bool onlyPositive)
 		{
 			Assert.DoesNotThrow(() => new NumberValidator(precision, scale, onlyPositive));
 		}
 
-		[TestCase(-1, 2, TestName = "Throws_IfNegativePrecision")]
-		[TestCase(0, 2, TestName = "Throws_IfZeroPrecision")]
-		[TestCase(0, -1, TestName = "Throws_IfNegativeScale")]
-		[TestCase(1, 1, TestName = "Throws_IfScaleAndPrecisionAreEqual")]
-		[TestCase(1, 2, TestName = "Throws_IfScaleGreaterThanPrecision")]
-		public void ThrowsArgumentException_WithIncorrectArguments(int precision, int scale)
+		[TestCase(-1, 2, TestName = "Constructor_NegativePrecision_ExceptionThrown")]
+		[TestCase(0, 2, TestName = "Constructor_ZeroPrecision_ExceptionThrown")]
+		[TestCase(0, -1, TestName = "Constructor_NegativeScale_ExceptionThrown")]
+		[TestCase(1, 1, TestName = "Constructor_ScaleEqualToPrecision_ExceptionThrown")]
+		[TestCase(1, 2, TestName = "Constructor_ScaleGreaterThanPrecision_ExceptionThrown")]
+		public void Constructor_IncorrectArguments_ExceptionThrown(int precision, int scale)
 		{
 			Assert.Throws<ArgumentException>(() => new NumberValidator(precision, scale, true));
 			Assert.Throws<ArgumentException>(() => new NumberValidator(precision, scale, false));
