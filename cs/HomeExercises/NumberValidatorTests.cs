@@ -7,26 +7,101 @@ namespace HomeExercises
 {
 	public class NumberValidatorTests
 	{
-		[Test]
-		public void Test()
-		{
-			Assert.Throws<ArgumentException>(() => new NumberValidator(-1, 2, true));
-			Assert.DoesNotThrow(() => new NumberValidator(1, 0, true));
-			Assert.Throws<ArgumentException>(() => new NumberValidator(-1, 2, false));
-			Assert.DoesNotThrow(() => new NumberValidator(1, 0, true));
 
-			Assert.IsTrue(new NumberValidator(17, 2, true).IsValidNumber("0.0"));
-			Assert.IsTrue(new NumberValidator(17, 2, true).IsValidNumber("0"));
-			Assert.IsTrue(new NumberValidator(17, 2, true).IsValidNumber("0.0"));
-			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("00.00"));
-			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("-0.00"));
-			Assert.IsTrue(new NumberValidator(17, 2, true).IsValidNumber("0.0"));
-			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("+0.00"));
-			Assert.IsTrue(new NumberValidator(4, 2, true).IsValidNumber("+1.23"));
-			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("+1.23"));
-			Assert.IsFalse(new NumberValidator(17, 2, true).IsValidNumber("0.000"));
-			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("-1.23"));
-			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("a.sd"));
+		private NumberValidator numberValidator;
+
+		[SetUp]
+		public void SetUp()
+		{
+			numberValidator = new NumberValidator(4, 2, true);
+		}
+
+		[Test]
+		public void ThrowException_WhenPrecisionNegativeNumber()
+		{
+			Action init = (() => new NumberValidator(-1, 2, false));
+			init.Should().Throw<ArgumentException>();
+		}
+
+		[Test]
+		public void DoesNotThrowException_WhenScaleZero()
+		{
+			Action init = (() => new NumberValidator(1, 0, false));
+			init.Should().NotThrow();
+		}
+
+		[Test]
+		public void ThrowException_WhenScaleMorePrecision()
+		{
+			Action init = (() => new NumberValidator(2, 3, false));
+			init.Should().Throw<ArgumentException>();
+		}
+
+		[Test]
+		public void False_WhenNumberLongerThenPrecision()
+		{
+			numberValidator.IsValidNumber("12.345").Should().Be(false);
+		}
+
+		[Test]
+		public void False_WhenFractionalPartNumberLongerThanScale()
+		{
+			numberValidator.IsValidNumber("1.234").Should().Be(false);
+		}
+
+		[Test]
+		public void False_WhenNumberValidatorOnlyForPositiveNumberButTakeNegative()
+		{
+			numberValidator.IsValidNumber("-1.2").Should().Be(false);
+		}
+
+		[Test]
+		public void False_WhenNumberHaveNotDigitOrSignChar()
+		{
+			numberValidator.IsValidNumber("a.b").Should().Be(false);
+		}
+
+		[Test]
+		public void False_WhenIncorrectFormatNumber()
+		{
+			numberValidator.IsValidNumber(".1").Should().Be(false);
+		}
+
+		[Test]
+		public void True_WhenNumberHaveCorrectFormatWithoutFractalPart()
+		{
+			numberValidator.IsValidNumber("1").Should().Be(true);
+		}
+
+		[Test]
+		public void True_WhenNumberHaveCorrectFormatWithFractalPart()
+		{
+			numberValidator.IsValidNumber("1.23").Should().Be(true);
+		}
+
+		[Test]
+		public void True_WhenNumberWithSign()
+		{
+			numberValidator.IsValidNumber("+1.23").Should().Be(true);
+		}
+
+		[Test]
+		public void True_WhenNumberValidatorNotOnlyForPositiveNumberButTakeNegative()
+		{
+			var numberValidatorWithNegativeNumber = new NumberValidator(4, 2, false);
+			numberValidatorWithNegativeNumber.IsValidNumber("-1.23").Should().Be(true);
+		}
+
+		[Test]
+		public void False_WhenStringNull()
+		{
+			numberValidator.IsValidNumber(null).Should().Be(false);
+		}
+
+		[Test]
+		public void False_WhenStringEmpty()
+		{
+			numberValidator.IsValidNumber(string.Empty).Should().Be(false);
 		}
 	}
 
