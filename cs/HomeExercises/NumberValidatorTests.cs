@@ -84,10 +84,19 @@ namespace HomeExercises
 		{
 			Assert.IsFalse(new NumberValidator(17, 2, false).IsValidNumber(value));
 			Assert.IsFalse(new NumberValidator(17, 2, true).IsValidNumber(value));
-		}
+			Assert.IsFalse(new NumberValidator(17, 0, false).IsValidNumber(value));
+			Assert.IsFalse(new NumberValidator(17, 0, true).IsValidNumber(value));
+        }
 
-		[TestCase(17, 2, false, "a.bc", TestName = "IsValidNumber_NonNumber_IsNotValid")]
-		[TestCase(17, 2, true, "a.bc", TestName = "OnlyPositive_IsValidNumber_NonNumber_IsNotValid")]
+		[TestCase("abcdefg", TestName = "IsValidNumber_NonNumberString_False")]
+		[TestCase("a.bc", TestName = "IsValidNumber_NonNumberStringWithPoint_False")]
+		public void IsValidNumber_NonNumberStrings_False(string value)
+		{
+			Assert.IsFalse(new NumberValidator(17, 2, false).IsValidNumber(value));
+			Assert.IsFalse(new NumberValidator(17, 2, true).IsValidNumber(value));
+			Assert.IsFalse(new NumberValidator(17, 0, false).IsValidNumber(value));
+			Assert.IsFalse(new NumberValidator(17, 0, true).IsValidNumber(value));
+        }
 
 		[TestCase(17, 2, true, "-0", TestName = "OnlyPositive_IsValidNumber_NegativeInteger_IsNotValid")]
 		[TestCase(17, 2, true, "-0.00", TestName = "OnlyPositive_IsValidNumber_NegativeFraction_IsNotValid")]
