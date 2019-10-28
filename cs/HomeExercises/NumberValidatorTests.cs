@@ -1,32 +1,45 @@
 ﻿using System;
 using System.Text.RegularExpressions;
 using FluentAssertions;
+using FluentAssertions.Execution;
 using NUnit.Framework;
 
 namespace HomeExercises
 {
+	[TestFixture]
 	public class NumberValidatorTests
 	{
 		[Test]
-		public void Test()
+		public void TestExceptions()
 		{
 			Assert.Throws<ArgumentException>(() => new NumberValidator(-1, 2, true));
 			Assert.DoesNotThrow(() => new NumberValidator(1, 0, true));
 			Assert.Throws<ArgumentException>(() => new NumberValidator(-1, 2, false));
 			Assert.DoesNotThrow(() => new NumberValidator(1, 0, true));
+		}
 
-			Assert.IsTrue(new NumberValidator(17, 2, true).IsValidNumber("0.0"));
-			Assert.IsTrue(new NumberValidator(17, 2, true).IsValidNumber("0"));
-			Assert.IsTrue(new NumberValidator(17, 2, true).IsValidNumber("0.0"));
-			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("00.00"));
-			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("-0.00"));
-			Assert.IsTrue(new NumberValidator(17, 2, true).IsValidNumber("0.0"));
-			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("+0.00"));
-			Assert.IsTrue(new NumberValidator(4, 2, true).IsValidNumber("+1.23"));
-			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("+1.23"));
-			Assert.IsFalse(new NumberValidator(17, 2, true).IsValidNumber("0.000"));
-			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("-1.23"));
-			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("a.sd"));
+		[Test]
+		[TestCase(17, 2, true, "0.0", true)]
+		[TestCase(17, 2, true, "0", true)]
+		[TestCase(17, 2, true, "00.00", true)]
+		[TestCase(4, 2, true, "+1.23", true)]
+		[TestCase(3, 2, true, "+1.23", false)]
+		[TestCase(3, 2, true, "-1.23", false)]
+		[TestCase(3, 2, true, "00.00", false)]
+		[TestCase(3, 2, true, "a.sd", false)]
+		[TestCase(3, 2, true, "-0.00", false)]
+		[TestCase(3, 2, true, "+0.00", false)]
+		[TestCase(3, 2, true, " 1.23", false)]
+		[TestCase(3, 2, true, "1. 23", false)]
+		[TestCase(3, 2, true, "1.23 ", false)]
+		[TestCase(3, 2, true, null, false)]
+		[TestCase(3, 2, true, " ", false)]
+		[TestCase(3, 1, true, "1.24", false)]
+		[TestCase(2, 2, true, "1.24", false)]
+		[TestCase(4, 2, true, "-1.24", false)]
+		public void TestNumbers(int precision, int scale, bool onlyPositive, string numString, bool expected)
+		{
+			new NumberValidator(precision, scale, onlyPositive).IsValidNumber(numString).Should().Be(expected);
 		}
 	}
 
@@ -44,8 +57,8 @@ namespace HomeExercises
 			this.onlyPositive = onlyPositive;
 			if (precision <= 0)
 				throw new ArgumentException("precision must be a positive number");
-			if (scale < 0 || scale >= precision)
-				throw new ArgumentException("precision must be a non-negative number less or equal than precision");
+			if (scale < 0 || scale > precision)
+				throw new ArgumentException("scale must be a non-negative number less or equal than precision");
 			numberRegex = new Regex(@"^([+-]?)(\d+)([.,](\d+))?$", RegexOptions.IgnoreCase);
 		}
 

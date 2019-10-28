@@ -16,15 +16,21 @@ namespace HomeExercises
 				new Person("Vasili III of Russia", 28, 170, 60, null));
 
 			// Перепишите код на использование Fluent Assertions.
-			Assert.AreEqual(actualTsar.Name, expectedTsar.Name);
-			Assert.AreEqual(actualTsar.Age, expectedTsar.Age);
-			Assert.AreEqual(actualTsar.Height, expectedTsar.Height);
-			Assert.AreEqual(actualTsar.Weight, expectedTsar.Weight);
+			CheckPersonsAreEqual(actualTsar, expectedTsar);
+		}
 
-			Assert.AreEqual(expectedTsar.Parent.Name, actualTsar.Parent.Name);
-			Assert.AreEqual(expectedTsar.Parent.Age, actualTsar.Parent.Age);
-			Assert.AreEqual(expectedTsar.Parent.Height, actualTsar.Parent.Height);
-			Assert.AreEqual(expectedTsar.Parent.Parent, actualTsar.Parent.Parent);
+		public void CheckPersonsAreEqual(Person actual, Person expected)
+		{
+			while (true)
+			{
+				if (actual is null && expected is null) return;
+				expected.Name.Should().Be(actual.Name, "Names should be equal");
+				expected.Age.Should().Be(actual.Age, "Ages should be equal");
+				expected.Height.Should().Be(actual.Height, "Heights should be equal");
+				expected.Weight.Should().Be(actual.Weight, "Weights should be equal");
+				actual = actual.Parent;
+				expected = expected.Parent;
+			}
 		}
 
 		[Test]
@@ -36,6 +42,9 @@ namespace HomeExercises
 				new Person("Vasili III of Russia", 28, 170, 60, null));
 
 			// Какие недостатки у такого подхода? 
+			
+			// Не понятно, какие именно разлчия у данных объектов. В случае "падения" теста будем знать
+			// только то, что у объектов не совпадают какие-то поля
 			Assert.True(AreEqual(actualTsar, expectedTsar));
 		}
 
