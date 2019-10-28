@@ -5,30 +5,138 @@ using NUnit.Framework;
 
 namespace HomeExercises
 {
-	public class NumberValidatorTests
-	{
-		[Test]
-		public void Test()
-		{
-			Assert.Throws<ArgumentException>(() => new NumberValidator(-1, 2, true));
-			Assert.DoesNotThrow(() => new NumberValidator(1, 0, true));
-			Assert.Throws<ArgumentException>(() => new NumberValidator(-1, 2, false));
-			Assert.DoesNotThrow(() => new NumberValidator(1, 0, true));
+    [TestFixture]
+    public class NumberValidatorTests
+    {
+        [Test]
+        [Category("Исключения")]
+        public void ArgumentException_If_PrecisionIsNegative()
+        {
+            Action action = () => new NumberValidator(-1, 2);
+            action.Should().Throw<ArgumentException>();
+        }
 
-			Assert.IsTrue(new NumberValidator(17, 2, true).IsValidNumber("0.0"));
-			Assert.IsTrue(new NumberValidator(17, 2, true).IsValidNumber("0"));
-			Assert.IsTrue(new NumberValidator(17, 2, true).IsValidNumber("0.0"));
-			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("00.00"));
-			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("-0.00"));
-			Assert.IsTrue(new NumberValidator(17, 2, true).IsValidNumber("0.0"));
-			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("+0.00"));
-			Assert.IsTrue(new NumberValidator(4, 2, true).IsValidNumber("+1.23"));
-			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("+1.23"));
-			Assert.IsFalse(new NumberValidator(17, 2, true).IsValidNumber("0.000"));
-			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("-1.23"));
-			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("a.sd"));
-		}
-	}
+        [Test]
+        [Category("Исключения")]
+        public void ArgumentException_If_ScaleIsNegative()
+        {
+            Action action = () => new NumberValidator(1, -2);
+            action.Should().Throw<ArgumentException>();
+        }
+
+        [Test]
+        [Category("Исключения")]
+        public void ArgumentException_If_PrecisionLessThanScale()
+        {
+            Action action = () => new NumberValidator(1, 2);
+            action.Should().Throw<ArgumentException>();
+        }
+
+        [Category("Не коректные строки")]
+        [TestCase("", ExpectedResult = false, TestName = "EmptyString")]
+        [TestCase(null, ExpectedResult = false, TestName = "InputNull")]
+        [TestCase("aaa", ExpectedResult = false, TestName = "StringWithLetters")]
+        [TestCase("a.aa", ExpectedResult = false, TestName = "StringWithLettersAndDot")]
+        [TestCase("a,aa", ExpectedResult = false, TestName = "StringWithLettersAndComma")]
+        [TestCase("!@#$%^&*()\"№;:?\\/}{[]", ExpectedResult = false, TestName = "DiffrentSymbols")]
+        [TestCase("   ", ExpectedResult = false, TestName = "WhiteSpaceString")]
+        [TestCase("123,abc", ExpectedResult = false, TestName = "NumbersAndLettersInOneString")]
+        public bool IncorrrectStrings(string input)
+        {
+            var numberValidator = new NumberValidator(30);
+            return numberValidator.IsValidNumber(input);
+        }
+
+        [Test]
+        [Category("Не коректные строки")]
+        public void FractionalPartMoreThanScale()
+        {
+            var numberValidator = new NumberValidator(4, 2);
+            numberValidator.IsValidNumber("0.000").Should().BeFalse();
+        }
+
+        [Category("Коректные строки")]
+        [TestCase("-12.00", ExpectedResult = true, TestName = "StringWithMinusSymbol")]
+        [TestCase("+12.00", ExpectedResult = true, TestName = "StringWithPlusSymbol")]
+        [TestCase("12.00", ExpectedResult = true, TestName = "DotIsSeparator")]
+        [TestCase("12,00", ExpectedResult = true, TestName = "CommaIsSeparator")]
+        [TestCase("12", ExpectedResult = true, TestName = "IntegerNumber")]
+        public bool CorrrectStrings(string input)
+        {
+            var numberValidator = new NumberValidator(6, 3);
+            return numberValidator.IsValidNumber(input);
+        }
+
+        [Test]
+        [Category("Коректные строки")]
+        public void FractionalPartLessThanScale()
+        {
+            var numberValidator = new NumberValidator(4, 2);
+            numberValidator.IsValidNumber("0.000").Should().BeFalse();
+        }
+
+        [Test]
+        [Category("Граничные случаи")]
+        public void BigNumber()
+        {
+            var stringBigNumber = long.MaxValue.ToString();
+            var numberValidator = new NumberValidator(stringBigNumber.Length);
+            numberValidator.IsValidNumber(stringBigNumber).Should().BeTrue();
+        }
+
+        [Test]
+        [Category("Граничные случаи")]
+        public void PlusSymbolsIncludeInPrecisionValue()
+        {
+            var numberValidator = new NumberValidator(4, 2);
+            numberValidator.IsValidNumber("+1.23").Should().BeTrue();
+            numberValidator.IsValidNumber("+12.23").Should().BeFalse();
+        }
+
+        [Test]
+        [Category("Граничные случаи")]
+        public void MinusSymbolsIncludeInPrecisionValue()
+        {
+            var numberValidator = new NumberValidator(4, 2);
+            numberValidator.IsValidNumber("-1.23").Should().BeTrue();
+            numberValidator.IsValidNumber("-12.23").Should().BeFalse();
+        }
+
+        [Test]
+        [Category("Граничные случаи")]
+        public void NumberLengthEqualPrecision()
+        {
+            var numberValidator = new NumberValidator(4);
+            numberValidator.IsValidNumber("1234").Should().BeTrue();
+        }
+
+        [Test]
+        [Category("Конструктор NumberValidator")]
+        public void ScaleDefaultValueIsZero()
+        {
+            var numberValidator = new NumberValidator(5);
+            numberValidator.IsValidNumber("1").Should().BeTrue();
+            numberValidator.IsValidNumber("1.0").Should().BeFalse();
+        }
+
+        [Test]
+        [Category("Конструктор NumberValidator")]
+        public void DefaultNumberValidatorIsNotOnlyPositive()
+        {
+            var numberValidator = new NumberValidator(5, 1);
+            numberValidator.IsValidNumber("1").Should().BeTrue();
+            numberValidator.IsValidNumber("-1").Should().BeTrue();
+        }
+
+        [Test]
+        [Category("Не коректные строки")]
+        public void NegativeNumber_When_NumberValidatorIsOnlyPositive()
+        {
+            var numberValidator = new NumberValidator(5, 1, true);
+            numberValidator.IsValidNumber("1").Should().BeTrue();
+            numberValidator.IsValidNumber("-1").Should().BeFalse();
+        }
+    }
 
 	public class NumberValidator
 	{

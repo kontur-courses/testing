@@ -12,20 +12,15 @@ namespace HomeExercises
 		{
 			var actualTsar = TsarRegistry.GetCurrentTsar();
 
-			var expectedTsar = new Person("Ivan IV The Terrible", 54, 170, 70,
-				new Person("Vasili III of Russia", 28, 170, 60, null));
+			var expectedTsar = new Person(
+                "Ivan IV The Terrible", 54, 170, 70,
+                new Person("Vasili III of Russia", 28, 170, 60, null));
 
-			// Перепишите код на использование Fluent Assertions.
-			Assert.AreEqual(actualTsar.Name, expectedTsar.Name);
-			Assert.AreEqual(actualTsar.Age, expectedTsar.Age);
-			Assert.AreEqual(actualTsar.Height, expectedTsar.Height);
-			Assert.AreEqual(actualTsar.Weight, expectedTsar.Weight);
+            actualTsar.Should().BeEquivalentTo(expectedTsar,
+                options => options
+                .Excluding(p => p.SelectedMemberInfo.Name.ToLower() == "id"));
 
-			Assert.AreEqual(expectedTsar.Parent.Name, actualTsar.Parent.Name);
-			Assert.AreEqual(expectedTsar.Parent.Age, actualTsar.Parent.Age);
-			Assert.AreEqual(expectedTsar.Parent.Height, actualTsar.Parent.Height);
-			Assert.AreEqual(expectedTsar.Parent.Parent, actualTsar.Parent.Parent);
-		}
+        }
 
 		[Test]
 		[Description("Альтернативное решение. Какие у него недостатки?")]
@@ -37,6 +32,16 @@ namespace HomeExercises
 
 			// Какие недостатки у такого подхода? 
 			Assert.True(AreEqual(actualTsar, expectedTsar));
+
+            /*
+             * 1) Данный подход плох тем, что при добавлении новых полей в класс Person
+             * нужно будет менять метод AreEqual.
+             * 2) В случае, если данные тест упадет, не сразу будет ясно в чем именно ошибка
+             * (не информативное сообщение об ошибке)
+             * 3) Данная реализации AreEqual будет сравнить полностью всё генеологическое дерево
+             * двух Person, что скорее всего является избыточным действием.
+             * 4) Много кода :D
+             */
 		}
 
 		private bool AreEqual(Person actual, Person expected)
@@ -79,5 +84,5 @@ namespace HomeExercises
 			Weight = weight;
 			Parent = parent;
 		}
-	}
+    }
 }
