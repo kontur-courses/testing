@@ -8,7 +8,7 @@ namespace HomeExercises
 {
 	public class NumberValidatorTests
 	{
-		[TestCaseSource(nameof(ValidDataSource))]
+		[TestCaseSource(nameof(_validDataSource))]
 		public void Should_CorrectParse_OnCorrectData(int precision, int scale, bool isOnlyPositive, string input, bool expected)
 		{
 			Assert.AreEqual(expected, 
@@ -16,7 +16,7 @@ namespace HomeExercises
 		}
 		
 		
-		[TestCaseSource(nameof(InvalidDataSource))]
+		[TestCaseSource(nameof(_invalidDataSource))]
 		public void Should_CorrectParse_OnInvalidData(int precision, int scale, bool isOnlyPositive, string input, bool expected)
 		{
 			Assert.AreEqual(expected, 
@@ -47,45 +47,39 @@ namespace HomeExercises
 			Assert.Throws<ArgumentException>(() => new NumberValidator(1, 2, true));
 		}
 
-		private static IEnumerable ValidDataSource()
+		private static IEnumerable _validDataSource = new List<TestCaseData>
 		{
-			var data = new List<TestCaseData> {
-					new TestCaseData(17, 2, true, "-0", false).SetName("Zero with specified precision"), 
-					new TestCaseData(17, 2, true, "0,0", true).SetName("Zero with specified by comma precision"),
-					new TestCaseData(17, 2, true, "0", true).SetName("Zero without precision"),
-					new TestCaseData(17, 2, true, "01", true).SetName("Leading zeros"),
-					new TestCaseData(17, 2, true, "0.10", true).SetName("Trailing zeros"),
-					new TestCaseData(1, 0, true, "01", true).SetName("Leading zeros doesn't affect on precision"),
-					new TestCaseData(17, 2, true, "1.23", true).SetName("Number with max scale"),
-					new TestCaseData(4, 0, true, "1234", true).SetName("Number with max precision"),
-					new TestCaseData(4, 2, true, "12.34", true).SetName("Number with max precision and max scale"),
-					new TestCaseData(1, 0, true, "11", false).SetName("Actual number precision more then specified precision"),
-					new TestCaseData(17, 2, true, "1.234", false).SetName("Actual number scale more then specified scale"),
-					new TestCaseData(17, 2, false, "+0", true).SetName("Positive signed number with false onlyPositive parameter"),
-					new TestCaseData(17, 2, true, "+0", true).SetName("Positive signed number with true onlyPositive parameter")
-			};
-			foreach (var caseData in data)
-				yield return caseData;
-		}
+			new TestCaseData(17, 2, true, "-0", false).SetName("Zero with specified precision"),
+			new TestCaseData(17, 2, true, "0,0", true).SetName("Zero with specified by comma precision"),
+			new TestCaseData(17, 2, true, "0", true).SetName("Zero without precision"),
+			new TestCaseData(17, 2, true, "01", true).SetName("Leading zeros"),
+			new TestCaseData(17, 2, true, "000001", true).SetName("Many Leading zeros"),
+			new TestCaseData(17, 2, true, "0.10", true).SetName("Trailing zeros"),
+			new TestCaseData(1, 0, true, "01", true).SetName("Leading zeros doesn't affect on precision"),
+			new TestCaseData(17, 2, true, "1.23", true).SetName("Number with max scale"),
+			new TestCaseData(4, 0, true, "1234", true).SetName("Number with max precision"),
+			new TestCaseData(4, 2, true, "12.34", true).SetName("Number with max precision and max scale"),
+			new TestCaseData(1, 0, true, "11", false).SetName("Actual number precision more then specified precision"),
+			new TestCaseData(17, 2, true, "1.234", false).SetName("Actual number scale more then specified scale"),
+			new TestCaseData(17, 2, false, "+0", true).SetName(
+				"Positive signed number with false onlyPositive parameter"),
+			new TestCaseData(17, 2, true, "+0", true).SetName("Positive signed number with true onlyPositive parameter")
+		};
 
-		private static IEnumerable InvalidDataSource()
+		private static IEnumerable _invalidDataSource = new List<TestCaseData>
 		{
-			var data = new List<TestCaseData>
-			{
-				new TestCaseData(17, 2, false, null, false).SetName("Null string for parsing"),
-				new TestCaseData(17, 2, false, "", false).SetName("Empty string for parsing"),
-				new TestCaseData(17, 2, false, "abc.1", false).SetName("Not decimal string mixed with decimal for parsing"),
-				new TestCaseData(17, 2, false, "abc", false).SetName("Not decimal string for parsing"),
-				new TestCaseData(17, 2, false, "0.", false).SetName("Number with dot but without scale"),
-				new TestCaseData(17, 2, false, "0.,1", false).SetName("Dot and comma separated numbers"),
-				new TestCaseData(17, 2, false, "+-0", false).SetName("Double signed number with mixed signs"),
-				new TestCaseData(17, 2, false, "--0", false).SetName("Double negative signed number"),
-				new TestCaseData(17, 2, false, "++0", false).SetName("Double positive signed number"),
-				new TestCaseData(17, 2, true, "-0", false).SetName("Negative signed number with true onlyPositive parameter")
-			};
-			foreach (var caseData in data)
-				yield return caseData;
-		}
+			new TestCaseData(17, 2, false, null, false).SetName("Null string for parsing"),
+			new TestCaseData(17, 2, false, "", false).SetName("Empty string for parsing"),
+			new TestCaseData(17, 2, false, "abc.1", false).SetName("Not decimal string mixed with decimal for parsing"),
+			new TestCaseData(17, 2, false, "abc", false).SetName("Not decimal string for parsing"),
+			new TestCaseData(17, 2, false, "0.", false).SetName("Number with dot but without scale"),
+			new TestCaseData(17, 2, false, "0.,1", false).SetName("Dot and comma separated numbers"),
+			new TestCaseData(17, 2, false, "+-0", false).SetName("Double signed number with mixed signs"),
+			new TestCaseData(17, 2, false, "--0", false).SetName("Double negative signed number"),
+			new TestCaseData(17, 2, false, "++0", false).SetName("Double positive signed number"),
+			new TestCaseData(17, 2, true, "-0", false).SetName(
+				"Negative signed number with true onlyPositive parameter")
+		};
 	}
 
 	public class NumberValidator
@@ -104,7 +98,7 @@ namespace HomeExercises
 				throw new ArgumentException("precision must be a positive number");
 			if (scale < 0 || scale >= precision)
 				throw new ArgumentException("precision must be a non-negative number less or equal than precision");
-			numberRegex = new Regex(@"^([+-]?)0*?(\d+)([.,](\d+))?$", RegexOptions.IgnoreCase);
+			numberRegex = new Regex(@"^([+-]?)(0+?)?(\d+)([.,](\d+))?$", RegexOptions.IgnoreCase);
 		}
 
 		public bool IsValidNumber(string value)
@@ -124,9 +118,9 @@ namespace HomeExercises
 				return false;
 
 			// Знак и целая часть
-			var intPart = match.Groups[1].Value.Length + match.Groups[2].Value.Length;
+			var intPart = match.Groups[1].Value.Length + match.Groups[3].Value.Length;
 			// Дробная часть
-			var fracPart = match.Groups[4].Value.Length;
+			var fracPart = match.Groups[5].Value.Length;
 
 			if (intPart + fracPart > precision || fracPart > scale)
 				return false;
