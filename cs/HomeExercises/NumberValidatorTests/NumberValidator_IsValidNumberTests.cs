@@ -6,82 +6,143 @@ namespace HomeExercises.NumberValidatorTests
     class NumberValidator_IsValidNumberTests
     {
         [TestCase(
-            17, 2, true,
-            "0", "+0",
-            TestName = "ShouldValid_OnSomePositiveInteger")]
-        [TestCase(
-            17, 2, false,
-            "000", "+02.3", "-012",
-            TestName = "ShouldValid_WhenNumberStartsWithZero_SignIsIgnored")]
-        [TestCase(
             17, 2, false,
             "-0",
             TestName = "ShouldValid_OnSomeNegativeInteger")]
         [TestCase(
-            17, 2, true,
-            "0.0", "+0.0",
-            TestName = "ShouldValid_OnSomePositiveFractionalNumber")]
-        [TestCase(
             17, 10, false,
             "-0.0",
             TestName = "ShouldValid_OnSomeNegativeFractionalNumber")]
-        [TestCase(
-            4, 2, false,
-            "1234", "123.4", "-123", "+123", "-12.3", "+1.23",
-            TestName = "ShouldValid_WhenNumberLengthEqualsMaxValidatorLength")]
-        [TestCase(
-            5, 2, false,
-            "1.23", "-1.23", "+1.23",
-            TestName = "ShouldValid_WhenNumberFracPartLengthEqualsMaxValidatorFracPartLength")]
-        [TestCase(
-            10, 5, false,
-            "1233.21", "-12.23", "+1.43",
-            TestName = "ShouldValid_WhenSeparatorIsDot")]
-        [TestCase(
-            10, 5, false,
-            "1233,21", "-12,23", "+1,43",
-            TestName = "ShouldValid_WhenSeparatorIsComma")]
-        [TestCase(
-            10, 5, true,
-            "+0", "+1.12", "+13,32",
-            TestName = "ShouldValid_WhenSignIsPlus")]
-        [TestCase(
-            10, 5, false,
-            "-0", "-1.12", "-13,32",
-            TestName = "ShouldValid_WhenSignIsMinus")]
-        [TestCase(
-            3, 2, true,
-            "12.3", "12,3",
-            TestName = "SeparatorShouldNotCountInNumberLength")]
-        [TestCase(
-            10, 4, false,
-            "5423", "32.123",
-            TestName = "ShouldValid_PositiveNumberInNotOnlyPositiveValidator")]
-        [TestCase(
-            100, 50, false,
-            "1234567891011121131415161718", "-1234567891011121131415161718",
-            TestName = "ShouldValid_WhenNumberAbsValueMoreThanMaxUnsignedLongAbsValue")]
         public void ShouldValid_WhenNumberIsCorrectForValidator(
-            int validatorInitArg_Precision, int validatorInitArg_Scale, bool validatorInitArg_OnlyPositive,
-            params string[] numbers)
+            int validatorInitArgPrecision, int validatorInitArgScale, bool validatorInitArgOnlyPositive,
+            string number)
         {
             var validator = new NumberValidator(
-                validatorInitArg_Precision,
-                validatorInitArg_Scale,
-                validatorInitArg_OnlyPositive);
-            
-            foreach (var number in numbers)
-                validator.IsValidNumber(number).Should().BeTrue();
+                validatorInitArgPrecision,
+                validatorInitArgScale,
+                validatorInitArgOnlyPositive);
+
+            validator.IsValidNumber(number).Should().BeTrue();
         }
 
-        [TestCase(
-            3, 2, true,
-            "00.00", "1234",
-            TestName = "ShouldInvalid_WhenNumberLengthMoreThanMaxValidatorNumberLength")]
-        [TestCase(
-            3, 2, true,
-            "-123", "-0.00",
-            TestName = "ShouldInvalid_WithNegativeNumberInOnlyPositiveValidator")]
+        [TestCase("1234567891011121131415161718")]
+        [TestCase("-1234567891011121131415161718")]
+        public void ShouldValid_WhenNumberAbsValueMoreThanMaxUnsignedLongAbsValue(string number)
+        {
+            var validator = new NumberValidator(100, 50, false);
+
+            validator.IsValidNumber(number).Should().BeTrue();
+        }
+
+        [TestCase("5423")]
+        [TestCase("32.123")]
+        public void ShouldValid_PositiveNumberInNotOnlyPositiveValidator(string number)
+        {
+            var validator = new NumberValidator(10, 4, false);
+
+            validator.IsValidNumber(number).Should().BeTrue();
+        }
+
+        [TestCase("12.3")]
+        [TestCase("12,3")]
+        public void SeparatorShouldNotCountInNumberLength(string number)
+        {
+            var validator = new NumberValidator(3, 2, true);
+
+            validator.IsValidNumber(number).Should().BeTrue();
+        }
+
+        [TestCase("-0")]
+        [TestCase("-1.12")]
+        [TestCase("-13,32")]
+        public void ShouldValid_WhenSignIsMinus(string number)
+        {
+            var validator = new NumberValidator(10, 5, false);
+
+            validator.IsValidNumber(number).Should().BeTrue();
+        }
+
+        [TestCase("+0")]
+        [TestCase("+1.12")]
+        [TestCase("+13,32")]
+        public void ShouldValid_WhenSignIsPlus(string number)
+        {
+            var validator = new NumberValidator(10, 5, true);
+
+            validator.IsValidNumber(number).Should().BeTrue();
+        }
+
+        [TestCase("1233,21")]
+        [TestCase("-12,23")]
+        [TestCase("+1,43")]
+        public void ShouldValid_WhenSeparatorIsComma(string number)
+        {
+            var validator = new NumberValidator(10, 5, false);
+
+            validator.IsValidNumber(number).Should().BeTrue();
+        }
+
+        [TestCase("1233.21")]
+        [TestCase("-12.23")]
+        [TestCase("+1.43")]
+        public void ShouldValid_WhenSeparatorIsDot(string number)
+        {
+            var validator = new NumberValidator(10, 5, false);
+
+            validator.IsValidNumber(number).Should().BeTrue();
+        }
+
+        [TestCase("1.23")]
+        [TestCase("-1.23")]
+        [TestCase("+1.23")]
+        public void ShouldValid_WhenNumberFracPartLengthEqualsMaxValidatorFracPartLength(string number)
+        {
+            var validator = new NumberValidator(5, 2, false);
+
+            validator.IsValidNumber(number).Should().BeTrue();
+        }
+
+        [TestCase("1234")]
+        [TestCase("123.4")]
+        [TestCase("-123")]
+        [TestCase("+123")]
+        [TestCase("-12.3")]
+        [TestCase("+1.23")]
+        public void ShouldValid_WhenNumberLengthEqualsMaxValidatorLength(string number)
+        {
+            var validator = new NumberValidator(4, 2, false);
+
+            validator.IsValidNumber(number).Should().BeTrue();
+        }
+
+        [TestCase("0.0")]
+        [TestCase("+0.0")]
+        public void ShouldValid_OnSomePositiveFractionalNumber(string number)
+        {
+            var validator = new NumberValidator(17, 2, true);
+
+            validator.IsValidNumber(number).Should().BeTrue();
+        }
+
+        [TestCase("000")]
+        [TestCase("+02.3")]
+        [TestCase("-012")]
+        public void ShouldValid_WhenNumberStartsWithZero_SignIsIgnored(string number)
+        {
+            var validator = new NumberValidator(17, 2, false);
+
+            validator.IsValidNumber(number).Should().BeTrue();
+        }
+
+        [TestCase("0")]
+        [TestCase("+0")]
+        public void ShouldValid_OnSomePositiveInteger(string number)
+        {
+            var validator = new NumberValidator(17, 2, true);
+
+            validator.IsValidNumber(number).Should().BeTrue();
+        }
+
         [TestCase(
             3, 2, true,
             "+0.00",
@@ -96,35 +157,64 @@ namespace HomeExercises.NumberValidatorTests
             TestName = "ShouldInvalid_WhenFracPartLengthMoreThanMaxValidatorFracPartLength")]
         [TestCase(
             17, 2, false,
-            "Asd", "a.sd", "+asd", "-asd",
-            TestName = "ShouldInvalid_WithNotANumber")]
-        [TestCase(
-            17, 2, false,
             "  123",
             TestName = "ShouldInvalid_WhenWhiteSpaceBeforeCorrectNumber")]
         [TestCase(
             17, 2, true,
-            new string[] { null },
+            null,
             TestName = "ShouldInvalid_WithNull")]
         [TestCase(
             17, 2, true,
             "",
             TestName = "ShouldInvalid_WithEmptyString")]
-        [TestCase(
-            17, 2, true,
-            ".12", ",12",
-            TestName = "ShouldInvalid_WhenArgumentStartsWithSeparator")]
         public void ShouldInvalid_WhenNumberIsIncorrectForValidator(
-            int validatorInitArg_Precision, int validatorInitArg_Scale, bool validatorInitArg_OnlyPositive,
-            params string[] numbers)
+            int validatorInitArgPrecision, int validatorInitArgScale, bool validatorInitArgOnlyPositive,
+            string number)
         {
             var validator = new NumberValidator(
-                validatorInitArg_Precision,
-                validatorInitArg_Scale,
-                validatorInitArg_OnlyPositive);
+                validatorInitArgPrecision,
+                validatorInitArgScale,
+                validatorInitArgOnlyPositive);
 
-            foreach (var number in numbers)
-                validator.IsValidNumber(number).Should().BeFalse();
+            validator.IsValidNumber(number).Should().BeFalse();
+        }
+
+        [TestCase(".12")]
+        [TestCase(",12")]
+        public void ShouldInvalid_WhenArgumentStartsWithSeparator(string number)
+        {
+            var validator = new NumberValidator(17, 2, true);
+
+            validator.IsValidNumber(number).Should().BeFalse();
+        }
+
+        [TestCase("Asd")]
+        [TestCase("a.sd")]
+        [TestCase("+asd")]
+        [TestCase("-asd")]
+        public void ShouldInvalid_WithNotANumber(string number)
+        {
+            var validator = new NumberValidator(17, 2, false);
+
+            validator.IsValidNumber(number).Should().BeFalse();
+        }
+
+        [TestCase("-123")]
+        [TestCase("-0.00")]
+        public void ShouldInvalid_WithNegativeNumberInOnlyPositiveValidator(string number)
+        {
+            var validator = new NumberValidator(3, 2, true);
+
+            validator.IsValidNumber(number).Should().BeFalse();
+        }
+
+        [TestCase("00.00")]
+        [TestCase("1234")]
+        public void ShouldInvalid_WhenNumberLengthMoreThanMaxValidatorNumberLength(string number)
+        {
+            var validator = new NumberValidator(3, 2, true);
+
+            validator.IsValidNumber(number).Should().BeFalse();
         }
     }
 }
