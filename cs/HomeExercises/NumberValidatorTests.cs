@@ -8,7 +8,6 @@ namespace HomeExercises
     [TestFixture]
     public class NumberValidatorTests
     {
-        [Test]
         [TestCase(-1, 2, true, TestName = "On negative precision")]
         [TestCase(2, 4, true, TestName = "On scale >= precision")]
         [TestCase(2, -1, true, TestName = "On negative scale")]
@@ -17,7 +16,6 @@ namespace HomeExercises
             Assert.Throws<ArgumentException>(() => new NumberValidator(precision, scale, onlyPositive));
         }
 
-        [Test]
         [TestCase(1, 0, true, TestName = "On small correct precision and scale")]
         [TestCase(int.MaxValue, int.MaxValue - 1, true, TestName = "On big correct precision and scale")]
 
@@ -26,34 +24,38 @@ namespace HomeExercises
             Assert.DoesNotThrow(() => new NumberValidator(precision, scale, onlyPositive));
         }
 
-        [Test]
-        [TestCase(17, 2, true, "0.0", true, TestName = "Returns true on fractional when precision and scale are more than necessary")]
-        [TestCase(17, 2, true, "0", true, TestName = "Returns true on integer when precision and scale are more than necessary")]
-        [TestCase(17, 2, true, "0.000", false, TestName = "Returns false on fractional when scale is less than necessary")]
+        [TestCase(17, 2, true, "0.0", TestName = "on fractional zero")]
+        [TestCase(17, 2, true, "0", TestName = "on integer zero")]
+        [TestCase(4, 2, true, "+1.23", TestName = "on positive fractional")]
+        [TestCase(4, 2, false, "-4.56", TestName = "on negative fractional")]
+        [TestCase(4, 2, true, "+1,23", TestName = "on positive fractional separated with comma")]
+        [TestCase(4, 2, false, "-4,56", TestName = "on negative fractional separated with comma")]
 
-        [TestCase(3, 2, true, "00.00", false, TestName = "Returns false on unsigned zero fractional when precision is less than necessary")]
-        [TestCase(3, 2, true, "-0.00", false, TestName = "Returns false on negative zero fractional when precision is less than necessary")]
-        [TestCase(3, 2, true, "+0.00", false, TestName = "Returns false on positive zero fractional when precision is less than necessary")]
-        [TestCase(3, 2, true, "+1.23", false, TestName = "Returns false on positive non-zero fractional when precision is less than necessary")]
-        [TestCase(3, 2, true, "-1.23", false, TestName = "Returns false on negative non-zero fractional when precision is less than necessary")]
-
-        [TestCase(3, 2, true, "a.sd", false, TestName = "Returns false on non-digits")]
-        [TestCase(3, 2, true, null, false, TestName = "Returns false on null")]
-        [TestCase(3, 2, true, "", false, TestName = "Returns false on empty string")]
-
-        [TestCase(10, 2, true, "-5.2", false, TestName = "Returns false on negative fractional when onlyPositive=true")]
-        [TestCase(10, 2, true, "-5", false, TestName = "Returns false on negative integer when onlyPositive=true")]
-
-        [TestCase(4, 2, true, "+1.23", true, TestName = "Returns true on positive non-zero fractional when precision is correct")]
-        [TestCase(4, 2, true, "-4.56", false, TestName = "Returns true on negative non-zero fractional when precision is correct")]
-
-        [TestCase(4, 2, true, "+1,23", true, TestName = "Returns true on positive non-zero fractional separated with comma")]
-        [TestCase(4, 2, true, "-4,56", false, TestName = "Returns true on negative non-zero fractional separated with comma")]
-
-        public void IsValidNumberReturnsCorrectResult(int precision, int scale, bool onlyPositive, string value, bool expected)
+        public void IsValidNumberReturnsTrueOnCorrectData(int precision, int scale, bool onlyPositive, string value)
         {
             var validator = new NumberValidator(precision, scale, onlyPositive);
-            validator.IsValidNumber(value).Should().Be(expected);
+            validator.IsValidNumber(value).Should().Be(true);
+        }
+
+
+        [TestCase(3, 2, true, "a.sd", TestName = "on non-digits")]
+        [TestCase(3, 2, true, null, TestName = "on null")]
+        [TestCase(3, 2, true, "", TestName = "on empty string")]
+        [TestCase(10, 2, true, "-5.2", TestName = "on negative fractional when onlyPositive=true")]
+        [TestCase(10, 2, true, "-5", TestName = "on negative integer when onlyPositive=true")]
+        [TestCase(17, 2, true, "0.000", TestName = "on fractional with incorrect scale")]
+        [TestCase(3, 2, true, "00.00", TestName = "on unsigned zero fractional with incorrect precision")]
+        [TestCase(3, 2, true, "-0.00", TestName = "on negative zero fractional with incorrect precision")]
+        [TestCase(3, 2, true, "+0.00", TestName = "on positive zero fractional with incorrect precision")]
+        [TestCase(3, 2, true, "+1.23", TestName = "on positive fractional with incorrect precision")]
+        [TestCase(3, 2, true, "-1.23", TestName = "on negative fractional with incorrect precision")]
+        [TestCase(3, 2, true, ".", TestName = "on single dot")]
+        [TestCase(3, 2, true, ",", TestName = "on single comma")]
+        [TestCase(17, 5, true, "1.2.0", TestName = "on two dots")]
+        public void IsValidNumberReturnsFalseOnIncorrectData(int precision, int scale, bool onlyPositive, string value)
+        {
+            var validator = new NumberValidator(precision, scale, onlyPositive);
+            validator.IsValidNumber(value).Should().Be(false);
         }
 
     }

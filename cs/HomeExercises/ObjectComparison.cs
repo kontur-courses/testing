@@ -1,4 +1,5 @@
 ﻿using FluentAssertions;
+using FluentAssertions.Equivalency;
 using NUnit.Framework;
 
 namespace HomeExercises
@@ -17,8 +18,8 @@ namespace HomeExercises
                 new Person("Vasili III of Russia", 28, 170, 60, null));
 
             actualTsar.Should().BeEquivalentTo(expectedTsar, options => options
-                .Excluding(person => person.Id)
-                .Excluding(person => person.Parent.Id));
+                .Excluding(person => person.SelectedMemberInfo.Name == nameof(Person.Id))
+                .IgnoringCyclicReferences());
         }
 
         [Test]
@@ -34,6 +35,7 @@ namespace HomeExercises
             // Сложнее читать
             // Неинформативное сообщение об ошибке: непонятно, почему именно тест упал
             // Сложнее расширять: для каждого нового поля в Person нужно дописывать метод AreEqual
+            // Не работает с циклическими ссылками
 
             Assert.True(AreEqual(actualTsar, expectedTsar));
         }
