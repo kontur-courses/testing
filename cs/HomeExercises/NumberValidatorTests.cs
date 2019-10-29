@@ -45,6 +45,7 @@ namespace HomeExercises
 				yield return new TestCaseData(4, 2, true, "00.00").SetName("when additional zeros");
 				yield return new TestCaseData(17, 2, false, "-1.0").SetName("when negative value");
 				yield return new TestCaseData(9, 4, true, "12345.6789").SetName("when value with all digits");
+				yield return new TestCaseData(6, 3, true, "112.345").SetName("when integer part plus fractional part equals precision");
 				yield return new TestCaseData(9, 4, false, "+145.69").SetName("when value with plus sign");
 				yield return new TestCaseData(10, 0, true, int.MaxValue.ToString()).SetName("when value is int.MaxValue");
 				yield return new TestCaseData(11, 0, false, int.MinValue.ToString()).SetName("when value is int.MinValue");
@@ -65,9 +66,11 @@ namespace HomeExercises
 				yield return new TestCaseData(3, 2, true, ".0").SetName("when point is on the left from zero");
 				yield return new TestCaseData(3, 2, true, "0.").SetName("when point is on the right from zero");
 				yield return new TestCaseData(17, 2, true, "125.001").SetName("when fractional part length is bigger than scale");
+				yield return new TestCaseData(17, 2, true, "125.0a1").SetName("when fractional part contains invalid signs");
+				yield return new TestCaseData(17, 2, true, "1l5.001").SetName("when integer part contains invalid signs");
 				yield return new TestCaseData(17, 2, true, "100 01").SetName("when whitespace is between digits");
 				yield return new TestCaseData(3, 1, true, "-1.0").SetName("when value is negative and onlyPositive is true");
-				yield return new TestCaseData(3, 1, false, "1!.3").SetName("when unexpected symbol");
+				yield return new TestCaseData(3, 1, false, "1!3").SetName("when unexpected symbol");
 				yield return new TestCaseData(3, 1, false, "-.0").SetName("when minus before point");
 				yield return new TestCaseData(3, 1, false, "-").SetName("when minus without digits");
 				yield return new TestCaseData(3, 1, true, "+").SetName("when plus without digits");
