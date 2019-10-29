@@ -3,29 +3,39 @@ using NUnit.Framework;
 
 namespace HomeExercises
 {
+	[TestFixture]
 	public class ObjectComparison
 	{
 		[Test]
 		[Description("Проверка текущего царя")]
 		[Category("ToRefactor")]
-		public void CheckCurrentTsar()
+		public void GetCurrentTsar_AlwaysShouldReturn_IvanIVTheTerrible()
 		{
 			var actualTsar = TsarRegistry.GetCurrentTsar();
 
 			var expectedTsar = new Person("Ivan IV The Terrible", 54, 170, 70,
-				new Person("Vasili III of Russia", 28, 170, 60, null));
+			                              new Person("Vasili III of Russia", 28, 170, 60, null));
 
-			// Перепишите код на использование Fluent Assertions.
-			Assert.AreEqual(actualTsar.Name, expectedTsar.Name);
-			Assert.AreEqual(actualTsar.Age, expectedTsar.Age);
-			Assert.AreEqual(actualTsar.Height, expectedTsar.Height);
-			Assert.AreEqual(actualTsar.Weight, expectedTsar.Weight);
+			const string ignoredMemberName = "Id";
 
-			Assert.AreEqual(expectedTsar.Parent.Name, actualTsar.Parent.Name);
-			Assert.AreEqual(expectedTsar.Parent.Age, actualTsar.Parent.Age);
-			Assert.AreEqual(expectedTsar.Parent.Height, actualTsar.Parent.Height);
-			Assert.AreEqual(expectedTsar.Parent.Parent, actualTsar.Parent.Parent);
+			actualTsar.Should().BeEquivalentTo(expectedTsar, options => options.Excluding(
+				                                   person => person.SelectedMemberPath.EndsWith(ignoredMemberName)),
+			                                   "TsarRegistry contains only one person - Ivan IV The Terrible");
 		}
+		
+		/*
+		 * Недостатки:
+		 * 1. Информативность - имя теста не соответствует популярным конвенциям и не даёт информации о тестируемом
+		 * 	  модуле и ожидаемом поведении.
+		 *    Пример хорошей конвенции: [UnitOfWork_StateUnderTest_ExpectedBehavior].
+		 * 2. Расширяемость - при добавлении новых членов в Person, нам придётся переписывать тесты.
+		 * 3. Читаемость - "Assert.True(AreEqual(actualTsar, expectedTsar));" - читается хуже, чем Fluent-style.
+		 * 	  Так же хорошим тоном считается указание причины ожидаемого поведения.
+		 * 4. Много кода - обычно, чем больше кода, тем больше вероятность сделать в нём ошибку.
+		 *    Плюс опять же, много кода хуже читается.
+		 * 5. Производительность - скорее всего этот рекурсивный велосипед много хуже оптимизирован, нежели специальный
+		 * 	  метод из специальной библиотеки.
+		 */
 
 		[Test]
 		[Description("Альтернативное решение. Какие у него недостатки?")]
