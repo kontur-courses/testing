@@ -17,7 +17,7 @@ namespace HomeExercises
 
 			var nameOfIdField = nameof(expectedTsar.Id);
 
-			TsarRegistry.GetCurrentTsar().Should().BeEquivalentTo(expectedTsar, options => options
+			actualTsar.Should().BeEquivalentTo(expectedTsar, options => options
 			.Excluding(Tsar => Tsar.SelectedMemberInfo.Name == nameOfIdField));
 		}
 
@@ -35,6 +35,8 @@ namespace HomeExercises
 			 * Во-первых, сравнивание объектов происходит до первого отличия из-за операции "&&" таким образом мы не получим все отличия.
 			 * Во-вторых, для того чтобы разобраться из-за чего тест завершается с отрицательным результатом, необходимо читать код метода сравнения.
 			 * В-третьих, в случае расширения исходного класса придется вносить изменения в AreEqual.
+			 * В-четвертых, метод не исключает возможности рекурсии.
+			 * 
 			 * 
 			*/
 		}
