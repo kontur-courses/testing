@@ -5,16 +5,24 @@ namespace HomeExercises
 {
     public class ObjectComparison
     {
+	    private Person expectedTsar;
+	    private Person actualTsar;
+
+	    [SetUp]
+	    public void SetUp()
+	    {
+			// Так как и там и там одинаковые входные данные, решил перенести их в СетАп
+			expectedTsar = new Person("Ivan IV The Terrible", 54, 170, 70,
+				new Person("Vasili III of Russia", 28, 170, 60, null));
+
+			actualTsar = TsarRegistry.GetCurrentTsar();
+	    }
+
         [Test]
         [Description("Проверка текущего царя")]
         [Category("ToRefactor")]
         public void CheckCurrentTsar()
         {
-            var actualTsar = TsarRegistry.GetCurrentTsar();
-
-            var expectedTsar = new Person("Ivan IV The Terrible", 54, 170, 70,
-                new Person("Vasili III of Russia", 28, 170, 60, null));
-
             // Перепишите код на использование Fluent Assertions.
             Test_PersonsAreEqual(expectedTsar, actualTsar);
 
@@ -29,10 +37,6 @@ namespace HomeExercises
         [Description("Альтернативное решение. Какие у него недостатки?")]
         public void CheckCurrentTsar_WithCustomEquality()
         {
-            var actualTsar = TsarRegistry.GetCurrentTsar();
-            var expectedTsar = new Person("Ivan IV The Terrible", 54, 170, 70,
-                new Person("Vasili III of Russia", 28, 170, 60, null));
-
             // Какие недостатки у такого подхода? 
             Assert.True(AreEqual(actualTsar, expectedTsar));
 
