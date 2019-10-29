@@ -1,5 +1,4 @@
-﻿using System.Text.RegularExpressions;
-using FluentAssertions;
+﻿using FluentAssertions;
 using NUnit.Framework;
 
 namespace HomeExercises
@@ -16,8 +15,7 @@ namespace HomeExercises
             
             actualTsar.Should().BeEquivalentTo(expectedTsar,
                 options => options
-                    .Excluding(t => Regex.IsMatch(t.SelectedMemberPath,"^(Parent.)*Id$")
-                     ));
+                    .Excluding(t => t.SelectedMemberInfo.Name == nameof(Person.Id)));
         }
         
         /// <summary>

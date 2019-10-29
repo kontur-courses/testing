@@ -38,18 +38,24 @@ namespace HomeExercises
     {
         [TestCase(null, 10, 2, TestName = "input is null")]
         [TestCase("", 10, 2, TestName = "input is empty")]
-        [TestCase("1d.f3", 10, 2, TestName = "input contains non digit elements")]
+        [TestCase("1j.l3", 10, 2, TestName = "input contains non digit elements")]
         [TestCase("0..23", 10, 2, TestName = "input has wrong int and frac part dividers")]
         [TestCase(".0.23", 10, 2, TestName = "input has wrong starting symbols")]
         [TestCase("0.23.", 10, 2, TestName = "input has wrong ending symbols")]
         [TestCase("abc 0.2 abc", 10, 2, TestName = "only substring of input string matches a numberRegex")]
         [TestCase("00.0", 2, 1, TestName = "input is longer than precision (even if there are useless zeroes)")]
+        [TestCase("005", 2, TestName = "input is longer than precision (even if there are useless zeroes at start)")]
         [TestCase("10.2", 2, 1, TestName = "input is longer than precision (int part is too long)")]
         [TestCase("-1.2", 2, 1, TestName = "input is longer than precision (because of sign -)")]
         [TestCase("+1.2", 2, 1, TestName = "input is longer than precision (because of sign +)")]
         [TestCase("1.20", 2, 1, TestName = "input frac part is longer than scale")]
         [TestCase("1.0", 2, 0, TestName = "scale is zero, but input has frac part")]
+        [TestCase("1.0", 2, 0, TestName = "scale is zero, but input has frac part")]
         [TestCase("-34.24", 10, 2, true, TestName = "onlyPositive is true, but input is negative")]
+        [TestCase("0C90ABFF", 10, TestName = "hexadecimal numbers are not supported")]
+        [TestCase("IV", 3, TestName = "roman numerals are not supported")]
+        [TestCase("2٫1", 2, 1, TestName = "arabic decimal separator (٫) is not supported")]
+        [TestCase("௨", 1, TestName = "tamil numerals are not supported")]
         public void Should_ReturnFalse_When(string input, int precision, int scale = 0, bool onlyPositive = false)
         {
             var numberValidator = new NumberValidator(precision, scale, onlyPositive);
@@ -66,6 +72,9 @@ namespace HomeExercises
         [TestCase("+2.5", 3, 1, TestName = "input frac part length == scale and input length == precision (signed, +)")]
         [TestCase("2.5", 2, 1, TestName = "input frac part length == scale and input length == precision (unsigned)")]
         [TestCase("2.5", 2, 1, true, TestName = "input is positive and onlyPositive is true")]
+        [TestCase("02.2", 3, 1, TestName = "there are useless zeroes at start")]
+        [TestCase("002", 3, 1, TestName = "there are useless zeroes at start of integer")]
+        [TestCase("2.200", 4, 3, TestName = "there are useless zeroes at end")]
         public void Should_ReturnTrue_When(string input, int precision, int scale = 0, bool onlyPositive = false)
         {
             var numberValidator = new NumberValidator(precision, scale, onlyPositive);
