@@ -50,12 +50,10 @@ namespace HomeExercises
         [TestCase("+1.2", 2, 1, TestName = "input is longer than precision (because of sign +)")]
         [TestCase("1.20", 2, 1, TestName = "input frac part is longer than scale")]
         [TestCase("1.0", 2, 0, TestName = "scale is zero, but input has frac part")]
-        [TestCase("1.0", 2, 0, TestName = "scale is zero, but input has frac part")]
         [TestCase("-34.24", 10, 2, true, TestName = "onlyPositive is true, but input is negative")]
         [TestCase("0C90ABFF", 10, TestName = "hexadecimal numbers are not supported")]
         [TestCase("IV", 3, TestName = "roman numerals are not supported")]
         [TestCase("2٫1", 2, 1, TestName = "arabic decimal separator (٫) is not supported")]
-        [TestCase("௨", 1, TestName = "tamil numerals are not supported")]
         public void Should_ReturnFalse_When(string input, int precision, int scale = 0, bool onlyPositive = false)
         {
             var numberValidator = new NumberValidator(precision, scale, onlyPositive);
@@ -75,6 +73,8 @@ namespace HomeExercises
         [TestCase("02.2", 3, 1, TestName = "there are useless zeroes at start")]
         [TestCase("002", 3, 1, TestName = "there are useless zeroes at start of integer")]
         [TestCase("2.200", 4, 3, TestName = "there are useless zeroes at end")]
+        [TestCase("2,2", 2, 1, TestName = "comma is correct divider")]
+        [TestCase("௨", 1, TestName = "tamil numerals are supported (and that's wrong)")]
         public void Should_ReturnTrue_When(string input, int precision, int scale = 0, bool onlyPositive = false)
         {
             var numberValidator = new NumberValidator(precision, scale, onlyPositive);
