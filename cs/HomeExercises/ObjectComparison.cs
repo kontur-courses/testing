@@ -5,7 +5,7 @@ namespace HomeExercises
 {
     public class ObjectComparison
     {
-	    [Test]
+        [Test]
         [Description("Проверка текущего царя")]
         [Category("ToRefactor")]
         public void CheckCurrentTsar()
@@ -16,7 +16,7 @@ namespace HomeExercises
                 new Person("Vasili III of Russia", 28, 170, 60, null));
 
             actualTsar.ShouldBeEquivalentTo(expectedTsar,
-	            opt => opt.Excluding(person => person.SelectedMemberInfo.Name == "Id"));
+                opt => opt.Excluding(person => person.SelectedMemberInfo.Name == "Id"));
         }
 
         [Test]
@@ -28,7 +28,7 @@ namespace HomeExercises
                 new Person("Vasili III of Russia", 28, 170, 60, null));
 
             // Какие недостатки у такого подхода? 
-			/*
+            /*
 			 *0)При долгой династии может случиться StackOverflow.
 			 *1)Скорее всего этот метод уже реализован.
 			 *2)При добавлении полей придется вписывать их в метод.
