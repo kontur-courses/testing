@@ -7,27 +7,68 @@ namespace HomeExercises
 {
 	public class NumberValidatorTests
 	{
-		[Test]
-		public void Test()
+		[TestCase(-2, 1, TestName = "Precision is negative")]
+		[TestCase(2, -1, TestName = "Scale is negative")]
+		[TestCase(1, 2, TestName = "Scale more then precision")]
+        public void ThrowArgumentException_When(int precision, int scale)
 		{
-			Assert.Throws<ArgumentException>(() => new NumberValidator(-1, 2, true));
-			Assert.DoesNotThrow(() => new NumberValidator(1, 0, true));
-			Assert.Throws<ArgumentException>(() => new NumberValidator(-1, 2, false));
-			Assert.DoesNotThrow(() => new NumberValidator(1, 0, true));
+			// ReSharper disable once ObjectCreationAsStatement
+			Assert.Throws<ArgumentException>(() => new NumberValidator(precision, scale, true));
+			// ReSharper disable once ObjectCreationAsStatement
+            Assert.Throws<ArgumentException>(() => new NumberValidator(precision, scale, false));
+        }
 
-			Assert.IsTrue(new NumberValidator(17, 2, true).IsValidNumber("0.0"));
-			Assert.IsTrue(new NumberValidator(17, 2, true).IsValidNumber("0"));
-			Assert.IsTrue(new NumberValidator(17, 2, true).IsValidNumber("0.0"));
+        [TestCase(1, 0)]
+        [TestCase(2, 1)]
+        public void CreateValidator_WhenArgumentsIsCorrect(int precision, int scale)
+		{
+			// ReSharper disable once ObjectCreationAsStatement
+			Assert.DoesNotThrow(() => new NumberValidator(precision, scale, true));
+			// ReSharper disable once ObjectCreationAsStatement
+			Assert.DoesNotThrow(() => new NumberValidator(precision, scale, false));
+        }
+
+        [Test]
+		public void ReturnFalse_WhenNumbersMoreThenPrecision()
+		{
 			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("00.00"));
-			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("-0.00"));
-			Assert.IsTrue(new NumberValidator(17, 2, true).IsValidNumber("0.0"));
-			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("+0.00"));
-			Assert.IsTrue(new NumberValidator(4, 2, true).IsValidNumber("+1.23"));
-			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("+1.23"));
-			Assert.IsFalse(new NumberValidator(17, 2, true).IsValidNumber("0.000"));
-			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("-1.23"));
-			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("a.sd"));
 		}
+
+		[TestCase("-0.00",false)]
+		[TestCase("+0.00", true)]
+		[TestCase("0,00", true)]
+		[TestCase("0.00", true)]
+		[TestCase("00.00", true)]
+        public void ReturnTrue_When(string number, bool onlyPositive)
+		{
+			Assert.IsTrue(new NumberValidator(17, 2, onlyPositive).IsValidNumber(number));
+		}
+
+		[TestCase("0", true)]
+		[TestCase("+0", true)]
+		[TestCase("-0", false)]
+        public void ReturnTrue_When1(string number, bool onlyPositive)
+        {
+	        Assert.IsTrue(new NumberValidator(17, 0, onlyPositive).IsValidNumber(number));
+        }
+
+        [TestCase("0.000")]
+        [TestCase("000.0")]
+        public void DoSomething_When(string number)
+		{
+			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber(number));
+		}
+
+		[TestCase(null)]
+		[TestCase("")]
+		[TestCase(" ")]
+		[TestCase("\n\r")]
+		[TestCase("a.sd")]
+        public void ReturnFalse_When(string number)
+		{
+			Assert.IsFalse(new NumberValidator(17, 2, true).IsValidNumber(number));
+		}
+
 	}
 
 	public class NumberValidator
@@ -42,9 +83,9 @@ namespace HomeExercises
 			this.precision = precision;
 			this.scale = scale;
 			this.onlyPositive = onlyPositive;
-			if (precision <= 0)
-				throw new ArgumentException("precision must be a positive number");
-			if (scale < 0 || scale >= precision)
+            if (precision <= 0)
+                throw new ArgumentException("precision must be a positive number");
+            if (scale < 0 || scale >= precision)
 				throw new ArgumentException("precision must be a non-negative number less or equal than precision");
 			numberRegex = new Regex(@"^([+-]?)(\d+)([.,](\d+))?$", RegexOptions.IgnoreCase);
 		}
