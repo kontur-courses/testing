@@ -15,16 +15,15 @@ namespace HomeExercises
 			var expectedTsar = new Person("Ivan IV The Terrible", 54, 170, 70,
 				new Person("Vasili III of Russia", 28, 170, 60, null));
 
-			// Перепишите код на использование Fluent Assertions.
-			Assert.AreEqual(actualTsar.Name, expectedTsar.Name);
-			Assert.AreEqual(actualTsar.Age, expectedTsar.Age);
-			Assert.AreEqual(actualTsar.Height, expectedTsar.Height);
-			Assert.AreEqual(actualTsar.Weight, expectedTsar.Weight);
-
-			Assert.AreEqual(expectedTsar.Parent.Name, actualTsar.Parent.Name);
-			Assert.AreEqual(expectedTsar.Parent.Age, actualTsar.Parent.Age);
-			Assert.AreEqual(expectedTsar.Parent.Height, actualTsar.Parent.Height);
-			Assert.AreEqual(expectedTsar.Parent.Parent, actualTsar.Parent.Parent);
+			// Во время чтения названия методов сразу понятно, что здесь проверяется
+			// и каким образом. Помимо этого, при таком подходе не придётся
+			// делать никаких изменений в тесте, если мы вводим поле, которое нужно проверять,
+			// так как такая проверка по умолчанию сравнивает все поля, кроме тех, которые мы
+			// указали отдельно. Также нам не нужно смотреть никакие доп методы, вся информация
+			// указана прямо здесь, в тесте. Мы сразу узнаем точное место, на котором тест упал.
+			actualTsar.Should().BeEquivalentTo(expectedTsar,
+				options => options
+					.Excluding(person => person.SelectedMemberInfo.Name == "Id"));
 		}
 
 		[Test]
@@ -36,6 +35,11 @@ namespace HomeExercises
 				new Person("Vasili III of Russia", 28, 170, 60, null));
 
 			// Какие недостатки у такого подхода? 
+			// Из названия метода не ясно, по какому именно принципу работает
+			// AreEqual. Какие поля он учитывает, как именно сравнивает.
+			// Помимо этого, название метода похоже на название методов из классов тестирования,
+			// что само по себе уже вводит в недоумение.
+			// Ещё важно, что при падении теста не ясно, что именно не совпало, и где есть "неравенство".
 			Assert.True(AreEqual(actualTsar, expectedTsar));
 		}
 
