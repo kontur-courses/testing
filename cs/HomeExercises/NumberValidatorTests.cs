@@ -26,29 +26,21 @@ namespace HomeExercises
 
         public class ConstructorShould : TestsBase
         {
-            private static Action[] precisionCases =
+            [TestCase(0)]
+            [TestCase(-1)]
+            public void ThrowArgumentException_OnZeroOrNegativePrecision(int precision)
             {
-                () => { var x = new NumberValidator(0); },
-                () => { var x = new NumberValidator(-1); }
-            };
-
-            [TestCaseSource("precisionCases")]
-            public void ThrowArgumentException_OnZeroOrNegativePrecision(Action create)
-            {
+                Action create = () => { var x = new NumberValidator(precision); };
                 create.Should().Throw<ArgumentException>()
                     .WithMessage("precision must be a positive number");
             }
 
-            private static Action[] scaleCases =
+            [TestCase(1, -1)]
+            [TestCase(1, 1)]
+            [TestCase(1, 2)]
+            public void ThrowArgumentException_OnNegativeScaleOrScaleBiggerEqualPrecision(int precision, int scale)
             {
-                () => { var x = new NumberValidator(1, 1); },
-                () => { var x = new NumberValidator(1, 2); },
-                () => { var x = new NumberValidator(1, -2); },
-            };
-
-            [TestCaseSource("scaleCases")]
-            public void ThrowArgumentException_OnNegativeScaleOrScaleBiggerEqualPrecision(Action create)
-            {
+                Action create = () => { var x = new NumberValidator(precision, scale); };
                 create.Should().Throw<ArgumentException>()
                     .WithMessage("scale must be a non-negative number less or equal than precision");
             }
@@ -63,23 +55,18 @@ namespace HomeExercises
 
         public class IsValidNumberShould : TestsBase
         {
-            [Test]
-            public void ReturnFalse_OnNull()
+            [TestCase(null)]
+            [TestCase("")]
+            public void ReturnFalse_OnNullOrEmpty(string number)
             {
-                basicValidator.IsValidNumber(null).Should().BeFalse();
-            }
-
-            [Test]
-            public void ReturnFalse_OnEmpty()
-            {
-                basicValidator.IsValidNumber("").Should().BeFalse();
+                basicValidator.IsValidNumber(number).Should().BeFalse();
             }
 
 
             private static string[] incorrectNumberFormatCases =
                 { "asd", ".11", "9.", "10,", "12.1e", "-a.89", "12. 4", "+\n", "6-", "++" };
 
-            [TestCaseSource("incorrectNumberFormatCases")]
+            [TestCaseSource(nameof(incorrectNumberFormatCases))]
             public void ReturnFalse_OnIncorrectNumberFormat(string number)
             {
                 basicValidator.IsValidNumber(number).Should().BeFalse();
@@ -87,7 +74,7 @@ namespace HomeExercises
 
             private static string[] precisionLessThanNumberLengthCases = { "21.3", "+10", "100" };
 
-            [TestCaseSource("precisionLessThanNumberLengthCases")]
+            [TestCaseSource(nameof(precisionLessThanNumberLengthCases))]
             public void ReturnFalse_OnPrecisionLessThanNumberLength(string number)
             {
                 var validator = new NumberValidator(2, 1);
@@ -109,7 +96,7 @@ namespace HomeExercises
             private static string[] correctNumbersCases =
                 { "55", "0.00", "10.13", "10,13", "-20", "+20", "-177.6", "+46,68", "1000000000" };
 
-            [TestCaseSource("correctNumbersCases")]
+            [TestCaseSource(nameof(correctNumbersCases))]
             public void ReturnTrue_OnCorrectNumbers(string number)
             {
                 basicValidator.IsValidNumber(number).Should().BeTrue();
