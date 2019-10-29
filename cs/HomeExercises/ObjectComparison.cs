@@ -16,16 +16,20 @@ namespace HomeExercises
 				new Person("Vasili III of Russia", 28, 170, 60, null));
 
 			// Перепишите код на использование Fluent Assertions.
-			Assert.AreEqual(actualTsar.Name, expectedTsar.Name);
-			Assert.AreEqual(actualTsar.Age, expectedTsar.Age);
-			Assert.AreEqual(actualTsar.Height, expectedTsar.Height);
-			Assert.AreEqual(actualTsar.Weight, expectedTsar.Weight);
 
-			Assert.AreEqual(expectedTsar.Parent.Name, actualTsar.Parent.Name);
-			Assert.AreEqual(expectedTsar.Parent.Age, actualTsar.Parent.Age);
-			Assert.AreEqual(expectedTsar.Parent.Height, actualTsar.Parent.Height);
-			Assert.AreEqual(expectedTsar.Parent.Parent, actualTsar.Parent.Parent);
-		}
+            expectedTsar.Name.Should().Be(actualTsar.Name);
+            expectedTsar.Age.Should().Be(actualTsar.Age);
+            expectedTsar.Height.Should().Be(actualTsar.Height);
+            expectedTsar.Weight.Should().Be(actualTsar.Weight);
+
+            actualTsar.Parent.Name.Should().Be(expectedTsar.Parent.Name);
+            actualTsar.Parent.Age.Should().Be(expectedTsar.Parent.Age);
+            actualTsar.Parent.Height.Should().Be(expectedTsar.Parent.Height);
+            actualTsar.Parent.Parent.Should().Be(expectedTsar.Parent.Parent);
+            
+            /* в первом варианте мы получаем больше данных после тестирования, по stacktrace можно увидеть
+             какой тест упал, тогда как во втором варианте мы просто увидим что объекты не равны*/
+        }
 
 		[Test]
 		[Description("Альтернативное решение. Какие у него недостатки?")]
