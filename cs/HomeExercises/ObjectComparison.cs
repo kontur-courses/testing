@@ -11,13 +11,14 @@ namespace HomeExercises
         {
             var actualTsar = TsarRegistry.GetCurrentTsar();
             var expectedTsar = new Person("Ivan IV The Terrible", 54, 170, 70,
-                new Person("Vasili III of Russia", 28, 170, 60,null));
-            
+                new Person("Vasili III of Russia", 28, 170, 60, null));
+
             actualTsar.Should().BeEquivalentTo(expectedTsar,
                 options => options
-                    .Excluding(t => t.SelectedMemberInfo.Name == nameof(Person.Id)));
+                    .Excluding(t => t.SelectedMemberInfo.Name == nameof(Person.Id)
+                                    && t.SelectedMemberInfo.DeclaringType == typeof(Person)));
         }
-        
+
         /// <summary>
         /// Недостатки этого решения:
         /// 1. Сообщения об ошибках в таком тесте сводятся к 'Expected: True But was: False',
