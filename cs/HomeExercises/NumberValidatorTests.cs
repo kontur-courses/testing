@@ -8,7 +8,7 @@ namespace HomeExercises
 	[TestFixture]
 	public class NumberValidatorTests
 	{
-		[TestCase(13, 6, TestName = "PrecisionIsPositive_ScaleIsPositiveLessPrecision")]
+		[TestCase(13, 6, TestName = "PrecisionIsPositive_ScaleIsPositiveAndLessThanPrecision")]
 		[TestCase(1, 0, TestName = "PrecisionIsPositive_ScaleIsZero")]
 		public void NumberValidatorConstructor_DoesNotThrow(int precision, int scale) =>
 			Assert.DoesNotThrow(() => new NumberValidator(precision, scale));

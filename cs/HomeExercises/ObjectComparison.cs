@@ -16,25 +16,25 @@ namespace HomeExercises
 			var expectedTsar = new Person("Ivan IV The Terrible", 54, 170, 70,
 			                              new Person("Vasili III of Russia", 28, 170, 60, null));
 
-			const string ignoredMemberName = "Id";
-
 			actualTsar.Should().BeEquivalentTo(expectedTsar, options => options.Excluding(
-				                                   person => person.SelectedMemberInfo.Name == ignoredMemberName),
+				                                   person => person.SelectedMemberInfo.Name == nameof(Person.Id)),
 			                                   "TsarRegistry contains only one person - Ivan IV The Terrible");
 		}
 		
 		/*
 		 * Недостатки:
 		 * 1. Информативность - имя теста не соответствует популярным конвенциям и не даёт информации о тестируемом
-		 * 	  модуле и ожидаемом поведении.
+		 *    модуле и ожидаемом поведении.
 		 *    Пример хорошей конвенции: [UnitOfWork_StateUnderTest_ExpectedBehavior].
 		 * 2. Расширяемость - при добавлении новых членов в Person, нам придётся переписывать тесты.
+		 *    В случае, если поменяется тип какого-либо из сравниваемых полей на ссылочный (кроме string), тест будет
+		 *    падать, т.к сравнение объектов будет осуществляться по ссылке.
 		 * 3. Читаемость - "Assert.True(AreEqual(actualTsar, expectedTsar));" - читается хуже, чем Fluent-style.
-		 * 	  Так же хорошим тоном считается указание причины ожидаемого поведения.
+		 *    Так же хорошим тоном считается указание причины ожидаемого поведения.
 		 * 4. Много кода - обычно, чем больше кода, тем больше вероятность сделать в нём ошибку.
 		 *    Плюс опять же, много кода хуже читается.
 		 * 5. Производительность - скорее всего этот рекурсивный велосипед много хуже оптимизирован, нежели специальный
-		 * 	  метод из специальной библиотеки.
+		 *    метод из специальной библиотеки.
 		 */
 
 		[Test]
