@@ -1,5 +1,4 @@
 ﻿using FluentAssertions;
-using static FluentAssertions.AssertionExtensions;
 using NUnit.Framework;
 
 namespace HomeExercises
@@ -15,12 +14,9 @@ namespace HomeExercises
 
 			var expectedTsar = new Person("Ivan IV The Terrible", 54, 170, 70,
 				new Person("Vasili III of Russia", 28, 170, 60, null));
-
-			// Переписал метод на использование fluent assertions.
-			actualTsar.ShouldBeEquivalentTo(expectedTsar, options => 
-					options.Excluding(o => o.Id)
-						.Excluding(o => o.Parent.Id)
-						.Excluding(o => o.Parent.Parent),
+			
+			actualTsar.ShouldBeEquivalentTo(expectedTsar, options =>
+				options.Excluding(o => o.SelectedMemberInfo.Name == "Id"),
 			"Ivan IV The Terrible is current tsar");
 		}
 
@@ -38,7 +34,7 @@ namespace HomeExercises
 			 * что объекты не одинаковы, но такой информации не достаточно. Нужно знать конкретные
 			 * отличающиеся свойства.
 			 * 2) При возникновении новых свойств придётся постоянно дополнять метод AreEqual,
-			 * что приводит к дополнительной трате времени. 
+			 * что приводит к дополнительной трате времени. j
 			 */
 			Assert.True(AreEqual(actualTsar, expectedTsar));
 		}
