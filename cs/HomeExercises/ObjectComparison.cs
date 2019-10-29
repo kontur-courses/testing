@@ -19,7 +19,7 @@ namespace HomeExercises
 			const string ignoredMemberName = "Id";
 
 			actualTsar.Should().BeEquivalentTo(expectedTsar, options => options.Excluding(
-				                                   person => person.SelectedMemberPath.EndsWith(ignoredMemberName)),
+				                                   person => person.SelectedMemberInfo.Name == ignoredMemberName),
 			                                   "TsarRegistry contains only one person - Ivan IV The Terrible");
 		}
 		
