@@ -9,10 +9,10 @@ namespace HomeExercises
     public class NumberValidatorTests
     {
 
-	    [TestCase(new [] {-1, 2}, TestName = "When_PrecisionIsNegative")]
-	    [TestCase(new [] {1, -2}, TestName = "When_ScaleIsNegative")]
-	    [TestCase(new [] {1, 3}, TestName = "When_ScaleIsBiggerThanPrecision")]
-	    [TestCase(new [] {1, 1}, TestName = "When_ScaleIsEqualToPrecision")]
+	    [TestCase( -1,2, TestName = "When_PrecisionIsNegative")]
+	    [TestCase(1, -2, TestName = "When_ScaleIsNegative")]
+	    [TestCase(1, 3, TestName = "When_ScaleIsBiggerThanPrecision")]
+	    [TestCase(1, 1, TestName = "When_ScaleIsEqualToPrecision")]
 
 	    public void ShouldThrowArgumentException(int precision, int scale)
 	    {
@@ -55,22 +55,19 @@ namespace HomeExercises
         [TestCase("", ExpectedResult = false, TestName = "ValueIsEmptyString")]
         public bool ShouldNotBeValid_WhenValueIsEmptyOrNull(string arg)
         {
-            return new NumberValidator(4, 2, true).IsValidNumber(arg);
-        }
-        [Test]
-        public void ShouldNotBeValid_When_NoNumberInValue()
-        {
-            Assert.IsFalse(new NumberValidator(4, 2, true).IsValidNumber("aaaa"));
+	        return new NumberValidator(4, 2, true).IsValidNumber(arg);
         }
 
-        [Test]
-        public void ShouldBeValid_When_UseCommaInNumber()
+        [TestCase("2,24",TestName = "When_CommaIsUsedInValue")]
+        [TestCase("2.24", TestName = "When_PointIsUsedInValue")]
+        public void ShouldBeValid_When_UseDiffrentDecimalSeparators(string arg)
         {
-            Assert.IsTrue(new NumberValidator(4, 2, true).IsValidNumber("2,24"));
+            Assert.IsTrue(new NumberValidator(4, 2, true).IsValidNumber(arg));
         }
 
-        [Test]
-        public void ShouldNotBeValid_When_NumbersAndNoNumbersInValue()
+        [TestCase("aaaa",TestName = "When_OnlyNoNumbersInValue")]
+        [TestCase("2, 24$", TestName = "When_NumbersAndNoNumbersInValue")]
+        public void ShouldNotBeValid_When_NoNumbersInValue(string arg)
         {
             Assert.IsFalse(new NumberValidator(4, 2, true).IsValidNumber("2,24$"));
         }

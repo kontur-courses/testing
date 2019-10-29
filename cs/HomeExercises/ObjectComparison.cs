@@ -25,9 +25,8 @@ namespace HomeExercises
             expectedTsar.Parent.Height.Should().Be(actualTsar.Parent.Height);
             expectedTsar.Parent.Parent.Should().Be(actualTsar.Parent.Parent);
             //или так
-            actualTsar.Should().BeEquivalentTo(expectedTsar, opitons => opitons.Excluding(
-					x =>x.SelectedMemberPath.StartsWith("Id")&&x.SelectedMemberPath.EndsWith("Id")
-							|| x.SelectedMemberPath.EndsWith("Parent.Id")));
+            actualTsar.Should().BeEquivalentTo(expectedTsar, opitons => 
+					opitons.Excluding(x => x.SelectedMemberInfo.Name == "Id"));
         }
 
         [Test]
@@ -42,9 +41,8 @@ namespace HomeExercises
             //В таком подходе в независимости от количества полей класса person можно сравнивать объекты этого класса по всем возможным полям
             //Так же можно указать те поля, которые сравнивать не нужно
             //Пишется намного меньше кода, однако читаемость у него такая себе
-            actualTsar.Should().BeEquivalentTo(expectedTsar, opitons => opitons.Excluding(
-	            x => x.SelectedMemberPath.StartsWith("Id") && x.SelectedMemberPath.EndsWith("Id")
-	                 || x.SelectedMemberPath.EndsWith("Parent.Id")));
+            actualTsar.Should().BeEquivalentTo(expectedTsar, opitons =>
+	            opitons.Excluding(x => x.SelectedMemberInfo.Name == "Id"));
             //в старом подходе используется рекурсия для сравнения поля parent, что может вызвать переполнение StackOverflow,
             //рекурсию в старом способе можно заменить на  stack, тогда память будет выделяться в куче а не в стэке, а размер куча = ОЗУ, размер стека фиксирован
         }
