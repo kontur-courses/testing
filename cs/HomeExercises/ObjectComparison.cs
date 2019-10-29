@@ -13,12 +13,10 @@ namespace HomeExercises
 
 			var expectedTsar = new Person("Ivan IV The Terrible", 54, 170, 70,
 				new Person("Vasili III of Russia", 28, 170, 60, null));
-
 			actualTsar.ShouldBeEquivalentTo(expectedTsar,
-				assertionOptions =>
-					assertionOptions.Excluding(subjectInfo =>
-						subjectInfo.SelectedMemberInfo.DeclaringType.Name == nameof(Person) &&
-						subjectInfo.SelectedMemberInfo.Name == nameof(Person.Id)));
+				assertionOptions => assertionOptions.Excluding(subjectInfo =>
+					subjectInfo.SelectedMemberInfo.DeclaringType.Name == nameof(Person) &&
+					subjectInfo.SelectedMemberInfo.Name == nameof(Person.Id)));
 		}
 
 		[Test]

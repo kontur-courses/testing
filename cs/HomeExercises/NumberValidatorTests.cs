@@ -2,142 +2,63 @@
 using System.Text.RegularExpressions;
 using FluentAssertions;
 using NUnit.Framework;
+using NUnit.Framework.Internal;
+using NUnit.Framework.Internal.Filters;
 
 namespace HomeExercises
 {
 	public class NumberValidatorTests
 	{
-		[Test]
-		public void Constructor_ThrowArgumentException_WhenPrecisionIsNegative()
+		[TestCase(-1, 2, TestName = "Precision is negative")]
+		[TestCase(0, 2, TestName = "Precision is zero")]
+		[TestCase(1, -1, TestName = "Scale is negative")]
+		[TestCase(1, 2, TestName = "Scale greater than precision")]
+		[TestCase(1, 1, TestName = "Scale equals precision")]
+		public void Constructor_ThrowsArgumentException(int precision, int scale)
 		{
-			Action act = () => new NumberValidator(-1, 2);
+			Action act = () => new NumberValidator(precision, scale);
 			act.ShouldThrow<ArgumentException>();
 		}
 
-		[Test]
-		public void Constructor_ThrowArgumentException_WhenPrecisionIsZero()
+		[TestCase(1, 0, TestName = "Precision is positive")]
+		[TestCase(2, 1, TestName = "Scale less than precision and positive")]
+		public void Constructor_DoesNotThrow(int precision, int scale)
 		{
-			Action act = () => new NumberValidator(0, 2);
-			act.ShouldThrow<ArgumentException>();
-		}
-
-		[Test]
-		public void Constructor_DoesNotThrow_WhenPrecisionIsPositive()
-		{
-			Action act = () => new NumberValidator(1, 0);
+			Action act = () => new NumberValidator(precision, scale);
 			act.ShouldNotThrow();
 		}
 
-		[Test]
-		public void Constructor_ThrowArgumentException_WhenScaleIsNegative()
+		[TestCase(1, 0, false, null, TestName = "Value is Null")]
+		[TestCase(1, 0, false, "", TestName = "Value is empty")]
+		[TestCase(3, 2, false, "a.sd", TestName = "Value is not representation of number")]
+		[TestCase(3, 2, false, "00.00", TestName = "Int part and frac part greater than precision")]
+		[TestCase(3, 2, true, "+1.23", TestName = "Sign and int part and frac part greater than precision")]
+		[TestCase(17, 1, false, "0.00", TestName = "Frac part greater than scale")]
+		[TestCase(17, 2, true, "-1.23", TestName = "Only positive and have negative sign")]
+		[TestCase(5, 3, false, ".5", TestName = "Without int part")]
+		[TestCase(5, 3, false, "+-0.3", TestName = "Two signs")]
+		[TestCase(6, 0, false, "five", TestName = "Word representation of number")]
+		[TestCase(20, 10, false, "5 + 3", TestName = "Sum of numbers")]
+		[TestCase(20, 10, false, "7 - 4", TestName = "Subtract of numbers")]
+		[TestCase(5, 2, false, "2.550", TestName = "Trailing zeros")]
+		public void IsValidNumber_ReturnFalse(
+			int precision, int scale, bool onlyPositive, string value)
 		{
-			Action act = () => new NumberValidator(1, -1);
-			act.ShouldThrow<ArgumentException>();
+			var numberValidator = new NumberValidator(precision, scale, onlyPositive);
+			numberValidator.IsValidNumber(value).Should().BeFalse();
 		}
 
-		[Test]
-		public void Constructor_ThrowArgumentException_WhenScaleGreaterThanPrecision()
+		[TestCase(17, 2, false, "+1.23", TestName = "Have positive sign")]
+		[TestCase(5, 2, false, "-5.43", TestName = "Have negative sign")]
+		[TestCase(17, 10, true, "+1.4563", TestName = "Only positive and have positive sign")]
+		[TestCase(4, 0, false, "0000", TestName = "Without frac part")]
+		[TestCase(17, 2, false, "98765432,1", TestName = "With comma delimiter")]
+		[TestCase(5, 4, false, "-0.60", TestName = "Trailing zeros")]
+		public void IsValidNumber_ReturnTrue(
+			int precision, int scale, bool onlyPositive, string value)
 		{
-			Action act = () => new NumberValidator(1, 2);
-            act.ShouldThrow<ArgumentException>();
-		}
-		
-		[Test]
-		public void Constructor_ThrowArgumentException_WhenScaleEqualsPrecision()
-		{
-			Action act = () => new NumberValidator(1, 1);
-			act.ShouldThrow<ArgumentException>();
-		}
-
-		[Test]
-		public void Constructor_DoesNotThrow_WhenScaleLessThanPrecisionAndPositive()
-		{
-			Action act = () => new NumberValidator(2, 1);
-			act.ShouldNotThrow();
-		}
-		
-		[Test]
-		public void Constructor_DoesNotThrow_WhenPrecisionPositiveAndScaleIsZero()
-		{
-			Action act = () => new NumberValidator(1, 0);
-			act.ShouldNotThrow();
-		}
-
-		[Test]
-		public void IsValidNumber_ReturnFalse_WhenValueIsNull()
-		{
-			var numberValidator = new NumberValidator(1);
-			numberValidator.IsValidNumber(null).Should().BeFalse();
-		}
-		
-		[Test]
-		public void IsValidNumber_ReturnFalse_WhenValueIsEmpty()
-		{
-			var numberValidator = new NumberValidator(1);
-			numberValidator.IsValidNumber("").Should().BeFalse();
-		}
-
-		[Test]
-		public void IsValidNumber_ReturnFalse_WhenValueIsNotRepresentationOfNumber()
-		{
-			var numberValidator = new NumberValidator(3, 2);
-			numberValidator.IsValidNumber("a.sd").Should().BeFalse();
-		}
-
-		[Test]
-		public void IsValidNumber_ReturnFalse_WhenIntPartAndFracPartGreaterThanPrecision()
-		{
-			var numberValidator = new NumberValidator(3, 2);
-			numberValidator.IsValidNumber("00.00").Should().BeFalse();
-		}
-
-		[Test]
-		public void IsValidNumber_ReturnFalse_WhenSignAndIntPartAndFracPartGreaterThanPrecision()
-		{
-			var numberValidator = new NumberValidator(3, 2, true);
-			numberValidator.IsValidNumber("+1.23").Should().BeFalse();	
-		}
-		
-		[Test]
-		public void IsValidNumber_ReturnFalse_WhenFracPartGreaterThanScale()
-		{
-			var numberValidator = new NumberValidator(17, 1);
-			numberValidator.IsValidNumber("0.00").Should().BeFalse();
-		}
-
-		[Test]
-		public void IsValidNumber_ReturnFalse_WhenOnlyPositiveAndHaveNegativeSign()
-		{
-			var numberValidator = new NumberValidator(17, 2, true);
-			numberValidator.IsValidNumber("-1.23").Should().BeFalse();
-		}
-
-		[Test]
-		public void IsValidNumber_ReturnTrue_WhenValueValidAndHavePositiveSign()
-		{
-			var numberValidator = new NumberValidator(17, 2);
-			numberValidator.IsValidNumber("+1.23").Should().BeTrue();
-		}
-		
-		[Test]
-		public void IsValidNumber_ReturnTrue_WhenOnlyPositiveAndValueValidAndHavePositiveSign()
-		{
-			var numberValidator = new NumberValidator(17, 2, true);
-			numberValidator.IsValidNumber("+1.23").Should().BeTrue();
-		}
-
-		[Test]
-		public void IsValidNumber_ReturnTrue_WhenValueValidWithoutFracPart()
-		{
-			var numberValidator = new NumberValidator(17);
-			numberValidator.IsValidNumber("0").Should().BeTrue();
-		}
-
-		[Test]
-		public void IsValidNumber_ReturnTrue_WhenValueValidWithCommaDelimiter()
-		{
-			var numberValidator = new NumberValidator(17, 2);
-			numberValidator.IsValidNumber("98765432,1").Should().BeTrue();
+			var numberValidator = new NumberValidator(precision, scale, onlyPositive);
+			numberValidator.IsValidNumber(value).Should().BeTrue();
 		}
 	}
 
