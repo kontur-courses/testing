@@ -5,67 +5,53 @@ using NUnit.Framework;
 
 namespace HomeExercises
 {
-    [TestFixture]
+    
     public class NumberValidatorTests
     {
-        [TestCase(-1, 0, true)]
-        public void NumberValidator_NegativePrecision_ArgumentException(int precision, int scale, bool onlyPositive)
+        [TestCase(-1, 2, TestName = "WhenPrecisionIsNegative")]
+        [TestCase(0, 2, TestName = "WhenPrecisionIsZero")]
+        [TestCase(1, -1, TestName = "WhenScaleIsNegative")]
+        [TestCase(1, 3, TestName = "WhenScaleIsGreaterThenPrecision")]
+        public void NumberValidator_RaiseArgumentException(int precision, int scale)
         {
-            new Action(() => new NumberValidator(precision, scale, onlyPositive)).Should().Throw<ArgumentException>();
+            new Action(() => new NumberValidator(precision, scale)).Should().Throw<ArgumentException>();
         }
 
-        [TestCase(1, 0, true)]
-        public void NumberValidator_PositivePrecision_NotThrow(int precision, int scale, bool onlyPositive)
-        {
-            new Action(() => new NumberValidator(precision, scale, onlyPositive)).Should().NotThrow();
-        }
-
-        [TestCase(-1, 0, true)]
-        public void NumberValidator_NegativeScale_ArgumentException(int precision, int scale, bool onlyPositive)
-        {
-            new Action(() => new NumberValidator(precision, scale, onlyPositive)).Should().Throw<ArgumentException>();
-        }
-
-        [TestCase(1, 0, true)]
-        public void NumberValidator_PositiveScale_NotThrow(int precision, int scale, bool onlyPositive)
-        {
-            new Action(() => new NumberValidator(precision, scale, onlyPositive)).Should().NotThrow();
-        }
-
-        [TestCase(1, 3, true)]
-        public void NumberValidator_ScaleGreaterPrecision_ArgumentException(int precision, int scale, bool onlyPositive)
-        {
-            new Action(() => new NumberValidator(precision, scale, onlyPositive)).Should().Throw<ArgumentException>();
-        }
-
-        [TestCase(17, 2, true, "0.0")]
-        [TestCase(17, 2, true, "0")]
-        [TestCase(4, 2, true, "+1.23")]
-        public void IsValidNumber_ValidNumber(int precision, int scale, bool onlyPositive, string value)
+        [TestCase(17, 2, false, "0.0", TestName = "WhenStringContainDot_CountNumberLessThenPrecision_FracPartLessScale")]
+        [TestCase(17, 2, false, "0,0", TestName = "WhenStringContainDot_CountNumberLessThenPrecision_FracPartLessScale")]
+        [TestCase(17, 2, false, "0", TestName = "WhenStringNotContainDot_CountNumberLessThenPrecision")]
+        [TestCase(17, 2, false, "+12", TestName = "WhenStringContainPlas")]
+        [TestCase(17, 2, false, "-12", TestName = "WhenStringContainMinus")]
+        [TestCase(17, 0, false, "222", TestName = "WhenStrindIsInteger_ScaleIsZero")]
+        [TestCase(17, 2, true, "12", TestName = "WhenStringNotContainSign_OnlyPositiveIsTrue")]
+        [TestCase(17, 2, true, "+12", TestName = "WhenStringContainPlas_OnlyPositiveIsTrue")]
+        public void IsValidNumber_ReturnsTrue(int precision, int scale, bool onlyPositive, string value)
         {
             new NumberValidator(precision, scale, onlyPositive).IsValidNumber(value).Should().BeTrue();
         }
 
-        [TestCase(3, 2, true, "00.00")]
-        [TestCase(3, 2, true, "-0.00")]
-        [TestCase(3, 2, true, "+0.00")]
-        [TestCase(3, 2, true, "+1.23")]
-        [TestCase(17, 2, true, "0.000")]
-        [TestCase(3, 2, true, "-1.23")]
-        [TestCase(3, 2, true, "a.sd")]
-        [TestCase(3, 2, true, ".")]
-        [TestCase(3, 2, true, "")]
-        [TestCase(3, 2, true, null)]
-        public void IsValidNumber_NotValidNumber(int precision, int scale, bool onlyPositive, string value)
+        [TestCase(3, 2, false, "0000", TestName = "WhenCountFracPartIsGreaterThenPrecision")]
+        [TestCase(3, 1, false, "0.00", TestName = "WhenCountFracPartIsGreaterThenScale")]
+        [TestCase(3, 2, false, "+000", TestName = "WhenCountNumberWithPlasIsGreaterThenPrecision")]
+        [TestCase(3, 2, false, "-000", TestName = "WhenCountNumberWithMinusIsGreaterThenPrecision")]
+        [TestCase(10, 2, false, "3+4", TestName = "WhenPlasIsInsideNumber")]
+        [TestCase(10, 2, false, "3-4", TestName = "WhenMinusIsInsideNumber")]
+        [TestCase(10, 2, false, "34+", TestName = "WhenPlasIsInsideNumber")]
+        [TestCase(10, 2, false, "34-", TestName = "WhenMinusIsInsideNumber")]
+        [TestCase(10, 2, false, "3 4", TestName = "WhenSpaceIsInsideNumber")]
+        [TestCase(10, 2, false, "34 ", TestName = "WhenSpaceIsAfterNumber")]
+        [TestCase(10, 2, false, " 34", TestName = "WhenSpaceIsBeforeNumber")]
+        [TestCase(3, 2, false, "a", TestName = "WhenStringContainOtherSymbol")]
+        [TestCase(3, 2, false, ".", TestName = "WhenStringContainOnlyDot")]
+        [TestCase(3, 2, false, ".0", TestName = "WhenStringStartIsDot")]
+        [TestCase(3, 2, false, "0.", TestName = "WhenStringEndIsDot")]
+        [TestCase(3, 2, false, "", TestName = "WhenStringIsEmpty")]
+        [TestCase(3, 2, false, " ", TestName = "WhenStringContainOnlySpace")]
+        [TestCase(3, 2, false, null, TestName = "WhenStringIsNull")]
+        [TestCase(3, 2, true, "-456", TestName = "WhenStringStartIsMinus_OnlyPositiveIsTrue")]
+        public void IsValidNumber_ReturnFalse(int precision, int scale, bool onlyPositive, string value)
         {
             new NumberValidator(precision, scale, onlyPositive).IsValidNumber(value).Should().BeFalse();
-        }
-
-        [TestCase(5, 2, false, "-0.3")]
-        [TestCase(5, 2, false, "-1")]
-        public void IsValidNumber_NegativeNumberNotOnlyPositive(int precision, int scale, bool onlyPositive, string value)
-        {
-            new NumberValidator(precision, scale, onlyPositive).IsValidNumber(value).Should().BeTrue();
         }
     }
 

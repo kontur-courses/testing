@@ -17,7 +17,9 @@ namespace HomeExercises
 
             actualTsar.Should().BeEquivalentTo(expectedTsar,
                 option => option
-                .Excluding((FluentAssertions.Equivalency.IMemberInfo o) => o.SelectedMemberPath.Contains("Id")));
+                .Excluding((FluentAssertions.Equivalency.IMemberInfo o) =>
+                o.SelectedMemberInfo.DeclaringType == typeof(Person) &&
+                o.SelectedMemberInfo.Name == nameof(Person.Id)));
 		}
 
 		[Test]
@@ -35,6 +37,11 @@ namespace HomeExercises
             // Из-за этого может понадовиться вручную дебажить тест чтобы узнать положение несовпадающего поля.
             // К тому же нельзя узнать было ли несовпадающее поле только одно или их было несколько,
             // что затруднит исправление, так как ты не узнаешь правильно ли исправил одно значения, пока не исправишь остальные.
+
+            // При расширении класса и добывлении в него новых полей придётся дописывать в условие новые сравнения,
+            // поэтому если сравнение объектов будет зависить от этой новой переменной (например год рождения),
+            // то при равенстве старых полей тест будет сообщать о равенстве объектов, в то время как года рождения могут отличаться.
+            // При этих же условиях моя реализация тесты перестанет проходить, чем сообщит о том что тест устарел и его стоит переписать.
 
             Assert.True(AreEqual(actualTsar, expectedTsar));
 		}
