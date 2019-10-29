@@ -15,8 +15,7 @@ namespace HomeExercises
 				new Person("Vasili III of Russia", 28, 170, 60, null));
 
             actualTsar.Should().BeEquivalentTo(expectedTsar, options => options
-            .Excluding(person => person.Id)
-            .Excluding(person => person.SelectedMemberPath.EndsWith(".Id")));
+            .Excluding(person => person.SelectedMemberInfo.Name == nameof(Person.Id)));
         }
 
 		[Test]

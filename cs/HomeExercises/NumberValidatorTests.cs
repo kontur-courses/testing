@@ -8,37 +8,47 @@ namespace HomeExercises
     [TestFixture]
     public class NumberValidatorTests
     {
-        [TestFixture]
-        public class ConstructorShould
+        public class TestsBase
         {
-            [Test]
-            public void ThrowArgumentException_OnNegativePrecision()
+            [OneTimeSetUp]
+            public void BaseOneTimeSetUp()
             {
-                Action create = () => { var x = new NumberValidator(-1); };
+                basicValidator = CreateBasicNumberValidator();
+            }
+
+            private NumberValidator CreateBasicNumberValidator()
+            {
+                return new NumberValidator(10, 2);
+            }
+
+            public NumberValidator basicValidator;
+        }
+
+        public class ConstructorShould : TestsBase
+        {
+            private static Action[] precisionCases =
+            {
+                () => { var x = new NumberValidator(0); },
+                () => { var x = new NumberValidator(-1); }
+            };
+
+            [TestCaseSource("precisionCases")]
+            public void ThrowArgumentException_OnZeroOrNegativePrecision(Action create)
+            {
                 create.Should().Throw<ArgumentException>()
                     .WithMessage("precision must be a positive number");
             }
 
-            [Test]
-            public void ThrowArgumentException_OnZeroPrecision()
+            private static Action[] scaleCases =
             {
-                Action create = () => { var x = new NumberValidator(0); };
-                create.Should().Throw<ArgumentException>()
-                    .WithMessage("precision must be a positive number");
-            }
+                () => { var x = new NumberValidator(1, 1); },
+                () => { var x = new NumberValidator(1, 2); },
+                () => { var x = new NumberValidator(1, -2); },
+            };
 
-            [Test]
-            public void ThrowArgumentException_OnNegativeScale()
+            [TestCaseSource("scaleCases")]
+            public void ThrowArgumentException_OnNegativeScaleOrScaleBiggerEqualPrecision(Action create)
             {
-                Action create = () => { var x = new NumberValidator(1, -2); };
-                create.Should().Throw<ArgumentException>()
-                    .WithMessage("scale must be a non-negative number less or equal than precision");
-            }
-
-            [Test]
-            public void ThrowArgumentException_OnScaleBiggerThanPrecision()
-            {
-                Action create = () => { var x = new NumberValidator(1, 2); };
                 create.Should().Throw<ArgumentException>()
                     .WithMessage("scale must be a non-negative number less or equal than precision");
             }
@@ -51,22 +61,8 @@ namespace HomeExercises
             }
         }
 
-        [TestFixture]
-        public class IsValidNumberShould
+        public class IsValidNumberShould : TestsBase
         {
-            private NumberValidator basicValidator;
-
-            private NumberValidator CreateBasicNumberValidator()
-            {
-                return new NumberValidator(10, 2);
-            }
-
-            [SetUp]
-            public void BaseSetUp()
-            {
-                basicValidator = CreateBasicNumberValidator();
-            }
-
             [Test]
             public void ReturnFalse_OnNull()
             {
@@ -79,23 +75,23 @@ namespace HomeExercises
                 basicValidator.IsValidNumber("").Should().BeFalse();
             }
 
-            [Test]
-            public void ReturnFalse_OnIncorrectNumberFormat()
+
+            private static string[] incorrectNumberFormatCases =
+                { "asd", ".11", "9.", "10,", "12.1e", "-a.89", "12. 4", "+\n", "6-", "++" };
+
+            [TestCaseSource("incorrectNumberFormatCases")]
+            public void ReturnFalse_OnIncorrectNumberFormat(string number)
             {
-                var numbers = new string[] { "asd", ".11", "9.", "10,", "12.1e", "-a.89", "12. 4", "+\n" };
-                foreach (var number in numbers)
-                {
-                    basicValidator.IsValidNumber(number).Should().BeFalse();
-                }
+                basicValidator.IsValidNumber(number).Should().BeFalse();
             }
 
-            [Test]
-            public void ReturnFalse_OnPrecisionLessThanNumberLength()
+            private static string[] precisionLessThanNumberLengthCases = { "21.3", "+10", "100" };
+
+            [TestCaseSource("precisionLessThanNumberLengthCases")]
+            public void ReturnFalse_OnPrecisionLessThanNumberLength(string number)
             {
                 var validator = new NumberValidator(2, 1);
-                validator.IsValidNumber("21.3").Should().BeFalse();
-                validator.IsValidNumber("+10").Should().BeFalse();
-                validator.IsValidNumber("100").Should().BeFalse();
+                validator.IsValidNumber(number).Should().BeFalse();
             }
 
             [Test]
@@ -110,64 +106,62 @@ namespace HomeExercises
                 new NumberValidator(10, 2, true).IsValidNumber("-10").Should().BeFalse();
             }
 
-            [Test]
-            public void ReturnTrue_OnCorrectNumbers()
+            private static string[] correctNumbersCases =
+                { "55", "0.00", "10.13", "10,13", "-20", "+20", "-177.6", "+46,68", "1000000000" };
+
+            [TestCaseSource("correctNumbersCases")]
+            public void ReturnTrue_OnCorrectNumbers(string number)
             {
-                var numbers = new string[] {"55", "0.00", "10.13", "10,13", "-20", "+20",
-                "-177.6", "+46,68", "1000000000"};
-                foreach (var number in numbers)
-                {
-                    basicValidator.IsValidNumber(number).Should().BeTrue();
-                }
+                basicValidator.IsValidNumber(number).Should().BeTrue();
             }
         }
     }
 
-        public class NumberValidator
-	{
-		private readonly Regex numberRegex;
-		private readonly bool onlyPositive;
-		private readonly int precision;
-		private readonly int scale;
+    public class NumberValidator
+    {
+        private readonly Regex numberRegex;
+        private readonly bool onlyPositive;
+        private readonly int precision;
+        private readonly int scale;
 
-		public NumberValidator(int precision, int scale = 0, bool onlyPositive = false)
-		{
-			this.precision = precision;
-			this.scale = scale;
-			this.onlyPositive = onlyPositive;
-			if (precision <= 0)
-				throw new ArgumentException("precision must be a positive number");
-			if (scale < 0 || scale >= precision)
-				throw new ArgumentException("scale must be a non-negative number less or equal than precision");
-			numberRegex = new Regex(@"^([+-]?)(\d+)([.,](\d+))?$", RegexOptions.IgnoreCase);
-		}
+        public NumberValidator(int precision, int scale = 0, bool onlyPositive = false)
+        {
+            this.precision = precision;
+            this.scale = scale;
+            this.onlyPositive = onlyPositive;
+            if (precision <= 0)
+                throw new ArgumentException("precision must be a positive number");
+            if (scale < 0 || scale >= precision)
+                throw new ArgumentException("scale must be a non-negative number less or equal than precision");
+            numberRegex = new Regex(@"^([+-]?)(\d+)([.,](\d+))?$", RegexOptions.IgnoreCase);
+        }
 
-		public bool IsValidNumber(string value)
-		{
-			// Проверяем соответствие входного значения формату N(m,k), в соответствии с правилом, 
-			// описанным в Формате описи документов, направляемых в налоговый орган в электронном виде по телекоммуникационным каналам связи:
-			// Формат числового значения указывается в виде N(m.к), где m – максимальное количество знаков в числе, включая знак (для отрицательного числа), 
-			// целую и дробную часть числа без разделяющей десятичной точки, k – максимальное число знаков дробной части числа. 
-			// Если число знаков дробной части числа равно 0 (т.е. число целое), то формат числового значения имеет вид N(m).
+        public bool IsValidNumber(string value)
+        {
+            // Проверяем соответствие входного значения формату N(m,k), в соответствии с правилом, 
+            // описанным в Формате описи документов, направляемых в налоговый орган в электронном виде по телекоммуникационным каналам связи:
+            // Формат числового значения указывается в виде N(m.к), где m – максимальное количество знаков в числе, включая знак (для отрицательного числа), 
+            // целую и дробную часть числа без разделяющей десятичной точки, k – максимальное число знаков дробной части числа. 
+            // Если число знаков дробной части числа равно 0 (т.е. число целое), то формат числового значения имеет вид N(m).
 
-			if (string.IsNullOrEmpty(value))
-				return false;
+            if (string.IsNullOrEmpty(value))
+                return false;
 
-			var match = numberRegex.Match(value);
-			if (!match.Success)
-				return false;
+            var match = numberRegex.Match(value);
+            if (!match.Success)
+                return false;
 
-			// Знак и целая часть
-			var intPart = match.Groups[1].Value.Length + match.Groups[2].Value.Length;
-			// Дробная часть
-			var fracPart = match.Groups[4].Value.Length;
+            // Знак и целая часть
+            var intPart = match.Groups[1].Value.Length + match.Groups[2].Value.Length;
+            // Дробная часть
+            var fracPart = match.Groups[4].Value.Length;
 
-			if (intPart + fracPart > precision || fracPart > scale)
-				return false;
+            if (intPart + fracPart > precision || fracPart > scale)
+                return false;
 
-			if (onlyPositive && match.Groups[1].Value == "-")
-				return false;
-			return true;
-		}
-	}
+            if (onlyPositive && match.Groups[1].Value == "-")
+                return false;
+            return true;
+        }
+    }
 }
