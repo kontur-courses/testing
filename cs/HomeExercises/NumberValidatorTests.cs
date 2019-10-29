@@ -8,20 +8,24 @@ namespace HomeExercises
 {
 	public class NumberValidatorTests
 	{
-		[Test, TestCaseSource(nameof(IncorrectArgumentsTestCases))]
-		public void NumberValidator_Should_ThrowArgumentException_When_IncorrectArguments(int precision, int scale)
+		[TestCase(-1, 0, TestName = "precision is negative")]
+		[TestCase(0, 0, TestName = "precision is zero")]
+		[TestCase(7, 7, TestName = "scale is equal to precision")]
+		[TestCase(7, 8, TestName = "scale is greater than precision")]
+		[TestCase(7, -1, TestName = "scale is negative")]
+		public void Constructor_Should_ThrowArgumentException_When_IncorrectArguments(int precision, int scale)
 		{
 			Following
 				.Code(() => new NumberValidator(precision, scale))
 				.ShouldThrow<ArgumentException>("arguments are incorrect");
 		}
 		
-		[Test, TestCaseSource(nameof(CorrectArgumentsTestCases))]
-		public void NumberValidator_Should_NotThrowExceptions_When_CorrectArguments(int precision, int scale, bool onlyPositive)
+		[TestCase(1, 0, true, TestName = "correct on non-zero precision and zero scale with only positive numbers")]
+		[TestCase(7, 5, false, TestName = "correct on non-zero precision greater than scale with negative numbers including")]
+		public void Constructor_Should_NotThrowExceptions_When_CorrectArguments(int precision, int scale, bool onlyPositive)
 		{
-			Following
-				.Code(() => new NumberValidator(precision, scale, onlyPositive))
-				.ShouldNotThrow("arguments are correct");
+			Following.Code(() => new NumberValidator(precision, scale, onlyPositive))
+					 .ShouldNotThrow("arguments are correct");
 		}
 		
 		[Test, TestCaseSource(nameof(ValidTestCases))]
@@ -30,35 +34,7 @@ namespace HomeExercises
 			var numberValidator = new NumberValidator(precision, scale, onlyPositive);
 			numberValidator.IsValidNumber(number).Should().BeTrue("all input data is correct");
 		}
-
-		[Test, TestCaseSource(nameof(InvalidTestCases))]
-		public void IsValidNumber_Should_ReturnFalse_When_NumberIsInvalid(int precision, int scale, bool onlyPositive, string number)
-		{
-			var numberValidator = new NumberValidator(precision, scale, onlyPositive);
-			numberValidator.IsValidNumber(number).Should().BeFalse("all input data is incorrect");
-		}
 		
-		
-		private static IEnumerable CorrectArgumentsTestCases
-		{
-			get
-			{
-				yield return new TestCaseData(1, 0, true).SetName("correct on correct data");
-				yield return new TestCaseData(7, 5, false).SetName("correct on correct data with non-zero scale");
-			}
-		}
-		
-		private static IEnumerable IncorrectArgumentsTestCases
-		{
-			get
-			{
-				yield return new TestCaseData(-1, 0).SetName("precision is negative");
-				yield return new TestCaseData(0, 0).SetName("precision is zero");
-				yield return new TestCaseData(7, 7).SetName("scale is equal to precision");
-				yield return new TestCaseData(7, 8).SetName("scale is greater than precision");
-				yield return new TestCaseData(7, -1).SetName("scale is negative");
-			}
-		}
 		private static IEnumerable ValidTestCases
 		{
 			get
@@ -73,6 +49,13 @@ namespace HomeExercises
 				yield return new TestCaseData(10, 0, true, int.MaxValue.ToString()).SetName("when value is int.MaxValue");
 				yield return new TestCaseData(11, 0, false, int.MinValue.ToString()).SetName("when value is int.MinValue");
 			}
+		}
+		
+		[Test, TestCaseSource(nameof(InvalidTestCases))]
+		public void IsValidNumber_Should_ReturnFalse_When_NumberIsInvalid(int precision, int scale, bool onlyPositive, string number)
+		{
+			var numberValidator = new NumberValidator(precision, scale, onlyPositive);
+			numberValidator.IsValidNumber(number).Should().BeFalse("all input data is incorrect");
 		}
 		
 		private static IEnumerable InvalidTestCases
