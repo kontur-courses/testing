@@ -3,40 +3,53 @@ using NUnit.Framework;
 
 namespace HomeExercises
 {
-	public class ObjectComparison
+	public class Test_TsarRegistry
 	{
+		private Person actualKing;
+		private Person expectedKing;
+
+		[SetUp]
+		public void SetUp()
+		{
+			// Так как в обоих тестах одни и те же данные
+			// Можно их инициализировать в Сетапе
+			actualKing = TsarRegistry.GetCurrentTsar();
+			expectedKing = new Person("Ivan IV The Terrible", 54, 170, 70,
+				new Person("Vasili III of Russia", 28, 170, 60, null));
+        }
+
 		[Test]
 		[Description("Проверка текущего царя")]
 		[Category("ToRefactor")]
-		public void CheckCurrentTsar()
+		public void CheckCurrentKing()
 		{
-			var actualTsar = TsarRegistry.GetCurrentTsar();
+			// Использовать Fluent API лучше тем, что можно сразу определить
+			// где ожидаемое значение, а где полученное.
+			actualKing.Should().NotBeNull();
+			actualKing.Name.Should().Be(expectedKing.Name);
+			actualKing.Age.Should().Be(expectedKing.Age);
+			actualKing.Height.Should().Be(expectedKing.Height);
+			actualKing.Weight.Should().Be(expectedKing.Weight);
 
-			var expectedTsar = new Person("Ivan IV The Terrible", 54, 170, 70,
-				new Person("Vasili III of Russia", 28, 170, 60, null));
-
-			// Перепишите код на использование Fluent Assertions.
-			Assert.AreEqual(actualTsar.Name, expectedTsar.Name);
-			Assert.AreEqual(actualTsar.Age, expectedTsar.Age);
-			Assert.AreEqual(actualTsar.Height, expectedTsar.Height);
-			Assert.AreEqual(actualTsar.Weight, expectedTsar.Weight);
-
-			Assert.AreEqual(expectedTsar.Parent.Name, actualTsar.Parent.Name);
-			Assert.AreEqual(expectedTsar.Parent.Age, actualTsar.Parent.Age);
-			Assert.AreEqual(expectedTsar.Parent.Height, actualTsar.Parent.Height);
-			Assert.AreEqual(expectedTsar.Parent.Parent, actualTsar.Parent.Parent);
-		}
+			actualKing.Parent.Should().NotBeNull();
+			actualKing.Parent.Name.Should().Be(expectedKing.Parent.Name);
+			actualKing.Parent.Age.Should().Be(expectedKing.Parent.Age);
+			actualKing.Parent.Height.Should().Be(expectedKing.Parent.Height);
+			actualKing.Parent.Weight.Should().Be(expectedKing.Parent.Weight);
+        }
 
 		[Test]
 		[Description("Альтернативное решение. Какие у него недостатки?")]
 		public void CheckCurrentTsar_WithCustomEquality()
 		{
-			var actualTsar = TsarRegistry.GetCurrentTsar();
-			var expectedTsar = new Person("Ivan IV The Terrible", 54, 170, 70,
-				new Person("Vasili III of Russia", 28, 170, 60, null));
+			// Какие недостатки у такого подхода?
+			// Если тест не пройдет, то будет непонятно, где именно
+			// Assert.True(AreEqual(actualKing, expectedKing));
 
-			// Какие недостатки у такого подхода? 
-			Assert.True(AreEqual(actualTsar, expectedTsar));
+			// В данном решении проверяется не только отец текущего человека,
+			// но и все отцы отцов
+			// Также, если тест упадет то можно увидеть, на чем ошибка 
+			Test_PersonsAreEqual(expectedKing, actualKing, "current King");
 		}
 
 		private bool AreEqual(Person actual, Person expected)
@@ -49,6 +62,25 @@ namespace HomeExercises
 				&& actual.Height == expected.Height
 				&& actual.Weight == expected.Weight
 				&& AreEqual(actual.Parent, expected.Parent);
+		}
+
+
+		public static void Test_PersonsAreEqual(Person expected, Person actual, string because)
+		{
+			actual.Name.Should().Be(expected.Name, $"because names of {because} should be equal");
+			actual.Age.Should().Be(expected.Age, $"because ages of {because} should be equal");
+			actual.Height.Should().Be(expected.Height, $"because heights of {because} should be equal");
+			actual.Weight.Should().Be(expected.Weight, $"because weights of {because} should be equal");
+
+			if (expected.Parent != null)
+			{
+				actual.Parent.Should().NotBeNull($"because parent of {because} shouldn't be null");
+				Test_PersonsAreEqual(expected.Parent, actual.Parent, "parent of " + because);
+			}
+			else
+			{
+				actual.Parent.Should().BeNull($"because parent of {because} should be null");
+			}
 		}
 	}
 
