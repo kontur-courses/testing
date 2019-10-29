@@ -5,28 +5,50 @@ using NUnit.Framework;
 
 namespace HomeExercises
 {
+	[TestFixture]
 	public class NumberValidatorTests
 	{
-		[Test]
-		public void Test()
+		[TestCase(-1, 2, TestName = "Precision negative")]
+		[TestCase(0, 2, TestName = "Precision zero")]
+		[TestCase(1, -1, TestName = "Scale negative")]
+		[TestCase(1, 2, TestName = "Scale greater than precision")]
+		[TestCase(-2, -1, TestName = "Scale greater than precision and precision negative and scale negative")]
+		public void Constructor_WithArgumentException(int precision, int scale = 0, bool onlyPositive = false)
 		{
-			Assert.Throws<ArgumentException>(() => new NumberValidator(-1, 2, true));
-			Assert.DoesNotThrow(() => new NumberValidator(1, 0, true));
-			Assert.Throws<ArgumentException>(() => new NumberValidator(-1, 2, false));
-			Assert.DoesNotThrow(() => new NumberValidator(1, 0, true));
-
-			Assert.IsTrue(new NumberValidator(17, 2, true).IsValidNumber("0.0"));
-			Assert.IsTrue(new NumberValidator(17, 2, true).IsValidNumber("0"));
-			Assert.IsTrue(new NumberValidator(17, 2, true).IsValidNumber("0.0"));
-			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("00.00"));
-			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("-0.00"));
-			Assert.IsTrue(new NumberValidator(17, 2, true).IsValidNumber("0.0"));
-			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("+0.00"));
-			Assert.IsTrue(new NumberValidator(4, 2, true).IsValidNumber("+1.23"));
-			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("+1.23"));
-			Assert.IsFalse(new NumberValidator(17, 2, true).IsValidNumber("0.000"));
-			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("-1.23"));
-			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("a.sd"));
+			Action action = () => new NumberValidator(precision, scale, onlyPositive);
+			action.ShouldThrow<ArgumentException>();
+		}
+		
+		[TestCase("0.00", true, TestName = "Zero with scale only positive")]
+		[TestCase("0.00", false, TestName = "Zero with scale")]
+		[TestCase("0", true, TestName = "Zero only positive")]
+		[TestCase("0", false, TestName = "Zero")]
+		[TestCase("+0", true, TestName = "Zero positive with only positive")]
+		[TestCase("-0", false, TestName = "Zero negative")]
+		[TestCase("1111", false, TestName = "Without scale")]
+		[TestCase("1111.12", false, TestName = "Number positive with scale")]
+		[TestCase("+1111.12", true, TestName = "Number positive with scale only positive")]
+		[TestCase("-1111", false, TestName = "Number negative without scale")]
+		public void IsValidNumber_ReturnTrue(string value, bool onlyPositive)
+		{
+			var numberValidator = new NumberValidator(17, 4, onlyPositive);
+			numberValidator.IsValidNumber(value).Should().BeTrue();
+		}
+		
+		
+		[TestCase(null, false, TestName = "Value is null")]
+		[TestCase("", false, TestName = "Value is empty")]
+		[TestCase("+ad", false, TestName = "Value isn't number")]
+		[TestCase(" ", false, TestName = "Value is spaсe")]
+		[TestCase("11111", false, TestName = "Precision more than set")]
+		[TestCase("+1111", false, TestName = "Sign and number have precision more than set")]
+		[TestCase("-11.1", true, TestName = "Number negative with only positive")]
+		[TestCase("-0", true, TestName = "Zero negative with only positive")]
+		[TestCase("1.111", false, TestName = "Scale more than set")]
+		public void IsValidNumber_ReturnFalse(string value, bool onlyPositive)
+		{
+			var numberValidator = new NumberValidator(4, 2, onlyPositive);
+			numberValidator.IsValidNumber(value).Should().BeFalse();
 		}
 	}
 
@@ -45,7 +67,7 @@ namespace HomeExercises
 			if (precision <= 0)
 				throw new ArgumentException("precision must be a positive number");
 			if (scale < 0 || scale >= precision)
-				throw new ArgumentException("precision must be a non-negative number less or equal than precision");
+				throw new ArgumentException("scale must be a non-negative number less or equal than precision");
 			numberRegex = new Regex(@"^([+-]?)(\d+)([.,](\d+))?$", RegexOptions.IgnoreCase);
 		}
 
