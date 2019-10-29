@@ -49,7 +49,7 @@ namespace HomeExercises
 		[TestCase(-1, 2, TestName = "Fails_WhenPrecisionLessThanZero")]
 		[TestCase(1, 2, TestName = "Fails_WhenScaleGreaterThanPrecision")]
 		[TestCase(1, -1, TestName = "Fails_WhenScaleLessThanZero")]
-		public void TestNumberValidator_Throws_Exceptions(int precision, int scale)
+		public void TestNumberValidator_Throws_Argument_Exception(int precision, int scale)
 		{
 			new Func<NumberValidator>(() => new NumberValidator(precision, scale)).Should().Throw<ArgumentException>();
 		}
