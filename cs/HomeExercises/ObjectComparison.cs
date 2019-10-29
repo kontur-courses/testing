@@ -16,18 +16,23 @@ namespace HomeExercises
 				new Person("Vasili III of Russia", 28, 170, 60, null));
 
 			// Перепишите код на использование Fluent Assertions.
-			Assert.AreEqual(actualTsar.Name, expectedTsar.Name);
-			Assert.AreEqual(actualTsar.Age, expectedTsar.Age);
-			Assert.AreEqual(actualTsar.Height, expectedTsar.Height);
-			Assert.AreEqual(actualTsar.Weight, expectedTsar.Weight);
-
-			Assert.AreEqual(expectedTsar.Parent.Name, actualTsar.Parent.Name);
-			Assert.AreEqual(expectedTsar.Parent.Age, actualTsar.Parent.Age);
-			Assert.AreEqual(expectedTsar.Parent.Height, actualTsar.Parent.Height);
-			Assert.AreEqual(expectedTsar.Parent.Parent, actualTsar.Parent.Parent);
+			actualTsar
+				.Should()
+				.BeEquivalentTo(expectedTsar, options => options
+					.Excluding(p => p.SelectedMemberInfo.Name == "Id"));
 		}
 
-		[Test]
+        /* Недостатки:
+		 * 1. При добавлении новых свойств в класс Person придется каждый раз дописывать
+		 *	  их в метод AreEqual -- лишняя работа, плюс он может вырасти до невероятных размеров
+		 *    и стать трудно читаемым. Например, даже сейчас в этом методе, в отличии от предыдущего,
+         *    написанного с использованием Fluent Assertions, не заметно, что вообще-то у класса
+         *    Person есть поле Id, которое в сравнении не участвует.
+		 * 2. Нет понятного сообщения об ошибке
+		 * 3. Можно запутаться, где actual, а где expected
+		 */
+
+        [Test]
 		[Description("Альтернативное решение. Какие у него недостатки?")]
 		public void CheckCurrentTsar_WithCustomEquality()
 		{
