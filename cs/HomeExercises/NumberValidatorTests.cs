@@ -67,7 +67,7 @@ namespace HomeExercises
 			numberValidator = new NumberValidator(4, 2, false);
 		}
 
-		[TestCase("-1,23", TestName = "ValidNumber_WhenNegativeNumberAndNotOnlyPositiveValidator")]
+		[TestCase("-1,23", TestName = "ValidNumber_WhenNegativeNumber")]
 		[TestCase("-1.23", TestName = "ValidNumber_WhenNegativeNumberWithDot")]
 		[TestCase("-1", TestName = "ValidNumber_WhenNegativeNumberWithoutFractalPart")]
 		public void True_WhenValue(string value)
