@@ -9,34 +9,36 @@ namespace HomeExercises
 	public class NumberValidatorTests
 	{
 		[Test]
-		[TestCase(17, 2, false, "0.0", true, TestName = "Passes_WhenStringContainsDotAndDigitCountLessThanScale")]
-		[TestCase(17, 2, false, "0,0", true, TestName = "Passes_WhenStringContainsCommaAndDigitCountLessThanScale")]
-		[TestCase(17, 2, false, "0", true, TestName = "Passes_WhenDigitCountLessThanScale")]
+		[TestCase(17, 2, false, "0.0", true, TestName = "ReturnsTrue_WhenStringContainsDotAndDigitCountLessThanScale")]
+		[TestCase(17, 2, false, "0,0", true, TestName =
+			"ReturnsTrue_WhenStringContainsCommaAndDigitCountLessThanScale")]
+		[TestCase(17, 2, false, "0", true, TestName = "ReturnsTrue_WhenDigitCountLessThanScale")]
 		[TestCase(17, 2, false, "00.00", true, TestName =
-			"Passes_WhenStringContainsDotAndFractionalDigitCountEqualToScale")]
-		[TestCase(4, 2, false, "+123", true, TestName = "Passes_WhenStringContainsPlusBefore")]
-		[TestCase(4, 2, false, "-123", true, TestName = "Passes_WhenStringContainsMinusBefore")]
-		[TestCase(4, 2, false, "1+2", false, TestName = "Fails_WhenContainsPlusInside")]
-		[TestCase(4, 2, false, "1-2", false, TestName = "Fails_WhenContainsMinusInside")]
-		[TestCase(4, 2, false, "12+", false, TestName = "Fails_WhenContainsPlusAfter")]
-		[TestCase(4, 2, false, "12-", false, TestName = "Fails_WhenContainsMinusAfter")]
-		[TestCase(3, 2, false, " 12", false, TestName = "Fails_WhenSpacesBeforeNumber")]
-		[TestCase(3, 2, false, "1 2", false, TestName = "Fails_WhenSpacesInsideNumber")]
-		[TestCase(3, 2, false, "12 ", false, TestName = "Fails_WhenSpacesAfterNumber")]
-		[TestCase(4, 0, false, "123", true, TestName = "Integer_Passes_WhenScaleEqualsToZero")]
-		[TestCase(4, 0, false, "123.4", false, TestName = "Fraction_Fails_WhenScaleEqualsToZero")]
-		[TestCase(3, 2, false, "1234", false, TestName = "Fails_WhenPrecisionIsLessThanDigitCount")]
-		[TestCase(3, 2, false, " ", false, TestName = "Fails_WithSpaceCharacterString")]
-		[TestCase(3, 2, false, null, false, TestName = "Fails_WithNullString")]
-		[TestCase(3, 1, false, "1.23", false, TestName = "Fails_WhenFractionalDigitsCountGreaterThanScale")]
-		[TestCase(2, 2, false, "1.23", false, TestName = "Fails_WhenDigitsCountGreaterThanPrecision")]
-		[TestCase(4, 2, true, "-1.23", false, TestName = "Fails_WhenOnlyPositiveIsTrueAndNumberStringStartsWithMinus")]
-		[TestCase(4, 2, false, ".23", false, TestName = "Fails_WhenNumberDoesntHaveIntegerPart")]
-		[TestCase(4, 2, false, "12.", false, TestName = "Fails_WhenNumberDoesntHaveFractionalPartButHaveADot")]
-		[TestCase(4, 2, false, "++12", false, TestName = "Fails_WhenContainsMultiplePluses")]
-		[TestCase(4, 2, false, "--12", false, TestName = "Fails_WhenContainsMultipleMinuses")]
-		[TestCase(4, 2, false, "+-12", false, TestName = "Fails_WhenContainsMultiplePluses")]
-		[TestCase(4, 2, false, "-+12", false, TestName = "Fails_WhenContainsMultiplePluses")]
+			"ReturnsTrue_WhenStringContainsDotAndFractionalDigitCountEqualToScale")]
+		[TestCase(4, 2, false, "+123", true, TestName = "ReturnsTrue_WhenStringContainsPlusBefore")]
+		[TestCase(4, 2, false, "-123", true, TestName = "ReturnsTrue_WhenStringContainsMinusBefore")]
+		[TestCase(4, 2, false, "1+2", false, TestName = "ReturnsFalse_WhenContainsPlusInside")]
+		[TestCase(4, 2, false, "1-2", false, TestName = "ReturnsFalse_WhenContainsMinusInside")]
+		[TestCase(4, 2, false, "12+", false, TestName = "ReturnsFalse_WhenContainsPlusAfter")]
+		[TestCase(4, 2, false, "12-", false, TestName = "ReturnsFalse_WhenContainsMinusAfter")]
+		[TestCase(3, 2, false, " 12", false, TestName = "ReturnsFalse_WhenSpacesBeforeNumber")]
+		[TestCase(3, 2, false, "1 2", false, TestName = "ReturnsFalse_WhenSpacesInsideNumber")]
+		[TestCase(3, 2, false, "12 ", false, TestName = "ReturnsFalse_WhenSpacesAfterNumber")]
+		[TestCase(4, 0, false, "123", true, TestName = "ReturnsTrue_WithInteger_WhenScaleEqualsToZero")]
+		[TestCase(4, 0, false, "123.4", false, TestName = "ReturnsFalse_WithFraction_WhenScaleEqualsToZero")]
+		[TestCase(3, 2, false, "1234", false, TestName = "ReturnsFalse_WhenPrecisionIsLessThanDigitCount")]
+		[TestCase(3, 2, false, " ", false, TestName = "ReturnsFalse_WithSpaceCharacterString")]
+		[TestCase(3, 2, false, null, false, TestName = "ReturnsFalse_WithNullString")]
+		[TestCase(3, 1, false, "1.23", false, TestName = "ReturnsFalse_WhenFractionalDigitsCountGreaterThanScale")]
+		[TestCase(2, 2, false, "1.23", false, TestName = "ReturnsFalse_WhenDigitsCountGreaterThanPrecision")]
+		[TestCase(4, 2, true, "-1.23", false, TestName =
+			"ReturnsFalse_WhenOnlyPositiveIsTrueAndNumberStringStartsWithMinus")]
+		[TestCase(4, 2, false, ".23", false, TestName = "ReturnsFalse_WhenNumberDoesntHaveIntegerPart")]
+		[TestCase(4, 2, false, "12.", false, TestName = "ReturnsFalse_WhenNumberDoesntHaveFractionalPartButHaveADot")]
+		[TestCase(4, 2, false, "++12", false, TestName = "ReturnsFalse_WhenContainsMultiplePluses")]
+		[TestCase(4, 2, false, "--12", false, TestName = "ReturnsFalse_WhenContainsMultipleMinuses")]
+		[TestCase(4, 2, false, "+-12", false, TestName = "ReturnsFalse_WhenContainsPlusMinus")]
+		[TestCase(4, 2, false, "-+12", false, TestName = "ReturnsFalse_WhenContainsMinusPlus")]
 		public void TestNumberValidator(int precision, int scale, bool onlyPositive,
 			string numString, bool expected)
 		{
@@ -47,7 +49,7 @@ namespace HomeExercises
 		[TestCase(-1, 2, TestName = "Fails_WhenPrecisionLessThanZero")]
 		[TestCase(1, 2, TestName = "Fails_WhenScaleGreaterThanPrecision")]
 		[TestCase(1, -1, TestName = "Fails_WhenScaleLessThanZero")]
-		public void TestNumberValidator_Throws_ExceptionsOnInvalidPrecisionOrScale(int precision, int scale)
+		public void TestNumberValidator_Throws_Exceptions(int precision, int scale)
 		{
 			new Func<NumberValidator>(() => new NumberValidator(precision, scale)).Should().Throw<ArgumentException>();
 		}

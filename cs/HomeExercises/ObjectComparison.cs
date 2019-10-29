@@ -17,7 +17,9 @@ namespace HomeExercises
 
 			// Перепишите код на использование Fluent Assertions.
 			expectedTsar.Should().BeEquivalentTo(actualTsar,
-				options => options.Excluding(p => p.SelectedMemberPath.EndsWith("Id")));
+				options => options.Excluding(p =>
+					p.SelectedMemberInfo.DeclaringType == typeof(Person)
+					&& p.SelectedMemberInfo.Name == "Id"));
 		}
 
 		[Test]
