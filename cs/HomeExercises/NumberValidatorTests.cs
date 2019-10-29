@@ -4,61 +4,40 @@ using System.Text.RegularExpressions;
 
 namespace HomeExercises
 {
-    public class NumberValidatorTests
+	public class NumberValidatorTests
 	{
-		[TestCase(0, 0)]
-		[TestCase(-17, 0)]
-		[TestCase(1, -2)]
-		[TestCase(3, 3)]
-		[TestCase(2, 3)]
+		[TestCase(0, 0, Description = "Precision is zero")]
+		[TestCase(-17, 0, Description = "Precision is a negative number")]
+		[TestCase(1, -2, Description = "Scale is a negative number")]
+		[TestCase(3, 3, Description = "Scale is equal to precision")]
+		[TestCase(2, 3, Description = "Scale is more than precision")]
 		public void NumberValidator_ThrowsArgumentException_CreationWithIncorrectArguments(int precision, int scale)
 		{
 			Assert.Throws<ArgumentException>(() => new NumberValidator(precision, scale));
         }
 
-		[Test]
-		public void NumberValidator_DoesNotThrowException_CorrectCreation()
+		[TestCase("0", Description = "Integer")]
+		[TestCase("10.01", Description = "Fraction number with a point as a separator")]
+		[TestCase("10,5", Description = "Fraction number with a comma as a separator")]
+		[TestCase("+1.23", Description = "Number with a plus sign")]
+		[TestCase("-9.99", Description = "Number with a minus sign")]
+		[TestCase("1", true, Description = "Positive number without a plus sign")]
+		[TestCase("+2", true, Description = "Positive number with a plus sign")]
+        public void IsValidNumber_ReturnsTrue_CheckingCorrectNumbers(string value, bool onlyPositive = false)
 		{
-			Assert.DoesNotThrow(() => new NumberValidator(1, 0));
+			Assert.IsTrue(new NumberValidator(4, 2, onlyPositive).IsValidNumber(value));
         }
 
-		[TestCase("0")]
-		[TestCase("10.01")]
-		[TestCase("10,5")]
-		[TestCase("+1.23")]
-		[TestCase("-9.99")]
-		public void IsValidNumber_ReturnsTrue_CheckingCorrectNumbers(string value)
+        [TestCase("0.000", Description = "Number with a long fractional part")]
+		[TestCase("+1.23", Description = "Long number with a plus sign")]
+		[TestCase("-1.23", Description = "Long number with a minus sign")]
+		[TestCase("-1", true, Description = "Non positive number")]
+        [TestCase("a.sd", Description = "String contains letters")]
+        [TestCase("", Description = "String is empty")]
+        [TestCase(null, Description = "Value is null")]
+        public void IsValidNumber_ReturnsFalse_CheckingIncorrectNumbers(string value, bool onlyPositive = false)
 		{
-			Assert.IsTrue(new NumberValidator(4, 2).IsValidNumber(value));
-        }
-
-		[TestCase("1")]
-		[TestCase("+2")]
-		public void IsValidNumber_ReturnsTrue_CheckingCorrectPositiveNumbers(string value)
-		{
-			Assert.IsTrue(new NumberValidator(4, 2, true).IsValidNumber(value));
-		}
-
-        [TestCase("0.000")]
-		[TestCase("+1.23")]
-		[TestCase("-1.23")]
-		public void IsValidNumber_ReturnsFalse_CheckingIncorrectLargeNumbers(string value)
-		{
-			Assert.IsFalse(new NumberValidator(3, 2).IsValidNumber(value));
-        }
-
-		[Test]
-		public void IsValidNumber_ReturnsFalse_CheckingIncorrectNegativeNumber()
-		{
-			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("-1.5"));
-        }
-
-		[TestCase("a.sd")]
-		[TestCase("")]
-		[TestCase(null)]
-		public void IsValidNumber_ReturnsFalse_CheckingNotANumber(string value)
-		{
-			Assert.IsFalse(new NumberValidator(3, 2).IsValidNumber(value));
+			Assert.IsFalse(new NumberValidator(3, 2, onlyPositive).IsValidNumber(value));
         }
 	}
 
