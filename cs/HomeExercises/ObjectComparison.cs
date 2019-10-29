@@ -23,14 +23,11 @@ namespace HomeExercises
         [Category("ToRefactor")]
         public void CheckCurrentTsar()
         {
-            // Перепишите код на использование Fluent Assertions.
-            Test_PersonsAreEqual(expectedTsar, actualTsar);
+	        actualTsar.ShouldBeEquivalentTo(expectedTsar,
+	            config => config.Excluding(o => o.SelectedMemberInfo.Name == nameof(Person.Id)));
 
-			// Используя такую проверку можно увидеть на каком именно поле провалился тест.
-			// Также, если в классе появится новое поле, то достаточно добавить одну строку кода
-			// в метод Test_PersonsAreEqual. И в нем по-прежнему остается рекурсивная 
-			// Также данный метод лучше тем что использует нерекурсивную проверку
-			// из-за которой может произойти переполнение стэка
+            // Используя такую проверку можно увидеть на каком именно поле провалился тест.
+            // Также, если в классе появится новое поле, b в нем по-прежнему остается рекурсивная проверка
         }
 
         [Test]
@@ -41,9 +38,15 @@ namespace HomeExercises
             Assert.True(AreEqual(actualTsar, expectedTsar));
 
 			// Если тест упадет, то будет непонятно, в каком именно поле будет ошибка
-			// Так как метод возвращает лишь ответ верны объекты или неверны
+			// так как метод возвращает лишь ответ верны объекты или неверны
+			
 			// Также если будет слишком глубокая рекурсия родителей, то в теории может
 			// произойти переполнение стэка
+
+			// При появлении новых полей нужно переписывать функцию AreEqual
+
+			// Функция AreEqual не защищена от ошибок реалзицаии, может произойти так что неправльно
+			// написан сам тест а не решение
         }
 
         private bool AreEqual(Person actual, Person expected)
@@ -57,24 +60,6 @@ namespace HomeExercises
                 && actual.Weight == expected.Weight
                 && AreEqual(actual.Parent, expected.Parent);
         }
-
-		public static void Test_PersonsAreEqual(Person expected, Person actual)
-		{
-			string because = "Person";
-			while (expected != null)
-			{
-				actual.Should().NotBeNull();
-				actual.Name.Should().Be(expected.Name, $"because names of {because} should be equal");
-				actual.Age.Should().Be(expected.Age, $"because ages of {because} should be equal");
-				actual.Height.Should().Be(expected.Height, $"because heights of {because} should be equal");
-				actual.Weight.Should().Be(expected.Weight, $"because weights of {because} should be equal");
-				expected = expected.Parent;
-				actual = actual.Parent;
-				because = "Parent of " + because;
-			}
-
-			actual.Should().BeNull($"because parent of {because} should be null");
-		}
     }
 
     public class TsarRegistry
