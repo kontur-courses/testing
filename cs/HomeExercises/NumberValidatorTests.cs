@@ -30,18 +30,18 @@ namespace HomeExercises
 
 
         [TestCase("-0.00", TestName = "IsValidNumber_WhenNegativeNumberWithFractional_ReturnTrue")]
-		[TestCase("+0.00", TestName = "IsValidNumber_WhenPositiveNumberWithFractional_ReturnTrue")]
-		[TestCase("0,00", TestName = "IsValidNumber_WhenNumberWithComma_ReturnTrue")]
+        [TestCase("+0.00", TestName = "IsValidNumber_WhenPositiveNumberWithFractional_ReturnTrue")]
+        [TestCase("0,00", TestName = "IsValidNumber_WhenNumberWithComma_ReturnTrue")]
         [TestCase("0.00", TestName = "IsValidNumber_WhenNumberWithPoint_ReturnTrue")]
-		[TestCase("00.00", TestName = "IsValidNumber_WhenNumberWithMultipleZeros_ReturnTrue")]
+        [TestCase("00.00", TestName = "IsValidNumber_WhenNumberWithMultipleZeros_ReturnTrue")]
         public void IsValidNumber_WhenNumberWithFractionalAndInteger_ReturnTrue(string number)
 		{
 			Assert.IsTrue(new NumberValidator(17, 2).IsValidNumber(number));
 		}
 
-		[TestCase("0", TestName = "IsValidNumber_WhenInteger_ReturnTrue")]
-		[TestCase("+0", TestName = "IsValidNumber_WhenPositiveInteger_ReturnTrue")]
-		[TestCase("-0", TestName = "IsValidNumber_WhenNegativeInteger_ReturnTrue")]
+        [TestCase("0", TestName = "IsValidNumber_WhenInteger_ReturnTrue")]
+        [TestCase("+0", TestName = "IsValidNumber_WhenPositiveInteger_ReturnTrue")]
+        [TestCase("-0", TestName = "IsValidNumber_WhenNegativeInteger_ReturnTrue")]
         public void IsValidNumber_WhenInteger_ReturnTrue(string number)
         {
 	        Assert.IsTrue(new NumberValidator(17, 0).IsValidNumber(number));
@@ -56,7 +56,7 @@ namespace HomeExercises
 			Assert.IsFalse(new NumberValidator(3, 1, true).IsValidNumber(number));
 		}
 
-		[Test]
+        [Test]
         public void IsValidNumber_WhenNegativeNumberWithPositiveValidator_ReturnFalse()
         {
 	        Assert.IsFalse(new NumberValidator(3, 1, true).IsValidNumber("-0"));
@@ -64,9 +64,9 @@ namespace HomeExercises
         }
 
         [TestCase(null, TestName = "IsValidNumber_WhenNull_ReturnFalse")]
-		[TestCase("", TestName = "IsValidNumber_WhenEmptyString_ReturnFalse")]
-		[TestCase(" ", TestName = "IsValidNumber_WhenSpace_ReturnFalse")]
-		[TestCase("\r\n", TestName = "IsValidNumber_WhenCRLF_ReturnFalse")]
+        [TestCase("", TestName = "IsValidNumber_WhenEmptyString_ReturnFalse")]
+        [TestCase(" ", TestName = "IsValidNumber_WhenSpace_ReturnFalse")]
+        [TestCase("\r\n", TestName = "IsValidNumber_WhenCRLF_ReturnFalse")]
 		public void IsValidNumber_WhenIsNullOrEmpty_ReturnFalse(string number)
 		{
 			Assert.IsFalse(new NumberValidator(17, 2, true).IsValidNumber(number));
