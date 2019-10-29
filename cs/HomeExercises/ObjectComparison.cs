@@ -16,21 +16,8 @@ namespace HomeExercises
 				new Person("Vasili III of Russia", 28, 170, 60, null));
 
 			// Перепишите код на использование Fluent Assertions.
-			CheckPersonsAreEqual(actualTsar, expectedTsar);
-		}
-
-		public void CheckPersonsAreEqual(Person actual, Person expected)
-		{
-			while (true)
-			{
-				if (actual is null && expected is null) return;
-				expected.Name.Should().Be(actual.Name, "Names should be equal");
-				expected.Age.Should().Be(actual.Age, "Ages should be equal");
-				expected.Height.Should().Be(actual.Height, "Heights should be equal");
-				expected.Weight.Should().Be(actual.Weight, "Weights should be equal");
-				actual = actual.Parent;
-				expected = expected.Parent;
-			}
+			expectedTsar.Should().BeEquivalentTo(actualTsar,
+				options => options.Excluding(p => p.Id).Excluding(p => p.Parent.Id));
 		}
 
 		[Test]
@@ -42,9 +29,9 @@ namespace HomeExercises
 				new Person("Vasili III of Russia", 28, 170, 60, null));
 
 			// Какие недостатки у такого подхода? 
-			
+
 			// Не понятно, какие именно разлчия у данных объектов. В случае "падения" теста будем знать
-			// только то, что у объектов не совпадают какие-то поля
+			// только то, что у объектов не совпадают какие-то поля; так же надо расширять 
 			Assert.True(AreEqual(actualTsar, expectedTsar));
 		}
 
@@ -73,11 +60,11 @@ namespace HomeExercises
 
 	public class Person
 	{
-		public static int IdCounter = 0;
+		public static int IdCounter;
 		public int Age, Height, Weight;
+		public int Id;
 		public string Name;
 		public Person Parent;
-		public int Id;
 
 		public Person(string name, int age, int height, int weight, Person parent)
 		{

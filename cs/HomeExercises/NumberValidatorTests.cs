@@ -10,36 +10,66 @@ namespace HomeExercises
 	public class NumberValidatorTests
 	{
 		[Test]
-		public void TestExceptions()
+		public void TestNumberValidator_Fails_OnInvalidNumberString()
 		{
-			Assert.Throws<ArgumentException>(() => new NumberValidator(-1, 2, true));
-			Assert.DoesNotThrow(() => new NumberValidator(1, 0, true));
-			Assert.Throws<ArgumentException>(() => new NumberValidator(-1, 2, false));
-			Assert.DoesNotThrow(() => new NumberValidator(1, 0, true));
+			using (new AssertionScope())
+			{
+				new NumberValidator(3, 2, true).IsValidNumber("+1.23").Should().BeFalse();
+				new NumberValidator(3, 2, true).IsValidNumber("-1.23").Should().BeFalse();
+				new NumberValidator(3, 2, true).IsValidNumber("00.00").Should().BeFalse();
+				new NumberValidator(3, 2, true).IsValidNumber("-0.00").Should().BeFalse();
+				new NumberValidator(3, 2, true).IsValidNumber("+0.00").Should().BeFalse();
+
+				new NumberValidator(3, 2, true).IsValidNumber(" 1.23").Should().BeFalse();
+				new NumberValidator(3, 2, true).IsValidNumber("1. 23").Should().BeFalse();
+				new NumberValidator(3, 2, true).IsValidNumber("1.23 ").Should().BeFalse();
+
+				new NumberValidator(3, 2, true).IsValidNumber(null).Should().BeFalse();
+				new NumberValidator(3, 2, true).IsValidNumber(" ").Should().BeFalse();
+
+				new NumberValidator(3, 1, true).IsValidNumber("1.24").Should().BeFalse();
+				new NumberValidator(2, 2, true).IsValidNumber("1.24").Should().BeFalse();
+				new NumberValidator(4).IsValidNumber("-1.23").Should().BeFalse();
+
+				new NumberValidator(4, 2, true).IsValidNumber("-1.24").Should().BeFalse();
+				new NumberValidator(4, 2, true).IsValidNumber(".24").Should().BeFalse();
+				new NumberValidator(4, 2, true).IsValidNumber("1.").Should().BeFalse();
+				new NumberValidator(4, 2, true).IsValidNumber(".").Should().BeFalse();
+
+				new NumberValidator(4, 2, true).IsValidNumber("1..2").Should().BeFalse();
+				new NumberValidator(4, 2, true).IsValidNumber("1.0.2").Should().BeFalse();
+				new NumberValidator(4, 2, true).IsValidNumber("1.,2").Should().BeFalse();
+				new NumberValidator(3, 2, true).IsValidNumber("a.sd").Should().BeFalse();
+				new NumberValidator(4, 2, true).IsValidNumber("+-1.2").Should().BeFalse();
+				new NumberValidator(4, 2, true).IsValidNumber("-+1.2").Should().BeFalse();
+			}
 		}
 
 		[Test]
-		[TestCase(17, 2, true, "0.0", true)]
-		[TestCase(17, 2, true, "0", true)]
-		[TestCase(17, 2, true, "00.00", true)]
-		[TestCase(4, 2, true, "+1.23", true)]
-		[TestCase(3, 2, true, "+1.23", false)]
-		[TestCase(3, 2, true, "-1.23", false)]
-		[TestCase(3, 2, true, "00.00", false)]
-		[TestCase(3, 2, true, "a.sd", false)]
-		[TestCase(3, 2, true, "-0.00", false)]
-		[TestCase(3, 2, true, "+0.00", false)]
-		[TestCase(3, 2, true, " 1.23", false)]
-		[TestCase(3, 2, true, "1. 23", false)]
-		[TestCase(3, 2, true, "1.23 ", false)]
-		[TestCase(3, 2, true, null, false)]
-		[TestCase(3, 2, true, " ", false)]
-		[TestCase(3, 1, true, "1.24", false)]
-		[TestCase(2, 2, true, "1.24", false)]
-		[TestCase(4, 2, true, "-1.24", false)]
-		public void TestNumbers(int precision, int scale, bool onlyPositive, string numString, bool expected)
+		public void TestNumberValidator_Passes_OnValidNumberString()
 		{
-			new NumberValidator(precision, scale, onlyPositive).IsValidNumber(numString).Should().Be(expected);
+			using (new AssertionScope())
+			{
+				new NumberValidator(17, 2, true).IsValidNumber("0.0").Should().BeTrue();
+				new NumberValidator(17, 2, true).IsValidNumber("0").Should().BeTrue();
+				new NumberValidator(17, 2, true).IsValidNumber("3214124").Should().BeTrue();
+				new NumberValidator(17, 2, true).IsValidNumber("00.00").Should().BeTrue();
+				new NumberValidator(4, 2, true).IsValidNumber("+1.23").Should().BeTrue();
+				new NumberValidator(4, 2, true).IsValidNumber("1,23").Should().BeTrue();
+				new NumberValidator(4, 2).IsValidNumber("-1.23").Should().BeTrue();
+				new NumberValidator(4, 0, true).IsValidNumber("100").Should().BeTrue();
+			}
+		}
+
+		[Test]
+		public void TestNumberValidator_Throws_ExceptionsOnInvalidPrecisionOrScale()
+		{
+			using (new AssertionScope())
+			{
+				new Func<NumberValidator>(() => new NumberValidator(-1, 2, true)).Should().Throw<ArgumentException>();
+				new Func<NumberValidator>(() => new NumberValidator(1, 2, true)).Should().Throw<ArgumentException>();
+				new Func<NumberValidator>(() => new NumberValidator(1, -1, true)).Should().Throw<ArgumentException>();
+			}
 		}
 	}
 
