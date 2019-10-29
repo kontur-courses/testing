@@ -1,32 +1,53 @@
 ﻿using System;
+using System.Security.Cryptography;
 using System.Text.RegularExpressions;
 using FluentAssertions;
 using NUnit.Framework;
 
 namespace HomeExercises
 {
+	[TestFixture]
 	public class NumberValidatorTests
 	{
 		[Test]
-		public void Test()
+		[TestCase(17, 2, true, "0.0", ExpectedResult = true,
+			Description = "unsigned valid number with fractional part")]
+		[TestCase(17, 2, true, "0", ExpectedResult = true,
+			Description = "unsigned valid number without fractional part")]
+		[TestCase(4, 2, true, "+1.23", ExpectedResult = true,
+			Description = "signed valid number")]
+		[TestCase(17, 2, true, "0.000", ExpectedResult = false,
+			Description = "fractional part more than possible")]
+		[TestCase(3, 2, true, "00.00", ExpectedResult = false,
+			Description = "integer part is not valid number")]
+		[TestCase(3, 2, true, "+1.23", ExpectedResult = false,
+			Description = "positive signed number is longer than possible")]
+		[TestCase(3, 2, true, "-1.23", ExpectedResult = false,
+			Description = "only a positive number is possible")]
+		[TestCase(3, 2, true, "a.sd", ExpectedResult = false,
+			Description = "invalid characters in number")]
+		public bool IsValidNumber(int precision, int scale, bool onlyPositive, string number)
 		{
-			Assert.Throws<ArgumentException>(() => new NumberValidator(-1, 2, true));
-			Assert.DoesNotThrow(() => new NumberValidator(1, 0, true));
-			Assert.Throws<ArgumentException>(() => new NumberValidator(-1, 2, false));
-			Assert.DoesNotThrow(() => new NumberValidator(1, 0, true));
+			return new NumberValidator(precision, scale, onlyPositive).IsValidNumber(number);
+		}
 
-			Assert.IsTrue(new NumberValidator(17, 2, true).IsValidNumber("0.0"));
-			Assert.IsTrue(new NumberValidator(17, 2, true).IsValidNumber("0"));
-			Assert.IsTrue(new NumberValidator(17, 2, true).IsValidNumber("0.0"));
-			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("00.00"));
-			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("-0.00"));
-			Assert.IsTrue(new NumberValidator(17, 2, true).IsValidNumber("0.0"));
-			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("+0.00"));
-			Assert.IsTrue(new NumberValidator(4, 2, true).IsValidNumber("+1.23"));
-			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("+1.23"));
-			Assert.IsFalse(new NumberValidator(17, 2, true).IsValidNumber("0.000"));
-			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("-1.23"));
-			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("a.sd"));
+
+		/// <summary>
+		/// the body of the test should be divided into blocks:
+		/// Arrange, Act and Assert, but in these cases it is not principle important
+		/// </summary>
+		[Test]
+		public void CreateNumberValidator_WithNegativePrecision_ShouldThrowException()
+		{
+			Action act = () => new NumberValidator(-1, 2, true);
+			act.Should().Throw<ArgumentException>();
+		}
+
+		[Test]
+		public void CreateNumberValidator_WithValidArguments_ShouldNotThrowException()
+		{
+			Action act = () => new NumberValidator(1, 0, true);
+			act.Should().NotThrow();
 		}
 	}
 
