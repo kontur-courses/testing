@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Text.RegularExpressions;
 using FluentAssertions;
-using FluentAssertions.Execution;
 using NUnit.Framework;
 
 namespace HomeExercises
@@ -10,36 +9,47 @@ namespace HomeExercises
 	public class NumberValidatorTests
 	{
 		[Test]
-		public void TestExceptions()
+		[TestCase(17, 2, false, "0.0", true, TestName = "Passes_WhenStringContainsDotAndDigitCountLessThanScale")]
+		[TestCase(17, 2, false, "0,0", true, TestName = "Passes_WhenStringContainsCommaAndDigitCountLessThanScale")]
+		[TestCase(17, 2, false, "0", true, TestName = "Passes_WhenDigitCountLessThanScale")]
+		[TestCase(17, 2, false, "00.00", true, TestName =
+			"Passes_WhenStringContainsDotAndFractionalDigitCountEqualToScale")]
+		[TestCase(4, 2, false, "+123", true, TestName = "Passes_WhenStringContainsPlusBefore")]
+		[TestCase(4, 2, false, "-123", true, TestName = "Passes_WhenStringContainsMinusBefore")]
+		[TestCase(4, 2, false, "1+2", false, TestName = "Fails_WhenContainsPlusInside")]
+		[TestCase(4, 2, false, "1-2", false, TestName = "Fails_WhenContainsMinusInside")]
+		[TestCase(4, 2, false, "12+", false, TestName = "Fails_WhenContainsPlusAfter")]
+		[TestCase(4, 2, false, "12-", false, TestName = "Fails_WhenContainsMinusAfter")]
+		[TestCase(3, 2, false, " 12", false, TestName = "Fails_WhenSpacesBeforeNumber")]
+		[TestCase(3, 2, false, "1 2", false, TestName = "Fails_WhenSpacesInsideNumber")]
+		[TestCase(3, 2, false, "12 ", false, TestName = "Fails_WhenSpacesAfterNumber")]
+		[TestCase(4, 0, false, "123", true, TestName = "Integer_Passes_WhenScaleEqualsToZero")]
+		[TestCase(4, 0, false, "123.4", false, TestName = "Fraction_Fails_WhenScaleEqualsToZero")]
+		[TestCase(3, 2, false, "1234", false, TestName = "Fails_WhenPrecisionIsLessThanDigitCount")]
+		[TestCase(3, 2, false, " ", false, TestName = "Fails_WithSpaceCharacterString")]
+		[TestCase(3, 2, false, null, false, TestName = "Fails_WithNullString")]
+		[TestCase(3, 1, false, "1.23", false, TestName = "Fails_WhenFractionalDigitsCountGreaterThanScale")]
+		[TestCase(2, 2, false, "1.23", false, TestName = "Fails_WhenDigitsCountGreaterThanPrecision")]
+		[TestCase(4, 2, true, "-1.23", false, TestName = "Fails_WhenOnlyPositiveIsTrueAndNumberStringStartsWithMinus")]
+		[TestCase(4, 2, false, ".23", false, TestName = "Fails_WhenNumberDoesntHaveIntegerPart")]
+		[TestCase(4, 2, false, "12.", false, TestName = "Fails_WhenNumberDoesntHaveFractionalPartButHaveADot")]
+		[TestCase(4, 2, false, "++12", false, TestName = "Fails_WhenContainsMultiplePluses")]
+		[TestCase(4, 2, false, "--12", false, TestName = "Fails_WhenContainsMultipleMinuses")]
+		[TestCase(4, 2, false, "+-12", false, TestName = "Fails_WhenContainsMultiplePluses")]
+		[TestCase(4, 2, false, "-+12", false, TestName = "Fails_WhenContainsMultiplePluses")]
+		public void TestNumberValidator(int precision, int scale, bool onlyPositive,
+			string numString, bool expected)
 		{
-			Assert.Throws<ArgumentException>(() => new NumberValidator(-1, 2, true));
-			Assert.DoesNotThrow(() => new NumberValidator(1, 0, true));
-			Assert.Throws<ArgumentException>(() => new NumberValidator(-1, 2, false));
-			Assert.DoesNotThrow(() => new NumberValidator(1, 0, true));
+			new NumberValidator(precision, scale, onlyPositive).IsValidNumber(numString).Should().Be(expected);
 		}
 
 		[Test]
-		[TestCase(17, 2, true, "0.0", true)]
-		[TestCase(17, 2, true, "0", true)]
-		[TestCase(17, 2, true, "00.00", true)]
-		[TestCase(4, 2, true, "+1.23", true)]
-		[TestCase(3, 2, true, "+1.23", false)]
-		[TestCase(3, 2, true, "-1.23", false)]
-		[TestCase(3, 2, true, "00.00", false)]
-		[TestCase(3, 2, true, "a.sd", false)]
-		[TestCase(3, 2, true, "-0.00", false)]
-		[TestCase(3, 2, true, "+0.00", false)]
-		[TestCase(3, 2, true, " 1.23", false)]
-		[TestCase(3, 2, true, "1. 23", false)]
-		[TestCase(3, 2, true, "1.23 ", false)]
-		[TestCase(3, 2, true, null, false)]
-		[TestCase(3, 2, true, " ", false)]
-		[TestCase(3, 1, true, "1.24", false)]
-		[TestCase(2, 2, true, "1.24", false)]
-		[TestCase(4, 2, true, "-1.24", false)]
-		public void TestNumbers(int precision, int scale, bool onlyPositive, string numString, bool expected)
+		[TestCase(-1, 2, TestName = "Fails_WhenPrecisionLessThanZero")]
+		[TestCase(1, 2, TestName = "Fails_WhenScaleGreaterThanPrecision")]
+		[TestCase(1, -1, TestName = "Fails_WhenScaleLessThanZero")]
+		public void TestNumberValidator_Throws_ExceptionsOnInvalidPrecisionOrScale(int precision, int scale)
 		{
-			new NumberValidator(precision, scale, onlyPositive).IsValidNumber(numString).Should().Be(expected);
+			new Func<NumberValidator>(() => new NumberValidator(precision, scale)).Should().Throw<ArgumentException>();
 		}
 	}
 
