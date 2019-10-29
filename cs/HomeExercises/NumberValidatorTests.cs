@@ -7,10 +7,10 @@ namespace HomeExercises
 {
 	public class NumberValidatorTests
 	{
-		[TestCase(-2, 1, TestName = "Precision is negative")]
-		[TestCase(2, -1, TestName = "Scale is negative")]
-		[TestCase(1, 2, TestName = "Scale more then precision")]
-        public void ThrowArgumentException_When(int precision, int scale)
+		[TestCase(-2, 1, TestName = "Constructor_WhenPrecisionIsNegative_ThrowArgumentException")]
+		[TestCase(2, -1, TestName = "Constructor_WhenScaleIsNegative_ThrowArgumentException")]
+		[TestCase(1, 2, TestName = "Constructor_WhenScaleMoreThenPrecision_ThrowArgumentException")]
+        public void Constructor_WhenIncorrectArguments_ThrowArgumentException(int precision, int scale)
 		{
 			// ReSharper disable once ObjectCreationAsStatement
 			Assert.Throws<ArgumentException>(() => new NumberValidator(precision, scale, true));
@@ -18,9 +18,9 @@ namespace HomeExercises
             Assert.Throws<ArgumentException>(() => new NumberValidator(precision, scale, false));
         }
 
-        [TestCase(1, 0)]
-        [TestCase(2, 1)]
-        public void CreateValidator_WhenArgumentsIsCorrect(int precision, int scale)
+        [TestCase(1, 0, TestName = "Constructor_WhenPrecisionIsPositiveAndScaleIsZero_DontThrowArgumentException")]
+        [TestCase(2, 1, TestName = "Constructor_WhenPrecisionIsPositiveAndScaleIsPositive_DontThrowArgumentException")]
+        public void Constructor_WhenCorrectArguments_DontThrowArgumentException(int precision, int scale)
 		{
 			// ReSharper disable once ObjectCreationAsStatement
 			Assert.DoesNotThrow(() => new NumberValidator(precision, scale, true));
@@ -28,43 +28,54 @@ namespace HomeExercises
 			Assert.DoesNotThrow(() => new NumberValidator(precision, scale, false));
         }
 
-        [Test]
-		public void ReturnFalse_WhenNumbersMoreThenPrecision()
+
+        [TestCase("-0.00", TestName = "IsValidNumber_WhenNegativeNumberWithFractional_ReturnTrue")]
+		[TestCase("+0.00", TestName = "IsValidNumber_WhenPositiveNumberWithFractional_ReturnTrue")]
+		[TestCase("0,00", TestName = "IsValidNumber_WhenNumberWithComma_ReturnTrue")]
+        [TestCase("0.00", TestName = "IsValidNumber_WhenNumberWithPoint_ReturnTrue")]
+		[TestCase("00.00", TestName = "IsValidNumber_WhenNumberWithMultipleZeros_ReturnTrue")]
+        public void IsValidNumber_WhenNumberWithFractionalAndInteger_ReturnTrue(string number)
 		{
-			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("00.00"));
+			Assert.IsTrue(new NumberValidator(17, 2).IsValidNumber(number));
 		}
 
-		[TestCase("-0.00",false)]
-		[TestCase("+0.00", true)]
-		[TestCase("0,00", true)]
-		[TestCase("0.00", true)]
-		[TestCase("00.00", true)]
-        public void ReturnTrue_When(string number, bool onlyPositive)
-		{
-			Assert.IsTrue(new NumberValidator(17, 2, onlyPositive).IsValidNumber(number));
-		}
-
-		[TestCase("0", true)]
-		[TestCase("+0", true)]
-		[TestCase("-0", false)]
-        public void ReturnTrue_When1(string number, bool onlyPositive)
+		[TestCase("0", TestName = "IsValidNumber_WhenInteger_ReturnTrue")]
+		[TestCase("+0", TestName = "IsValidNumber_WhenPositiveInteger_ReturnTrue")]
+		[TestCase("-0", TestName = "IsValidNumber_WhenNegativeInteger_ReturnTrue")]
+        public void IsValidNumber_WhenInteger_ReturnTrue(string number)
         {
-	        Assert.IsTrue(new NumberValidator(17, 0, onlyPositive).IsValidNumber(number));
+	        Assert.IsTrue(new NumberValidator(17, 0).IsValidNumber(number));
         }
 
-        [TestCase("0.000")]
-        [TestCase("000.0")]
-        public void DoSomething_When(string number)
+        [TestCase("0.00", TestName = "IsValidNumber_WhenOverflowNumberInFractional_ReturnFalse")]
+        [TestCase("-00.0", TestName = "IsValidNumber_WhenOverflowSymbolThroMinus_ReturnFalse")]
+        [TestCase("+00.0", TestName = "IsValidNumber_WhenOverflowSymbolThroPlus_ReturnFalse")]
+        [TestCase("0000", TestName = "IsValidNumber_WhenOverflowNumberInInteger_ReturnFalse")]
+        public void IsValidNumber_WhenOverflowSymbol_ReturnFalse(string number)
 		{
-			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber(number));
+			Assert.IsFalse(new NumberValidator(3, 1, true).IsValidNumber(number));
 		}
 
-		[TestCase(null)]
-		[TestCase("")]
-		[TestCase(" ")]
-		[TestCase("\n\r")]
-		[TestCase("a.sd")]
-        public void ReturnFalse_When(string number)
+		[Test]
+        public void IsValidNumber_WhenNegativeNumberWithPositiveValidator_ReturnFalse()
+        {
+	        Assert.IsFalse(new NumberValidator(3, 1, true).IsValidNumber("-0"));
+	        Assert.IsFalse(new NumberValidator(3, 1, true).IsValidNumber("-0.0"));
+        }
+
+        [TestCase(null, TestName = "IsValidNumber_WhenNull_ReturnFalse")]
+		[TestCase("", TestName = "IsValidNumber_WhenEmptyString_ReturnFalse")]
+		[TestCase(" ", TestName = "IsValidNumber_WhenSpace_ReturnFalse")]
+		[TestCase("\r\n", TestName = "IsValidNumber_WhenCRLF_ReturnFalse")]
+		public void IsValidNumber_WhenIsNullOrEmpty_ReturnFalse(string number)
+		{
+			Assert.IsFalse(new NumberValidator(17, 2, true).IsValidNumber(number));
+		}
+
+        [TestCase("a.sd", TestName = "IsValidNumber_WhenSomeTextWithPoint_ReturnFalse")]
+        [TestCase("00.sd", TestName = "IsValidNumber_WhenSomeTextWithPointAndNumber_ReturnFalse")]
+        [TestCase("asd", TestName = "IsValidNumber_WhenSomeText_ReturnFalse")]
+        public void IsValidNumber_WhenNaN_ReturnFalse(string number)
 		{
 			Assert.IsFalse(new NumberValidator(17, 2, true).IsValidNumber(number));
 		}
