@@ -40,7 +40,10 @@ namespace HomeExercises
 		[TestCase(6, 0, false, "five", TestName = "Word representation of number")]
 		[TestCase(20, 10, false, "5 + 3", TestName = "Sum of numbers")]
 		[TestCase(20, 10, false, "7 - 4", TestName = "Subtract of numbers")]
-		[TestCase(5, 2, false, "2.550", TestName = "Trailing zeros")]
+		[TestCase(5, 2, false, "2.550", TestName = "Number with trailing zeros does not suits scale")]
+		[TestCase(5, 2, false, "2.", TestName = "Delimiter without frac part")]
+		[TestCase(12, 0, false, "1 000 000", TestName = "Spaces in number representation")]
+		[TestCase(12, 5, false, "1,000.25", TestName = "Thousands delimiter")]
 		public void IsValidNumber_ReturnFalse(
 			int precision, int scale, bool onlyPositive, string value)
 		{
@@ -53,7 +56,7 @@ namespace HomeExercises
 		[TestCase(17, 10, true, "+1.4563", TestName = "Only positive and have positive sign")]
 		[TestCase(4, 0, false, "0000", TestName = "Without frac part")]
 		[TestCase(17, 2, false, "98765432,1", TestName = "With comma delimiter")]
-		[TestCase(5, 4, false, "-0.60", TestName = "Trailing zeros")]
+		[TestCase(5, 4, false, "-0.60", TestName = "Valid number with trailing zeros")]
 		public void IsValidNumber_ReturnTrue(
 			int precision, int scale, bool onlyPositive, string value)
 		{
