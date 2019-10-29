@@ -1,33 +1,61 @@
 ﻿using System;
 using System.Text.RegularExpressions;
-using FluentAssertions;
 using NUnit.Framework;
+// ReSharper disable ObjectCreationAsStatement
 
 namespace HomeExercises
 {
+	[TestFixture]
 	public class NumberValidatorTests
 	{
-		[Test]
-		public void Test()
-		{
-			Assert.Throws<ArgumentException>(() => new NumberValidator(-1, 2, true));
-			Assert.DoesNotThrow(() => new NumberValidator(1, 0, true));
-			Assert.Throws<ArgumentException>(() => new NumberValidator(-1, 2, false));
-			Assert.DoesNotThrow(() => new NumberValidator(1, 0, true));
+		[TestCase(13, 6, TestName = "PrecisionIsPositive_ScaleIsPositiveLessPrecision")]
+		[TestCase(1, 0, TestName = "PrecisionIsPositive_ScaleIsZero")]
+		public void NumberValidatorConstructor_DoesNotThrow(int precision, int scale) =>
+			Assert.DoesNotThrow(() => new NumberValidator(precision, scale));
 
-			Assert.IsTrue(new NumberValidator(17, 2, true).IsValidNumber("0.0"));
-			Assert.IsTrue(new NumberValidator(17, 2, true).IsValidNumber("0"));
-			Assert.IsTrue(new NumberValidator(17, 2, true).IsValidNumber("0.0"));
-			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("00.00"));
-			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("-0.00"));
-			Assert.IsTrue(new NumberValidator(17, 2, true).IsValidNumber("0.0"));
-			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("+0.00"));
-			Assert.IsTrue(new NumberValidator(4, 2, true).IsValidNumber("+1.23"));
-			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("+1.23"));
-			Assert.IsFalse(new NumberValidator(17, 2, true).IsValidNumber("0.000"));
-			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("-1.23"));
-			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("a.sd"));
-		}
+		[TestCase(0, 1, TestName = "PrecisionIsZero")]
+		[TestCase(-1, 0, TestName = "PrecisionIsNegative")]
+		[TestCase(2, 2, TestName = "ScaleIsEqualToPrecision")]
+		[TestCase(6, -2, TestName = "ScaleIsNegative")]
+		public void NumberValidatorConstructor_ThrowArgumentException(int precision, int scale) =>
+			Assert.Throws<ArgumentException>(() => new NumberValidator(precision, scale));
+
+		[TestCase(17, 2, true, "0.0",
+			ExpectedResult = true, TestName = "True_OnNumberWithCorrectPrecisionAndScale")]
+		[TestCase(17, 2, true, "0",
+			ExpectedResult = true, TestName = "True_OnNumberWithCorrectPrecisionAndZeroScale")]
+		[TestCase(17, 2, true, "0.000",
+			ExpectedResult = false, TestName = "False_OnNumberWithTooMuchScale")]
+		[TestCase(3, 2, true, "10.00",
+			ExpectedResult = false, TestName = "False_OnNumberWithTooMuchPrecision")]
+		[TestCase(3, 2, true, "00.00",
+			ExpectedResult = false, TestName = "False_OnNumberWithTooMuchPrecisionDueToLeadingZeros")]
+		[TestCase(3, 2, true, "+0.00",
+			ExpectedResult = false, TestName = "False_OnZeroWithTooMuchPrecisionDueToLeadingSign")]
+		[TestCase(3, 2, true, "-0.0",
+			ExpectedResult = false, TestName = "False_OnZeroWithLeadingMinus_WhenOnlyPositiveAccept")]
+		[TestCase(3, 2, true, "+1.23",
+			ExpectedResult = false, TestName = "False_OnNumberWithTooMuchPrecisionDueToLeadingSign")]
+		[TestCase(3, 2, true, "a.sd",
+			ExpectedResult = false, TestName = "False_OnWrongFormatValue")]
+		[TestCase(3, 2, true, "4,42",
+			ExpectedResult = true, TestName = "True_OnNumberWithCommaAsSeparator")]
+		[TestCase(4, 2, true, "+1.23",
+			ExpectedResult = true, TestName = "True_OnCorrectNumberWithSign")]
+		[TestCase(4, 2, false, "-1.23",
+			ExpectedResult = true, TestName = "True_OnNegativeNumber_WhenOnlyPositiveFlagIsFalse")]
+		[TestCase(4, 2, true, "-3.51",
+			ExpectedResult = false, TestName = "False_OnNegativeNumber_WhenOnlyPositiveAccept")]
+		[TestCase(4, 2, true, ".1",
+			ExpectedResult = false, TestName = "False_OnEmptyIntPartBeforeSeparator")]
+		[TestCase(4, 2, true, "1.",
+			ExpectedResult = false, TestName = "False_OnEmptyFracPartAfterSeparator")]
+		[TestCase(4, 2, false, null,
+			ExpectedResult = false, TestName = "False_OnNull")]
+		[TestCase(4, 2, false, "",
+			ExpectedResult = false, TestName = "False_OnEmpty")]
+		public bool IsValidNumber(int precision, int scale, bool onlyPositive, string value) =>
+			new NumberValidator(precision, scale, onlyPositive).IsValidNumber(value);
 	}
 
 	public class NumberValidator
