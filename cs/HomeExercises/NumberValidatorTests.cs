@@ -16,48 +16,41 @@ namespace HomeExercises
 		}
 
 
-		[Test]
 		[TestCase(-1, 0, true, TestName = "negative precision")]
 		[TestCase(0, 0, true, TestName = "zero precision")]
         public void Constructor_ThrowsArgumentException_WhenPrecisionIsNotPositive(int precision, int scale, bool onlyPositive)
 		{
 			Action create = () => new NumberValidator(precision, scale, onlyPositive);
-			create.ShouldThrowExactly<ArgumentException>($"precision {precision} is not positive")
-				.WithMessage("*precision*");
+			create.ShouldThrowExactly<ArgumentException>($"precision {precision} is not positive");
 		}
 
-        [Test]
         [TestCase(1, -1, true, TestName = "scale less than zero")]
         [TestCase(1, 2, true, TestName = "scale bigger than precision")]
         [TestCase(1, 1, true, TestName = "scale equals precision")]
         public void Constructor_ThrowsArgumentException_WhenScaleIsIncorrect(int precision, int scale, bool onlyPositive)
         {
 	        Action create = () => new NumberValidator(precision, scale, onlyPositive);
-	        create.ShouldThrowExactly<ArgumentException>($"scale {scale} can't be with precision {precision}")
-		        .WithMessage("*scale*");
+	        create.ShouldThrowExactly<ArgumentException>($"scale {scale} can't be with precision {precision}");
         }
 
-        [Test]
         [TestCase(1, 0, true, TestName = "correct integer")]
-        [TestCase(2, 1, true, TestName = "correct non-integer")]
+        [TestCase(2, 1, true, TestName = "correct decimal")]
         public void Constructor_DoesNotThrowException_WhenInputIsCorrect(int precision, int scale, bool onlyPositive)
         {
 	        Action create = () => new NumberValidator(precision, scale, onlyPositive);
 	        create.ShouldNotThrow($"both precision {precision} and scale {scale} are correct");
         }
 
-        [Test]
-        [TestCase("0", TestName = "correct unsigned int")]
-        [TestCase("0.0", TestName = "correct unsigned non-int")]
+        [TestCase("0", TestName = "correct unsigned integer")]
+        [TestCase("0.0", TestName = "correct unsigned decimal")]
         [TestCase("+1.2", TestName = "correct positive")]
         [TestCase("-1.2", TestName = "correct negative")]
-        [TestCase("0,0", TestName = "correct number with comma")]
+        [TestCase("0,0", TestName = "correct decimal with comma")]
         public void IsValid_True_OnCorrectInput(string value)
         {
 	        numberValidator.IsValidNumber(value).Should().BeTrue($"{value} is correct argument");
         }
 
-        [Test]
         [TestCase("0.000", TestName = "too big scale")]
         [TestCase("0000", TestName = "too big precision")]
         [TestCase("00.00", TestName = "length is bigger than precision")]
@@ -72,7 +65,6 @@ namespace HomeExercises
 	        numberValidator.IsValidNumber(value).Should().BeFalse($"{value} is incorrect argument");
         }
 
-        [Test]
         [TestCase("-0.0", TestName = "negative zero")]
         [TestCase("-2", TestName = "negative integer")]
         public void IsValid_False_OnNegativeWhenCreatedWithOnlyPositive(string value)
