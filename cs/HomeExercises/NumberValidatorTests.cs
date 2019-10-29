@@ -17,15 +17,23 @@ namespace HomeExercises
 		[TestCase(4, 2, true, "+1.23", ExpectedResult = true,
 			Description = "signed valid number")]
 		[TestCase(17, 2, true, "0.000", ExpectedResult = false,
-			Description = "fractional part more than possible")]
+			Description = "fractional part of a number more than possible")]
 		[TestCase(3, 2, true, "00.00", ExpectedResult = false,
-			Description = "integer part is not valid number")]
+			Description = "integer part of a number is not valid number")]
+		[TestCase(3, 2, true, "42.42", ExpectedResult = false,
+			Description = "number is longer than possible")]
 		[TestCase(3, 2, true, "+1.23", ExpectedResult = false,
 			Description = "positive signed number is longer than possible")]
+		[TestCase(3, 2, false, "-1.23", ExpectedResult = false,
+			Description = "negative signed number is longer than possible")]
 		[TestCase(3, 2, true, "-1.23", ExpectedResult = false,
-			Description = "only a positive number is possible")]
+			Description = "the argument is a negative number and the flag is onlyPositive=true")]
 		[TestCase(3, 2, true, "a.sd", ExpectedResult = false,
 			Description = "invalid characters in number")]
+		[TestCase(4, 2, true, "", ExpectedResult = false,
+			Description = "string is empty")]
+		[TestCase(4, 2, true, null, ExpectedResult = false,
+			Description = "string is null")]
 		public bool IsValidNumber(int precision, int scale, bool onlyPositive, string number)
 		{
 			return new NumberValidator(precision, scale, onlyPositive).IsValidNumber(number);
@@ -37,9 +45,12 @@ namespace HomeExercises
 		/// Arrange, Act and Assert, but in these cases it is not principle important
 		/// </summary>
 		[Test]
-		public void CreateNumberValidator_WithNegativePrecision_ShouldThrowException()
+		[TestCase(-1, 2, true, Description = "argument precision is negative")]
+		[TestCase(1, -2, false, Description = "argument scale is negative")]
+		[TestCase(1, 4, true, Description = "argument scale more than equals")]
+		public void CreateNumberValidator_ShouldThrowException(int precision, int scale, bool onlyPositive)
 		{
-			Action act = () => new NumberValidator(-1, 2, true);
+			Action act = () => new NumberValidator(precision, scale, onlyPositive);
 			act.Should().Throw<ArgumentException>();
 		}
 
@@ -66,7 +77,7 @@ namespace HomeExercises
 			if (precision <= 0)
 				throw new ArgumentException("precision must be a positive number");
 			if (scale < 0 || scale >= precision)
-				throw new ArgumentException("precision must be a non-negative number less or equal than precision");
+				throw new ArgumentException("scale must be a non-negative number less or equal than precision");
 			numberRegex = new Regex(@"^([+-]?)(\d+)([.,](\d+))?$", RegexOptions.IgnoreCase);
 		}
 
