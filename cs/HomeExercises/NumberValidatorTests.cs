@@ -12,11 +12,20 @@ namespace HomeExercises
 		[TestCase(0, 2, TestName = "Кол-во знаков равно нулю")]
 		[TestCase(1, -1, TestName = "Кол-во знаков дробной части числа отрицательно")]
 		[TestCase(1, 2, TestName = "Дробная часть больше чем длина числа")]
+		[TestCase(2, 2, TestName = "Длина дробной части равна длине числа")]
 		[TestCase(-2, -1, TestName = "Дробная часть больше чем длина числа при отрицательных значениях")]
 		public void Constructor_WithArgumentException(int precision, int scale = 0, bool onlyPositive = false)
 		{
 			Action action = () => new NumberValidator(precision, scale, onlyPositive);
 			action.ShouldThrow<ArgumentException>();
+		}
+		
+		[TestCase(2, 0, TestName = "Длина дробной части равна нулю")]
+		[TestCase(2, 1, TestName = "Длины числа и дробной части положительные")]
+		public void Constructor_DoesNotThrow(int precision, int scale = 0, bool onlyPositive = false)
+		{
+			Action action = () => new NumberValidator(precision, scale, onlyPositive);
+			action.ShouldNotThrow();
 		}
 		
 		[TestCase("0.00", true, TestName = "Ноль с нулевой дробной частью при только положительных")]
@@ -39,14 +48,18 @@ namespace HomeExercises
 		[TestCase(null, false, TestName = "Значение null")]
 		[TestCase("", false, TestName = "Значение - пустая строка")]
 		[TestCase("+ad", false, TestName = "Значение - это строка с буквами")]
-		[TestCase(" ", false, TestName = "Значение пробел")]
+		[TestCase(" ", false, TestName = "Значение - пробел")]
 		[TestCase("11111", false, TestName = "Длина числа больше установлена")]
 		[TestCase("+1111", false, TestName = "Длина числа плюс знак \"плюс\" больше установленной")]
 		[TestCase("-11", true, TestName = "Отрицательное число при только положительных")]
-		[TestCase("-1.1", false, TestName = "Отрицательное число с дробной частью при только положительных")]
+		[TestCase("-1.1", true, TestName = "Отрицательное число с дробной частью при только положительных")]
 		[TestCase("-0", true, TestName = "Отрицательный ноль при только положительных")]
 		[TestCase("1.111", false, TestName = "Длинна дробной части больше чем установлена")]
-		
+		[TestCase("+-1", false, TestName = "Плюс минус число")]
+		[TestCase("1E2", false, TestName = "Число с экспонентой")]
+		[TestCase("O.1", false, TestName = "Буква О вместо нуля")]
+		[TestCase(".1", false, TestName = "Без целой части")]
+		[TestCase("1.", false, TestName = "Без дробной части, но с разделяешей точкой")]
 		public void IsValidNumber_ReturnFalse(string value, bool onlyPositive)
 		{
 			var numberValidator = new NumberValidator(4, 2, onlyPositive);
