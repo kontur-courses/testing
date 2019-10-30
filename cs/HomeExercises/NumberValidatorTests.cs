@@ -35,7 +35,7 @@ namespace HomeExercises
 		[TestCase(17, 2, true, "a.sd", TestName = "WhenNotANumber")]
 		[TestCase(10, 2, true, null, TestName = "WhenNullValue")]
 		[TestCase(10, 2, true, "", TestName = "WhenEmptyString")]
-		[TestCase(3, 2, false, "-1.23", TestName = "SignTakenIntoAccountPrecision")]
+		[TestCase(3, 2, false, "-1.23", TestName = "WhenSignTakenIntoAccountPrecision")]
 		[TestCase(3, 2, true, "++1", TestName = "WhenSeveralSigns")]
 		[TestCase(3, 2, true, "1..2", TestName = "WhenSeveralSeparators")]
 		[TestCase(3, 2, true, "1.", TestName = "WhenEndsOnDot")]
