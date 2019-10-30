@@ -8,14 +8,13 @@ namespace HomeExercises
 	[TestFixture]
 	public class NumberValidatorTests
 	{
-		[Test]
-		public void IsValidNumber_WithNegativeNumberWhenOnlyPositiveIsTrue_ShouldReturnFalse()
+		[TestCase("-42.42")]
+		[TestCase("-42,42")]
+		[TestCase("-42")]
+		public void IsValidNumber_WithNegativeNumberWhenOnlyPositiveIsTrue_ShouldReturnFalse(string number)
 		{
 			var numberValidator = new NumberValidator(3, 2, true);
-			var number = "-1.42";
-
 			var actual = numberValidator.IsValidNumber(number);
-
 			actual.Should().BeFalse();
 		}
 
@@ -29,9 +28,12 @@ namespace HomeExercises
 			actual.Should().BeFalse();
 		}
 
-		[TestCase(3, 2, true, "a.42", Description = "invalid characters in integer part")]
-		[TestCase(3, 2, true, "00.00", Description = "integer part of a number is not valid number")]
-		public void IsValidNumber_InvalidIntegerPartOfNumber_ShouldReturnFalse(
+		#region FractionalPartIsNotNumber
+
+		[TestCase(17, 2, true, "42.a")]
+		[TestCase(17, 2, true, "+42.a")]
+		[TestCase(17, 2, false, "-42.a")]
+		public void IsValidNumber_FractionalPartOfNumberWithDotIsNotNumber_ShouldReturnFalse(
 			int precision, int scale, bool onlyPositive, string number)
 		{
 			var numberValidator = new NumberValidator(precision, scale, onlyPositive);
@@ -39,12 +41,76 @@ namespace HomeExercises
 			actual.Should().BeFalse();
 		}
 
+		[TestCase(17, 2, true, "42,a")]
+		[TestCase(17, 2, true, "+42,a")]
+		[TestCase(17, 2, false, "-42,a")]
+		public void IsValidNumber_FractionalPartOfNumberWithDotIsCommaNumber_ShouldReturnFalse(
+			int precision, int scale, bool onlyPositive, string number)
+		{
+			var numberValidator = new NumberValidator(precision, scale, onlyPositive);
+			var actual = numberValidator.IsValidNumber(number);
+			actual.Should().BeFalse();
+		}
+
+		#endregion
+
+		#region InvalidIntegerNumber
+
+		[TestCase(3, 2, true, "a")]
+		[TestCase(3, 2, true, "+a")]
+		[TestCase(3, 2, false, "-a")]
+		[TestCase(3, 2, false, "-")]
+		[TestCase(3, 2, true, "+")]
+		public void IsValidNumber_InvalidIntegerNumber_ShouldReturnFalse(
+			int precision, int scale, bool onlyPositive, string number)
+		{
+			var numberValidator = new NumberValidator(precision, scale, onlyPositive);
+			var actual = numberValidator.IsValidNumber(number);
+			actual.Should().BeFalse();
+		}
+
+		[TestCase(3, 2, true, "a.42")]
+		[TestCase(3, 2, true, "+a.42")]
+		[TestCase(3, 2, false, "-a.42")]
+		public void IsValidNumber_InvalidIntegerPartOfNumberWithDot_ShouldReturnFalse(
+			int precision, int scale, bool onlyPositive, string number)
+		{
+			var numberValidator = new NumberValidator(precision, scale, onlyPositive);
+			var actual = numberValidator.IsValidNumber(number);
+			actual.Should().BeFalse();
+		}
+
+		[TestCase(3, 2, true, "a,42")]
+		[TestCase(3, 2, true, "+a,42")]
+		[TestCase(3, 2, false, "-a,42")]
+		public void IsValidNumber_InvalidCharactersInIntegerPart_ShouldReturnFalse(
+			int precision, int scale, bool onlyPositive, string number)
+		{
+			var numberValidator = new NumberValidator(precision, scale, onlyPositive);
+			var actual = numberValidator.IsValidNumber(number);
+			actual.Should().BeFalse();
+		}
+
+		#endregion
+
+		#region NumberLongerThanPossible
+
+		[TestCase(1, 0, true, "42")]
+		[TestCase(2, 0, true, "+42")]
+		[TestCase(2, 0, false, "-42")]
+		public void IsValidNumber_IntegerNumberLongerThanPossible_ShouldReturnFalse(
+			int precision, int scale, bool onlyPositive, string number)
+		{
+			var numberValidator = new NumberValidator(precision, scale, onlyPositive);
+			var actual = numberValidator.IsValidNumber(number);
+			actual.Should().BeFalse();
+		}
 
 		[TestCase(3, 2, true, "42.42", Description = "unsigned number is longer than possible")]
 		[TestCase(3, 2, true, "+1.23", Description = "positive signed number is longer than possible")]
-		[TestCase(3, 2, true, "-1.23", Description = "negative signed number is longer than possible")]
+		[TestCase(3, 2, false, "-1.23", Description = "negative signed number is longer than possible")]
 		[TestCase(17, 2, true, "0.000", Description = "fractional part of a number more than possible")]
-		public void IsValidNumber_NumberLongerThanPossible_ShouldReturnFalse(
+		public void IsValidNumber_NumberWithDotLongerThanPossible_ShouldReturnFalse(
 			int precision, int scale, bool onlyPositive, string number)
 		{
 			var numberValidator = new NumberValidator(precision, scale, onlyPositive);
@@ -52,17 +118,215 @@ namespace HomeExercises
 			actual.Should().BeFalse();
 		}
 
-		[TestCase(17, 2, true, "0.0", Description = "unsigned valid number with fractional part")]
-		[TestCase(17, 2, true, "0", Description = "unsigned valid number without fractional part")]
-		[TestCase(4, 2, true, "+1.23", Description = "positive valid number")]
-		[TestCase(4, 2, false, "-1.23", Description = "negative valid number")]
-		public void IsValidNumber_ArgumentIsValidNumber_ShouldReturnTrue(
+		[TestCase(3, 2, true, "42,42")]
+		[TestCase(3, 2, true, "+1,23")]
+		[TestCase(3, 2, false, "-1,23")]
+		[TestCase(17, 2, true, "0,000")]
+		public void IsValidNumber_NumberWithCommaLongerThanPossible_ShouldReturnFalse(
+			int precision, int scale, bool onlyPositive, string number)
+		{
+			var numberValidator = new NumberValidator(precision, scale, onlyPositive);
+			var actual = numberValidator.IsValidNumber(number);
+			actual.Should().BeFalse();
+		}
+
+		#endregion
+
+		#region ValidNumber
+
+		[TestCase(17, 2, true, "42")]
+		[TestCase(17, 2, false, "-42")]
+		[TestCase(17, 2, true, "+42")]
+		public void IsValidNumber_ArgumentIsValidIntegerNumber_ShouldReturnTrue(
 			int precision, int scale, bool onlyPositive, string number)
 		{
 			var numberValidator = new NumberValidator(precision, scale, onlyPositive);
 			var actual = numberValidator.IsValidNumber(number);
 			actual.Should().BeTrue();
 		}
+
+		[TestCase(4, 2, true, "+1.23", Description = "positive valid number")]
+		[TestCase(4, 2, false, "-1.23", Description = "negative valid number")]
+		[TestCase(4, 2, true, "42.42")]
+		public void IsValidNumber_ArgumentIsValidNumberWithDot_ShouldReturnTrue(
+			int precision, int scale, bool onlyPositive, string number)
+		{
+			var numberValidator = new NumberValidator(precision, scale, onlyPositive);
+			var actual = numberValidator.IsValidNumber(number);
+			actual.Should().BeTrue();
+		}
+
+		[TestCase(4, 2, true, "+1,23")]
+		[TestCase(4, 2, false, "-1,23")]
+		[TestCase(4, 2, true, "42,42")]
+		public void IsValidNumber_ArgumentIsValidNumberWithComma_ShouldReturnTrue(
+			int precision, int scale, bool onlyPositive, string number)
+		{
+			var numberValidator = new NumberValidator(precision, scale, onlyPositive);
+			var actual = numberValidator.IsValidNumber(number);
+			actual.Should().BeTrue();
+		}
+
+		#endregion
+
+		#region NumberIsSubstring
+
+		[TestCase("42.42lemon")]
+		[TestCase("lemon42.42")]
+		[TestCase("le42.42mon")]
+		[TestCase("42le.mon42")]
+		[TestCase("42le.42")]
+		[TestCase("42.mon42")]
+		public void IsValidNumber_NumberWithDotIsSubstring_ShouldReturnFalse(string number)
+		{
+			var numberValidator = new NumberValidator(4, 2, true);
+			var actual = numberValidator.IsValidNumber(number);
+			actual.Should().BeFalse();
+		}
+
+		[TestCase("-42.42lemon")]
+		[TestCase("lemon-42.42")]
+		[TestCase("le-42.42mon")]
+		[TestCase("-42le.mon42")]
+		[TestCase("-42le.42")]
+		[TestCase("-42.mon42")]
+		public void IsValidNumber_NegativeNumberWithDotIsSubstring_ShouldReturnFalse(string number)
+		{
+			var numberValidator = new NumberValidator(4, 2, false);
+			var actual = numberValidator.IsValidNumber(number);
+			actual.Should().BeFalse();
+		}
+
+		[TestCase("+42.42lemon")]
+		[TestCase("lemon+42.42")]
+		[TestCase("le+42.42mon")]
+		[TestCase("+42le.mon42")]
+		[TestCase("+42le.42")]
+		[TestCase("+42.mon42")]
+		public void IsValidNumber_PositiveNumberWithDotIsSubstring_ShouldReturnFalse(string number)
+		{
+			var numberValidator = new NumberValidator(4, 2, true);
+			var actual = numberValidator.IsValidNumber(number);
+			actual.Should().BeFalse();
+		}
+
+		[TestCase("42,42lemon")]
+		[TestCase("lemon42,42")]
+		[TestCase("le42,42mon")]
+		[TestCase("42le,mon42")]
+		[TestCase("42le,42")]
+		[TestCase("42,mon42")]
+		public void IsValidNumber_NumberWithCommaIsSubstring_ShouldReturnFalse(string number)
+		{
+			var numberValidator = new NumberValidator(4, 2, true);
+			var actual = numberValidator.IsValidNumber(number);
+			actual.Should().BeFalse();
+		}
+
+		[TestCase("-42,42lemon")]
+		[TestCase("lemon-42,42")]
+		[TestCase("le-42,42mon")]
+		[TestCase("-42le,mon42")]
+		[TestCase("-42le,42")]
+		[TestCase("-42,mon42")]
+		public void IsValidNumber_NegativeNumberWithCommaIsSubstring_ShouldReturnFalse(string number)
+		{
+			var numberValidator = new NumberValidator(4, 2, false);
+			var actual = numberValidator.IsValidNumber(number);
+			actual.Should().BeFalse();
+		}
+
+		[TestCase("+42,42lemon")]
+		[TestCase("lemon+42,42")]
+		[TestCase("le+42,42mon")]
+		[TestCase("+42le,mon42")]
+		[TestCase("+42le,42")]
+		[TestCase("+42,mon42")]
+		public void IsValidNumber_PositiveNumberWithCommaIsSubstring_ShouldReturnFalse(string number)
+		{
+			var numberValidator = new NumberValidator(4, 2, true);
+			var actual = numberValidator.IsValidNumber(number);
+			actual.Should().BeFalse();
+		}
+
+		[TestCase("42lemon")]
+		[TestCase("lemon42")]
+		[TestCase("le42mon")]
+		[TestCase("4lemon2")]
+		public void IsValidNumber_IntegerNumberIsSubstring_ShouldReturnFalse(string number)
+		{
+			var numberValidator = new NumberValidator(4, 2, true);
+			var actual = numberValidator.IsValidNumber(number);
+			actual.Should().BeFalse();
+		}
+
+		[TestCase("-42lemon")]
+		[TestCase("lemon-42")]
+		[TestCase("le-42mon")]
+		[TestCase("-4lemon2")]
+		public void IsValidNumber_NegativeIntegerNumberIsSubstring_ShouldReturnFalse(string number)
+		{
+			var numberValidator = new NumberValidator(4, 2, false);
+			var actual = numberValidator.IsValidNumber(number);
+			actual.Should().BeFalse();
+		}
+
+		[TestCase("+42lemon")]
+		[TestCase("lemon+42")]
+		[TestCase("le+42mon")]
+		[TestCase("+4lemon2")]
+		public void IsValidNumber_PositiveIntegerNumberIsSubstring_ShouldReturnFalse(string number)
+		{
+			var numberValidator = new NumberValidator(4, 2, true);
+			var actual = numberValidator.IsValidNumber(number);
+			actual.Should().BeFalse();
+		}
+
+		#endregion
+
+		#region NumberWithSeparatorWithoutPartOfNumber
+
+		[TestCase("42.")]
+		[TestCase("42,")]
+		[TestCase("-42.")]
+		[TestCase("-42,")]
+		[TestCase("+42.")]
+		[TestCase("+42,")]
+		public void IsValidNumber_NumberWithSeparatorWithoutFractionalPart_ShouldReturnFalse(string number)
+		{
+			var numberValidator = new NumberValidator(4, 2, false);
+			var actual = numberValidator.IsValidNumber(number);
+			actual.Should().BeFalse();
+		}
+
+		[TestCase(".42")]
+		[TestCase(",42")]
+		[TestCase("-.42")]
+		[TestCase("-,42")]
+		[TestCase("+.42")]
+		[TestCase("+,42")]
+		public void IsValidNumber_NumberWithSeparatorWithoutIntegerPart_ShouldReturnFalse(string number)
+		{
+			var numberValidator = new NumberValidator(4, 2, false);
+			var actual = numberValidator.IsValidNumber(number);
+			actual.Should().BeFalse();
+		}
+
+		[TestCase(".")]
+		[TestCase(",")]
+		[TestCase("-.")]
+		[TestCase("-,")]
+		[TestCase("+.")]
+		[TestCase("+,")]
+		public void IsValidNumber_NumberWithSeparatorWithoutIntegerAndFractionParts_ShouldReturnFalse(string number)
+		{
+			var numberValidator = new NumberValidator(4, 2, false);
+			var actual = numberValidator.IsValidNumber(number);
+			actual.Should().BeFalse();
+		}
+
+		#endregion
+
 
 		[TestCase(-1, 2, true, Description = "argument precision is negative")]
 		[TestCase(1, -2, false, Description = "argument scale is negative")]
