@@ -10,27 +10,16 @@ namespace HomeExercises
     {
         [Test]
         [Category("Exeptions")]
-        public void ArgumentException_If_PrecisionIsNegative()
+        [Category("Сonstructor NumberValidator")]
+        [TestCase(-1, 2, TestName = "PrecisionIsNegative")]
+        [TestCase(1, -2, TestName = "ScaleIsNegative")]
+        [TestCase(1, 2, TestName = "PrecisionLessThanScale")]
+        public void СonstructorExeptions(int precision, int scale)
         {
-            Action action = () => new NumberValidator(-1, 2);
+            Action action = () => new NumberValidator(precision, scale);
             action.Should().Throw<ArgumentException>();
         }
 
-        [Test]
-        [Category("Exeptions")]
-        public void ArgumentException_If_ScaleIsNegative()
-        {
-            Action action = () => new NumberValidator(1, -2);
-            action.Should().Throw<ArgumentException>();
-        }
-
-        [Test]
-        [Category("Exeptions")]
-        public void ArgumentException_If_PrecisionLessThanScale()
-        {
-            Action action = () => new NumberValidator(1, 2);
-            action.Should().Throw<ArgumentException>();
-        }
 
         [Category("Invalid strings")]
         [TestCase("", ExpectedResult = false, TestName = "EmptyString")]
