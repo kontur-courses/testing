@@ -42,8 +42,17 @@ namespace HomeExercises
 			// Какие недостатки у такого подхода? 
 			Assert.True(AreEqual(actualTsar, expectedTsar));
 		}
+        [Test]
+        [Description("Альтернативное решение enchanced")]
+        public void CheckCurrentTsar_WithCustomEqualityEnchanced()
+        {
+            var actualTsar = TsarRegistry.GetCurrentTsar();
+            var expectedTsar = new Person("Ivan IV The Terrible", 54, 170, 70,
+                new Person("Vasili III of Russia", 28, 170, 60, null));
+            AreEqualEnchanced(actualTsar, expectedTsar);
+        }
 
-		private bool AreEqual(Person actual, Person expected)
+        private bool AreEqual(Person actual, Person expected)
 		{
 			if (actual == expected) return true;
 			if (actual == null || expected == null) return false;
@@ -54,6 +63,19 @@ namespace HomeExercises
 				&& actual.Weight == expected.Weight
 				&& AreEqual(actual.Parent, expected.Parent);
 		}
+
+        private void AreEqualEnchanced(Person actual, Person expected)
+        {
+            if (actual == expected) return;
+            actual.Should().NotBeNull();
+            expected.Should().NotBeNull();
+            expected.Name.Should().Be(actual.Name);
+            expected.Age.Should().Be(actual.Age);
+            expected.Height.Should().Be(actual.Height);
+            expected.Weight.Should().Be(actual.Weight);
+            AreEqualEnchanced(actual.Parent, expected.Parent);
+
+        }
 	}
 
 	public class TsarRegistry
