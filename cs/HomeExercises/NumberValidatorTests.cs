@@ -9,7 +9,7 @@ namespace HomeExercises
     public class NumberValidatorTests
 	{
         [Test]
-        public void NumberValidator_RightInput_ShouldNotThrowException()
+        public void NumberValidator_PositiveScaleAndPrecision_ShouldNotThrowException()
         {
             Assert.DoesNotThrow(() => new NumberValidator(1, 0, true));
         }
@@ -24,79 +24,79 @@ namespace HomeExercises
             Assert.Throws<ArgumentException>(() => new NumberValidator(1, -1, true));
         }
         [Test]
-        public void NumberValidator_ScaleLesserThanPrecision_ShouldThrowException()
+        public void NumberValidator_ScaleLessThanPrecision_ShouldThrowException()
         {
             Assert.Throws<ArgumentException>(() => new NumberValidator(1, 2, true));
         }
         [Test]
-        public void NumberValidator_CheckingEmptyInput_False()
+        public void NumberValidator_EmptyInput_ShouldNotBeValid()
         {
             Assert.IsFalse(new NumberValidator(17, 2, true).IsValidNumber(""));
         }
         [Test]
-        public void NumberValidator_CheckingNullInput_False()
+        public void NumberValidator_NullInput_ShouldNotBeValid()
         {
             Assert.IsFalse(new NumberValidator(17, 2, true).IsValidNumber(null));
         }
         [Test]
-        public void NumberValidator_CheckingRightInputOnlyIntPart_True()
+        public void NumberValidator_OnlyIntPart_ShouldBeValid()
         {
             Assert.IsTrue(new NumberValidator(17, 2, true).IsValidNumber("0"));
         }
         [Test]
-        public void NumberValidator_CheckingWrongInputOnlyIntPartGreaterThanScale_False()
+        public void NumberValidator_OnlyIntPartGreaterThanScale_ShouldNotBeValid()
         {
             Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("111111"));
         }
         [Test]
-        public void NumberValidator_CheckingRightInputBothPartsLesserThanLimits_True()
+        public void NumberValidator_BothPartsLesserThanLimits_ShouldBeValid()
         {
             Assert.IsTrue(new NumberValidator(17, 2, true).IsValidNumber("0.0"));
         }
         [Test]
-        public void NumberValidator_CheckingRightInputScaleEqualLimits_True()
+        public void NumberValidator_ScaleEqualLimits_ShouldBeValid()
         {
             Assert.IsTrue(new NumberValidator(17, 2, true).IsValidNumber("00.00"));
         }
         [Test]
-        public void NumberValidator_CheckingRightInputPrecisionEqualLimits_True()
+        public void NumberValidator_PrecisionEqualLimits_ShouldBeValid()
         {
             Assert.IsTrue(new NumberValidator(4, 2, true).IsValidNumber("00.00"));
         }
         [Test]
-        public void NumberValidator_CheckingWrongInputScaleGreaterThanLimits_False()
+        public void NumberValidator_ScaleGreaterThanLimits_ShouldNotBeValid()
         {
             Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("00.00"));
         }
         [Test]
-        public void NumberValidator_CheckingWrongInputPrecisionGreaterThanLimits_False()
+        public void NumberValidator_PrecisionGreaterThanLimits_ShouldNotBeValid()
         {
             Assert.IsFalse(new NumberValidator(17, 2, true).IsValidNumber("0.000"));
         }
         [Test]
-        public void NumberValidator_CheckingSignIsAlsoPartOfScale()
+        public void NumberValidator_NumberWithSign_SignShouldBePartOfScale()
         {
             Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("+0.00"));
             Assert.IsTrue(new NumberValidator(4, 2, true).IsValidNumber("+0.00"));
         }
         [Test]
-        public void NumberValidator_CheckingRightInputLesserNotPositive_True()
+        public void NumberValidator_InputNegative_ShouldBeValidIfValidatorAcceptNegative()
         {
             Assert.IsTrue(new NumberValidator(17, 2, false).IsValidNumber("-1"));
             Assert.IsTrue(new NumberValidator(17, 2, false).IsValidNumber("-1.0"));
         }
         [Test]
-        public void NumberValidator_CheckingWrongInputWrongSignOnlyInt_False()
+        public void NumberValidator_InputNegative_ShouldNotBeValidIfValidatorNotAcceptNegative()
         {
             Assert.IsFalse(new NumberValidator(17, 2, true).IsValidNumber("-1"));
         }
         [Test]
-        public void NumberValidator_CheckingWrongInputWrongSign_False()
+        public void NumberValidator_CheckingWrongInputWrongSign_ShouldNotBeValid()//maybe remove
         {
             Assert.IsFalse(new NumberValidator(17, 2, true).IsValidNumber("-1.0"));
         }
         [Test]
-        public void NumberValidator_CheckingWrongInputNotNumbers_False()
+        public void NumberValidator_NotNumbers_ShouldNotBeValid()
         {
             Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("a.sd"));
             Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("ф.ыв"));
@@ -106,32 +106,32 @@ namespace HomeExercises
             Assert.IsFalse(new NumberValidator(10, 5, true).IsValidNumber("\n.\n\n"));
         }
         [Test]
-        public void NumberValidator_CheckingContainLetters_False()
+        public void NumberValidator_IfContainLetters_ShouldNotBeValid()
         {
             Assert.IsFalse(new NumberValidator(17, 10, false).IsValidNumber("1.23asd"));
             Assert.IsFalse(new NumberValidator(17, 10, false).IsValidNumber("1.asd23"));
         }
         [Test]
-        public void NumberValidator_CheckingMultipleSign_False()
+        public void NumberValidator_MultipleSign_ShouldNotBeValid()
         {
             Assert.IsFalse(new NumberValidator(17, 10, false).IsValidNumber("--1.23"));
             Assert.IsFalse(new NumberValidator(17, 10, false).IsValidNumber("-----1.23"));
             Assert.IsFalse(new NumberValidator(17, 10, false).IsValidNumber("-+1.23"));
             Assert.IsFalse(new NumberValidator(17, 10, false).IsValidNumber("+-1.23"));
         }
-        public void NumberValidator_CheckingWrongInputSignInFracPart_False()
+        public void NumberValidator_SignInFracPart_ShouldNotBeValid()
         {
             Assert.IsFalse(new NumberValidator(17, 10, false).IsValidNumber("1.-23"));
             Assert.IsFalse(new NumberValidator(17, 10, false).IsValidNumber("1.23-"));
         }
         [Test]
-        public void NumberValidator_WrongDelimeter_False()
+        public void NumberValidator_DelimetersThatNotColonAndComma_ShouldNotBeValid()//maybe remove
         {
             Assert.IsFalse(new NumberValidator(17, 10, false).IsValidNumber("1/23"));
         }
 
         [Test]
-		public void NumberValidator_TestNotStaticOnlyPositive()
+		public void NumberValidator_CheckingThatClassNotStaticOnlyPositive()
 		{
             var val1 = new NumberValidator(17, 10, true);
             var val2 = new NumberValidator(17, 10, false);
@@ -140,7 +140,7 @@ namespace HomeExercises
 
         }
         [Test]
-        public void NumberValidator_TestNotStaticScale()
+        public void NumberValidator_CheckingThatScaleNotStatic()
         {
             var val1 = new NumberValidator(5, 3, true);
             var val2 = new NumberValidator(10, 3, false);
@@ -149,7 +149,7 @@ namespace HomeExercises
 
         }
         [Test]
-        public void NumberValidator_TestNotStaticPrecision()
+        public void NumberValidator_CheckingThatPrecisionNotStatic()
         {
             var val1 = new NumberValidator(10, 3, true);
             var val2 = new NumberValidator(10, 8, false);
