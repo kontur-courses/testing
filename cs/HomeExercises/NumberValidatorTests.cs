@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Security.Cryptography;
 using System.Text.RegularExpressions;
 using FluentAssertions;
 using NUnit.Framework;
@@ -10,45 +9,66 @@ namespace HomeExercises
 	public class NumberValidatorTests
 	{
 		[Test]
-		[TestCase(17, 2, true, "0.0", ExpectedResult = true,
-			Description = "unsigned valid number with fractional part")]
-		[TestCase(17, 2, true, "0", ExpectedResult = true,
-			Description = "unsigned valid number without fractional part")]
-		[TestCase(4, 2, true, "+1.23", ExpectedResult = true,
-			Description = "signed valid number")]
-		[TestCase(17, 2, true, "0.000", ExpectedResult = false,
-			Description = "fractional part of a number more than possible")]
-		[TestCase(3, 2, true, "00.00", ExpectedResult = false,
-			Description = "integer part of a number is not valid number")]
-		[TestCase(3, 2, true, "42.42", ExpectedResult = false,
-			Description = "number is longer than possible")]
-		[TestCase(3, 2, true, "+1.23", ExpectedResult = false,
-			Description = "positive signed number is longer than possible")]
-		[TestCase(3, 2, false, "-1.23", ExpectedResult = false,
-			Description = "negative signed number is longer than possible")]
-		[TestCase(3, 2, true, "-1.23", ExpectedResult = false,
-			Description = "the argument is a negative number and the flag is onlyPositive=true")]
-		[TestCase(3, 2, true, "a.sd", ExpectedResult = false,
-			Description = "invalid characters in number")]
-		[TestCase(4, 2, true, "", ExpectedResult = false,
-			Description = "string is empty")]
-		[TestCase(4, 2, true, null, ExpectedResult = false,
-			Description = "string is null")]
-		public bool IsValidNumber(int precision, int scale, bool onlyPositive, string number)
+		public void IsValidNumber_WithNegativeNumberWhenOnlyPositiveIsTrue_ShouldReturnFalse()
 		{
-			return new NumberValidator(precision, scale, onlyPositive).IsValidNumber(number);
+			var numberValidator = new NumberValidator(3, 2, true);
+			var number = "-1.42";
+
+			var actual = numberValidator.IsValidNumber(number);
+
+			actual.Should().BeFalse();
+		}
+
+		[TestCase(4, 2, true, "", Description = "string is empty")]
+		[TestCase(4, 2, true, null, Description = "string is null")]
+		public void IsValidNumber_NumberIsNullOrEmpty_ShouldReturnFalse
+			(int precision, int scale, bool onlyPositive, string number)
+		{
+			var numberValidator = new NumberValidator(precision, scale, onlyPositive);
+			var actual = numberValidator.IsValidNumber(number);
+			actual.Should().BeFalse();
+		}
+
+		[TestCase(3, 2, true, "a.42", Description = "invalid characters in integer part")]
+		[TestCase(3, 2, true, "00.00", Description = "integer part of a number is not valid number")]
+		public void IsValidNumber_InvalidIntegerPartOfNumber_ShouldReturnFalse(
+			int precision, int scale, bool onlyPositive, string number)
+		{
+			var numberValidator = new NumberValidator(precision, scale, onlyPositive);
+			var actual = numberValidator.IsValidNumber(number);
+			actual.Should().BeFalse();
 		}
 
 
-		/// <summary>
-		/// the body of the test should be divided into blocks:
-		/// Arrange, Act and Assert, but in these cases it is not principle important
-		/// </summary>
-		[Test]
+		[TestCase(3, 2, true, "42.42", Description = "unsigned number is longer than possible")]
+		[TestCase(3, 2, true, "+1.23", Description = "positive signed number is longer than possible")]
+		[TestCase(3, 2, true, "-1.23", Description = "negative signed number is longer than possible")]
+		[TestCase(17, 2, true, "0.000", Description = "fractional part of a number more than possible")]
+		public void IsValidNumber_NumberLongerThanPossible_ShouldReturnFalse(
+			int precision, int scale, bool onlyPositive, string number)
+		{
+			var numberValidator = new NumberValidator(precision, scale, onlyPositive);
+			var actual = numberValidator.IsValidNumber(number);
+			actual.Should().BeFalse();
+		}
+
+		[TestCase(17, 2, true, "0.0", Description = "unsigned valid number with fractional part")]
+		[TestCase(17, 2, true, "0", Description = "unsigned valid number without fractional part")]
+		[TestCase(4, 2, true, "+1.23", Description = "positive valid number")]
+		[TestCase(4, 2, false, "-1.23", Description = "negative valid number")]
+		public void IsValidNumber_ArgumentIsValidNumber_ShouldReturnTrue(
+			int precision, int scale, bool onlyPositive, string number)
+		{
+			var numberValidator = new NumberValidator(precision, scale, onlyPositive);
+			var actual = numberValidator.IsValidNumber(number);
+			actual.Should().BeTrue();
+		}
+
 		[TestCase(-1, 2, true, Description = "argument precision is negative")]
 		[TestCase(1, -2, false, Description = "argument scale is negative")]
 		[TestCase(1, 4, true, Description = "argument scale more than equals")]
-		public void CreateNumberValidator_ShouldThrowException(int precision, int scale, bool onlyPositive)
+		public void CreateNumberValidator_WithInvalidArguments_ShouldThrowException(
+			int precision, int scale, bool onlyPositive)
 		{
 			Action act = () => new NumberValidator(precision, scale, onlyPositive);
 			act.Should().Throw<ArgumentException>();

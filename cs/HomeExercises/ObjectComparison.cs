@@ -6,13 +6,13 @@ namespace HomeExercises
 	[TestFixture]
 	public class ObjectComparison
 	{
-        /*
+		/*
 		Преимущества использования FluentAsssertions:
 			1. Код становится более удобочитаемым и лаконичным. Труднее допустить ошибку.
 			2. Расширяемость кода.
 			3. Глубину рекурсии можно ограничить (по умолчанию глубина = 10).
 		*/
-        [Test]
+		[Test]
 		[Description("Проверка текущего царя")]
 		[Category("ToRefactor")]
 		public void CheckCurrentTsar()
@@ -22,8 +22,8 @@ namespace HomeExercises
 			var expectedTsar = new Person("Ivan IV The Terrible", 54, 170, 70,
 				new Person("Vasili III of Russia", 28, 170, 60, null));
 
-			actualTsar.Should().BeEquivalentTo(expectedTsar,
-				options => options.Excluding(x => x.Id).Excluding(x => x.Parent.Id));
+			actualTsar.Should().BeEquivalentTo(expectedTsar, options => options.Excluding(
+				x => x.RuntimeType == typeof(int) && x.SelectedMemberPath.EndsWith("Id")));
 		}
 	}
 
