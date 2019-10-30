@@ -18,8 +18,8 @@ namespace HomeExercises
 			actual.Should().BeFalse();
 		}
 
-		[TestCase(4, 2, true, "", Description = "string is empty")]
-		[TestCase(4, 2, true, null, Description = "string is null")]
+		[TestCase(4, 2, true, "")]
+		[TestCase(4, 2, true, null)]
 		public void IsValidNumber_NumberIsNullOrEmpty_ShouldReturnFalse
 			(int precision, int scale, bool onlyPositive, string number)
 		{
@@ -106,10 +106,10 @@ namespace HomeExercises
 			actual.Should().BeFalse();
 		}
 
-		[TestCase(3, 2, true, "42.42", Description = "unsigned number is longer than possible")]
-		[TestCase(3, 2, true, "+1.23", Description = "positive signed number is longer than possible")]
-		[TestCase(3, 2, false, "-1.23", Description = "negative signed number is longer than possible")]
-		[TestCase(17, 2, true, "0.000", Description = "fractional part of a number more than possible")]
+		[TestCase(3, 2, true, "42.42")]
+		[TestCase(3, 2, true, "+1.23")]
+		[TestCase(3, 2, false, "-1.23")]
+		[TestCase(17, 2, true, "0.000")]
 		public void IsValidNumber_NumberWithDotLongerThanPossible_ShouldReturnFalse(
 			int precision, int scale, bool onlyPositive, string number)
 		{
@@ -145,8 +145,8 @@ namespace HomeExercises
 			actual.Should().BeTrue();
 		}
 
-		[TestCase(4, 2, true, "+1.23", Description = "positive valid number")]
-		[TestCase(4, 2, false, "-1.23", Description = "negative valid number")]
+		[TestCase(4, 2, true, "+1.23")]
+		[TestCase(4, 2, false, "-1.23")]
 		[TestCase(4, 2, true, "42.42")]
 		public void IsValidNumber_ArgumentIsValidNumberWithDot_ShouldReturnTrue(
 			int precision, int scale, bool onlyPositive, string number)
