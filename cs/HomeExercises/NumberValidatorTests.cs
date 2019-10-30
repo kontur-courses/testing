@@ -28,41 +28,71 @@ namespace HomeExercises
 			action.ShouldNotThrow();
 		}
 		
+		
+		[TestCase("1111", false, TestName = "Число без дробной части")]
+		[TestCase("1111.12", false, TestName = "Число с дробной частью")]
+		[TestCase("+1111", false, TestName = "Число c  плюсом")]
+		[TestCase("+1111.12", true, TestName = "Положительное число со знаком плюс")]
+		[TestCase("-1111.12", false, TestName = "Отрицательное число с дробной частью")]
+		[TestCase("-12345678.90", false, TestName = "Отрицательное число из всех цифр")]
+		[TestCase("+23,90", false, TestName = "Число с раздилительной запятой")]
+		public void IsValidNumber_ReturnTrue_WhenNumberHasStandardForm(string value, bool onlyPositive)
+		{
+			var numberValidator = new NumberValidator(17, 4, onlyPositive);
+			numberValidator.IsValidNumber(value).Should().BeTrue();
+		}
+		
 		[TestCase("0.00", true, TestName = "Ноль с нулевой дробной частью при только положительных")]
 		[TestCase("0.00", false, TestName = "Ноль с нулевой дробной частью")]
-		[TestCase("0", true, TestName = "Ноль положительных")]
+		[TestCase("0", true, TestName = "Ноль при только положительных")]
 		[TestCase("0", false, TestName = "Ноль")]
 		[TestCase("+0", true, TestName = "Ноль с плюсом при только положительных")]
 		[TestCase("-0", false, TestName = "Ноль с минусом")]
-		[TestCase("1111", false, TestName = "Число без дробной части")]
-		[TestCase("1111.12", false, TestName = "Число с дробной частью")]
-		[TestCase("+1111.12", true, TestName = "Положительное число со знаком плюс")]
-		[TestCase("-1111", false, TestName = "Отрицательное число с дробно частью")]
-		public void IsValidNumber_ReturnTrue(string value, bool onlyPositive)
+		public void IsValidNumber_ReturnTrue_WhenNumberIsZero(string value, bool onlyPositive)
 		{
 			var numberValidator = new NumberValidator(17, 4, onlyPositive);
 			numberValidator.IsValidNumber(value).Should().BeTrue();
 		}
 		
 		
-		[TestCase(null, false, TestName = "Значение null")]
-		[TestCase("", false, TestName = "Значение - пустая строка")]
-		[TestCase("+ad", false, TestName = "Значение - это строка с буквами")]
-		[TestCase(" ", false, TestName = "Значение - пробел")]
-		[TestCase("11111", false, TestName = "Длина числа больше установлена")]
-		[TestCase("+1111", false, TestName = "Длина числа плюс знак \"плюс\" больше установленной")]
-		[TestCase("-11", true, TestName = "Отрицательное число при только положительных")]
-		[TestCase("-1.1", true, TestName = "Отрицательное число с дробной частью при только положительных")]
-		[TestCase("-0", true, TestName = "Отрицательный ноль при только положительных")]
-		[TestCase("1.111", false, TestName = "Длинна дробной части больше чем установлена")]
-		[TestCase("+-1", false, TestName = "Плюс минус число")]
-		[TestCase("1E2", false, TestName = "Число с экспонентой")]
-		[TestCase("O.1", false, TestName = "Буква О вместо нуля")]
-		[TestCase(".1", false, TestName = "Без целой части")]
-		[TestCase("1.", false, TestName = "Без дробной части, но с разделяешей точкой")]
-		public void IsValidNumber_ReturnFalse(string value, bool onlyPositive)
+		[TestCase(null, TestName = "Значение null")]
+		[TestCase("", TestName = "Значение - пустая строка")]
+		[TestCase("+ad", TestName = "Значение - это строка с буквами")]
+		[TestCase(" ", TestName = "Значение - пробел")]
+		[TestCase("O.1", TestName = "Буква О вместо нуля")]
+		public void IsValidNumber_ReturnFalse_WhenInputIsNotNumber(string value, bool onlyPositive = false)
 		{
 			var numberValidator = new NumberValidator(4, 2, onlyPositive);
+			numberValidator.IsValidNumber(value).Should().BeFalse();
+		}
+		
+		[TestCase("-11", TestName = "Отрицательное число при только положительных")]
+		[TestCase("-1.1", TestName = "Отрицательное число с дробной частью при только положительных")]
+		[TestCase("-0", TestName = "Отрицательный ноль при только положительных")]
+		public void IsValidNumber_ReturnFalse_WhenNumberOnlyPositive(string value, bool onlyPositive = true)
+		{
+			var numberValidator = new NumberValidator(17, 4, onlyPositive);
+			numberValidator.IsValidNumber(value).Should().BeFalse();
+		}
+		
+		[TestCase("11111", TestName = "Число без целой части")]
+		[TestCase("+1111", TestName = "Число с плюсом")]
+		[TestCase("1.111", TestName = "Дробная части больше чем установлена")]
+		[TestCase("+11.11", TestName = "Число с дробной частью")]
+		public void IsValidNumber_ReturnFalse_WhenLengthNumberGreaterThanSet(string value, bool onlyPositive = false)
+		{
+			var numberValidator = new NumberValidator(4, 2, onlyPositive);
+			numberValidator.IsValidNumber(value).Should().BeFalse();
+		}
+		
+		
+		[TestCase("+-1", TestName = "Плюс минус число")]
+		[TestCase("1E2", TestName = "Число с экспонентой")]
+		[TestCase(".1", TestName = "Без целой части")]
+		[TestCase("1.", TestName = "Без дробной части, но с разделяющей точкой")]
+		public void IsValidNumber_ReturnFalse_WhenNumberHasNonStandardForm(string value, bool onlyPositive = false)
+		{
+			var numberValidator = new NumberValidator(10, 5, onlyPositive);
 			numberValidator.IsValidNumber(value).Should().BeFalse();
 		}
 	}
