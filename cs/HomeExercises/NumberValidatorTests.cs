@@ -6,174 +6,84 @@ using NUnit.Framework;
 namespace HomeExercises
 {
 	[TestFixture]
-	public class NumberValidator_Constructor_Tests
+	public class NumberValidator_Tests
 	{
-		[Test]
-		public void Test_Throws_OnNegativePrecision()
+		[TestCase(-2, 5, TestName = "Negative precision")]
+		[TestCase(0, 5, TestName = "Zero precision")]
+		public void Test_Throws_OnIncorrectPrecision(int precision, int scale)
 		{
-			Action action = () => new NumberValidator(-1, 2, true);
+			Action action = () => new NumberValidator(precision, scale, true);
 			action
 				.ShouldThrow<ArgumentException>()
 				.WithMessage("precision must be a positive number");
-		}
+        }
 
-		[Test]
-        public void Test_Throw_WhenPrecisionLessThanScale()
+		[TestCase(1, 2, true, TestName = "Precision less then scale")]
+		[TestCase(1, 1, true, TestName = "Precision is equal to scale")]
+		[TestCase(2, -1, true, TestName = "Negative scale")]
+		public void Test_Throws_OnIncorrectScale(int precision, int scale, bool onlyPositive)
 		{
-			Action action = () => new NumberValidator(1, 2, true);
+			Action action = () => new NumberValidator(precision, scale, onlyPositive);
 			action
 				.ShouldThrow<ArgumentException>()
 				.WithMessage("precision must be a non-negative number less or equal than precision");
 		}
 
-        [Test]
-        public void Test_Throws_WhenPrecisionIsEqualScale()
-		{
-			Action action = () => new NumberValidator(1, 1, true);
-			action
-				.ShouldThrow<ArgumentException>()
-				.WithMessage("precision must be a non-negative number less or equal than precision");
-		}
 
-        [Test]
-        public void Test_Throws_OnNegativeScale()
-		{
-			Action action = () => new NumberValidator(5, -1, true);
-			action
-				.ShouldThrow<ArgumentException>()
-				.WithMessage("precision must be a non-negative number less or equal than precision"); ;
-		}
+		[TestCase(5, 2, true, TestName = "With OnlyPositive flag")]
+		[TestCase(5, 2, false, TestName = "Without onlyPositive flag")]
+		[TestCase(5, 0, false, TestName = "Scale is zero")]
+        public void Test_NotThrow_OnCorrectInput(int precision, int scale, bool onlyPositive)
+        {
+	        Action action = () => new NumberValidator(5, 2, true);
+	        action.ShouldNotThrow();
+        }
 
-        [Test]
-        public void Test_NotThrow_WhenOnlyPositiveFlagIsTrue()
-		{
-			Action action = () => new NumberValidator(5, 2, true);
-			action.ShouldNotThrow();
 
-		}
+        [TestCase("0", TestName = "On Int zero")]
+        [TestCase("+0", TestName = "On Signed zero with plus")]
+        [TestCase("0.00", TestName = "On zero with fractional part")]
+        [TestCase("00000", TestName = "On Number precision is equal than Validator precision")]
+		[TestCase("1.23", TestName = "On unsigned Number with point")]
+		[TestCase("1,23", TestName = "On unsigned Number with comma")]
+		[TestCase("+1.23", TestName = "On Signed number with plus")]
+        public void Test_IsValid_WithOnlyPositiveFlag(string number)
+        {
+			var numberValidator = new NumberValidator(5, 2, true);
 
-        [Test]
-        public void Test_NotThrow_WhenOnlyPositiveFlagIfFalse()
+			numberValidator.IsValidNumber(number).Should().BeTrue();
+        }
+
+		[TestCase(5, 2, "-1.23", TestName = "On Negative number")]
+		[TestCase(3, 2, "0000", TestName = "On Precision is less than the number precision")]
+		[TestCase(5, 2, "-0", TestName = "On Negative zero")]
+		[TestCase(5, 2, "0,000", TestName = "On Scale is less than the number scale")]
+		[TestCase(5, 2, "b.ab", TestName = "On String from letters")]
+		[TestCase(5, 2, "2..3", TestName = "On Doubled point")]
+		[TestCase(5, 2, "+-5", TestName = "On Doubled sign")]
+		[TestCase(5, 2, "2a.5b", TestName = "On Number contains letters")]
+		[TestCase(5, 2, null, TestName = "On Null string")]
+		[TestCase(5, 2, "", TestName = "On Empty string")]
+		[TestCase(5, 2, ".25", TestName = "On Number without int part")]
+		[TestCase(5, 2, "25.", TestName = "On Number with point without fractional part")]
+		public void Test_IsNotValid_WithOnlyPositiveFlag(int precision, int scale, string number)
+        {
+			var numberValidator = new NumberValidator(precision, scale, true);
+
+	        numberValidator.IsValidNumber(number).Should().BeFalse();
+        }
+
+		[TestCase("+1.24", TestName = "On positive number")]
+		[TestCase("-0", TestName = "On negative zero")]
+		[TestCase("-1.23", TestName = "On negative number with point")]
+		[TestCase("-1,23", TestName = "On negative number with comma")]
+        public void Test_IsValid_WithoutOnlyPositiveFlag(string number)
 		{
-			Action action = () => new NumberValidator(5, 2, true);
-			action.ShouldNotThrow();
-		}
+			var numberValidator = new NumberValidator(5, 2);
+
+            numberValidator.IsValidNumber(number).Should().BeTrue();
+        }
     }
-
-	[TestFixture]
-	public class NumberValidator_WithOnlyPositiveFlag_Tests
-	{
-		private NumberValidator numberValidator;
-
-		[SetUp]
-		public void SetUp()
-		{
-			numberValidator = new NumberValidator(5, 2, true);
-		}
-
-
-		[Test]
-		public void Test()
-		{
-			Assert.IsTrue(new NumberValidator(4, 2, true).IsValidNumber("+1.23"));
-			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("-1.23"));
-		}
-
-		[TestCase("-1.23")]
-		[TestCase("-1,23")]
-		public void Test_IsNotValid_On_NegativeNumber(string number)
-		{
-			numberValidator.IsValidNumber(number).Should().BeFalse();
-		}
-
-		[TestCase("0")]
-		[TestCase("+0.00")]
-		[TestCase("0.00")]
-		[TestCase("00000")]
-		public void Test_IsValid_OnValidZero(string number)
-		{
-			numberValidator.IsValidNumber(number).Should().BeTrue();
-		}
-
-		[TestCase("000000", "because precision of this number is greater than the precision of Validator")]
-		[TestCase("-0.00" , "because it is negative zero")]
-		[TestCase("0.000", "because scale is less than length this number")]
-		[TestCase("+000.00", "because precision of this number is greater than the precision of Validator")]
-		public void Test_IsNotValid_OnWrongZero(string zeroForm, string becauseMessage)
-		{
-			numberValidator.IsValidNumber(zeroForm).Should().BeFalse(becauseMessage);
-		}
-
-		[TestCase("a.sd", "because it's not a digits")]
-		[TestCase("1a.b2", "because there are letters in a number")]
-		public void Test_IsNotValid_OnLettersString(string testInput, string becauseMessage)
-		{
-			numberValidator.IsValidNumber(testInput).Should().BeFalse(becauseMessage);
-		}
-
-		[Test]
-		public void Test_IsNotValid_OnEmptyString()
-		{
-			numberValidator.IsValidNumber("").Should().BeFalse();
-		}
-
-		[Test]
-		public void Test_IsNotValid_OnNullString()
-		{
-			numberValidator.IsValidNumber(null).Should().BeFalse();
-		}
-		
-	}
-
-	[TestFixture]
-	public class NumberValidator_WithoutOnlyPositiveFlag_Tests
-	{
-		private NumberValidator numberValidator;
-
-        [SetUp]
-		public void SetUp()
-		{
-			numberValidator = new NumberValidator(5, 2);
-		}
-
-		[TestCase("+1.23")]
-		[TestCase("+2,34")]
-		public void Test_IsValid_OnPositiveNumbers(string number)
-		{
-			numberValidator.IsValidNumber(number).Should().BeTrue();
-		}
-
-		[Test]
-		public void Test_IsValid_OnUnsignedNumber()
-		{
-			numberValidator.IsValidNumber("1.23");
-		}
-
-		[Test]
-		public void Test_IsValid_OnNegativeZero()
-		{
-			numberValidator.IsValidNumber("-0.00").Should().BeTrue();
-		}
-
-		[TestCase("-1.23")]
-		[TestCase("-1,23")]
-		public void Test_IsValid_OnNegativeNumbers(string number)
-		{
-			numberValidator.IsValidNumber(number).Should().BeTrue();
-		}
-
-		[Test]
-		public void Test_IsNotValid_OnNumberWithoutIntPart()
-		{
-			numberValidator.IsValidNumber(".25").Should().BeFalse();
-		}
-
-		[Test]
-		public void Test_IsNotValid_OnNumberWithCommaWithoutFractionalPart()
-		{
-			numberValidator.IsValidNumber("2,").Should().BeFalse();
-		}
-	}
 
 	public class NumberValidator
 	{
