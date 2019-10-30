@@ -8,30 +8,37 @@ namespace HomeExercises
 {
     public class NumberValidatorTests
     {
-        [TestCase(-1, 1, "non-positive precision doesn't make sense")]
-        [TestCase(1, -1, "negative fraction part length doesn't make sense")]
-        [TestCase(1, 2, "length of fraction part can not be greater than total number length")]
-        public void IsThrowingException_OnIncorrectConstructorArguments(
+        [TestCase(-1, 1, "non-positive precision doesn't make sense",
+            TestName = "{m}NonPositivePrecision")]
+        [TestCase(1, -1, "negative fraction part length doesn't make sense", 
+            TestName = "{m}NegativeFraction")]
+        [TestCase(1, 2, "length of fraction part can not be greater than total number length", 
+            TestName = "{m}ScaleGreaterThanPrecision")]
+        public void ValidatorConstructor_IsThrowingException_On(
             int precision, int scale, string message)
         {
             Action act = () => new NumberValidator(precision, scale);
             act.ShouldThrow<ArgumentException>($"{message} (N({precision}, {scale}))");
         }
 
-        [TestCase(1, 0, "some numbers can have zero-length fraction part (i.e. integers)")]
-        public void IsWorkingProperly_OnCorrectConstructorArguments(
+        [TestCase(1, 0, "some numbers can have zero-length fraction part (i.e. integers)", 
+            TestName = "{m}ZeroScale")]
+        public void ValidatorConstructor_IsWorkingProperly_On(
             int precision, int scale, string message)
         {
             Action act = () => new NumberValidator(precision, scale);
             act.ShouldNotThrow<ArgumentException>($"{message} (N({precision}, {scale}))");
         }
 
-        [TestCase("0", "it's a valid number")]
-        [TestCase("0.0", "numbers can have fraction part")]
-        [TestCase("+0.0", "plus sign is an acceptable starting symbol")]
-        [TestCase("-0.0", "minus sign is an acceptable starting symbol")]
-        [TestCase("0,0", "fraction can also be denoted as ,")]
-        public void IsValidatingProperNumberFormats(
+        [TestCase("0", "it's a valid number", TestName ="{m}IsValidNumber")]
+        [TestCase("0.0", "numbers can have fraction part", TestName = "{m}HasFractionPart")]
+        [TestCase("+0.0", "plus sign is an acceptable starting symbol",
+            TestName = "{m}StartsWithPlusSign")]
+        [TestCase("-0.0", "minus sign is an acceptable starting symbol", 
+            TestName = "{m}StartsWithMinusSign")]
+        [TestCase("0,0", "fraction can also be denoted by ,",
+            TestName = "{m}HasFractionDenotedByComma")]
+        public void IsValidNumber_ShouldBeTrue_IfFormat(
             string number, string message, int precision=3, int scale=2, bool onlyPositive=false)
         {
             var validator = new NumberValidator(precision, scale, onlyPositive);
@@ -40,31 +47,46 @@ namespace HomeExercises
                $"{message} (on {validatorStr} validator for \"{number}\")");
         }
 
+
         //incorrect number formats
-        [TestCase(null, "null must not be validated")]
-        [TestCase("", "empty string is not a number string")]
-        [TestCase(" ", "whitespace is not a number string")]
-        [TestCase("a.sd", "number string must not consist of letters")]
+        [TestCase(null, "null must not be validated", TestName = "{m}IsNull")]
+        [TestCase("", "empty string is not a number string", TestName = "{m}IsEmpty")]
+        [TestCase(" ", "whitespace is not a number string", TestName = "{m}IsWhitespace")]
+        [TestCase("a.sd", "number string must not consist of letters", 
+            TestName = "{m}ConsistOfLetters")]
         [TestCase(" 0.0",
-    "number strings must not start with whitespace(s) or any other characters")]
+    "number strings must not start with whitespace(s) or any other characters", 
+            TestName = "{m}StartsWithWhitespace")]
         [TestCase("0.0 ",
-    "number strings must not end with whitespace(s) or any other characters")]
-        [TestCase("++0", "number string must not have more than one sign symbol")]
-        [TestCase("0.0.0", "number string must not have more than one dot/comma")]
-        [TestCase(".1", "integer part must be present")]
-        [TestCase("0.", "fraction part must be present if there's a dot or comma")]
+    "number strings must not end with whitespace(s) or any other characters", 
+            TestName = "{m}EndsWithWhitespace")]
+        [TestCase("++0", "number string must not have more than one sign symbol", 
+            TestName = "{m}HasMoreThanOneSign")]
+        [TestCase("0.0.0", "number string must not have more than one dot/comma", 
+            TestName = "{m}HasMoreThanOneDelimiter")]
+        [TestCase(".1", "integer part must be present", 
+            TestName = "{m}HasNoIntegerPartBeforeDelimiter")]
+        [TestCase("0.", "fraction part must be present if there's a dot or comma", 
+            TestName = "{m}HasNoFractionPartAfterDelimiter")]
         //with larger precision or scale
-        [TestCase("00.00", "number string length must be less or equal to validator precision")]
+        [TestCase("00.00", "number string length must be less or equal to validator precision", 
+            TestName = "{m}IsLongerThanPrecision")]
         [TestCase("0.000", 
-            "fraction part length must be less or equal to validator fraction part precision")]
-        [TestCase("-0.00", "minus sign must be accounted for when checking number precision")]
-        [TestCase("+0.00", "plus sign must be accounted for when checking number precision")]
+            "fraction part length must be less or equal to validator fraction part precision", 
+            TestName = "{m}HasFractionLongerThanScale")]
+        [TestCase("-0.00", "minus sign must be accounted for when checking number precision", 
+            TestName = "{m}IsLongerThanPrecisionWithMinusSign")]
+        [TestCase("+0.00", "plus sign must be accounted for when checking number precision",
+            TestName = "{m}IsLongerThanPrecisionWithPlusSign")]
         //integer validator
-        [TestCase("0.1", "non-integer number should not be validated", 3, 0)]
-        [TestCase("1.0", "integer numbers with fraction part present must not be validated", 3, 0)]
+        [TestCase("0.1", "non-integer number should not be validated", 3, 0, 
+            TestName = "{m}IsNotIntegerOnIntegerValidator")]
+        [TestCase("1.0", "integer numbers with fraction part present must not be validated", 3, 0, 
+            TestName = "{m}HasFractionOnIntegerValidator")]
         //positive-only validator
-        [TestCase("-1", "negative number should not be validated", 3, 2, true)]
-        public void IsNotValidatingInvalidNumbers(
+        [TestCase("-1", "negative number should not be validated", 3, 2, true, 
+            TestName = "{m}IsNegativeOnPositiveOnlyValidator")]
+        public void IsValidNumber_ShouldBeFalse_IfFormat(
             string number, string message, int precision=3, int scale=2, bool onlyPositive=false)
         {
             var validator = new NumberValidator(precision, scale, onlyPositive);
@@ -100,7 +122,6 @@ namespace HomeExercises
             // Формат числового значения указывается в виде N(m.к), где m – максимальное количество знаков в числе, включая знак (для отрицательного числа), 
             // целую и дробную часть числа без разделяющей десятичной точки, k – максимальное число знаков дробной части числа. 
             // Если число знаков дробной части числа равно 0 (т.е. число целое), то формат числового значения имеет вид N(m).
-
             if (string.IsNullOrEmpty(value))
                 return false;
 
