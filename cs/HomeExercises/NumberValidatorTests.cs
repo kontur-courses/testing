@@ -90,6 +90,7 @@ namespace HomeExercises
 		[TestCase("1E2", TestName = "Число с экспонентой")]
 		[TestCase(".1", TestName = "Без целой части")]
 		[TestCase("1.", TestName = "Без дробной части, но с разделяющей точкой")]
+		[TestCase("pi", TestName = "Число пи(pi)")]
 		public void IsValidNumber_ReturnFalse_WhenNumberHasNonStandardForm(string value, bool onlyPositive = false)
 		{
 			var numberValidator = new NumberValidator(10, 5, onlyPositive);
