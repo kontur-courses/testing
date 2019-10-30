@@ -1,4 +1,5 @@
 ﻿using FluentAssertions;
+using static FluentAssertions.AssertionExtensions;
 using NUnit.Framework;
 
 namespace HomeExercises
@@ -15,23 +16,11 @@ namespace HomeExercises
 			var expectedTsar = new Person("Ivan IV The Terrible", 54, 170, 70,
 				new Person("Vasili III of Russia", 28, 170, 60, null));
 
-			// Перепишите код на использование Fluent Assertions.
-			/*
-			 * 1) Теперь, при возникновении ошибок, будет явно видно,
-			 * в каком из полей идёт расхождение с образцом.
-			 * 2) Благодаря because мы сразу же можем увидеть,
-			 * почему требуется равенство свойств. В данном случае,
-			 * потому что текущий царь (по версии теста) - Иван IV Грозный
-			 * 3) Благодаря опции ExcludingMissingMembers, мы можем принимать
-			 * различные классы, наследующиеся от Person, но, при этом,
-			 * сравнивать их лишь по свойствам Person. Например, если создать класс
-			 * Tsar, унаследовать его от Person и добавить ему новые свойства, например,
-			 * года правления, то этот тест всё равно будет работать корректно. 
-			 */
-			actualTsar.ShouldBeEquivalentTo(expectedTsar, options =>
-				options.ExcludingMissingMembers()
-					.Excluding(o => o.Id)
-					.Excluding(o => o.Parent.Id),
+			// Переписал метод на использование fluent assertions.
+			actualTsar.ShouldBeEquivalentTo(expectedTsar, options => 
+					options.Excluding(o => o.Id)
+						.Excluding(o => o.Parent.Id)
+						.Excluding(o => o.Parent.Parent),
 			"Ivan IV The Terrible is current tsar");
 		}
 
@@ -43,8 +32,6 @@ namespace HomeExercises
 			var expectedTsar = new Person("Ivan IV The Terrible", 54, 170, 70,
 				new Person("Vasili III of Russia", 28, 170, 60, null));
 			
-			
-
 			// Какие недостатки у такого подхода?
 			/*
 			 * 1) Невозможно определить конкретную причину ошибки теста - мы лишь знаем,
