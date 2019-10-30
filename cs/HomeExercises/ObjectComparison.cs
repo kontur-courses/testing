@@ -18,9 +18,8 @@ namespace HomeExercises
 			actualTsar.ShouldBeEquivalentTo(expectedTsar,
 				options =>
 				{
-					options.Excluding(p => p.Id);
-					options.Excluding(p => p.Parent.Id);
-					return options;
+					options.Excluding(p => p.SelectedMemberPath.EndsWith("Id"));
+				    return options;
 				});
 		}
 
