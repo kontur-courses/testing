@@ -1,5 +1,6 @@
 ﻿using FluentAssertions;
 using NUnit.Framework;
+using System.Reflection;
 
 namespace HomeExercises
 {
@@ -15,20 +16,22 @@ namespace HomeExercises
 			var expectedTsar = new Person("Ivan IV The Terrible", 54, 170, 70,
 				new Person("Vasili III of Russia", 28, 170, 60, null));
 
-			// Перепишите код на использование Fluent Assertions.
+            // Перепишите код на использование Fluent Assertions.
 
-            expectedTsar.Name.Should().Be(actualTsar.Name);
-            expectedTsar.Age.Should().Be(actualTsar.Age);
-            expectedTsar.Height.Should().Be(actualTsar.Height);
-            expectedTsar.Weight.Should().Be(actualTsar.Weight);
+            //expectedTsar.Name.Should().Be(actualTsar.Name);
+            //expectedTsar.Age.Should().Be(actualTsar.Age);
+            //expectedTsar.Height.Should().Be(actualTsar.Height);
+            //expectedTsar.Weight.Should().Be(actualTsar.Weight);
 
-            actualTsar.Parent.Name.Should().Be(expectedTsar.Parent.Name);
-            actualTsar.Parent.Age.Should().Be(expectedTsar.Parent.Age);
-            actualTsar.Parent.Height.Should().Be(expectedTsar.Parent.Height);
-            actualTsar.Parent.Parent.Should().Be(expectedTsar.Parent.Parent);
-            
+            //actualTsar.Parent.Name.Should().Be(expectedTsar.Parent.Name);
+            //actualTsar.Parent.Age.Should().Be(expectedTsar.Parent.Age);
+            //actualTsar.Parent.Height.Should().Be(expectedTsar.Parent.Height);
+            //actualTsar.Parent.Parent.Should().Be(expectedTsar.Parent.Parent);
+
             /* в первом варианте мы получаем больше данных после тестирования, по stacktrace можно увидеть
              какой тест упал, тогда как во втором варианте мы просто увидим что объекты не равны*/
+            actualTsar.ShouldBeEquivalentTo(expectedTsar
+                , o => o.Excluding(s => s.Id));//проблема: у parent ID учитывается
         }
 
 		[Test]
