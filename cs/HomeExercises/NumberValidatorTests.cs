@@ -10,13 +10,13 @@ namespace HomeExercises
 {
 	public class NumberValidatorTests
 	{
-		[Test, TestCaseSource(nameof(IsValidNumber_CheckErrors_TestCases))]
-		public void IsValidNumber_IncorrectInput_ThrowsException(int precision, int scale, bool isOnlyPositive)
+		[Test, TestCaseSource(nameof(NumberValidator_CheckErrors_TestCases))]
+		public void NumberValidator_IncorrectInput_ThrowsException(int precision, int scale, bool isOnlyPositive)
 		{
 			Assert.Throws<ArgumentException>(() => new NumberValidator(precision, scale, isOnlyPositive));
 		}
 
-		public static IEnumerable IsValidNumber_CheckErrors_TestCases
+		public static IEnumerable NumberValidator_CheckErrors_TestCases
 		{
 			get
 			{
