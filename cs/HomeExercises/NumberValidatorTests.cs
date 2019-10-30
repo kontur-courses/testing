@@ -1,45 +1,29 @@
 ﻿using System;
 using System.Collections;
+using System.Dynamic;
 using System.Text.RegularExpressions;
 using FluentAssertions;
+
 using NUnit.Framework;
 
 namespace HomeExercises
 {
 	public class NumberValidatorTests
 	{
-		[TestCase(-1, TestName = "precision is negative")]
-		[TestCase(0, TestName = "precision is zero")]
-		public void Should_ThrowArgumentException_When_PrecisionIsLessThanOrEqualToZero(int precision)
+		[Test, TestCaseSource(nameof(IncorrectArgumentsTestCases))]
+		public void NumberValidator_Should_ThrowArgumentException_When_IncorrectArguments(int precision, int scale)
 		{
-			Action action = () =>
-			{
-				new NumberValidator(precision);
-			};
-			action.ShouldThrow<ArgumentException>("precision is incorrect");
+			Action action = () => { new NumberValidator(precision, scale); };
+			action.ShouldThrow<ArgumentException>("arguments are incorrect");
 		}
 		
-		[TestCase(7, TestName = "scale is equal to precision")]
-		[TestCase(8, TestName = "scale is greater than precision")]
-		public void Should_ThrowArgumentException_When_ScaleIsGreaterThanOrEqualToPrecision(int scale)
+		[Test, TestCaseSource(nameof(CorrectArgumentsTestCases))]
+		public void NumberValidator_Should_NotThrowExceptions_When_CorrectArguments(int precision, int scale, bool onlyPositive)
 		{
-			Action action = () =>
-			{
-				new NumberValidator(7, scale);
-			};
-			action.ShouldThrow<ArgumentException>("scale is incorrect");
+			Action action = () => { new NumberValidator(precision, scale, onlyPositive); };
+			action.ShouldNotThrow("arguments are correct");
 		}
 		
-		[Test]
-		public void Should_ThrowArgumentException_When_ScaleIsNegative()
-		{
-			Action action = () =>
-			{
-				new NumberValidator(7, -1);
-			};
-			action.ShouldThrow<ArgumentException>("scale is negative");
-		}
-
 		[Test, TestCaseSource(nameof(ValidTestCases))]
 		public void IsValidNumber_Should_ReturnTrue_When_NumberIsValid(int precision, int scale, bool onlyPositive, string number)
 		{
@@ -53,18 +37,41 @@ namespace HomeExercises
 			var numberValidator = new NumberValidator(precision, scale, onlyPositive);
 			numberValidator.IsValidNumber(number).Should().BeFalse("all input data is incorrect");
 		}
-
+		
+		
+		private static IEnumerable CorrectArgumentsTestCases
+		{
+			get
+			{
+				yield return new TestCaseData(1, 0, true).SetName("correct on (1, 0, true)");
+				yield return new TestCaseData(7, 5, false).SetName("correct on (7, 5, false)");
+			}
+		}
+		
+		private static IEnumerable IncorrectArgumentsTestCases
+		{
+			get
+			{
+				yield return new TestCaseData(-1, 0).SetName("precision is negative: -1");
+				yield return new TestCaseData(0, 0).SetName("precision is zero");
+				yield return new TestCaseData(7, 7).SetName("scale is equal to precision");
+				yield return new TestCaseData(7, 8).SetName("scale is greater than precision");
+				yield return new TestCaseData(7, -1).SetName("scale is negative: -1");
+			}
+		}
 		private static IEnumerable ValidTestCases
 		{
 			get
 			{
-				yield return new TestCaseData(2, 1, true, "0.0");
-				yield return new TestCaseData(17, 2, true, "0");
-				yield return new TestCaseData(2, 1, true, "0,0");
-				yield return new TestCaseData(17, 2, false, "-1.0");
-				yield return new TestCaseData(9, 4, true, "12345.6789");
-				yield return new TestCaseData(17, 2, true, "900000000000000.01");
-				yield return new TestCaseData(3, 1, true, "+5.0");
+				yield return new TestCaseData(2, 1, true, "0.0").SetName("valid on (2, 1, true) and value \"0.0\"");
+				yield return new TestCaseData(17, 2, true, "0").SetName("valid on (17, 2, true) and value \"0\"");
+				yield return new TestCaseData(2, 1, true, "0,0").SetName("valid on (2, 1, true) and value \"0,0\"");
+				yield return new TestCaseData(17, 2, false, "-1.0").SetName("valid on (17, 2, false) and value \"-1.0\"");
+				yield return new TestCaseData(9, 4, true, "12345.6789").SetName("valid on (9, 4, true) and value \"12345.6789\"");
+				yield return new TestCaseData(9, 4, false, "+145.69").SetName("valid on (9, 4, false) and value \"+145.69\"");
+				yield return new TestCaseData(10, 0, true, int.MaxValue.ToString()).SetName("valid on (10, 0, true) and value int.MaxValue");
+				yield return new TestCaseData(11, 0, false, int.MinValue.ToString()).SetName("valid on (11, 0, false) and value int.MinValue");
+				yield return new TestCaseData(3, 1, true, "+5.0").SetName("valid on (3, 1, true) and value \"+5.0\"");
 			}
 		}
 		
@@ -72,13 +79,19 @@ namespace HomeExercises
 		{
 			get
 			{
-				yield return new TestCaseData(3, 2, true, "00.00");
-				yield return new TestCaseData(3, 1, true, "-1.0");
-				yield return new TestCaseData(2, 1, true, "");
-				yield return new TestCaseData(2, 1, true, null);
-				yield return new TestCaseData(17, 2, true, "100.001");
-				yield return new TestCaseData(17, 2, true, "100 01");
-				yield return new TestCaseData(2, 1, true, "qwerty");
+				yield return new TestCaseData(3, 2, true, "00.00").SetName("invalid on (3, 2, true) and value \"00.00\"");
+				yield return new TestCaseData(3, 2, true, ".0").SetName("invalid on (3, 2, true) and value \".0\"");
+				yield return new TestCaseData(3, 2, true, "0.").SetName("invalid on (3, 2, true) and value \"0.\"");
+				yield return new TestCaseData(17, 2, true, "125.001").SetName("invalid on (17, 2, true) and value \"125.001\"");
+				yield return new TestCaseData(17, 2, true, "100 01").SetName("invalid on (17, 2, true) and value \"100 01\"");
+				yield return new TestCaseData(3, 1, true, "-1.0").SetName("invalid on (3, 1, true) and value \"-1.0\"");
+				yield return new TestCaseData(3, 1, false, "-.0").SetName("invalid on (3, 1, true) and value \"-.0\"");
+				yield return new TestCaseData(3, 1, false, "-").SetName("invalid on (3, 1, true) and value \"-\"");
+				yield return new TestCaseData(3, 1, true, "+").SetName("invalid on (3, 1, true) and value \"+\"");
+				yield return new TestCaseData(2, 1, true, "").SetName("invalid on (2, 1, true) and value empty string");
+				yield return new TestCaseData(2, 1, true, "    ").SetName("invalid on (2, 1, true) and value whitespace string");
+				yield return new TestCaseData(2, 1, true, null).SetName("invalid on (2, 1, true) and value null");
+				yield return new TestCaseData(2, 1, true, "qwerty").SetName("invalid on (2, 1, true) and value \"qwerty\"");
 			}
 		}
 	}
