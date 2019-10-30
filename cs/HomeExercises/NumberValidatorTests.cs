@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Text.RegularExpressions;
+using FluentAssertions;
 using NUnit.Framework;
 // ReSharper disable ObjectCreationAsStatement
 
@@ -20,42 +21,37 @@ namespace HomeExercises
 		public void NumberValidatorConstructor_ThrowArgumentException(int precision, int scale) =>
 			Assert.Throws<ArgumentException>(() => new NumberValidator(precision, scale));
 
-		[TestCase(17, 2, true, "0.0",
-			ExpectedResult = true, TestName = "True_OnNumberWithCorrectPrecisionAndScale")]
-		[TestCase(17, 2, true, "0",
-			ExpectedResult = true, TestName = "True_OnNumberWithCorrectPrecisionAndZeroScale")]
-		[TestCase(17, 2, true, "0.000",
-			ExpectedResult = false, TestName = "False_OnNumberWithTooMuchScale")]
-		[TestCase(3, 2, true, "10.00",
-			ExpectedResult = false, TestName = "False_OnNumberWithTooMuchPrecision")]
-		[TestCase(3, 2, true, "00.00",
-			ExpectedResult = false, TestName = "False_OnNumberWithTooMuchPrecisionDueToLeadingZeros")]
-		[TestCase(3, 2, true, "+0.00",
-			ExpectedResult = false, TestName = "False_OnZeroWithTooMuchPrecisionDueToLeadingSign")]
-		[TestCase(3, 2, true, "-0.0",
-			ExpectedResult = false, TestName = "False_OnZeroWithLeadingMinus_WhenOnlyPositiveAccept")]
-		[TestCase(3, 2, true, "+1.23",
-			ExpectedResult = false, TestName = "False_OnNumberWithTooMuchPrecisionDueToLeadingSign")]
-		[TestCase(3, 2, true, "a.sd",
-			ExpectedResult = false, TestName = "False_OnWrongFormatValue")]
-		[TestCase(3, 2, true, "4,42",
-			ExpectedResult = true, TestName = "True_OnNumberWithCommaAsSeparator")]
-		[TestCase(4, 2, true, "+1.23",
-			ExpectedResult = true, TestName = "True_OnCorrectNumberWithSign")]
-		[TestCase(4, 2, false, "-1.23",
-			ExpectedResult = true, TestName = "True_OnNegativeNumber_WhenOnlyPositiveFlagIsFalse")]
-		[TestCase(4, 2, true, "-3.51",
-			ExpectedResult = false, TestName = "False_OnNegativeNumber_WhenOnlyPositiveAccept")]
-		[TestCase(4, 2, true, ".1",
-			ExpectedResult = false, TestName = "False_OnEmptyIntPartBeforeSeparator")]
-		[TestCase(4, 2, true, "1.",
-			ExpectedResult = false, TestName = "False_OnEmptyFracPartAfterSeparator")]
-		[TestCase(4, 2, false, null,
-			ExpectedResult = false, TestName = "False_OnNull")]
-		[TestCase(4, 2, false, "",
-			ExpectedResult = false, TestName = "False_OnEmpty")]
-		public bool IsValidNumber(int precision, int scale, bool onlyPositive, string value) =>
-			new NumberValidator(precision, scale, onlyPositive).IsValidNumber(value);
+		[Test]
+		public void IsValidNumber_TakesNullOrEmpty_ReturnsFalse([Values(null, "")] string value) =>
+			new NumberValidator(2, 1).IsValidNumber(value).Should().BeFalse();
+
+		[TestCase("a.sd", TestName = "OnValueWithNonDigitalSymbols")]
+		[TestCase(".1", TestName = "OnEmptyIntPartBeforeSeparator")]
+		[TestCase("1.", TestName = "OnEmptyFracPartAfterSeparator")]
+		[TestCase("++1.2", TestName = "OnExcessLeadingSigned")]
+		[TestCase("  \t\v", TestName = "OnWhitespaceCharacters")]
+		[TestCase("1.2.2", TestName = "OnSeveralFracParts")]
+		[TestCase("1..2", TestName = "OnExcessSeparators")]
+		public void IsValidNumber_TakesInvalidFormatValue_ReturnsFalse(string value) =>
+			new NumberValidator(20, 10).IsValidNumber(value).Should().BeFalse();
+
+		[TestCase(5, 4, true, "0.0", TestName = "OnNumberWithCorrectPrecisionAndScale")]
+		[TestCase(17, 2, true, "0", TestName = "OnNumberWithCorrectPrecisionAndZeroScale")]
+		[TestCase(3, 2, true, "4,42", TestName = "OnNumberWithCommaAsSeparator")]
+		[TestCase(4, 2, true, "+1.23", TestName = "OnCorrectNumberWithSign")]
+		[TestCase(4, 2, false, "-1.23", TestName = "OnNegativeNumber_WhenOnlyPositiveFlagIsFalse")]
+		public void IsValidNumber_ReturnsTrue(int precision, int scale, bool onlyPositive, string value) =>
+			new NumberValidator(precision, scale, onlyPositive).IsValidNumber(value).Should().BeTrue();
+
+		[TestCase("0.000", TestName = "OnNumberWithTooMuchScale")]
+		[TestCase("10.00", TestName = "OnNumberWithTooMuchPrecision")]
+		[TestCase("00.00", TestName = "OnNumberWithTooMuchPrecisionDueToLeadingZeros")]
+		[TestCase("+0.00", TestName = "OnZeroWithTooMuchPrecisionDueToLeadingSign")]
+		[TestCase("-0.0", TestName = "OnZeroWithLeadingMinus_WhenOnlyPositiveAccept")]
+		[TestCase("+1.23", TestName = "OnNumberWithTooMuchPrecisionDueToLeadingSign")]
+		[TestCase("-3.5", TestName = "OnNegativeNumber_WhenOnlyPositiveAccept")]
+		public void IsValidNumber_ReturnsFalse(string value) =>
+			new NumberValidator(3, 2, true).IsValidNumber(value).Should().BeFalse();
 	}
 
 	public class NumberValidator

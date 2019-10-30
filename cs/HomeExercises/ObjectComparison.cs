@@ -9,18 +9,18 @@ namespace HomeExercises
 		[Test]
 		[Description("Проверка текущего царя")]
 		[Category("ToRefactor")]
-		public void GetCurrentTsar_AlwaysShouldReturn_IvanIVTheTerrible()
+		public void GetCurrentTsar_IsStubMethod_ReturnsIvanIVTheTerrible()
 		{
 			var actualTsar = TsarRegistry.GetCurrentTsar();
 
 			var expectedTsar = new Person("Ivan IV The Terrible", 54, 170, 70,
-			                              new Person("Vasili III of Russia", 28, 170, 60, null));
+										new Person("Vasili III of Russia", 28, 170, 60, null));
 
 			actualTsar.Should().BeEquivalentTo(expectedTsar, options => options.Excluding(
-				                                   person => person.SelectedMemberInfo.Name == nameof(Person.Id)),
-			                                   "TsarRegistry contains only one person - Ivan IV The Terrible");
+													person => person.SelectedMemberInfo.Name == nameof(Person.Id)),
+												"GetCurrentTsar() is demonstration method which returns Ivan IV");
 		}
-		
+
 		/*
 		 * Недостатки:
 		 * 1. Информативность - имя теста не соответствует популярным конвенциям и не даёт информации о тестируемом
