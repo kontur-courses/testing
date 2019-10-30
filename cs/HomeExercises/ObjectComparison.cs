@@ -7,7 +7,6 @@ namespace HomeExercises
 	{
 		[Test]
 		[Description("Проверка текущего царя")]
-		[Category("ToRefactor")]
 		public void CheckCurrentTsar()
 		{
 			var actualTsar = TsarRegistry.GetCurrentTsar();
@@ -16,9 +15,7 @@ namespace HomeExercises
 				new Person("Vasili III of Russia", 28, 170, 60, null));
 
 			actualTsar.ShouldBeEquivalentTo(expectedTsar, opt => 
-				opt.Excluding(info => 
-					info.SelectedMemberInfo.DeclaringType.Name == nameof(Person) &&
-					info.SelectedMemberInfo.Name == nameof(Person.Id)));
+				opt.Excluding(info => info.SelectedMemberInfo.Name == nameof(Person.Id)));
 		}
 		
 		[Test]
@@ -31,7 +28,7 @@ namespace HomeExercises
 
 // Это решение лучше, тем что оно позволяет понять из-за каких полей повалился тест.
 // А также выведет все поля на которых тест провалится
-// Также он менее зависим от текущих полей Person, т.е. при расширении Person нам не нужно будет вносить большие правки  
+// Также он менее зависим от текущих полей Person, т.е. при расширении Person нам не нужно будет вносить большие правки
 			Assert.True(AreEqual(actualTsar, expectedTsar));
 		}
 
