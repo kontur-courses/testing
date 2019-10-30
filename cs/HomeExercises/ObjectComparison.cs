@@ -10,7 +10,6 @@ namespace HomeExercises
 		public void CheckCurrentTsar()
 		{
 			var actualTsar = TsarRegistry.GetCurrentTsar();
-
 			var expectedTsar = new Person("Ivan IV The Terrible", 54, 170, 70,
 				new Person("Vasili III of Russia", 28, 170, 60, null));
 
@@ -26,9 +25,12 @@ namespace HomeExercises
 			var expectedTsar = new Person("Ivan IV The Terrible", 54, 170, 70,
 				new Person("Vasili III of Russia", 28, 170, 60, null));
 
-// Это решение лучше, тем что оно позволяет понять из-за каких полей повалился тест.
+
+			// Это решение лучше, тем что оно позволяет понять из-за каких полей повалился тест.
 // А также выведет все поля на которых тест провалится
 // Также он менее зависим от текущих полей Person, т.е. при расширении Person нам не нужно будет вносить большие правки
+// Отсутсвует хвостовая рекурсия, из-за которой при большой вложенности тест может упасть
+// Более информативный вывод сообщения при зацикливании родителей сыновей
 			Assert.True(AreEqual(actualTsar, expectedTsar));
 		}
 
