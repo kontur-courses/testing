@@ -12,7 +12,7 @@ namespace HomeExercises
 		[TestCase(17, -1, true, TestName = "IfScaleLessThanZero")]
 		[TestCase(17, 17, true, TestName = "IfScaleIsEqualToPrecision")]
 		[TestCase(17, 18, true, TestName = "IfScaleBiggerThanPrecision")]
-		public void NumberValidator_ShouldThrowArgumentException_OnTheseInputArguments(int precision, int scale, bool onlyPositive)
+		public void NumberValidator_ShouldThrowArgumentException(int precision, int scale, bool onlyPositive)
 		{
 			Action action = () => new NumberValidator(precision, scale, onlyPositive);
 
@@ -21,7 +21,7 @@ namespace HomeExercises
 		}
 
 		[TestCase(17, 16, true, TestName = "IfScaleLessThanPrecision")]
-		public void NumberValidator_ShouldNotThrowArgumentException_OnTheseInputArguments(int precision, int scale, bool onlyPositive)
+		public void NumberValidator_ShouldNotThrowArgumentException(int precision, int scale, bool onlyPositive)
 		{
 			Action action = () => new NumberValidator(precision, scale, onlyPositive);
 
@@ -36,9 +36,13 @@ namespace HomeExercises
 		[TestCase(5, 2, false, "-12.12", TestName = "IfNegativeNumberAndNotOnlyPositiveValidator")]
 		[TestCase(5, 3, true, "12.1", TestName = "IfNumberPrecisionLessThanValidatorPrecision")]
 		[TestCase(5, 3, true, "123.12", TestName = "IfNumberPrecisionIsEqualToValidatorPrecision")]
-		public void IsValidNumber_ShouldBeTrue_OnTheseInputArguments(int precision, int scale, bool onlyPositive, string numberLine)
+		public void IsValidNumber_ShouldBeTrue(int precision, int scale, bool onlyPositive, string numberLine)
 		{
-			new NumberValidator(precision, scale, onlyPositive).IsValidNumber(numberLine).Should().BeTrue();
+			var validator = new NumberValidator(precision, scale, onlyPositive);
+
+			var isValidNumber = validator.IsValidNumber(numberLine);
+
+			isValidNumber.Should().BeTrue();
 		}
 
 		[TestCase(17, 2, true, "123.123", TestName = "IfNumberScaleBiggerThanValidatorScale")]
@@ -50,10 +54,14 @@ namespace HomeExercises
 		[TestCase(5, 3, true, "aaa.12", TestName = "IfIntegerPartContainsNotDigitSymbols")]
 		[TestCase(5, 3, true, "123.aa", TestName = "IfFractionalPartContainsNotDigitSymbols")]
 		[TestCase(5, 3, true, "123a12", TestName = "IfSeparatorIsNotDotOrComma")]
-		public void IsValidNumber_ShouldBeFalse_OnTheseInputArguments(int precision, int scale, bool onlyPositive, string numberLine)
+		public void IsValidNumber_ShouldBeFalse(int precision, int scale, bool onlyPositive, string numberLine)
 		{
-			new NumberValidator(precision, scale, onlyPositive).IsValidNumber(numberLine).Should().BeFalse();
-		}
+			var validator = new NumberValidator(precision, scale, onlyPositive);
+
+			var isValidNumber = validator.IsValidNumber(numberLine);
+
+			isValidNumber.Should().BeFalse();
+        }
 	}
 
 	public class NumberValidator
