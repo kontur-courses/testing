@@ -19,7 +19,8 @@ namespace HomeExercises
 
 
             /* в первом варианте мы получаем больше данных после тестирования, по stacktrace можно увидеть
-             какой тест упал, тогда как во втором варианте мы просто увидим что объекты не равны*/
+             какой тест упал, тогда как во втором варианте мы просто увидим что объекты не равны, также вариант 
+             с fluentassertions короче и читабельнее*/
             actualTsar.ShouldBeEquivalentTo(expectedTsar
                 , o => o.Excluding(x=>x.SelectedMemberPath.EndsWith("Id")));
         }
