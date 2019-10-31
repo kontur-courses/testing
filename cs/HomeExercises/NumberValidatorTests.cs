@@ -11,9 +11,9 @@ namespace HomeExercises
 		[Test]
 		[Category("Exeptions")]
 		[Category("Сonstructor NumberValidator")]
-		[TestCase(-1, 2, TestName = "PrecisionIsNegative")]
-		[TestCase(1, -2, TestName = "ScaleIsNegative")]
-		[TestCase(1, 2, TestName = "PrecisionLessThanScale")]
+		[TestCase(-1, 2, TestName = "NumberValidatorConstructor_ThrowArgumentException_WhenPrecisionIsNegative")]
+		[TestCase(1, -2, TestName = "NumberValidatorConstructor_ThrowArgumentException_WhenScaleIsNegative")]
+		[TestCase(1, 2, TestName = "NumberValidatorConstructor_ThrowArgumentException_WhenPrecisionLessThanScale")]
 		public void СonstructorExeptions(int precision, int scale)
 		{
 			Action action = () => new NumberValidator(precision, scale);
@@ -22,14 +22,14 @@ namespace HomeExercises
 
 
 		[Category("Invalid strings")]
-		[TestCase("", ExpectedResult = false, TestName = "EmptyString")]
-		[TestCase(null, ExpectedResult = false, TestName = "InputNull")]
-		[TestCase("aaa", ExpectedResult = false, TestName = "StringWithLetters")]
-		[TestCase("a.aa", ExpectedResult = false, TestName = "StringWithLettersAndDot")]
-		[TestCase("a,aa", ExpectedResult = false, TestName = "StringWithLettersAndComma")]
-		[TestCase("!@#$%^&*()\"№;:?\\/}{[]", ExpectedResult = false, TestName = "DiffrentSymbols")]
-		[TestCase("   ", ExpectedResult = false, TestName = "WhiteSpaceString")]
-		[TestCase("123,abc", ExpectedResult = false, TestName = "NumbersAndLettersInOneString")]
+		[TestCase("", ExpectedResult = false, TestName = "IsValidNumber_MustBeFalse_WhenAcceptsEmptyString")]
+		[TestCase(null, ExpectedResult = false, TestName = "IsValidNumber_MustBeFalse_WhenAcceptsNull")]
+		[TestCase("aaa", ExpectedResult = false, TestName = "IsValidNumber_MustBeFalse_WhenAcceptsStringWithLetters")]
+		[TestCase("a.aa", ExpectedResult = false, TestName = "IsValidNumber_MustBeFalse_WhenAcceptsStringWithLettersAndDot")]
+		[TestCase("a,aa", ExpectedResult = false, TestName = "IsValidNumber_MustBeFalse_WhenAcceptsStringWithLettersAndComma")]
+		[TestCase("!@#$%^&*()\"№;:?\\/}{[]", ExpectedResult = false, TestName = "IsValidNumber_MustBeFalse_WhenAcceptsStringWithDiffrentSymbols")]
+		[TestCase("   ", ExpectedResult = false, TestName = "IsValidNumber_MustBeFalse_WhenAcceptsWhiteSpaceString")]
+		[TestCase("123,abc", ExpectedResult = false, TestName = "IsValidNumber_MustBeFalse_WhenAcceptsNumbersAndLettersInOneString")]
 		public bool IncorrrectStrings(string input)
 		{
 			var numberValidator = new NumberValidator(30);
@@ -38,7 +38,7 @@ namespace HomeExercises
 
 		[Test]
 		[Category("Invalid strings")]
-		public void FractionalPartMoreThanScale()
+		public void IsValidNumber_MustBeFalse_WhenNumberFractionalPartMoreThanScale()
 		{
 			var numberValidator = new NumberValidator(4, 2);
 			numberValidator.IsValidNumber("0.000").Should().BeFalse();
@@ -46,7 +46,7 @@ namespace HomeExercises
 
 		[Test]
 		[Category("Invalid strings")]
-		public void NegativeNumber_When_NumberValidatorIsOnlyPositive()
+		public void IsValidNumber_MustBeFalse_WhenAcceptsNegativeNumber_When_NumberValidatorIsOnlyPositive()
 		{
 			var numberValidator = new NumberValidator(5, 1, true);
 			numberValidator.IsValidNumber("1").Should().BeTrue();
@@ -54,11 +54,11 @@ namespace HomeExercises
 		}
 
 		[Category("Valid strings")]
-		[TestCase("-12.00", ExpectedResult = true, TestName = "StringWithMinusSymbol")]
-		[TestCase("+12.00", ExpectedResult = true, TestName = "StringWithPlusSymbol")]
-		[TestCase("12.00", ExpectedResult = true, TestName = "DotIsSeparator")]
-		[TestCase("12,00", ExpectedResult = true, TestName = "CommaIsSeparator")]
-		[TestCase("12", ExpectedResult = true, TestName = "IntegerNumber")]
+		[TestCase("-12.00", ExpectedResult = true, TestName = "IsValidNumber_MustBeTrue_WhenAcceptsNumberWithMinusSymbol")]
+		[TestCase("+12.00", ExpectedResult = true, TestName = "IsValidNumber_MustBeTrue_WhenAcceptsNumberWithPlusSymbol")]
+		[TestCase("12.00", ExpectedResult = true, TestName = "IsValidNumber_MustBeTrue_WhenAcceptsNumber_When_DotIsSeparator")]
+		[TestCase("12,00", ExpectedResult = true, TestName = "IsValidNumber_MustBeTrue_WhenAcceptsNumber_When_CommaIsSeparator")]
+		[TestCase("12", ExpectedResult = true, TestName = "IsValidNumber_MustBeTrue_WhenAcceptsIntegerNumber")]
 		public bool CorrrectStrings(string input)
 		{
 			var numberValidator = new NumberValidator(6, 3, false);
@@ -75,7 +75,7 @@ namespace HomeExercises
 
 		[Test]
 		[Category("Extreme case")]
-		public void PlusSymbolsIncludeInPrecisionValue()
+		public void IsValidNumber_MustBeInclude_PlusSymbolsInPrecisionValue()
 		{
 			var numberValidator = new NumberValidator(4, 2);
 			numberValidator.IsValidNumber("+1.23").Should().BeTrue();
@@ -84,7 +84,7 @@ namespace HomeExercises
 
 		[Test]
 		[Category("Extreme case")]
-		public void MinusSymbolsIncludeInPrecisionValue()
+		public void IsValidNumber_MustBeInclude_MinusSymbolsInPrecisionValue()
 		{
 			var numberValidator = new NumberValidator(4, 2, false);
 			numberValidator.IsValidNumber("-1.23").Should().BeTrue();
@@ -93,7 +93,7 @@ namespace HomeExercises
 
 		[Test]
 		[Category("Extreme case")]
-		public void NumberLengthEqualPrecision()
+		public void IsValidNumber_MustBeTrue_WhenNumberLengthEqualPrecision()
 		{
 			var numberValidator = new NumberValidator(4);
 			numberValidator.IsValidNumber("1234").Should().BeTrue();
@@ -101,7 +101,7 @@ namespace HomeExercises
 
 		[Test]
 		[Category("Сonstructor NumberValidator")]
-		public void ScaleDefaultValueIsZero()
+		public void NumberValidatorConstructor_ScaleDefaultValue_MustBeZero()
 		{
 			var numberValidator = new NumberValidator(5);
 			numberValidator.IsValidNumber("1").Should().BeTrue();
@@ -110,7 +110,7 @@ namespace HomeExercises
 
 		[Test]
 		[Category("Сonstructor NumberValidator")]
-		public void DefaultNumberValidatorIsNotOnlyPositive()
+		public void NumberValidatorConstructor_DefaultNumberValidator_MustBeNotOnlyPositive()
 		{
 			var numberValidator = new NumberValidator(5, 1);
 			numberValidator.IsValidNumber("1").Should().BeTrue();
