@@ -1,5 +1,7 @@
-﻿using FluentAssertions;
+using FluentAssertions;
 using NUnit.Framework;
+using System;
+using System.Linq;
 
 namespace HomeExercises
 {
@@ -16,17 +18,17 @@ namespace HomeExercises
 				new Person("Vasili III of Russia", 28, 170, 60, null));
 
 			actualTsar.ShouldBeEquivalentTo(expectedTsar, options =>
-				options.Excluding(info => info.SelectedMemberInfo.Name == "Id"));
+				options.Excluding(info => info.SelectedMemberInfo.Name == "Id" && 
+				                          info.SelectedMemberInfo.DeclaringType == typeof(Person)));
 		}
 
 		[Test]
 		[Description("Альтернативное решение. Какие у него недостатки?")]
-		
 		// Недостатки данного подхода:
 		// 1) Проблема расширяемости = необходимо кажды раз менять функцию при структурном изменении класса Person.
 		// 2) При падении теста не будет достаточно информации выданной тестом. 
 		// 3) Размеры кода будут расти при увеличении кол-во полей класса Person. 
-		
+		// 4) При наличии замкнутой цепочки будет хождение по кругу до StackOverflowException
 		public void CheckCurrentTsar_WithCustomEquality()
 		{
 			var actualTsar = TsarRegistry.GetCurrentTsar();
