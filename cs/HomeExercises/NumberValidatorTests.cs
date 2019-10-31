@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using FluentAssertions;
 using NUnit.Framework;
@@ -14,7 +13,8 @@ namespace HomeExercises
         [TestCase(1, 2, true, TestName = "ScaleLessThanPrecision_ShouldThrowArgumentException")]
         public void NumberValidatorCreation_Throws(int precision, int scale, bool onlyPositive)
         {
-            Assert.Throws<ArgumentException>(() => new NumberValidator(precision, scale, onlyPositive));
+            Action ValidatorCreation = () => new NumberValidator(precision, scale, onlyPositive);
+            ValidatorCreation.ShouldThrow<ArgumentException>();
         }
 
         [TestCase(2, 1, true, TestName = "PositiveScaleAndPrecision_ShouldNotThrowException")]
@@ -22,7 +22,8 @@ namespace HomeExercises
         [TestCase(1, 0, true, TestName = "ZeroScale_ShouldNotThrowException")]
         public void NumberValidatorCreation_ShouldNotThrows(int precision, int scale, bool onlyPositive)
         {
-            Assert.DoesNotThrow(() => new NumberValidator(precision, scale, onlyPositive));
+            Action ValidatorCreation = () => new NumberValidator(precision, scale, onlyPositive);
+            ValidatorCreation.ShouldNotThrow<ArgumentException>();
         }
 
         [TestCase(17, 2, true, "0.0", ExpectedResult = true, TestName = "BothPartsLesserThanLimits_ShouldBeValid")]
@@ -55,35 +56,32 @@ namespace HomeExercises
         [Test]
         public void NumberValidator_NumberWithSign_SignShouldBePartOfScale()
         {
-            Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("+0.00"));
-            Assert.IsTrue(new NumberValidator(4, 2, true).IsValidNumber("+0.00"));
+            new NumberValidator(3, 2, true).IsValidNumber("+0.00").Should().BeFalse();
+            new NumberValidator(4, 2, true).IsValidNumber("+0.00").Should().BeTrue();
         }
         [Test]
 		public void NumberValidator_CheckingThatClassNotStaticOnlyPositive()
 		{
             var val1 = new NumberValidator(17, 10, true);
             var val2 = new NumberValidator(17, 10, false);
-            Assert.IsFalse(val1.IsValidNumber("-1"));
-            Assert.IsTrue(val2.IsValidNumber("-1"));
-
+            val1.IsValidNumber("-1").Should().BeFalse();
+            val2.IsValidNumber("-1").Should().BeTrue();
         }
         [Test]
         public void NumberValidator_CheckingThatScaleNotStatic()
         {
             var val1 = new NumberValidator(5, 3, true);
             var val2 = new NumberValidator(10, 3, false);
-            Assert.IsFalse(val1.IsValidNumber("000000.0"));
-            Assert.IsTrue(val2.IsValidNumber("000000.0"));
-
+            val1.IsValidNumber("000000.0").Should().BeFalse();
+            val2.IsValidNumber("000000.0").Should().BeTrue();
         }
         [Test]
         public void NumberValidator_CheckingThatPrecisionNotStatic()
         {
             var val1 = new NumberValidator(10, 3, true);
             var val2 = new NumberValidator(10, 8, false);
-            Assert.IsFalse(val1.IsValidNumber("1.000000"));
-            Assert.IsTrue(val2.IsValidNumber("1.000000"));
-
+            val1.IsValidNumber("1.000000").Should().BeFalse();
+            val2.IsValidNumber("1.000000").Should().BeTrue();
         }
 
     }
