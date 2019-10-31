@@ -6,75 +6,75 @@ using NUnit.Framework.Internal;
 
 namespace HomeExercises
 {
+	public static class Calling
+	{
+		public static Action ThisLambda(this Action act) => act;
+	}
+
 	public class NumberValidatorTests
 	{
+		[Category("Exception from constructor")]
 		[TestCase(-123, 2, true, TestName = "Scale < 0")]
-		public void CreateValidator_ThrowWhenIncorrectInput_Scale(int precision, int scale, bool onlyPositive = true)
-		{
-			Action act = () => new NumberValidator(precision, scale, onlyPositive);
-			act.ShouldThrow<ArgumentException>($"scale {scale} isn't possible");
-		}
-
 		[TestCase(0, 2, true, TestName = "Precision == 0")]
 		[TestCase(-123, 2, true, TestName = "Precision < 0")]
-		public void CreateValidator_ThrowWhenIncorrectInput_Precision(int precision, int scale, bool onlyPositive)
-		{
-			Action act = () => new NumberValidator(precision, scale, onlyPositive);
-			act.ShouldThrow<ArgumentException>($"precision {precision} isn't possible");
-		}
-
 		[TestCase(2, 2, true, TestName = "Precision == Scale")]
 		[TestCase(1, 2, true, TestName = "Precision < Scale")]
-		public void CreateValidator_ThrowWhenIncorrectInput_PrecisionAndScaleCompare(int precision, int scale, bool onlyPositive)
+		public void Constructor_IncorrectInput_ThrowArgumentException(int precision, int scale, bool onlyPositive)
 		{
-			Action act = () => new NumberValidator(precision, scale, onlyPositive);
-			act.ShouldThrow<ArgumentException>($"precision {precision} with scale {scale} isn't possible");
+			Calling.ThisLambda(() => new NumberValidator(precision, scale, onlyPositive))
+				.ShouldThrow<ArgumentException>();
 		}
 
-		[Category("Correct Input")]
-		[TestCase(3, 2, true, TestName = "Typical constructor init")]
+		[Category("Correct Input to constructor")]
+		[TestCase(3, 2, true, TestName = "Precision and Scale not zero")]
 		[TestCase(10, 0, true, TestName = "Scale zero in constructor")]
-		public void CreateValidator_CorrectInput(int precision, int scale, bool onlyPositive)
+		public void Constructor_CorrectInput_NotThrowArgumentException(int precision, int scale, bool onlyPositive)
 		{
-			Action act = () => new NumberValidator(precision, scale, onlyPositive);
-			act.ShouldNotThrow<ArgumentException>();
+			Calling.ThisLambda(() => new NumberValidator(precision, scale, onlyPositive))
+				.ShouldNotThrow<ArgumentException>();
 		}
 
 		[Category("Correct Input")]
 		[TestCase("+1.23", TestName = "With plus symbol and fractional part")]
 		[TestCase("-1.23", TestName = "With minus symbol and fractional part")]
+		[TestCase("1,23", TestName = "Fractional part with comma")]
+		[TestCase("-1,23", TestName = "Fractional part with comma and with minus symbol")]
 		[TestCase("0", TestName = "Int part zero")]
 		[TestCase("0.0", TestName = "Int and frac part zero")]
-		public void IsValidNumber_CorrectInput(string value)
+		[TestCase("1234567890", TestName = "All digit apply")]
+		public void IsValidNumber_CorrectInputString_ReturnsTrue(string value) 
 		{
-			new NumberValidator(5, 2, false).IsValidNumber(value).Should().BeTrue();
+			new NumberValidator(12, 2).IsValidNumber(value).Should().BeTrue();
 		}
 
 		[Category("Incorrect parsing")]
-        	[TestCase("", TestName = "Empty string")]
+		[TestCase("", TestName = "Empty string")]
 		[TestCase(null, TestName = "Null input")]
-		[TestCase("ad.s", TestName = "Other symbols input")]
+		[TestCase("sdk", TestName = "Other symbols input")]
+		[TestCase("ad.s", TestName = "Other symbols input in frac and int parts")]
 		[TestCase("0..0", TestName = "Double point")]
+		[TestCase("0.,0", TestName = "Point and comma")]
 		[TestCase("0.", TestName = "Empty frac part")]
 		[TestCase(".0", TestName = "Empty int part")]
 		[TestCase("--0.0", TestName = "Double sign symbol")]
-		
-		public void IsValidNumber_IncorrectInputString_ParseFalse(string value)
+		[TestCase("1,hi", TestName = "Fractional part with comma and other symbols")]
+		[TestCase("sd,2", TestName = "Fractional part with comma and other symbols in int part")]
+		public void IsValidNumber_IncorrectInputString_ParseFailed(string value)
 		{
 			new NumberValidator(3,2).IsValidNumber(value).Should().BeFalse();
 		}
 
 		[Category("Doesn't fit the value rule")]
-		[TestCase("000.00", TestName = "Length more than precision")]
-		[TestCase("00000", TestName = "Length more than precision without frac parth")]
+		[TestCase("000.00", TestName = "Length of frac and int parts more than precision")]
+		[TestCase("00000", TestName = "Length more than precision without frac part")]
 		[TestCase("-00.00", TestName = "Length with sign more than precision")]
 		[TestCase("0.000", TestName = "Too big scale")]
 		[TestCase("-12.0", TestName = "Negative value when only positive")]
 		[TestCase("-0.0", TestName = "Negative zero when only positive")]
-        	public void IsValidNumber_IncorrectInputString_NotMatchForRules(string value)
+		public void IsValidNumber_IncorrectInputString_NotMatchForRules(string value)
 		{
 			new NumberValidator(4, 2, true).IsValidNumber(value).Should().BeFalse();
-        	}
+		}
 	}
 
 	public class NumberValidator
