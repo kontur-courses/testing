@@ -7,8 +7,10 @@ namespace HomeExercises
 	public class NumberValidatorTests
 	{
 		[TestCase(-2, 1, TestName = "Constructor_WhenPrecisionIsNegative_ThrowArgumentException")]
+		[TestCase(0, 1, TestName = "Constructor_WhenPrecisionIsZero_ThrowArgumentException")]
 		[TestCase(2, -1, TestName = "Constructor_WhenScaleIsNegative_ThrowArgumentException")]
 		[TestCase(1, 2, TestName = "Constructor_WhenScaleMoreThenPrecision_ThrowArgumentException")]
+		[TestCase(1, 1, TestName = "Constructor_WhenScaleEquallyPrecision_ThrowArgumentException")]
 		public void Constructor_WhenIncorrectArguments_ThrowArgumentException(int precision, int scale)
 		{
 			// ReSharper disable once ObjectCreationAsStatement
