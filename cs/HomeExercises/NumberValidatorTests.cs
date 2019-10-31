@@ -8,7 +8,7 @@ namespace HomeExercises
     public class NumberValidatorTests
     {
         [Test]
-        public void Ctor_ShouldThrowArgumentException_WhenPrecisionNotPositive()
+        public void Ctor_ShouldThrow_WhenPrecisionNotPositive()
         {
             Action action = () => new NumberValidator(-1, 2);
 
@@ -16,7 +16,7 @@ namespace HomeExercises
         }
 
         [Test]
-        public void Ctor_ShouldThrowArgumentException_WhenScaleIsNegative()
+        public void Ctor_ShouldThrow_WhenScaleIsNegative()
         {
             Action action = () => new NumberValidator(1, -2);
 
@@ -25,7 +25,7 @@ namespace HomeExercises
 
         [TestCase(1, 2, TestName = "Scale more than precision")]
         [TestCase(1, 1, TestName = "Scale is equal to precision")]
-        public void Ctor_ShouldThrowArgumentException_WhenScaleMoreOrEqualToPrecision(int precision, int scale)
+        public void Ctor_ShouldThrow_WhenScaleMoreOrEqualToPrecision(int precision, int scale)
         {
             Action action = () => new NumberValidator(precision, scale);
 
@@ -42,6 +42,8 @@ namespace HomeExercises
 
         [TestCase(null, TestName = "Null")]
         [TestCase("", TestName = "Empty string")]
+        [TestCase("   ", TestName = "Whitespaces")]
+        [TestCase("\t\t\t", TestName = "Tabs")]
         public void IsValidNumber_ShouldBeFalse_WhenNullOrEmpty(string input)
         {
             new NumberValidator(17, 2)
@@ -97,24 +99,17 @@ namespace HomeExercises
                 .BeTrue();
         }
 
-        [Test]
-        public void IsValidNumber_ShouldBeTrue_OnNumberWithSign()
+        [TestCase(17, 2, "+1.23", TestName = "Positive number")]
+        [TestCase(17, 2, "-1.23", TestName = "Negative number")]
+        [TestCase(17, 2, "-0", TestName = "Zero with negative sign")]
+        [TestCase(17, 2, "+0", TestName = "Zero with positive sign")]
+        public void IsValidNumber_ShouldBeTrue_OnNumberWithSign(int precision, int scale, string input)
         {
-            new NumberValidator(17, 2, true)
-                .IsValidNumber("+1.23")
+            new NumberValidator(precision, scale)
+                .IsValidNumber(input)
                 .Should()
                 .BeTrue();
         }
-
-        [Test]
-        public void IsValidNumber_ShouldBeTrue_OnNumberWithNegativeSignWhenNotOnlyPositiveFlag()
-        {
-            new NumberValidator(17, 2, false)
-                .IsValidNumber("-1.23")
-                .Should()
-                .BeTrue();
-        }
-
 
     }
 
