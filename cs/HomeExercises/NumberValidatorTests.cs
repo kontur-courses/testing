@@ -60,30 +60,15 @@ namespace HomeExercises
             return new NumberValidator(precision, scale, onlyPositive).IsValidNumber(number);
         }
 
-        [Test]
-		public void CheckingThatClassNotStaticOnlyPositive_firstCreatedValidator()
-		{
-            var val1 = new NumberValidator(17, 10, true);
-            var val2 = new NumberValidator(17, 10, false);
-            val1.IsValidNumber("-1").Should().BeFalse();
-        }
-
-        [Test]
-        public void NumberValidator_CheckingThatScaleNotStatic()
+        [TestCase(17, 10, true, 17, 10, false, "-1", ExpectedResult = false, TestName = "CheckingThatOnlyPositiveNotStatic")]
+        [TestCase(5, 3, true, 10, 3, true, "000000.0", ExpectedResult = false, TestName = "CheckingThatScaleNotStatic")]
+        [TestCase(10, 3, true, 10, 8, true, "1.000000", ExpectedResult = false, TestName = "CheckingThatPrecisionNotStatic")]
+        public bool CheckingThatClassNotStatic(int precision1, int scale1, bool onlyPositive1, int precision2, int scale2, bool onlyPositive2, string number)
         {
-            var val1 = new NumberValidator(5, 3, true);
-            var val2 = new NumberValidator(10, 3, false);
-            val1.IsValidNumber("000000.0").Should().BeFalse();
+            var val1 = new NumberValidator(precision1, scale1, onlyPositive1);
+            var val2 = new NumberValidator(precision2, scale2, onlyPositive2);
+            return val1.IsValidNumber(number);
         }
-
-        [Test]
-        public void NumberValidator_CheckingThatPrecisionNotStatic()
-        {
-            var val1 = new NumberValidator(10, 3, true);
-            var val2 = new NumberValidator(10, 8, false);
-            val1.IsValidNumber("1.000000").Should().BeFalse();
-        }
-
     }
 
 	public class NumberValidator
