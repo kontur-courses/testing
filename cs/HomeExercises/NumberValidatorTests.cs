@@ -67,10 +67,10 @@ namespace HomeExercises
 
 		[Test]
 		[Category("Valid strings")]
-		public void FractionalPartLessThanScale()
+		public void IsValidNumber_MustBeTrue_WhenNumberFractionalPartLessThanScale()
 		{
 			var numberValidator = new NumberValidator(4, 2);
-			numberValidator.IsValidNumber("0.000").Should().BeFalse();
+			numberValidator.IsValidNumber("0.0").Should().BeTrue();
 		}
 
 		[Test]
