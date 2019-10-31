@@ -1,4 +1,5 @@
 ﻿using FluentAssertions;
+using FluentAssertions.Equivalency;
 using NUnit.Framework;
 
 namespace HomeExercises
@@ -23,7 +24,9 @@ namespace HomeExercises
 				new Person("Vasili III of Russia", 28, 170, 60, null));
 
 			actualTsar.Should().BeEquivalentTo(expectedTsar, options => options.Excluding(
-				x => x.RuntimeType == typeof(int) && x.SelectedMemberPath.EndsWith("Id")));
+				x => x.SelectedMemberInfo.DeclaringType == typeof(Person) &&
+				     x.SelectedMemberInfo.MemberType == typeof(int) && 
+				     x.SelectedMemberInfo.Name == nameof(Person.Id)));
 		}
 	}
 
