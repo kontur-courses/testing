@@ -35,7 +35,7 @@ namespace HomeExercises
 		[TestCase(17, 2, true, "42,a")]
 		[TestCase(17, 2, true, "+42,a")]
 		[TestCase(17, 2, false, "-42,a")]
-		public void IsValidNumber_FractionalPartOfNumberIsNotNumber_ShouldReturnFalse(
+		public void IsValidNumber_FractionalPartIsNotNumber_ShouldReturnFalse(
 			int precision, int scale, bool onlyPositive, string number)
 		{
 			var numberValidator = new NumberValidator(precision, scale, onlyPositive);
