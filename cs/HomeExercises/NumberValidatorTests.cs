@@ -1,19 +1,12 @@
-using System;
-using System.Text.RegularExpressions;
 using FluentAssertions;
 using NUnit.Framework;
-using NUnit.Framework.Internal;
+using System;
+using System.Text.RegularExpressions;
 
 namespace HomeExercises
 {
-	public static class Calling
-	{
-		public static Action ThisLambda(this Action act) => act;
-	}
-
 	public class NumberValidatorTests
 	{
-		[Category("Exception from constructor")]
 		[TestCase(-123, 2, true, TestName = "Scale < 0")]
 		[TestCase(0, 2, true, TestName = "Precision == 0")]
 		[TestCase(-123, 2, true, TestName = "Precision < 0")]
@@ -25,7 +18,6 @@ namespace HomeExercises
 				.ShouldThrow<ArgumentException>();
 		}
 
-		[Category("Correct Input to constructor")]
 		[TestCase(3, 2, true, TestName = "Precision and Scale not zero")]
 		[TestCase(10, 0, true, TestName = "Scale zero in constructor")]
 		public void Constructor_CorrectInput_NotThrowArgumentException(int precision, int scale, bool onlyPositive)
@@ -34,7 +26,6 @@ namespace HomeExercises
 				.ShouldNotThrow<ArgumentException>();
 		}
 
-		[Category("Correct Input")]
 		[TestCase("+1.23", TestName = "With plus symbol and fractional part")]
 		[TestCase("-1.23", TestName = "With minus symbol and fractional part")]
 		[TestCase("1,23", TestName = "Fractional part with comma")]
@@ -47,7 +38,6 @@ namespace HomeExercises
 			new NumberValidator(12, 2).IsValidNumber(value).Should().BeTrue();
 		}
 
-		[Category("Incorrect parsing")]
 		[TestCase("", TestName = "Empty string")]
 		[TestCase(null, TestName = "Null input")]
 		[TestCase("sdk", TestName = "Other symbols input")]
@@ -59,22 +49,26 @@ namespace HomeExercises
 		[TestCase("--0.0", TestName = "Double sign symbol")]
 		[TestCase("1,hi", TestName = "Fractional part with comma and other symbols")]
 		[TestCase("sd,2", TestName = "Fractional part with comma and other symbols in int part")]
-		public void IsValidNumber_IncorrectInputString_ParseFailed(string value)
+		public void IsValidNumber_WhenImpossibleParseInput_ReturnFalse(string value)
 		{
 			new NumberValidator(3,2).IsValidNumber(value).Should().BeFalse();
 		}
 
-		[Category("Doesn't fit the value rule")]
 		[TestCase("000.00", TestName = "Length of frac and int parts more than precision")]
 		[TestCase("00000", TestName = "Length more than precision without frac part")]
 		[TestCase("-00.00", TestName = "Length with sign more than precision")]
 		[TestCase("0.000", TestName = "Too big scale")]
 		[TestCase("-12.0", TestName = "Negative value when only positive")]
 		[TestCase("-0.0", TestName = "Negative zero when only positive")]
-		public void IsValidNumber_IncorrectInputString_NotMatchForRules(string value)
+		public void IsValidNumber_WhenNumberIsBreakingRules_ReturnFalse(string value)
 		{
 			new NumberValidator(4, 2, true).IsValidNumber(value).Should().BeFalse();
 		}
+	}
+
+	public static class Calling
+	{
+		public static Action ThisLambda(this Action act) => act;
 	}
 
 	public class NumberValidator
