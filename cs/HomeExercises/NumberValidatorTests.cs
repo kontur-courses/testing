@@ -53,34 +53,52 @@ namespace HomeExercises
             return new NumberValidator(precision, scale, onlyPositive).IsValidNumber(number);
         }
 
-        [Test]
-        public void NumberValidator_NumberWithSign_SignShouldBePartOfScale()
+        [TestCase(3, 2, true, "+0.00", ExpectedResult = false, TestName = "NumberWithSign_SignShouldBePartOfScale")]
+        [TestCase(4, 2, true, "+0.00", ExpectedResult = true, TestName = "NumberWithSign_SignShouldBePartOfScale")]
+        public bool Test_NumberWithSign_SignShouldBePartOfScale(int precision, int scale, bool onlyPositive, string number)
         {
-            new NumberValidator(3, 2, true).IsValidNumber("+0.00").Should().BeFalse();
-            new NumberValidator(4, 2, true).IsValidNumber("+0.00").Should().BeTrue();
+            return new NumberValidator(precision, scale, onlyPositive).IsValidNumber(number);
         }
+
         [Test]
-		public void NumberValidator_CheckingThatClassNotStaticOnlyPositive()
+		public void CheckingThatClassNotStaticOnlyPositive_firstCreatedValidator()
 		{
             var val1 = new NumberValidator(17, 10, true);
             var val2 = new NumberValidator(17, 10, false);
             val1.IsValidNumber("-1").Should().BeFalse();
+        }
+
+        [Test]
+        public void CheckingThatClassNotStaticOnlyPositive_secondCreatedValidator()
+        {
+            var val1 = new NumberValidator(17, 10, true);
+            var val2 = new NumberValidator(17, 10, false);
             val2.IsValidNumber("-1").Should().BeTrue();
         }
         [Test]
-        public void NumberValidator_CheckingThatScaleNotStatic()
+        public void NumberValidator_CheckingThatScaleNotStatic_firstCreatedValidator()
         {
             var val1 = new NumberValidator(5, 3, true);
             var val2 = new NumberValidator(10, 3, false);
             val1.IsValidNumber("000000.0").Should().BeFalse();
+        }
+        public void NumberValidator_CheckingThatScaleNotStatic_secondCreatedValidator()
+        {
+            var val1 = new NumberValidator(5, 3, true);
+            var val2 = new NumberValidator(10, 3, false);
             val2.IsValidNumber("000000.0").Should().BeTrue();
         }
         [Test]
-        public void NumberValidator_CheckingThatPrecisionNotStatic()
+        public void NumberValidator_CheckingThatPrecisionNotStatic_firstCreatedValidator()
         {
             var val1 = new NumberValidator(10, 3, true);
             var val2 = new NumberValidator(10, 8, false);
             val1.IsValidNumber("1.000000").Should().BeFalse();
+        }
+        public void NumberValidator_CheckingThatPrecisionNotStatic_secondCreatedValidator()
+        {
+            var val1 = new NumberValidator(10, 3, true);
+            var val2 = new NumberValidator(10, 8, false);
             val2.IsValidNumber("1.000000").Should().BeTrue();
         }
 
