@@ -14,6 +14,7 @@ namespace HomeExercises
 		[TestCase(-1, 2, TestName = "NumberValidatorConstructor_ThrowArgumentException_WhenPrecisionIsNegative")]
 		[TestCase(1, -2, TestName = "NumberValidatorConstructor_ThrowArgumentException_WhenScaleIsNegative")]
 		[TestCase(1, 2, TestName = "NumberValidatorConstructor_ThrowArgumentException_WhenPrecisionLessThanScale")]
+		[TestCase(0, 0, TestName = "NumberValidatorConstructor_ThrowArgumentException_WhenPrecisionAndScaleEqualZero")]
 		public void СonstructorExeptions(int precision, int scale)
 		{
 			Action action = () => new NumberValidator(precision, scale);
@@ -30,9 +31,10 @@ namespace HomeExercises
 		[TestCase("!@#$%^&*()\"№;:?\\/}{[]", ExpectedResult = false, TestName = "IsValidNumber_MustBeFalse_WhenAcceptsStringWithDiffrentSymbols")]
 		[TestCase("   ", ExpectedResult = false, TestName = "IsValidNumber_MustBeFalse_WhenAcceptsWhiteSpaceString")]
 		[TestCase("123,abc", ExpectedResult = false, TestName = "IsValidNumber_MustBeFalse_WhenAcceptsNumbersAndLettersInOneString")]
+		[TestCase("1234567890123456789012345678", ExpectedResult = false, TestName = "IsValidNumber_MustBeFalse_WhenNumberLengthGreaterPrecision")]
 		public bool IncorrrectStrings(string input)
 		{
-			var numberValidator = new NumberValidator(30);
+			var numberValidator = new NumberValidator(15);
 			return numberValidator.IsValidNumber(input);
 		}
 
