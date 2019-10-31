@@ -26,31 +26,33 @@ namespace HomeExercises
             ValidatorCreation.ShouldNotThrow<ArgumentException>();
         }
 
-        [TestCase(17, 2, true, "0.0", ExpectedResult = true, TestName = "BothPartsLesserThanLimits_ShouldBeValid")]
-        [TestCase(17, 2, true, "00.00", ExpectedResult = true, TestName = "ScaleEqualLimits_ShouldBeValid")]
-        [TestCase(4, 2, true, "00.00", ExpectedResult = true, TestName = "PrecisionEqualLimits_ShouldBeValid")]
-        [TestCase(17, 2, true, "0", ExpectedResult = true, TestName = "OnlyIntPart_ShouldBeValid")]
-        [TestCase(10, 5, false, "-1.0", ExpectedResult = true, TestName = "InputNegative_ShouldBeValidIfValidatorAcceptNegative")]
-        public bool Test_IsNumberValid_ValidCases(int precision, int scale, bool onlyPositive, string number)
+        [TestCase(17, 2, true, "0.0", TestName = "BothPartsLesserThanLimits_ShouldBeValid")]
+        [TestCase(17, 2, true, "00.00", TestName = "ScaleEqualLimits_ShouldBeValid")]
+        [TestCase(4, 2, true, "00.00", TestName = "PrecisionEqualLimits_ShouldBeValid")]
+        [TestCase(17, 2, true, "0", TestName = "OnlyIntPart_ShouldBeValid")]
+        [TestCase(10, 5, false, "-1.0", TestName = "InputNegative_ShouldBeValidIfValidatorAcceptNegative")]
+        public void Test_IsNumberValid_ValidCases(int precision, int scale, bool onlyPositive, string number)
         {
-            return new NumberValidator(precision, scale, onlyPositive).IsValidNumber(number);
+            var validator = new NumberValidator(precision, scale, onlyPositive);
+            validator.IsValidNumber(number).Should().BeTrue();
         }
 
-        [TestCase(17, 2, true, "", ExpectedResult = false, TestName = "EmptyInput_ShouldNotBeValid")]
-        [TestCase(10, 5, true, null, ExpectedResult = false, TestName = "NullInput_ShouldNotBeValid")]
-        [TestCase(3, 2, true, "111111", ExpectedResult = false, TestName = "OnlyIntPartGreaterThanScale_ShouldNotBeValid")]
-        [TestCase(3, 2, true, "00.00", ExpectedResult = false, TestName = "ScaleGreaterThanLimits_ShouldNotBeValid")]
-        [TestCase(17, 2, true, "0.000", ExpectedResult = false, TestName = "PrecisionGreaterThanLimits_ShouldNotBeValid")]
-        [TestCase(17, 2, true, "-1.0", ExpectedResult = false, TestName = "InputNegative_ShouldNotBeValidIfValidatorNotAcceptNegative")]
-        [TestCase(10, 5, true, "a.sd", ExpectedResult = false, TestName = "NotNumbers_ShouldNotBeValid")]
-        [TestCase(10, 5, true, "ф.ыв", ExpectedResult = false, TestName = "NotNumbers_ShouldNotBeValid")]
-        [TestCase(10, 5, true, "\n.\n\n", ExpectedResult = false, TestName = "NotNumbers_ShouldNotBeValid")]
-        [TestCase(10, 5, true, "1.23asd", ExpectedResult = false, TestName = "IfContainLetters_ShouldNotBeValid")]
-        [TestCase(10, 5, false, "-+1.23", ExpectedResult = false, TestName = "MultipleSign_ShouldNotBeValid")]
-        [TestCase(10, 5, false, "1.-23", ExpectedResult = false, TestName = "SignInFracPart_ShouldNotBeValid")]
-        public bool Test_IsNumberValid_NotValidCases(int precision, int scale, bool onlyPositive, string number)
+        [TestCase(17, 2, true, "", TestName = "EmptyInput_ShouldNotBeValid")]
+        [TestCase(10, 5, true, null, TestName = "NullInput_ShouldNotBeValid")]
+        [TestCase(3, 2, true, "111111", TestName = "OnlyIntPartGreaterThanScale_ShouldNotBeValid")]
+        [TestCase(3, 2, true, "00.00", TestName = "ScaleGreaterThanLimits_ShouldNotBeValid")]
+        [TestCase(17, 2, true, "0.000", TestName = "PrecisionGreaterThanLimits_ShouldNotBeValid")]
+        [TestCase(17, 2, true, "-1.0", TestName = "InputNegative_ShouldNotBeValidIfValidatorNotAcceptNegative")]
+        [TestCase(10, 5, true, "a.sd", TestName = "NotNumbers_ShouldNotBeValid")]
+        [TestCase(10, 5, true, "ф.ыв", TestName = "NotNumbers_ShouldNotBeValid")]
+        [TestCase(10, 5, true, "\n.\n\n", TestName = "NotNumbers_ShouldNotBeValid")]
+        [TestCase(10, 5, true, "1.23asd", TestName = "IfContainLetters_ShouldNotBeValid")]
+        [TestCase(10, 5, false, "-+1.23", TestName = "MultipleSign_ShouldNotBeValid")]
+        [TestCase(10, 5, false, "1.-23", TestName = "SignInFracPart_ShouldNotBeValid")]
+        public void Test_IsNumberValid_NotValidCases(int precision, int scale, bool onlyPositive, string number)
         {
-            return new NumberValidator(precision, scale, onlyPositive).IsValidNumber(number);
+            var validator = new NumberValidator(precision, scale, onlyPositive);
+            validator.IsValidNumber(number).Should().BeFalse();
         }
 
         [TestCase(3, 2, true, "+0.00", ExpectedResult = false, TestName = "NumberWithSign_SignShouldBePartOfScale")]
@@ -60,14 +62,14 @@ namespace HomeExercises
             return new NumberValidator(precision, scale, onlyPositive).IsValidNumber(number);
         }
 
-        [TestCase(17, 10, true, 17, 10, false, "-1", ExpectedResult = false, TestName = "CheckingThatOnlyPositiveNotStatic")]
-        [TestCase(5, 3, true, 10, 3, true, "000000.0", ExpectedResult = false, TestName = "CheckingThatScaleNotStatic")]
-        [TestCase(10, 3, true, 10, 8, true, "1.000000", ExpectedResult = false, TestName = "CheckingThatPrecisionNotStatic")]
-        public bool CheckingThatClassNotStatic(int precision1, int scale1, bool onlyPositive1, int precision2, int scale2, bool onlyPositive2, string number)
+        [TestCase(17, 10, true, 17, 10, false, "-1", TestName = "CheckingThatOnlyPositiveNotStatic")]
+        [TestCase(5, 3, true, 10, 3, true, "000000.0", TestName = "CheckingThatScaleNotStatic")]
+        [TestCase(10, 3, true, 10, 8, true, "1.000000", TestName = "CheckingThatPrecisionNotStatic")]
+        public void CheckingThatClassNotStatic(int precision1, int scale1, bool onlyPositive1, int precision2, int scale2, bool onlyPositive2, string number)
         {
             var val1 = new NumberValidator(precision1, scale1, onlyPositive1);
             var val2 = new NumberValidator(precision2, scale2, onlyPositive2);
-            return val1.IsValidNumber(number);
+            val1.IsValidNumber(number).Should().BeFalse();
         }
     }
 
