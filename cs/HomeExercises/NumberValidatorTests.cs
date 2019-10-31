@@ -9,49 +9,39 @@ namespace HomeExercises
     [TestFixture]
     public class NumberValidatorTests
 	{
-        [TestCase(-1, 2, true, TestName = "NumberValidator_NegativePrecision_ShouldThrowArgumentException")]
-        [TestCase(1, -1, true, TestName = "NumberValidator_NegativeScale_ShouldThrowArgumentException")]
-        [TestCase(1, 2, true, TestName = "NumberValidator_ScaleLessThanPrecision_ShouldThrowArgumentException")]
+        [TestCase(-1, 2, true, TestName = "NegativePrecision_ShouldThrowArgumentException")]
+        [TestCase(1, -1, true, TestName = "NegativeScale_ShouldThrowArgumentException")]
+        [TestCase(1, 2, true, TestName = "ScaleLessThanPrecision_ShouldThrowArgumentException")]
         public void NumberValidatorCreation_Throws(int precision, int scale, bool onlyPositive)
         {
             Assert.Throws<ArgumentException>(() => new NumberValidator(precision, scale, onlyPositive));
         }
 
-        [TestCase(2, 1, true, TestName = "NumberValidator_PositiveScaleAndPrecision_ShouldNotThrowException")]
-        [TestCase(100, 30, true, TestName = "NumberValidator_PositiveScaleAndPrecision_ShouldNotThrowException")]
-        [TestCase(1, 0, true, TestName = "NumberValidator_ZeroScale_ShouldNotThrowException")]
+        [TestCase(2, 1, true, TestName = "PositiveScaleAndPrecision_ShouldNotThrowException")]
+        [TestCase(100, 30, true, TestName = "PositiveScaleAndPrecision_ShouldNotThrowException")]
+        [TestCase(1, 0, true, TestName = "ZeroScale_ShouldNotThrowException")]
         public void NumberValidatorCreation_ShouldNotThrows(int precision, int scale, bool onlyPositive)
         {
             Assert.DoesNotThrow(() => new NumberValidator(precision, scale, onlyPositive));
         }
 
-        [TestCase(17, 2, true, "0.0", ExpectedResult = true, TestName = "NumberValidator_BothPartsLesserThanLimits_ShouldBeValid")]
-        [TestCase(17, 2, true, "00.00", ExpectedResult = true, TestName = "NumberValidator_ScaleEqualLimits_ShouldBeValid")]
-        [TestCase(4, 2, true, "00.00", ExpectedResult = true, TestName = "NumberValidator_PrecisionEqualLimits_ShouldBeValid")]
-        [TestCase(17, 2, true, "", ExpectedResult = false, TestName = "NumberValidator_EmptyInput_ShouldNotBeValid")]
-        [TestCase(10, 5, true, null, ExpectedResult = false, TestName = "NumberValidator_NullInput_ShouldNotBeValid")]
-        [TestCase(17, 2, true, "0", ExpectedResult = true, TestName = "NumberValidator_OnlyIntPart_ShouldBeValid")]
-        [TestCase(3, 2, true, "111111", ExpectedResult = false, TestName = "NumberValidator_OnlyIntPartGreaterThanScale_ShouldNotBeValid")]
-        [TestCase(3, 2, true, "00.00", ExpectedResult = false, TestName = "NumberValidator_ScaleGreaterThanLimits_ShouldNotBeValid")]
-        [TestCase(17, 2, true, "0.000", ExpectedResult = false, TestName = "NumberValidator_PrecisionGreaterThanLimits_ShouldNotBeValid")]
-        [TestCase(17, 2, true, "-1", ExpectedResult = false, TestName = "NumberValidator_InputNegative_ShouldNotBeValidIfValidatorNotAcceptNegative")]
-        [TestCase(17, 2, true, "-1.0", ExpectedResult = false, TestName = "NumberValidator_InputNegative_ShouldNotBeValidIfValidatorNotAcceptNegative")]
-        [TestCase(17, 2, false, "-1", ExpectedResult = true, TestName = "NumberValidator_InputNegative_ShouldBeValidIfValidatorAcceptNegative")]
-        [TestCase(10, 5, false, "-1.0", ExpectedResult = true, TestName = "NumberValidator_InputNegative_ShouldBeValidIfValidatorAcceptNegative")]
-        [TestCase(10, 5, true, "a.sd", ExpectedResult = false, TestName = "NumberValidator_NotNumbers_ShouldNotBeValid")]
-        [TestCase(10, 5, true, "ф.ыв", ExpectedResult = false, TestName = "NumberValidator_NotNumbers_ShouldNotBeValid")]
-        [TestCase(10, 5, true, "Ä.äÖÜü", ExpectedResult = false, TestName = "NumberValidator_NotNumbers_ShouldNotBeValid")]
-        [TestCase(10, 5, true, "슈.퍼맨", ExpectedResult = false, TestName = "NumberValidator_NotNumbers_ShouldNotBeValid")]
-        [TestCase(10, 5, true, "==.==", ExpectedResult = false, TestName = "NumberValidator_NotNumbers_ShouldNotBeValid")]
-        [TestCase(10, 5, true, "\n.\n\n", ExpectedResult = false, TestName = "NumberValidator_NotNumbers_ShouldNotBeValid")]
-        [TestCase(10, 5, true, "1.23asd", ExpectedResult = false, TestName = "NumberValidator_IfContainLetters_ShouldNotBeValid")]
-        [TestCase(10, 5, true, "1.asd23", ExpectedResult = false, TestName = "NumberValidator_IfContainLetters_ShouldNotBeValid")]
-        [TestCase(10, 5, false, "--1.23", ExpectedResult = false, TestName = "NumberValidator_MultipleSign_ShouldNotBeValid")]
-        [TestCase(10, 5, false, "-----1.23", ExpectedResult = false, TestName = "NumberValidator_MultipleSign_ShouldNotBeValid")]
-        [TestCase(10, 5, false, "-+1.23", ExpectedResult = false, TestName = "NumberValidator_MultipleSign_ShouldNotBeValid")]
-        [TestCase(10, 5, false, "+-1.23", ExpectedResult = false, TestName = "NumberValidator_MultipleSign_ShouldNotBeValid")]
-        [TestCase(10, 5, false, "1.-23", ExpectedResult = false, TestName = "NumberValidator_SignInFracPart_ShouldNotBeValid")]
-        [TestCase(10, 5, false, "1.23-", ExpectedResult = false, TestName = "NumberValidator_SignInFracPart_ShouldNotBeValid")]
+        [TestCase(17, 2, true, "0.0", ExpectedResult = true, TestName = "BothPartsLesserThanLimits_ShouldBeValid")]
+        [TestCase(17, 2, true, "00.00", ExpectedResult = true, TestName = "ScaleEqualLimits_ShouldBeValid")]
+        [TestCase(4, 2, true, "00.00", ExpectedResult = true, TestName = "PrecisionEqualLimits_ShouldBeValid")]
+        [TestCase(17, 2, true, "", ExpectedResult = false, TestName = "EmptyInput_ShouldNotBeValid")]
+        [TestCase(10, 5, true, null, ExpectedResult = false, TestName = "NullInput_ShouldNotBeValid")]
+        [TestCase(17, 2, true, "0", ExpectedResult = true, TestName = "OnlyIntPart_ShouldBeValid")]
+        [TestCase(3, 2, true, "111111", ExpectedResult = false, TestName = "OnlyIntPartGreaterThanScale_ShouldNotBeValid")]
+        [TestCase(3, 2, true, "00.00", ExpectedResult = false, TestName = "ScaleGreaterThanLimits_ShouldNotBeValid")]
+        [TestCase(17, 2, true, "0.000", ExpectedResult = false, TestName = "PrecisionGreaterThanLimits_ShouldNotBeValid")]
+        [TestCase(17, 2, true, "-1.0", ExpectedResult = false, TestName = "InputNegative_ShouldNotBeValidIfValidatorNotAcceptNegative")]
+        [TestCase(10, 5, false, "-1.0", ExpectedResult = true, TestName = "InputNegative_ShouldBeValidIfValidatorAcceptNegative")]
+        [TestCase(10, 5, true, "a.sd", ExpectedResult = false, TestName = "NotNumbers_ShouldNotBeValid")]
+        [TestCase(10, 5, true, "ф.ыв", ExpectedResult = false, TestName = "NotNumbers_ShouldNotBeValid")]
+        [TestCase(10, 5, true, "\n.\n\n", ExpectedResult = false, TestName = "NotNumbers_ShouldNotBeValid")]
+        [TestCase(10, 5, true, "1.23asd", ExpectedResult = false, TestName = "IfContainLetters_ShouldNotBeValid")]
+        [TestCase(10, 5, false, "-+1.23", ExpectedResult = false, TestName = "MultipleSign_ShouldNotBeValid")]
+        [TestCase(10, 5, false, "1.-23", ExpectedResult = false, TestName = "SignInFracPart_ShouldNotBeValid")]
         public bool Test_IsNumberValid(int precision, int scale, bool onlyPositive, string number)
         {
             return new NumberValidator(precision, scale, onlyPositive).IsValidNumber(number);
