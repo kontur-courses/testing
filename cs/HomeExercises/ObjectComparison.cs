@@ -10,41 +10,45 @@ namespace HomeExercises
 		[Category("ToRefactor")]
 		public void CheckCurrentTsar()
 		{
-		    var actualTsar = TsarRegistry.GetCurrentTsar();
+			var actualTsar = TsarRegistry.GetCurrentTsar();
 
-		    var expectedTsar = new Person("Ivan IV The Terrible", 54, 170, 70,
-			new Person("Vasili III of Russia", 28, 170, 60, null));
+			var expectedTsar = new Person("Ivan IV The Terrible", 54, 170, 70,
+				new Person("Vasili III of Russia", 28, 170, 60, null));
 
-		    actualTsar.ShouldBeEquivalentTo(expectedTsar,
-			options => options.Excluding(person => person.SelectedMemberPath.EndsWith("Id")));
+			actualTsar.ShouldBeEquivalentTo(
+			    expectedTsar,
+			    options => options.Excluding(person => person.SelectedMemberInfo.Name == nameof(Person.Id)));
 		}
 
 		[Test]
 		[Description("Альтернативное решение. Какие у него недостатки?")]
 		public void CheckCurrentTsar_WithCustomEquality()
 		{
-		    var actualTsar = TsarRegistry.GetCurrentTsar();
-		    var expectedTsar = new Person("Ivan IV The Terrible", 54, 170, 70,
-			new Person("Vasili III of Russia", 28, 170, 60, null));
+			var actualTsar = TsarRegistry.GetCurrentTsar();
+			var expectedTsar = new Person("Ivan IV The Terrible", 54, 170, 70,
+				new Person("Vasili III of Russia", 28, 170, 60, null));
 
-		    // Какие недостатки у такого подхода?
-		    // При изменении класса Person нужно будет изменить также и метод AreEqual.
-		    // При использовании альтернативного решения в случае ошибки не будет говориться, 
-		    //в каком месте она произошла,
-		    //в отличие от FluentAssertions, который даст подробную информацию.
-		    Assert.True(AreEqual(actualTsar, expectedTsar));
+			// Какие недостатки у такого подхода?
+			// При изменении класса Person нужно будет изменить также и метод AreEqual.
+			// При использовании альтернативного решения в случае ошибки не будет говориться, 
+			//в каком месте она произошла,
+			//в отличие от FluentAssertions, который даст подробную информацию.
+			// При добавлении/удалении свойств класса Person
+			// строки кода альтернативного решения будут значительно изменяться
+			// , в отличие от решения с использованием FluentAssertions
+			Assert.True(AreEqual(actualTsar, expectedTsar));
 		}
 
 		private bool AreEqual(Person actual, Person expected)
 		{
-		    if (actual == expected) return true;
-	            if (actual == null || expected == null) return false;
-		    return
-			actual.Name == expected.Name
-			&& actual.Age == expected.Age
-			&& actual.Height == expected.Height
-			&& actual.Weight == expected.Weight
-			&& AreEqual(actual.Parent, expected.Parent);
+			if (actual == expected) return true;
+			if (actual == null || expected == null) return false;
+			return
+				actual.Name == expected.Name
+				&& actual.Age == expected.Age
+				&& actual.Height == expected.Height
+				&& actual.Weight == expected.Weight
+				&& AreEqual(actual.Parent, expected.Parent);
 		}
 	}
 
