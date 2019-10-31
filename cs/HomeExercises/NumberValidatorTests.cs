@@ -1,41 +1,36 @@
 using System;
 using System.Text.RegularExpressions;
-using FluentAssertions;
 using NUnit.Framework;
 
 namespace HomeExercises
 {
 	public class NumberValidatorTests
 	{
-		[TestCase(-1, 2, true)]
-		[TestCase(0, 2, false)]
-		[TestCase(2, -1, true)]
-		[TestCase(1, 2, false)]
-		public static void AssertThrowsException(int precision, int scale, bool onlyPositive)
+		[TestCase(-1, 2, true, TestName ="Precission is less than zero")]
+		[TestCase(0, 2, false, TestName = "Precission is zero")]
+		[TestCase(2, -1, true, TestName = "Scale is less than zero")]
+		[TestCase(1, 2, false, TestName = "Precission is less than scale")]
+		public static void Constructor_ShouldThrowArgumentException_OnTheseArguments(int precision, int scale, bool onlyPositive)
 		    => Assert.Throws<ArgumentException>(() => new NumberValidator(precision, scale, onlyPositive));
 
-		[TestCase(1, 0, true)]
-		public static void AssertDoesNotThrowEcxeption(int precision, int scale, bool onlyPositive)
-		    => Assert.DoesNotThrow(() => new NumberValidator(precision, scale, onlyPositive));
 
-		[TestCase(17, 2, true, "0.0")]
-		[TestCase(17, 2, true, "0")]
-		[TestCase(4, 2, true, "+1.23")]
-		public static void AssertNotFalls_OnCorrectValues(int precision, int scale, bool onlyPositive, string value)
+		[TestCase(17, 2, true, "0.0", TestName = "With no sign")]
+		[TestCase(17, 2, true, "0", TestName = "With no fractional part")]
+		[TestCase(4, 2, true, "+1.23", TestName = "With positive sign")]
+		public static void IsValidNumber_ShouldBeTrue_OnTheseArguments(int precision, int scale, bool onlyPositive, string value)
 		    => Assert.IsTrue(new NumberValidator(precision, scale, onlyPositive).IsValidNumber(value));
 
-		[TestCase(1, 0, true, "")]
-		[TestCase(1, 0, true, "   ")]
-		[TestCase(1, 0, true, null)]
-		[TestCase(3, 2, true, "00.00")]
-		[TestCase(3, 2, true, "-0.00")]
-		[TestCase(3, 2, true, "+0.00")]
-		[TestCase(3, 2, true, "+1.23")]
-		[TestCase(17, 2, true, "0.000")]
-		[TestCase(3, 2, true, "-1.23")]
-		[TestCase(17, 2, true, "-000.00")]
-		[TestCase(3, 2, true, "a.sd")]
-		public static void AssertFalls_OnIncorrectValues(int precision, int scale, bool onlyPositive, string value)
+		[TestCase(1, 0, true, "", TestName = "Value is empty")]
+		[TestCase(1, 0, true, "   ", TestName = "Value is whitespace")]
+		[TestCase(1, 0, true, null, TestName = "Value is null")]
+		[TestCase(3, 2, true, "0.", TestName = "With dot and with no fractional part")]
+		[TestCase(3, 2, true, ".0", TestName = "With dot and with no int part")]
+		[TestCase(3, 2, true, "a.sd", TestName = "Value does not consist of numbers")]
+		[TestCase(3, 2, true, "-0.00", TestName = "Only positive and negative sign")]
+		[TestCase(3, 2, true, "00.00", TestName = "Precission is less than intPart plus fracPart")]
+		[TestCase(3, 2, true, "+0.00", TestName = "Precission is less than intPart with sign plus fracPart")]
+		[TestCase(17, 2, true, "0.000", TestName = "Scale is less than fracPart")]
+		public static void IsValidNumber_ShouldBeFalse_OnTheseArguments(int precision, int scale, bool onlyPositive, string value)
 		    => Assert.IsFalse(new NumberValidator(precision, scale, onlyPositive).IsValidNumber(value));        
 	}
 
