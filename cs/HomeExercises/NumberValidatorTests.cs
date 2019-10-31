@@ -69,37 +69,19 @@ namespace HomeExercises
         }
 
         [Test]
-        public void CheckingThatClassNotStaticOnlyPositive_secondCreatedValidator()
-        {
-            var val1 = new NumberValidator(17, 10, true);
-            var val2 = new NumberValidator(17, 10, false);
-            val2.IsValidNumber("-1").Should().BeTrue();
-        }
-        [Test]
-        public void NumberValidator_CheckingThatScaleNotStatic_firstCreatedValidator()
+        public void NumberValidator_CheckingThatScaleNotStatic()
         {
             var val1 = new NumberValidator(5, 3, true);
             var val2 = new NumberValidator(10, 3, false);
             val1.IsValidNumber("000000.0").Should().BeFalse();
         }
-        public void NumberValidator_CheckingThatScaleNotStatic_secondCreatedValidator()
-        {
-            var val1 = new NumberValidator(5, 3, true);
-            var val2 = new NumberValidator(10, 3, false);
-            val2.IsValidNumber("000000.0").Should().BeTrue();
-        }
+
         [Test]
-        public void NumberValidator_CheckingThatPrecisionNotStatic_firstCreatedValidator()
+        public void NumberValidator_CheckingThatPrecisionNotStatic()
         {
             var val1 = new NumberValidator(10, 3, true);
             var val2 = new NumberValidator(10, 8, false);
             val1.IsValidNumber("1.000000").Should().BeFalse();
-        }
-        public void NumberValidator_CheckingThatPrecisionNotStatic_secondCreatedValidator()
-        {
-            var val1 = new NumberValidator(10, 3, true);
-            var val2 = new NumberValidator(10, 8, false);
-            val2.IsValidNumber("1.000000").Should().BeTrue();
         }
 
     }
