@@ -3,7 +3,6 @@ using NUnit.Framework;
 
 namespace HomeExercises
 {
-	[TestFixture]
 	public class ObjectComparison
 	{
 		[Test]

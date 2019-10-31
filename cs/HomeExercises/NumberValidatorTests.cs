@@ -5,119 +5,55 @@ using NUnit.Framework;
 
 namespace HomeExercises
 {
-	[TestFixture]
 	public class NumberValidatorTests
 	{
-	    [Test]
-	    public void NumberValidator_ThrowsArgumentException_IfScaleLessThanZero()
-	    {
-	        Action action = () => new NumberValidator(17, -1, true);
+		[TestCase(-1, 0, true, TestName = "IfPrecisionLessThanZero")]
+		[TestCase(0, 0, true, TestName = "IfPrecisionIsEqualToZero")]
+		[TestCase(17, -1, true, TestName = "IfScaleLessThanZero")]
+		[TestCase(17, 17, true, TestName = "IfScaleIsEqualToPrecision")]
+		[TestCase(17, 18, true, TestName = "IfScaleBiggerThanPrecision")]
+		public void NumberValidator_ShouldThrowArgumentException_OnTheseInputArguments(int precision, int scale, bool onlyPositive)
+		{
+			Action action = () => new NumberValidator(precision, scale, onlyPositive);
 
-	        action
-	            .ShouldThrow<ArgumentException>()
-	            .WithMessage("scale must be a non-negative number less than precision");
-	    }
+			action
+				.ShouldThrow<ArgumentException>();
+		}
 
-	    [Test]
-	    public void NumberValidator_ThrowsArgumentException_IfPrecisionLessOrEqualToZero()
-	    {
-	        Action action = () => new NumberValidator(0, 0, true);
+		[TestCase(17, 16, true, TestName = "IfScaleLessThanPrecision")]
+		public void NumberValidator_ShouldNotThrowArgumentException_OnTheseInputArguments(int precision, int scale, bool onlyPositive)
+		{
+			Action action = () => new NumberValidator(precision, scale, onlyPositive);
 
-	        action
-	            .ShouldThrow<ArgumentException>()
-	            .WithMessage("precision must be a positive number");
-	    }
+			action
+				.ShouldNotThrow<ArgumentException>();
+		}
 
-	    [Test]
-	    public void NumberValidator_NotThrowsArgumentException_IfScaleLessThanPrecision()
-	    {
-	        Action action = () => new NumberValidator(17, 16, true);
+		[TestCase(17, 2, true, "123", TestName = "IfNumberScaleIsZero")]
+		[TestCase(17, 2, true, "123.1", TestName = "IfNumberScaleLessThanValidatorScale")]
+		[TestCase(17, 2, true, "123.12", TestName = "IfNumberScaleIsEqualToValidatorScale")]
+		[TestCase(5, 2, true, "123,12", TestName = "IfSeparatorIsСomma")]
+		[TestCase(5, 2, false, "-12.12", TestName = "IfNegativeNumberAndNotOnlyPositiveValidator")]
+		[TestCase(5, 3, true, "12.1", TestName = "IfNumberPrecisionLessThanValidatorPrecision")]
+		[TestCase(5, 3, true, "123.12", TestName = "IfNumberPrecisionIsEqualToValidatorPrecision")]
+		public void IsValidNumber_ShouldBeTrue_OnTheseInputArguments(int precision, int scale, bool onlyPositive, string numberLine)
+		{
+			new NumberValidator(precision, scale, onlyPositive).IsValidNumber(numberLine).Should().BeTrue();
+		}
 
-	        action
-	            .ShouldNotThrow<ArgumentException>();
-	    }
-
-	    [Test]
-	    public void NumberValidator_ThrowsArgumentException_IfScaleIsEqualToPrecision()
-	    {
-	        Action action = () => new NumberValidator(17, 17, true);
-
-	        action
-	            .ShouldThrow<ArgumentException>()
-	            .WithMessage("scale must be a non-negative number less than precision");
-	    }
-
-	    [Test]
-	    public void IsValidNumber_ShouldBeTrue_IfNumberScaleIsZero()
-	    {
-	        new NumberValidator(17, 2, true).IsValidNumber("123").Should().BeTrue();
-	    }
-
-	    [Test]
-	    public void IsValidNumber_ShouldBeTrue_IfNumberScaleLessThanValidatorScale()
-	    {
-	        new NumberValidator(17, 2, true).IsValidNumber("123.1").Should().BeTrue();
-	    }
-
-	    [Test]
-	    public void IsValidNumber_ShouldBeTrue_IfNumberScaleIsEqualToValidatorScale()
-	    {
-	        new NumberValidator(17, 2, true).IsValidNumber("123.12").Should().BeTrue();
-	    }
-
-	    [Test]
-	    public void IsValidNumber_ShouldBeFalse_IfNumberScaleBiggerThanValidatorScale()
-	    {
-	        new NumberValidator(17, 2, true).IsValidNumber("123.123").Should().BeFalse();
-	    }
-
-	    [Test]
-	    public void IsValidNumber_IntegerPartShouldIncreasePrecision()
-	    {
-	        new NumberValidator(5, 2, true).IsValidNumber("123.12").Should().BeTrue();
-	        new NumberValidator(5, 2, true).IsValidNumber("1234.12").Should().BeFalse();
-	    }
-
-	    [Test]
-	    public void IsValidNumber_FractionalPartShouldIncreasePrecision()
-	    {
-	        new NumberValidator(5, 2, true).IsValidNumber("123.12").Should().BeTrue();
-	        new NumberValidator(5, 2, true).IsValidNumber("123.123").Should().BeFalse();
-	    }
-
-	    [Test]
-	    public void IsValidNumber_SignShouldIncreasePrecision()
-	    {
-	        new NumberValidator(5, 2, true).IsValidNumber("123.12").Should().BeTrue();
-	        new NumberValidator(5, 2).IsValidNumber("-123.12").Should().BeFalse();
-	        new NumberValidator(5, 2, true).IsValidNumber("+123.12").Should().BeFalse();
-	    }
-
-	    [Test]
-	    public void IsValidNumber_ShouldBeFalse_IfValueIsNotNumber()
-	    {
-	        new NumberValidator(5, 2, true).IsValidNumber("aaa.12").Should().BeFalse();
-	        new NumberValidator(5, 2, true).IsValidNumber("123.aa").Should().BeFalse();
-	        new NumberValidator(5, 2, true).IsValidNumber("123a12").Should().BeFalse();
-	    }
-
-	    [Test]
-	    public void IsValidNumber_ShouldBeTrue_IfSeparatorIsСomma()
-	    {
-	        new NumberValidator(5, 2, true).IsValidNumber("123,12").Should().BeTrue();
-	    }
-
-	    [Test]
-	    public void IsValidNumber_ShouldBeFalse_IfNegativeNumberAndOnlyPositiveValidator()
-	    {
-	        new NumberValidator(5, 2, true).IsValidNumber("-12.12").Should().BeFalse();
-	    }
-
-	    [Test]
-	    public void IsValidNumber_ShouldBeTrue_IfNegativeNumberAndNotOnlyPositiveValidator()
-	    {
-	        new NumberValidator(5, 2).IsValidNumber("-12.12").Should().BeTrue();
-	    }
+		[TestCase(17, 2, true, "123.123", TestName = "IfNumberScaleBiggerThanValidatorScale")]
+		[TestCase(5, 2, true, "-12.12", TestName = "IfNegativeNumberAndOnlyPositiveValidator")]
+		[TestCase(5, 3, true, "1234.12", TestName = "IfNumberPrecisionBiggerThanValidatorPrecisionAndIntegerPartHasIncreased")]
+		[TestCase(5, 3, true, "123.123", TestName = "IfNumberPrecisionBiggerThanValidatorPrecisionAndFractionalPartHasIncreased")]
+		[TestCase(5, 3, true, "-123.12", TestName = "IfNumberPrecisionWithMinusBiggerThanValidatorPrecision")]
+		[TestCase(5, 3, true, "+123.12", TestName = "IfNumberPrecisionWithPlusBiggerThanValidatorPrecision")]
+		[TestCase(5, 3, true, "aaa.12", TestName = "IfIntegerPartContainsNotDigitSymbols")]
+		[TestCase(5, 3, true, "123.aa", TestName = "IfFractionalPartContainsNotDigitSymbols")]
+		[TestCase(5, 3, true, "123a12", TestName = "IfSeparatorIsNotDotOrComma")]
+		public void IsValidNumber_ShouldBeFalse_OnTheseInputArguments(int precision, int scale, bool onlyPositive, string numberLine)
+		{
+			new NumberValidator(precision, scale, onlyPositive).IsValidNumber(numberLine).Should().BeFalse();
+		}
 	}
 
 	public class NumberValidator
@@ -135,7 +71,7 @@ namespace HomeExercises
 			if (precision <= 0)
 				throw new ArgumentException("precision must be a positive number");
 			if (scale < 0 || scale >= precision)
-				throw new ArgumentException("scale must be a non-negative number less than precision");
+				throw new ArgumentException("precision must be a non-negative number less or equal than precision");
 			numberRegex = new Regex(@"^([+-]?)(\d+)([.,](\d+))?$", RegexOptions.IgnoreCase);
 		}
 
