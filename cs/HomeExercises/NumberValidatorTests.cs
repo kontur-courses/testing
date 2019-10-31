@@ -5,98 +5,58 @@ using NUnit.Framework;
 
 namespace HomeExercises
 {
+	[TestFixture]
 	public class NumberValidatorTests
 	{
-		[Test, Category("ConstructorTests")]
-		public void Constructor_Smokie()
+		[Category("ConstructorTests")]
+		[TestCase(1, 0, true, TestName = "OnPositivePrecisionAndNotNegativeScale")]
+		public void Constructor_ShouldNotThrowArgumentException(int precision, int scale, bool onlyPositive)
 		{
-			Action action = () => new NumberValidator(2, 1, true);
+			Action action = () => new NumberValidator(precision, scale, onlyPositive);
 			action.ShouldNotThrow<ArgumentException>();
 		}
-		[Test, Category("ConstructorTests")]
-		public void Constructor_ShouldThrowArgumentException_OnNegativeOrZeroPrecision()
+
+		[Category("ConstructorTests")]
+		[TestCase(-1, 1, true, TestName = "OnNegativePrecision")]
+		[TestCase(0, 1, true, TestName = "OnZeroPrecision")]
+		[TestCase(1, -1, true, TestName = "OnNegativeScale")]
+		[TestCase(1, 1, true, TestName = "OnPrecisionEqualToScale")]
+		[TestCase(1, 2, true, TestName = "OnPrecisionSmallerThanScale")]
+		public void Constructor_ShouldThrowArgumentException(int precision, int scale, bool onlyPositive)
 		{
-			Action action1 = () => new NumberValidator(-1, 2, true);
-			action1.ShouldThrow<ArgumentException>();
-			Action action2 = () => new NumberValidator(0, 2, true);
-			action2.ShouldThrow<ArgumentException>();
-		}
-		
-		[Test, Category("ConstructorTests")]
-		public void Constructor_ShouldThrowArgumentException_OnNegativeScale()
-		{
-			Action action = () => new NumberValidator(1, -1, true);
+			Action action = () => new NumberValidator(precision, scale, onlyPositive);
 			action.ShouldThrow<ArgumentException>();
 		}
 
-		[Test, Category("ConstructorTests")]
-		public void Constructor_ShouldThrowArgumentException_OnPrecisionBiggerThanScale()
+		[Category("IsValidNumberTests")]
+		[TestCase(1, 0, true, "a", ExpectedResult = false,
+			TestName = "ReturnsFalse_OnNotNumberArgument")]
+		[TestCase(3, 2, true, "0.0.0", ExpectedResult = false,
+			TestName = "ReturnsFalse_OnWrongNumberFormat")]
+		[TestCase(3, 1, true, "-0.0", ExpectedResult = false,
+			TestName = "ReturnsFalse_OnOnlyPositiveAndNegativeArgument")]
+		[TestCase(1, 0, true, "00", ExpectedResult = false,
+			TestName = "ReturnsFalse_OnNumberBiggerThanPrecision")]
+		[TestCase(2, 1, true, "+0.0", ExpectedResult = false,
+			TestName = "ReturnsFalse_OnNumberWithSignBiggerThanPrecision")]
+		[TestCase(2, 0, true, "0.0", ExpectedResult = false,
+			TestName = "ReturnsFalse_OnNumberFractionalPartBiggerThanScale")]
+		[TestCase(2, 1, true, null, ExpectedResult = false,
+			TestName = "ReturnsFalse_OnNullString")]
+		[TestCase(2, 1, true, "", ExpectedResult = false,
+			TestName = "ReturnsFalse_OnEmptyString")]
+		[TestCase(2, 1, true, "0.0", ExpectedResult = true,
+			TestName = "ReturnsTrue_OnValidNumberWithFractionalPart")]
+		[TestCase(1, 0, true, "0", ExpectedResult = true,
+			TestName = "ReturnsTrue_OnValidNumberWithoutFractionalPart")]
+		[TestCase(2, 1, true, "0,0", ExpectedResult = true,
+			TestName = "ReturnsTrue_OnValidNumberWithComma")]
+		[TestCase(3, 1, false, "-0.0", ExpectedResult = true,
+			TestName = "ReturnsTrue_OnValidNegativeNumber")]
+		public bool IsValidNumber(int precision, int scale, bool onlyPositive, string number)
 		{
-			Action action = () => new NumberValidator(1, 2, true);
-			action.ShouldThrow<ArgumentException>();
-		}
-
-		[Test, Category("IsValidNumberTests")]
-		public void IsValidNumber_ReturnsFalse_OnNotNumberArgument()
-		{
-			var nv = new NumberValidator(3, 2, true);
-			nv.IsValidNumber("a.sd").Should().Be(false);
-		}
-
-		[Test, Category("IsValidNumberTests")]
-		public void IsValidNumber_ReturnsFalse_OnOnlyPositiveAndNegativeArgument()
-		{
-			var nv = new NumberValidator(3, 2, true);
-            nv.IsValidNumber("-1.23").Should().Be(false);
-		}
-
-		[Test, Category("IsValidNumberTests")]
-		public void IsValidNumber_SameResult_OnPositiveWithPlusOrNot()
-		{
-			var nv = new NumberValidator(17, 10, true);
-            nv.IsValidNumber("+1.23").Should().Be(nv.IsValidNumber("1.23"));
-		}
-
-		[Test, Category("IsValidNumberTests")]
-		public void IsValidNumber_ReturnsFalse_OnNumberBiggerThanPrecision()
-		{
-			var nv = new NumberValidator(3, 2, true);
-            nv.IsValidNumber("00.00").Should().Be(false);
-		}
-		
-		[Test, Category("IsValidNumberTests")]
-		public void IsValidNumber_ReturnsFalse_OnNumberFractionalPartBiggerThanScale()
-		{
-			var nv = new NumberValidator(17, 2, true);
-			nv.IsValidNumber("0.000").Should().Be(false);
-		}
-		
-		[Test, Category("IsValidNumberTests")]
-		public void IsValidNumber_ReturnsFalse_OnNumberWithSignBiggerThanPrecision()
-		{
-			var nv = new NumberValidator(3, 2, true);
-			nv.IsValidNumber("+0.00").Should().Be(false);
-		}
-		
-		[Test, Category("IsValidNumberTests")]
-		public void IsValidNumber_ReturnsTrue_OnValidNumberWithFractionalPart()
-		{
-			var nv = new NumberValidator(4, 2, true);
-			nv.IsValidNumber("+0.00").Should().Be(true);
-		}
-
-		[Test, Category("IsValidNumberTests")]
-		public void IsValidNumber_ReturnsTrue_OnValidNumberWithoutFractionalPart()
-		{
-			var nv = new NumberValidator(4, 2, true);
-			nv.IsValidNumber("0").Should().Be(true);
-		}
-		
-		[Test, Category("IsValidNumberTests")]
-		public void IsValidNumber_WorksWithPointAndComma()
-		{
-			var nv = new NumberValidator(4, 2, true);
-			nv.IsValidNumber("0.01").Should().Be(nv.IsValidNumber("0,01"));
+			var nv = new NumberValidator(precision, scale, onlyPositive);
+			return nv.IsValidNumber(number);
 		}
 	}
 
