@@ -26,7 +26,8 @@ namespace HomeExercises
             ValidatorCreation.ShouldNotThrow<ArgumentException>();
         }
 
-        [TestCase(17, 2, true, "0.0", TestName = "BothPartsLesserThanLimits_ShouldBeValid")]
+        [TestCase(17, 2, true, "0.0", TestName = "dotAsDelimeter_ShouldBeValid")]
+        [TestCase(17, 2, true, "0,0", TestName = "commaAsDelimeter_ShouldBeValid")]
         [TestCase(17, 2, true, "00.00", TestName = "ScaleEqualLimits_ShouldBeValid")]
         [TestCase(4, 2, true, "00.00", TestName = "PrecisionEqualLimits_ShouldBeValid")]
         [TestCase(17, 2, true, "0", TestName = "OnlyIntPart_ShouldBeValid")]
@@ -55,8 +56,8 @@ namespace HomeExercises
             validator.IsValidNumber(number).Should().BeFalse();
         }
 
-        [TestCase(3, 2, true, "+0.00", ExpectedResult = false, TestName = "NumberWithSign_SignShouldBePartOfScale")]
-        [TestCase(4, 2, true, "+0.00", ExpectedResult = true, TestName = "NumberWithSign_SignShouldBePartOfScale")]
+        [TestCase(3, 2, true, "+0.00", ExpectedResult = false, TestName = "SignShouldBePartOfScale")]
+        [TestCase(4, 2, true, "+0.00", ExpectedResult = true, TestName = "SignShouldBePartOfScale")]
         public bool Test_NumberWithSign_SignShouldBePartOfScale(int precision, int scale, bool onlyPositive, string number)
         {
             return new NumberValidator(precision, scale, onlyPositive).IsValidNumber(number);
