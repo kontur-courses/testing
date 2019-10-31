@@ -16,7 +16,7 @@ namespace HomeExercises
 
 			actualTsar.ShouldBeEquivalentTo(expectedTsar, options => options.Excluding(
 				subjectInfo => subjectInfo.SelectedMemberInfo.Name == nameof(Person.Id)));
-        }
+		}
 
 		[Test]
 		[Description("Альтернативное решение. Какие у него недостатки?")]
