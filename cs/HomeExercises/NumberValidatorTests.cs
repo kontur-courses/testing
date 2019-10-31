@@ -41,6 +41,7 @@ namespace HomeExercises
 		[TestCase(17, 4, true, "17.24", TestName = "RandomValue")]
 		[TestCase(17, 4, true, "+1488", TestName = "ValueWithPlusSign")]
 		[TestCase(17, 4, false, "-0.1337", TestName = "NegativeValue")]
+		[TestCase(4, 0, true, "+1000", TestName = "ValueWithPlusSignAndBigLength")] // Пропустил этот тест в прошлый раз. Судя по документации, он должен проходить, но он падает.
         public void IsValidNumber_OnCorrectInput(int precision, int scale, bool onlyPositive, string value)
 		{
 			new NumberValidator(precision, scale, onlyPositive)
@@ -55,11 +56,11 @@ namespace HomeExercises
 		[TestCase(17, 4, true, "abcde.fg", TestName = "RandomString")]
 		[TestCase(17, 4, true, "", TestName = "EmptyString")]
 		[TestCase(17, 4, true, null, TestName = "NullString")]
-        public void IsValidNumber_OnIncorrectInput_WrongString(int precision, int scale, bool onlyPositive, string value)
+        public void IsValidNumber_OnIncorrectInput_WhenWrongFormat(int precision, int scale, bool onlyPositive, string value)
 		{
 			new NumberValidator(precision, scale, onlyPositive)
 				.IsValidNumber(value)
-				.Should().BeFalse("Given string is incorrect");
+				.Should().BeFalse("Given string is in wrong format");
         }
 
 
@@ -68,11 +69,11 @@ namespace HomeExercises
 		[TestCase(17, 4, true, "-0.0", TestName = "NegativeZeroWhenOnlyPositive")]
         [TestCase(17, 4, true, "-17.4", TestName = "NegativeValueWhenOnlyPositive")]
 		[TestCase(4, 3, true, "-17.40", TestName = "LengthWithSignMoreThanPrecision")]
-        public void IsValidNumber_OnIncorrectInput_WrongValue(int precision, int scale, bool onlyPositive, string value)
+        public void IsValidNumber_OnIncorrectInput_WhenWrongNumber(int precision, int scale, bool onlyPositive, string value)
 		{
 			new NumberValidator(precision, scale, onlyPositive)
 				.IsValidNumber(value)
-				.Should().BeFalse("Given value is incorrect");
+				.Should().BeFalse("Given number is incorrect");
         }
 	}
 

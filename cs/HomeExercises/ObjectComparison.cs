@@ -23,7 +23,7 @@ namespace HomeExercises
 			// указана прямо здесь, в тесте. Мы сразу узнаем точное место, на котором тест упал.
 			actualTsar.Should().BeEquivalentTo(expectedTsar,
 				options => options
-					.Excluding(person => person.SelectedMemberInfo.Name == "Id"));
+					.Excluding(person => person.SelectedMemberInfo.Name == nameof(Person.Id)));
 		}
 
 		[Test]
