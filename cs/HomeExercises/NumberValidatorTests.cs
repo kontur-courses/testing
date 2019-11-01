@@ -15,17 +15,10 @@ namespace HomeExercises
             
         }
 
-        [OneTimeSetUp]
-        public void Init()
-        {
-            longWrongString = RepeatChar('a', 20000);
-            longCorrectString = new String('1', 20000);
-
-        }
 
         private NumberValidator defaultNumberValidator;
-        private static string longWrongString;
-        private string longCorrectString;
+        private static string longWrongString =  new String('a', 20000);
+        private static string longCorrectString = new String('1', 20000);
         private Action ConstructNumberValidator(int precision, int? scale = null)
         {
                 return  () => new NumberValidator(precision, scale ?? 0);
@@ -38,17 +31,13 @@ namespace HomeExercises
                 result = function.DynamicInvoke();
 
         }
-        private string RepeatChar(char chr, int count)
-        {
-            return new String(chr, count);
 
-        }
 
         [TestCase(2, 1, TestName = "Positive scale is less then positive precision")]
         [TestCase(1, 0, TestName = "Zero scale")]
         [TestCase(1, TestName = "Positive precision, no scale")]
         [TestCase(int.MaxValue, int.MaxValue - 1, TestName = "Scale is max value of int, precision is positive and less then scale ")]
-        public void Constructor_OnCorrectArguments_DoesntThrowAnyExceptions(int precision, int? scale = null)
+        public void Constructor_DoesntThrowAnyExceptions_OnCorrectArguments(int precision, int? scale = null)
         {
             Action act = ConstructNumberValidator(precision, scale);
             act.ShouldNotThrow();
@@ -59,7 +48,7 @@ namespace HomeExercises
         [TestCase(1, -2, TestName = "Negative scale")]
         [TestCase(1, 2, TestName = "Scale is greater then precision")]
         [TestCase(1, 1, TestName = "Scale equals precision")]
-        public void Constructor_OnWrongArguments_ThrowsArgumentExceptions(int precision, int? scale = null)
+        public void Constructor_ThrowsArgumentExceptions_OnWrongArguments(int precision, int? scale = null)
         {
             Action act = ConstructNumberValidator(precision, scale);
             act.ShouldThrow<ArgumentException>();
@@ -73,7 +62,7 @@ namespace HomeExercises
         [TestCase(10, 5, false, "-1111.222", TestName = "Precision and scale are greater then numerals and minus")]       
         [TestCase(3, 2, false, "0.11", TestName = "Integer part is zero")]
         [TestCase(3, 2, false, "0,11", TestName = "Number contains comma")]
-        public void IsValid_OnCorrectNumber_ReturnsTrue(int precision, int scale, bool onlyPositive, string value)
+        public void IsValid_ReturnsTrue_OnCorrectNumber(int precision, int scale, bool onlyPositive, string value)
         {
             var validator = new NumberValidator(precision, scale, onlyPositive);
             validator.IsValidNumber(value).Should().BeTrue();
@@ -87,7 +76,7 @@ namespace HomeExercises
         [TestCase(4, 2, false, "-12.32", TestName = "Count of numerals and minus is greater then precision")]
         [TestCase(4, 3, false, "+12.32", TestName = "Count of numerals and plus is greater then precision")]
         [TestCase(3, 1, true, "-1.2", TestName = "Number should be positive but it is negative")]
-        public void IsValid_OnWrongNumber_ReturnsFalse(int precision, int scale, bool onlyPositive, string value)
+        public void IsValid_ReturnsFalse_OnWrongNumber(int precision, int scale, bool onlyPositive, string value)
         {
             var validator = new NumberValidator(precision, scale, onlyPositive);
             validator.IsValidNumber(value).Should().BeFalse();
@@ -104,36 +93,36 @@ namespace HomeExercises
         [TestCase("12.12.12", TestName = "String contains 2 dots")]
         [TestCase(".12", TestName = "Empty string before dot")]
         [TestCase("12.", TestName = "Empty string after dot")]
-        public void IsValide_OnWrongString_ReturnsFalse(string value)
+        public void IsValide_ReturnsFalse_OnWrongStrine(string value)
         {
             defaultNumberValidator.IsValidNumber(value).Should().BeFalse();
         }
 
         [Test, Timeout(10000)]
-        public void IsValid_On10000Iterations_WorksFast()
+        public void IsValid_WorksFast_On10000Iterations()
         {
             Func<bool> funct = () => defaultNumberValidator.IsValidNumber("-1.2");
             DoInCycle(10000, funct);
         }
 
         [Test, Timeout(10000)]
-        public void Constructor_On10000Iterations_WorksFast()
+        public void Constructor_WorksFast_On10000Iterations()
         {
             Func<NumberValidator> funct = () => new NumberValidator(10,2);
             DoInCycle(10000, funct);
         }
         [Test, Timeout(10000)]
-        public void IsValid_OnCoorectArgumentsLongerThen10000_WorksFast()
+        public void IsValid_WorksFast_OnCoorectArgumentsLongerThen10000()
         {
             defaultNumberValidator.IsValidNumber(longCorrectString);
         }
         [Test, Timeout(10000)]
-        public void IsValid_OnWrongArgumentsLongerThen10000_WorksFast()
+        public void IsValid_WorksFast_OnWrongArgumentsLongerThen10000()
         {
             defaultNumberValidator.IsValidNumber(longWrongString);
         }
         [Test]
-        public void IsValid_OnMoreThanOneNumbers_ReturnsTrue()
+        public void IsValid_ReturnsTrue_OnMoreThanOneNumbers()
         {
             var validator = new NumberValidator(10, 5);
             validator.IsValidNumber("0.2").Should().BeTrue();
@@ -151,7 +140,7 @@ namespace HomeExercises
         [TestCase(10001, 1, TestName = "Count of int numerals is more then 10000")]
         [TestCase(1, 10001, TestName = "Count of frac numerals is more then 10000")]
         [TestCase(10001, 10001, TestName = "Count of int and frac numerals is more then 10000")]
-        public void IsValid_OnNumbersLonger10000_ReturnTrue(int intPartCount, int fracPartCount)
+        public void IsValid_ReturnTrue_OnNumbersLonger10000(int intPartCount, int fracPartCount)
         {
             var value = new String('1', intPartCount) + "." + new String('1',fracPartCount);
             defaultNumberValidator.IsValidNumber(value).Should().BeTrue();
