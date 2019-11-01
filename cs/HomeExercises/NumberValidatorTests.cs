@@ -14,7 +14,8 @@ namespace HomeExercises
 		[TestCase(-1, 2, TestName = "NumberValidatorConstructor_ThrowArgumentException_WhenPrecisionIsNegative")]
 		[TestCase(1, -2, TestName = "NumberValidatorConstructor_ThrowArgumentException_WhenScaleIsNegative")]
 		[TestCase(1, 2, TestName = "NumberValidatorConstructor_ThrowArgumentException_WhenPrecisionLessThanScale")]
-		[TestCase(0, 0, TestName = "NumberValidatorConstructor_ThrowArgumentException_WhenPrecisionAndScaleEqualZero")]
+		[TestCase(0, 1, TestName = "NumberValidatorConstructor_ThrowArgumentException_WhenPrecisionEqualZero")]
+		[TestCase(2, 2, TestName = "NumberValidatorConstructor_ThrowArgumentException_WhenPrecisionEqualScale")]
 		public void СonstructorExeptions(int precision, int scale)
 		{
 			Action action = () => new NumberValidator(precision, scale);
