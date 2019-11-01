@@ -18,7 +18,7 @@ namespace HomeExercises
 				.ShouldThrow<ArgumentException>();
 		}
 
-		[TestCase(3, 2, true, TestName = "Precision and Scale not zero")]
+		[TestCase(3, 2, true, TestName = "Precision and scale not zero and scale < precision")]
 		[TestCase(10, 0, true, TestName = "Scale zero in constructor")]
 		public void Constructor_CorrectInput_NotThrowArgumentException(int precision, int scale, bool onlyPositive)
 		{
