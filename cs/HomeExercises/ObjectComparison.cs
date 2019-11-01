@@ -5,18 +5,23 @@ namespace HomeExercises
 {
     public class ObjectComparison
     {
+	    private Person actualTsar;
+        Person expectedTsar;
+        [SetUp]
+	    public void SetUp()
+	    {
+		     actualTsar = TsarRegistry.GetCurrentTsar();
+		    expectedTsar = new Person("Ivan IV The Terrible", 54, 170, 70,
+			    new Person("Vasili III of Russia", 28, 170, 60, null));
+	    }
+
         [Test]
         [Description("Проверка текущего царя")]
         [Category("ToRefactor")]
         public void CheckCurrentTsar()
         {
-            var actualTsar = TsarRegistry.GetCurrentTsar();
-
-            var expectedTsar = new Person("Ivan IV The Terrible", 54, 170, 70,
-                new Person("Vasili III of Russia", 28, 170, 60, null));
-
             actualTsar
-                .ShouldBeEquivalentTo(expectedTsar,
+                .Should().BeEquivalentTo(expectedTsar,
                     config => config
                         .Excluding(o => o.SelectedMemberInfo.Name == nameof(Person.Id)));
         }
@@ -37,6 +42,8 @@ namespace HomeExercises
             second.Parent = second;
             //4. не понятно какие поля учавствуют в сравнении а какие нет
             //5. при появлении новых полей нужно переписывать метод
+			//6.Информация возвращаемая данным тестом не дает понимание где и как произошла ошибка
+			//а значит и не совпадение выявить сложно Экспектед тру бат вос фолс не очень информативно
 
             var actualTsar = TsarRegistry.GetCurrentTsar();
             var expectedTsar = new Person("Ivan IV The Terrible", 54, 170, 70,

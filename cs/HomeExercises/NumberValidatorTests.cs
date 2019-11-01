@@ -5,71 +5,31 @@ using NUnit.Framework;
 
 namespace HomeExercises
 {
+    [TestFixture]
     public class NumberValidatorTests
     {
-        public class NumberValidator_Constructor_Tests
+        [Test]
+        [TestCase(0, 1, TestName = "OnZeroPrecision")]
+        [TestCase(4, -1, TestName = "OnNegativeScale")]
+        [TestCase(-2, 1, TestName = "OnNegativePrecision")]
+        [TestCase(4, 4, TestName = "OnScaleSameAsPrecision")]
+        [TestCase(4, 5, TestName = "OnScaleBiggerThanPrecision")]
+        public void Ctor_ThrowArgumentException_WhenIncorrectScaleOrPrecision(int precision, int scale)
         {
-            [Test]
-
-            [TestCase(4, 1, false, TestName = "NotThrowAnything_AtPositivePrecision_PositiveScale_OnlyPositiveFalse")]
-            [TestCase(4, 0, false, TestName = "NotThrowAnything_AtPositivePrecision_ZeroScale_OnlyPositiveFalse")]
-            [TestCase(4, 0, true, TestName = "NotThrowAnything_AtPositivePrecision_ZeroScale_OnlyPositiveTrue")]
-            public void Constructor_WithThreeCorrectArguments(int precision, int scale, bool onlyPositive)
-            {
-                Action action = () => new NumberValidator(precision, scale, onlyPositive);
-                action.ShouldNotThrow();
-            }
-
-            [TestCase(4, 1)]
-            public void Constructor_NotThrowAnything_WithTwoCorrectArguments(int precision, int scale)
-            {
-                Action action = () => new NumberValidator(precision, scale);
-                action.ShouldNotThrow();
-            }
-
-            [TestCase(4)]
-            public void Constructor_NotThrowAnything_WithOneCorrectArguments(int precision)
-            {
-                Action action = () => new NumberValidator(precision);
-                action.ShouldNotThrow();
-            }
-
-            [Test]
-            [TestCase(0, 1, TestName = "ThrowArgumentException_OnZeroPrecision")]
-            [TestCase(-2, 1, TestName = "ThrowArgumentException_OnNegativePrecision")]
-            [TestCase(4, -1, TestName = "ThrowArgumentException_OnNegativeScale")]
-            [TestCase(4, 5, TestName = "ThrowArgumentException_OnScaleBiggerThanPrecision")]
-            [TestCase(4, 4, TestName = "ThrowArgumentException_OnScaleSameAsPrecision")]
-            public void Constructor_WhenIncorrectScaleOrPrecision(int precision, int scale)
-            {
-                Action action = () => new NumberValidator(precision, scale);
-                action.ShouldThrow<ArgumentException>();
-            }
+            Action action = () => new NumberValidator(precision, scale);
+            action.Should().Throw<ArgumentException>();
         }
 
-
-        public class NumberValidator_IsValidNumber_Tests
+        public class IsValidNumber_Tests
         {
-            [Test]
-            [TestCase("-1", TestName = "OnlyPositive_IsNotStatic")]
-            [TestCase("1.0", TestName = "Scale_IsNotStatic")]
-            [TestCase("1000", TestName = "Precision_IsNotStatic")]
-            public void Validator_ShouldNotHave_StaticFields(string value)
-            {
-                var first = new NumberValidator(2, 0, true);
-                var second = new NumberValidator(30, 10, false);
-                first.IsValidNumber(value).Should().BeFalse();
-            }
-
-            [Test]
-            [TestCase(null, TestName = "ReturnFalse_AtNullString")]
-            [TestCase("", TestName = "ReturnFalse_AtEmptyString")]
-            [TestCase("str", TestName = "ReturnFalse_AtStringOfLetters")]
-            [TestCase("12r", TestName = "ReturnFalse_AtNumberWithLetters")]
-            [TestCase("12;3", TestName = "ReturnFalse_AtStringWithWrongSeparator")]
-            [TestCase("-+1", TestName = "ReturnFalse_AtTwoSignedNumber")]
-            [TestCase("   ", TestName = "ReturnFalse_AtWhitespacesString")]
-            public void IsValidNumber_ReturnFalse_AtInputWithNonNumbersOrNotExpectedSymbols(string value)
+            [TestCase(null, TestName = "String_IsNull")]
+            [TestCase("", TestName = "String_IsEmpty")]
+            [TestCase("str", TestName = "String_ContainsLetters")]
+            [TestCase("12r", TestName = "Number_ContainsLetters")]
+            [TestCase("12;3", TestName = "String_ContainsWrongSeparator")]
+            [TestCase("-+1", TestName = "Number_IsTwoSigned")]
+            [TestCase("   ", TestName = "String_IsWhiteSpaces")]
+            public void NonZeroPrecision_NonZeroScale_OnlyPositive_ReturnFalse_When(string value)
             {
                 new NumberValidator(10, 5)
                     .IsValidNumber(value)
@@ -77,61 +37,50 @@ namespace HomeExercises
                     .BeFalse();
             }
 
-            [Test]
-            [TestCase("0", true, TestName = "ReturnTrue_OnZero")]
-            [TestCase("1", true, TestName = "ReturnTrue_OnNumberWithLength_ThatLessThanPrecision")]
-            [TestCase("123", true, TestName = "ReturnTrue_OnNumberWithLength_ThatEqualsPrecision")]
-            [TestCase("1234", false, TestName = "ReturnFalse_OnNumberWithLength_ThatBiggerThanPrecision")]
-            public void IsValidNumber_WithNonZeroPrecisionAndZeroScale(string value, bool expectedResult)
+            [TestCase("0", TestName = "WhenNumber_IsZero")]
+            [TestCase("+0", TestName = "WhenZero_ContainsPlus")]
+            [TestCase("+1.2", TestName = "WhenNumber_IsPositive")]
+            [TestCase("1", TestName = "WhenLengthOfNumber__ThatLessThanPrecision")]
+            [TestCase("123", TestName = "WhenLengthOfNumber__ThatEqualsPrecision")]
+            [TestCase("12.0", TestName = "WhenLengthOfNumber_EqualsPrecision_AndPointSeparator_IsNotCountingInLength")]
+            [TestCase("12,0", TestName = "WhenLengthOfNumber_EqualsPrecision_AndCommaSeparator_IsNotCountingInLength")]
+            [TestCase("0.0", TestName = "WhenNumber_ContainsZerosInIntegerAndDecimalParts")]
+            [TestCase("1.23", TestName = "WhenScaleEquals_ToDecimalPartLength")]
+            [TestCase("1.2", TestName = "WhenScaleLess_ThanDecimalPartLength")]
+
+            public void NonZeroPrecision_NonZeroScale_NotOnlyPositive_ReturnTrue(string value)
             {
-                new NumberValidator(3)
-                    .IsValidNumber(value)
-                    .Should()
-                    .Be(expectedResult);
+                var numberValidator = new NumberValidator(3, 2, true);
+                numberValidator
+	                .IsValidNumber(value)
+	                .Should()
+	                .BeTrue();
             }
 
-            [Test]
-            [TestCase("0.0", true, TestName = "ReturnTrue_OnNumberOfZeros")]
-            [TestCase("1.23", true, TestName = "ReturnTrue_WhenScaleEquals_ToDecimalPartLength")]
-            [TestCase("1.2", true, TestName = "ReturnTrue_WhenScaleLess_ThanDecimalPartLength")]
-            [TestCase("1.234", false, TestName = "ReturnFalse_WhenScaleLess_ThanDecimalPartLength")]
-            [TestCase(".12", false, TestName = "ReturnFalse_WhenIntegerPartIsEmptyAndNumberContainsSeparator")]
-            [TestCase("123.", false, TestName = "ReturnFalse_WhenDecimalPartIsEmptyButNumberContainsSeparator")]
-            [TestCase("12.0", true, TestName = "ReturnTrue_WhenLengthOfNumberEqualsPrecision_AndPointSeparator_IsNotCountingInLength")]
-            [TestCase("12,0", true, TestName = "ReturnTrue_WhenLengthOfNumberEqualsPrecision_AndCommaSeparator_IsNotCountingInLength")]
-            public void IsValidNumber_WithNonZeroPrecisionAndScale(string value, bool expectedResult)
+            [TestCase("1234", false, TestName = "WhenLengthOfNumber_BiggerThanPrecision")]
+            [TestCase("123.", false, TestName = "WhenDecimalPart_Empty_AndNumberContainsSeparator")]
+            [TestCase("+123", false, TestName = "WhenLengthOfNumber_EqualsPrecision_ButNumberContainsPlus")]
+            public void NonZeroPrecision_ZeroScale_NotOnlyPositive_ReturnFalse(string value, bool expectedResult)
             {
-                new NumberValidator(3, 2)
+                var numberValidator = new NumberValidator(3);
+                numberValidator
                     .IsValidNumber(value)
                     .Should()
-                    .Be(expectedResult);
+                    .BeFalse();
             }
 
-            [Test]
-            [TestCase("+1.2", true, TestName = "ReturnTrue_OnPositiveNumber")]
-            [TestCase("+0", true, TestName = "ReturnTrue_OnZeroWithPositiveSign")]
-            [TestCase("-0", false, TestName = "ReturnFalse_OnZeroWithNegativeSign")]
-            [TestCase("-1.2", false, TestName = "ReturnFalse_OnNegativeNumber")]
-            [TestCase("+123", false, TestName = "ReturnFalse_WhenLengthOfNumberEqualsPrecision_AndSign_IsCountingInLength")]
-            [TestCase("+123", false, TestName = "ReturnFalse_WhenLengthOfNumberEqualsPrecision_AndSign_IsCountingInLength")]
-            public void IsValidNumber_WithOnlyPositive(string value, bool expectedResult)
+            [TestCase("-1.2", TestName = "Number_IsNegative")]
+            [TestCase("-0", TestName = "Number_IsZeroWithNegativeSign")]
+            [TestCase("1.234", TestName = "ScaleLess_ThanDecimalPartLength")]
+            [TestCase(".12", TestName = "IntegerPart_Empty_AndNumberContainsSeparator")]
+            [TestCase("-123", TestName = "LengthOfNumber_EqualsPrecision_ButNumberContainsMinus")]
+            public void NonZeroPrecision_NonZeroScale_OnlyPositive_ReturnFalse(string value)
             {
-                new NumberValidator(3, 1, true)
+                var numberValidator = new NumberValidator(3, 2, true);
+                numberValidator
                     .IsValidNumber(value)
                     .Should()
-                    .Be(expectedResult);
-            }
-            [Test]
-            [TestCase("+1.2", TestName = "ReturnTrue_OnPositiveNumber")]
-            [TestCase("+0", TestName = "ReturnTrue_OnZeroWithPositiveSign")]
-            [TestCase("-0", TestName = "ReturnTrue_OnZeroWithNegativeSign")]
-            [TestCase("-1.2", TestName = "ReturnTrue_OnNegativeNumber")]
-            public void IsValidNumber_With(string value)
-            {
-                new NumberValidator(3, 1)
-                    .IsValidNumber(value)
-                    .Should()
-                    .BeTrue();
+                    .BeFalse();
             }
         }
     }
