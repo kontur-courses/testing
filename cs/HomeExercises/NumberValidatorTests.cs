@@ -11,7 +11,7 @@ namespace HomeExercises
         [TestCase(-1, 2, true, TestName = "NegativePrecision_ShouldThrowArgumentException")]
         [TestCase(1, -1, true, TestName = "NegativeScale_ShouldThrowArgumentException")]
         [TestCase(1, 2, true, TestName = "ScaleLessThanPrecision_ShouldThrowArgumentException")]
-        public void NumberValidatorCreation_Throws(int precision, int scale, bool onlyPositive)
+        public void Creation_Throws(int precision, int scale, bool onlyPositive)
         {
             Action ValidatorCreation = () => new NumberValidator(precision, scale, onlyPositive);
             ValidatorCreation.ShouldThrow<ArgumentException>();
@@ -20,7 +20,7 @@ namespace HomeExercises
         [TestCase(2, 1, true, TestName = "PositiveScaleAndPrecision_ShouldNotThrowException")]
         [TestCase(100, 30, true, TestName = "PositiveScaleAndPrecision_ShouldNotThrowException")]
         [TestCase(1, 0, true, TestName = "ZeroScale_ShouldNotThrowException")]
-        public void NumberValidatorCreation_ShouldNotThrows(int precision, int scale, bool onlyPositive)
+        public void Creation_ShouldNotThrows(int precision, int scale, bool onlyPositive)
         {
             Action ValidatorCreation = () => new NumberValidator(precision, scale, onlyPositive);
             ValidatorCreation.ShouldNotThrow<ArgumentException>();
@@ -32,7 +32,7 @@ namespace HomeExercises
         [TestCase(4, 2, true, "00.00", TestName = "PrecisionEqualLimits_ShouldBeValid")]
         [TestCase(17, 2, true, "0", TestName = "OnlyIntPart_ShouldBeValid")]
         [TestCase(10, 5, false, "-1.0", TestName = "InputNegative_ShouldBeValidIfValidatorAcceptNegative")]
-        public void Test_IsNumberValid_ValidCases(int precision, int scale, bool onlyPositive, string number)
+        public void IsNumberValid_ValidCases(int precision, int scale, bool onlyPositive, string number)
         {
             var validator = new NumberValidator(precision, scale, onlyPositive);
             validator.IsValidNumber(number).Should().BeTrue();
@@ -50,7 +50,7 @@ namespace HomeExercises
         [TestCase(10, 5, true, "1.23asd", TestName = "IfContainLetters_ShouldNotBeValid")]
         [TestCase(10, 5, false, "-+1.23", TestName = "MultipleSign_ShouldNotBeValid")]
         [TestCase(10, 5, false, "1.-23", TestName = "SignInFracPart_ShouldNotBeValid")]
-        public void Test_IsNumberValid_NotValidCases(int precision, int scale, bool onlyPositive, string number)
+        public void IsNumberValid_NotValidCases(int precision, int scale, bool onlyPositive, string number)
         {
             var validator = new NumberValidator(precision, scale, onlyPositive);
             validator.IsValidNumber(number).Should().BeFalse();
@@ -58,7 +58,7 @@ namespace HomeExercises
 
         [TestCase(3, 2, true, "+0.00", ExpectedResult = false, TestName = "SignShouldBePartOfScale")]
         [TestCase(4, 2, true, "+0.00", ExpectedResult = true, TestName = "SignShouldBePartOfScale")]
-        public bool Test_NumberWithSign_SignShouldBePartOfScale(int precision, int scale, bool onlyPositive, string number)
+        public bool NumberWithSign_SignShouldBePartOfScale(int precision, int scale, bool onlyPositive, string number)
         {
             return new NumberValidator(precision, scale, onlyPositive).IsValidNumber(number);
         }
