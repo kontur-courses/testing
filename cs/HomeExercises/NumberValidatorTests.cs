@@ -9,12 +9,12 @@ namespace HomeExercises
     public class NumberValidatorTests
     {
         [Test]
-        [TestCase(0, 1, TestName = "OnZeroPrecision")]
-        [TestCase(4, -1, TestName = "OnNegativeScale")]
-        [TestCase(-2, 1, TestName = "OnNegativePrecision")]
-        [TestCase(4, 4, TestName = "OnScaleSameAsPrecision")]
-        [TestCase(4, 5, TestName = "OnScaleBiggerThanPrecision")]
-        public void Ctor_ThrowArgumentException_WhenIncorrectScaleOrPrecision(int precision, int scale)
+        [TestCase(0, 1, TestName = "Precision_IsZero")]
+        [TestCase(4, -1, TestName = "Scale_IsNegative")]
+        [TestCase(-2, 1, TestName = "Precision_IsNegative")]
+        [TestCase(4, 4, TestName = "Scale_Equals_Precision")]
+        [TestCase(4, 5, TestName = "Scale_Bigger_ThanPrecision")]
+        public void Ctor_WIthIncorrectScaleOrPrecision_ThrowArgumentException_When(int precision, int scale)
         {
             Action action = () => new NumberValidator(precision, scale);
             action.Should().Throw<ArgumentException>();
@@ -22,59 +22,49 @@ namespace HomeExercises
 
         public class IsValidNumber_Tests
         {
-            [TestCase(null, TestName = "String_IsNull")]
-            [TestCase("", TestName = "String_IsEmpty")]
-            [TestCase("str", TestName = "String_ContainsLetters")]
-            [TestCase("12r", TestName = "Number_ContainsLetters")]
-            [TestCase("12;3", TestName = "String_ContainsWrongSeparator")]
+            [TestCase(null, TestName = "Number_IsNull")]
+            [TestCase("", TestName = "Number_IsEmpty")]
             [TestCase("-+1", TestName = "Number_IsTwoSigned")]
-            [TestCase("   ", TestName = "String_IsWhiteSpaces")]
-            public void NonZeroPrecision_NonZeroScale_OnlyPositive_ReturnFalse_When(string value)
+            [TestCase(" ", TestName = "Number_IsWhiteSpaces")]
+            [TestCase("sr", TestName = "Number_ContainsLetters")]
+            [TestCase("1r", TestName = "Number_ContainsLetters")]
+            [TestCase("1;3", TestName = "Number_ContainsWrongSeparator")]
+            [TestCase("1234", TestName = "LengthOfNumber_BiggerThanPrecision")]
+            [TestCase("123.", TestName = "DecimalPart_Empty_AndNumberContainsSeparator")]
+            [TestCase("+123", TestName = "LengthOfNumber_EqualsPrecision_ButNumberContainsPlus")]
+            public void NonZeroPrecision_NonZeroScale_NotOnlyPositive_ReturnFalse_When(string value)
             {
-                new NumberValidator(10, 5)
-                    .IsValidNumber(value)
+	            var numberValidator = new NumberValidator(3, 2);
+	            numberValidator.IsValidNumber(value)
                     .Should()
                     .BeFalse();
             }
 
-            [TestCase("0", TestName = "WhenNumber_IsZero")]
-            [TestCase("+0", TestName = "WhenZero_ContainsPlus")]
-            [TestCase("+1.2", TestName = "WhenNumber_IsPositive")]
-            [TestCase("1", TestName = "WhenLengthOfNumber__ThatLessThanPrecision")]
-            [TestCase("123", TestName = "WhenLengthOfNumber__ThatEqualsPrecision")]
-            [TestCase("12.0", TestName = "WhenLengthOfNumber_EqualsPrecision_AndPointSeparator_IsNotCountingInLength")]
-            [TestCase("12,0", TestName = "WhenLengthOfNumber_EqualsPrecision_AndCommaSeparator_IsNotCountingInLength")]
-            [TestCase("0.0", TestName = "WhenNumber_ContainsZerosInIntegerAndDecimalParts")]
-            [TestCase("1.23", TestName = "WhenScaleEquals_ToDecimalPartLength")]
-            [TestCase("1.2", TestName = "WhenScaleLess_ThanDecimalPartLength")]
-
-            public void NonZeroPrecision_NonZeroScale_NotOnlyPositive_ReturnTrue(string value)
+            [TestCase("0", TestName = "Number_IsZero")]
+            [TestCase("+0", TestName = "Zero_ContainsPlus")]
+            [TestCase("+1.2", TestName = "Number_IsPositive")]
+            [TestCase("0.0", TestName = "Number_ContainsZerosInIntegerAndDecimalParts")]
+            [TestCase("1.23", TestName = "DecimalPartLength_Equals_Scale")]
+            [TestCase("1.2", TestName = "DecimalPartLength_Bigger_Scale")]
+            [TestCase("1", TestName = "LengthOfNumber_Less_Precision")]
+            [TestCase("123", TestName = "LengthOfNumber_Equals_Precision")]
+            [TestCase("12.0", TestName = "LengthOfNumber_Equals_Precision_AndPointSeparator_IsNotCountingInLength")]
+            [TestCase("12,0", TestName = "LengthOfNumber_Equals_Precision_AndCommaSeparator_IsNotCountingInLength")]
+            public void NonZeroPrecision_NonZeroScale_NotOnlyPositive_ReturnTrue_When(string value)
             {
                 var numberValidator = new NumberValidator(3, 2, true);
                 numberValidator
-	                .IsValidNumber(value)
-	                .Should()
-	                .BeTrue();
-            }
-
-            [TestCase("1234", false, TestName = "WhenLengthOfNumber_BiggerThanPrecision")]
-            [TestCase("123.", false, TestName = "WhenDecimalPart_Empty_AndNumberContainsSeparator")]
-            [TestCase("+123", false, TestName = "WhenLengthOfNumber_EqualsPrecision_ButNumberContainsPlus")]
-            public void NonZeroPrecision_ZeroScale_NotOnlyPositive_ReturnFalse(string value, bool expectedResult)
-            {
-                var numberValidator = new NumberValidator(3);
-                numberValidator
                     .IsValidNumber(value)
                     .Should()
-                    .BeFalse();
+                    .BeTrue();
             }
 
             [TestCase("-1.2", TestName = "Number_IsNegative")]
             [TestCase("-0", TestName = "Number_IsZeroWithNegativeSign")]
-            [TestCase("1.234", TestName = "ScaleLess_ThanDecimalPartLength")]
+            [TestCase("1.234", TestName = "DecimalPartLength_Bigger_Scale")]
             [TestCase(".12", TestName = "IntegerPart_Empty_AndNumberContainsSeparator")]
-            [TestCase("-123", TestName = "LengthOfNumber_EqualsPrecision_ButNumberContainsMinus")]
-            public void NonZeroPrecision_NonZeroScale_OnlyPositive_ReturnFalse(string value)
+            [TestCase("-123", TestName = "LengthOfNumber_Equals_Precision_ButNumberContainsMinus")]
+            public void NonZeroPrecision_NonZeroScale_OnlyPositive_ReturnFalse_When(string value)
             {
                 var numberValidator = new NumberValidator(3, 2, true);
                 numberValidator
