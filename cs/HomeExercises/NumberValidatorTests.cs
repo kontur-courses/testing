@@ -17,8 +17,7 @@ namespace HomeExercises
 		{
 			Action action = () => new NumberValidator(precision, scale, onlyPositive);
 			action
-				.ShouldThrow<ArgumentException>()
-				.WithMessage("precision must be a positive number");
+				.ShouldThrow<ArgumentException>();
         }
 
         [TestCase(5, 2, true, TestName = "With OnlyPositive flag")]
