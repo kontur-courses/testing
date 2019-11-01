@@ -23,11 +23,11 @@ namespace HomeExercises
             //Перепишите код на использование Fluent Assertions.
                         actualTsar.ShouldBeEquivalentTo(expectedTsar, options =>
                 options
-                        .Including(f => f.SelectedMemberPath.EndsWith("Name")
-                        || f.SelectedMemberPath.EndsWith("Age")
-                        || f.SelectedMemberPath.EndsWith("Height")
-                        || f.SelectedMemberPath.EndsWith("Weight")
-                        || f.SelectedMemberPath.EndsWith("Parent")
+                        .Including(f => f.SelectedMemberPath == "HomeExercises.Person.Name"
+                        || f.SelectedMemberPath == "HomeExercises.Person.Age"
+                        || f.SelectedMemberPath == "HomeExercises.Person.Height"
+                        || f.SelectedMemberPath == "HomeExercises.Person.Weight"
+                        || f.SelectedMemberPath == "HomeExercises.Person.Parent"
                         || f.SelectedMemberDescription.Contains("Property")));
 
         }
@@ -44,10 +44,7 @@ namespace HomeExercises
             // Какие недостатки у такого подхода? 
             /* 1) При таком подходе мы не получаем информацию о том, где конкретно произошла ошибка
              * и в каких полях/свойствах у нас появились несовпадения.
-             * 2) Также рекурсивный метод 
-             * может привести к ошибке StackOverflowException. FluentAssertions же не даёт рекурсии
-             * опуститься глубже 10 шагов, если мы явно этого не разрешим.
-             * 3) При расширении класса Person нам придётся дописывать метод, что ухудшит его читаемость
+             * 2) При расширении класса Person нам придётся дописывать метод, что ухудшит его читаемость
             */
             Assert.True(AreEqual(actualTsar, expectedTsar));
 		}
