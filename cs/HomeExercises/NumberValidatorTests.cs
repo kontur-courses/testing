@@ -31,7 +31,11 @@ namespace HomeExercises
         [TestCase(17, 2, true, "00.00", TestName = "ScaleEqualLimits_ShouldBeValid")]
         [TestCase(4, 2, true, "00.00", TestName = "PrecisionEqualLimits_ShouldBeValid")]
         [TestCase(17, 2, true, "0", TestName = "OnlyIntPart_ShouldBeValid")]
+        [TestCase(10, 5, false, "+1.0", TestName = "PlusAsSign_ShouldBeValid")]
         [TestCase(10, 5, false, "-1.0", TestName = "InputNegative_ShouldBeValidIfValidatorAcceptNegative")]
+        [TestCase(30, 15, true, "00000000000000.00000000000000", TestName = "NumbersGreaterThanInt_ShouldBeValid")]
+        [TestCase(10, 5, false, "0001.0001", TestName = "excessZeroesInIntPart_ShouldBeValid")]
+        [TestCase(10, 5, false, "0.10000", TestName = "excessZeroesInFracPart_ShouldBeValid")]
         public void IsNumberValid_ValidCases(int precision, int scale, bool onlyPositive, string number)
         {
             var validator = new NumberValidator(precision, scale, onlyPositive);
@@ -44,6 +48,7 @@ namespace HomeExercises
         [TestCase(3, 2, true, "00.00", TestName = "ScaleGreaterThanLimits_ShouldNotBeValid")]
         [TestCase(17, 2, true, "0.000", TestName = "PrecisionGreaterThanLimits_ShouldNotBeValid")]
         [TestCase(17, 2, true, "-1.0", TestName = "InputNegative_ShouldNotBeValidIfValidatorNotAcceptNegative")]
+        [TestCase(10, 5, false, "1.0.0", TestName = "TwoDelimeters_ShouldNotBeValid")]
         [TestCase(10, 5, true, "a.sd", TestName = "NotNumbers_ShouldNotBeValid")]
         [TestCase(10, 5, true, "ф.ыв", TestName = "NotNumbers_ShouldNotBeValid")]
         [TestCase(10, 5, true, "\n.\n\n", TestName = "NotNumbers_ShouldNotBeValid")]
