@@ -8,16 +8,29 @@ namespace HomeExercises
 {
 	public class NumberValidatorTests
 	{
-        private readonly NumberValidator defaultNumberValidator = new NumberValidator(int.MaxValue, int.MaxValue - 1, false);
+
+        [SetUp]
+        public void InitEvery()
+        { defaultNumberValidator = new NumberValidator(int.MaxValue, int.MaxValue - 1, false);
+            
+        }
+
+        [OneTimeSetUp]
+        public void Init()
+        {
+            longWrongString = RepeatChar('a', 20000);
+            longCorrectString = new String('1', 20000);
+
+        }
+
+        private NumberValidator defaultNumberValidator;
+        private static string longWrongString;
+        private string longCorrectString;
         private Action ConstructNumberValidator(int precision, int? scale = null)
         {
-            if (scale != null)
-            {
-                return  () => new NumberValidator(precision, (int)scale, true);
-            }
-            else
-                return () => new NumberValidator(precision);
+                return  () => new NumberValidator(precision, scale ?? 0);
         }
+
         private void DoInCycle(int count, Delegate function)
         {
             Object result;
@@ -25,7 +38,11 @@ namespace HomeExercises
                 result = function.DynamicInvoke();
 
         }
+        private string RepeatChar(char chr, int count)
+        {
+            return new String(chr, count);
 
+        }
 
         [TestCase(2, 1, TestName = "Positive scale is less then positive precision")]
         [TestCase(1, 0, TestName = "Zero scale")]
@@ -105,6 +122,16 @@ namespace HomeExercises
             Func<NumberValidator> funct = () => new NumberValidator(10,2);
             DoInCycle(10000, funct);
         }
+        [Test, Timeout(10000)]
+        public void IsValid_OnCoorectArgumentsLongerThen10000_WorksFast()
+        {
+            defaultNumberValidator.IsValidNumber(longCorrectString);
+        }
+        [Test, Timeout(10000)]
+        public void IsValid_OnWrongArgumentsLongerThen10000_WorksFast()
+        {
+            defaultNumberValidator.IsValidNumber(longWrongString);
+        }
         [Test]
         public void IsValid_OnMoreThanOneNumbers_ReturnsTrue()
         {
@@ -114,7 +141,7 @@ namespace HomeExercises
         }
 
         [Test]
-        public void IsValid_MoreThanOneValidator_ReturnsTrue()
+        public void IsValid_WorksCorrect_WithMoreThanOneValidatorCreated()
         {
             var validator1 = new NumberValidator(2, 1, true);
             var validator2 = new NumberValidator(10, 5);
