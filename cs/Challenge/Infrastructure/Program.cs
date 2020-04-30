@@ -58,7 +58,7 @@ namespace Challenge.Infrastructure
             }
             catch(Exception e)
             {
-                Console.WriteLine(e.Message);
+                Console.WriteLine(e);
             }
         }
 
