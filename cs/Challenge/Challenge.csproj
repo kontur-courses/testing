@@ -143,4 +143,7 @@
     </PropertyGroup>
     <Error Condition="!Exists('..\packages\Microsoft.Bcl.Build.1.0.21\build\Microsoft.Bcl.Build.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Microsoft.Bcl.Build.1.0.21\build\Microsoft.Bcl.Build.targets'))" />
   </Target>
+  <Target Name="AfterBuild">
+    <Copy SourceFiles="app.config" DestinationFiles="$(TargetDir)\Challenge.exe.config" Condition="!Exists('$(TargetDir)\Challenge.exe.config')" />
+  </Target>
 </Project>
