@@ -10,13 +10,12 @@ describe("Stack", () => {
         });
 
         it("pushes items to empty stack", () => {
-            const stack = new Stack([1, 2, 3]);
+            const stack = new Stack();
 
-            assert.equal(stack.count(), 3);
-            assert.equal(stack.pop(), 3);
-            assert.equal(stack.pop(), 2);
-            assert.equal(stack.pop(), 1);
-            assert.equal(stack.count(), 0);
+			stack.push(1);
+			stack.push(2);
+
+            assert.equal(stack.count(), 2);
         });
     });
 
@@ -45,12 +44,33 @@ describe("Stack", () => {
             assert.throws(() => { stack.pop(); }, "Stack is empty")
         });
 
+        it("pop items from stack", () => {
+            const stack = new Stack([1, 2, 3]);
+
+            assert.equal(stack.count(), 3);
+            assert.equal(stack.pop(), 3);
+            assert.equal(stack.pop(), 2);
+            assert.equal(stack.pop(), 1);
+            assert.equal(stack.count(), 0);
+        });
+
         it("returns last pushed item", () => {
             const stack = new Stack([1, 2, 3]);
 
             stack.push(42);
 
             assert.equal(stack.pop(), 42);
+        });
+    });
+
+    describe("peek", () => {
+        it("peek not delete items from stack", () => {
+            const stack = new Stack([1, 2]);
+
+            assert.equal(stack.count(), 2);
+            assert.equal(stack.peek(), 2);
+            assert.equal(stack.peek(), 2);
+            assert.equal(stack.count(), 2);
         });
     });
 });
