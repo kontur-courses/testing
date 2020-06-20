@@ -19,6 +19,17 @@ namespace Samples.Specifications
 		[Test]
 		public void Constructor_PushesItemsToEmptyStack()
 		{
+			var stack = new Stack<int>();
+			
+			stack.Push(1);
+			stack.Push(2);
+			
+			Assert.AreEqual(2, stack.Count);
+		}
+
+		[Test]
+		public void Constructor_PopItemsFromStack()
+		{
 			var stack = new Stack<int>(new[] { 1, 2, 3 });
 
 			Assert.AreEqual(3, stack.Count);
@@ -26,6 +37,17 @@ namespace Samples.Specifications
 			Assert.AreEqual(2, stack.Pop());
 			Assert.AreEqual(1, stack.Pop());
 			Assert.AreEqual(0, stack.Count);
+		}
+
+		[Test]
+		public void Constructor_PeekNotDeleteItemsFromStack()
+		{
+			var stack = new Stack<int>(new[] { 1, 2 });
+
+			Assert.AreEqual(2, stack.Count);
+			Assert.AreEqual(2, stack.Peek());
+			Assert.AreEqual(2, stack.Peek());
+			Assert.AreEqual(2, stack.Count);
 		}
 
 		[Test]
