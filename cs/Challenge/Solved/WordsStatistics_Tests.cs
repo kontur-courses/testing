@@ -50,7 +50,7 @@ namespace Challenge.Solved
 			wordsStatistics.AddWord("bbbbbbbbbb");
 			wordsStatistics.AddWord("bbbbbbbbbb");
 			wordsStatistics.GetStatistics().Select(t => t.Word)
-				.ShouldBeEquivalentTo(new[] {"bbbbbbbbbb", "aaaaaaaaaa"},
+				.Should().BeEquivalentTo(new[] {"bbbbbbbbbb", "aaaaaaaaaa"},
 					options => options.WithStrictOrdering());
 		}
 
