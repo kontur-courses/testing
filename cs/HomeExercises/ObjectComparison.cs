@@ -21,7 +21,7 @@ namespace HomeExercises
 			Assert.AreEqual(actualTsar.Height, expectedTsar.Height);
 			Assert.AreEqual(actualTsar.Weight, expectedTsar.Weight);
 
-			Assert.AreEqual(expectedTsar.Parent.Name, actualTsar.Parent.Name);
+			Assert.AreEqual(expectedTsar.Parent!.Name, actualTsar.Parent!.Name);
 			Assert.AreEqual(expectedTsar.Parent.Age, actualTsar.Parent.Age);
 			Assert.AreEqual(expectedTsar.Parent.Height, actualTsar.Parent.Height);
 			Assert.AreEqual(expectedTsar.Parent.Parent, actualTsar.Parent.Parent);
@@ -39,7 +39,7 @@ namespace HomeExercises
 			Assert.True(AreEqual(actualTsar, expectedTsar));
 		}
 
-		private bool AreEqual(Person actual, Person expected)
+		private bool AreEqual(Person? actual, Person? expected)
 		{
 			if (actual == expected) return true;
 			if (actual == null || expected == null) return false;
@@ -67,10 +67,10 @@ namespace HomeExercises
 		public static int IdCounter = 0;
 		public int Age, Height, Weight;
 		public string Name;
-		public Person Parent;
+		public Person? Parent;
 		public int Id;
 
-		public Person(string name, int age, int height, int weight, Person parent)
+		public Person(string name, int age, int height, int weight, Person? parent)
 		{
 			Id = IdCounter++;
 			Name = name;
