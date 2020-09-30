@@ -6,9 +6,9 @@
 		public const string DEFAULT_ROLE = "ROLE_USER";
 		public const string DEFAULT_PASSWORD = "42";
 		private string name = DEFAULT_NAME;
-		private string password = DEFAULT_PASSWORD;
+		private string? password = DEFAULT_PASSWORD;
 		private string role = DEFAULT_ROLE;
-		private string login;
+		private string? login;
 
 		private TestUserBuilder()
 		{
@@ -25,13 +25,13 @@
 			return this;
 		}
 
-		public TestUserBuilder WithLogin(string newLogin)
+		public TestUserBuilder WithLogin(string? newLogin)
 		{
 			login = newLogin;
 			return this;
 		}
 
-		public TestUserBuilder WithPassword(string newPassword)
+		public TestUserBuilder WithPassword(string? newPassword)
 		{
 			password = newPassword;
 			return this;
