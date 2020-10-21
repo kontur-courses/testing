@@ -1,4 +1,5 @@
-﻿using FluentAssertions;
+﻿using System.Linq;
+using FluentAssertions;
 using NUnit.Framework;
 
 namespace HomeExercises
@@ -16,15 +17,16 @@ namespace HomeExercises
 				new Person("Vasili III of Russia", 28, 170, 60, null));
 
 			// Перепишите код на использование Fluent Assertions.
-			Assert.AreEqual(actualTsar.Name, expectedTsar.Name);
-			Assert.AreEqual(actualTsar.Age, expectedTsar.Age);
-			Assert.AreEqual(actualTsar.Height, expectedTsar.Height);
-			Assert.AreEqual(actualTsar.Weight, expectedTsar.Weight);
-
-			Assert.AreEqual(expectedTsar.Parent!.Name, actualTsar.Parent!.Name);
-			Assert.AreEqual(expectedTsar.Parent.Age, actualTsar.Parent.Age);
-			Assert.AreEqual(expectedTsar.Parent.Height, actualTsar.Parent.Height);
-			Assert.AreEqual(expectedTsar.Parent.Parent, actualTsar.Parent.Parent);
+			
+			actualTsar.Name.Should().Be(expectedTsar.Name);
+			actualTsar.Age.Should().Be(expectedTsar.Age);
+			actualTsar.Height.Should().Be(expectedTsar.Height);
+			actualTsar.Weight.Should().Be(expectedTsar.Weight);
+			
+			expectedTsar.Parent!.Name.Should().Be(actualTsar.Parent!.Name);
+			expectedTsar.Parent.Age.Should().Be(actualTsar.Parent.Age);
+			expectedTsar.Parent.Height.Should().Be(actualTsar.Parent.Height);
+			expectedTsar.Parent.Parent.Should().Be(expectedTsar.Parent.Parent);
 		}
 
 		[Test]
@@ -36,19 +38,34 @@ namespace HomeExercises
 				new Person("Vasili III of Russia", 28, 170, 60, null));
 
 			// Какие недостатки у такого подхода? 
-			Assert.True(AreEqual(actualTsar, expectedTsar));
+			// Недостаток такой, что при добавлении нового поля в классе Person, придётся добавлять корректировать метод AreEquals. 
+			AreEqual(actualTsar, expectedTsar).Should().BeTrue();
 		}
-
+		
+		// Моё решение отличается от предыдущего тем, что в нём использована рефлексия, которая позволяет сравнивать поля классов.
+		// То есть даже при добавлении нового поля, тест переписывать не придётся
 		private bool AreEqual(Person? actual, Person? expected)
 		{
 			if (actual == expected) return true;
 			if (actual == null || expected == null) return false;
-			return
-				actual.Name == expected.Name
-				&& actual.Age == expected.Age
-				&& actual.Height == expected.Height
-				&& actual.Weight == expected.Weight
-				&& AreEqual(actual.Parent, expected.Parent);
+			var fields = typeof(Person).GetFields();
+			foreach (var fieldInfo in fields.Where((field => field.Name != "Id")))
+			{
+				if (fieldInfo.FieldType == typeof(Person))
+				{
+					if (!AreEqual((Person?)fieldInfo.GetValue(actual), (Person?)fieldInfo.GetValue(expected)))
+						return false;
+				}
+				else
+				{
+					if (!fieldInfo.GetValue(actual)!.Equals(fieldInfo.GetValue(expected)))
+					{
+						return false;
+					}
+				}
+			}
+
+			return true;
 		}
 	}
 
