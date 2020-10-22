@@ -1,33 +1,132 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Text.RegularExpressions;
 using FluentAssertions;
 using NUnit.Framework;
 
 namespace HomeExercises
 {
+	[SuppressMessage("ReSharper", "ObjectCreationAsStatement")]
 	public class NumberValidatorTests
 	{
-		[Test]
-		public void Test()
+		[TestCase(-1, TestName = "Negative")]
+		[TestCase(0, TestName = "Zero")]
+		public void Ctor_ShouldThrow_WhenPrecisionIs(int precision)
 		{
-			Assert.Throws<ArgumentException>(() => new NumberValidator(-1, 2, true));
-			Assert.DoesNotThrow(() => new NumberValidator(1, 0, true));
-			Assert.Throws<ArgumentException>(() => new NumberValidator(-1, 2, false));
-			Assert.DoesNotThrow(() => new NumberValidator(1, 0, true));
-
-			Assert.IsTrue(new NumberValidator(17, 2, true).IsValidNumber("0.0"));
-			Assert.IsTrue(new NumberValidator(17, 2, true).IsValidNumber("0"));
-			Assert.IsTrue(new NumberValidator(17, 2, true).IsValidNumber("0.0"));
-			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("00.00"));
-			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("-0.00"));
-			Assert.IsTrue(new NumberValidator(17, 2, true).IsValidNumber("0.0"));
-			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("+0.00"));
-			Assert.IsTrue(new NumberValidator(4, 2, true).IsValidNumber("+1.23"));
-			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("+1.23"));
-			Assert.IsFalse(new NumberValidator(17, 2, true).IsValidNumber("0.000"));
-			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("-1.23"));
-			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("a.sd"));
+			Action test = () => new NumberValidator(precision);
+			test.Should()
+				.Throw<ArgumentException>()
+				.WithMessage("precision must be a positive number");
 		}
+
+		[TestCase(1, -1, TestName = "Negative")]
+		[TestCase(1, 2, TestName = "Greater than precision")]
+		[TestCase(1, 1, TestName = "Equal to precision")]
+		public void Ctor_ShouldThrow_WhenScaleIs(int precision, int scale)
+		{
+			Action test = () => new NumberValidator(precision, scale);
+			test.Should()
+				.Throw<ArgumentException>()
+				.WithMessage("scale must be a non-negative number less than precision");
+		}
+
+		[TestCase(2, 1, TestName = "Scale is positive")]
+		[TestCase(1, 0, TestName = "Scale is zero")]
+		public void Ctor_ShouldNotThrow_WhenScaleIs(int precision, int scale)
+		{
+			Action test = () => new NumberValidator(precision, scale);
+			test.Should().NotThrow();
+		}
+
+		[TestCase(null, TestName = "Value is null")]
+		[TestCase("", TestName = "Value is empty")]
+		[TestCase(".9", TestName = "Missing integer part")]
+		[TestCase("0.", TestName = "Missing fracture part")]
+		[TestCase(".", TestName = "Missing everything")]
+		[TestCase("+-0.9", TestName = "Two different signs")]
+		[TestCase("--0.9", TestName = "Two minus signs")]
+		[TestCase("++0.9", TestName = "Two plus signs")]
+		[TestCase(" 0.9", TestName = "Not at start of a line")]
+		[TestCase("0.9 ", TestName = "Not at The End Of The Line")]
+		[TestCase("0.a01", TestName = "Contains non-digits")]
+		public void IsValidNumber_ReturnFalse_InvalidFormat(string value)
+		{
+			var validator = new NumberValidator(7, 4);
+			validator.IsValidNumber(value)
+				.Should()
+				.BeFalse();
+		}
+
+		[TestCaseSource(nameof(alwaysFalseCases))]
+		[TestCaseSource(nameof(negativeNumbersCases))]
+		public void IsValidNumber_OnlyPositive_ReturnFalseWhen(int precision, int scale, string value)
+		{
+			var validator = new NumberValidator(precision, scale, true);
+			validator.IsValidNumber(value)
+				.Should()
+				.BeFalse();
+		}
+
+		[TestCaseSource(nameof(alwaysFalseCases))]
+		public void IsValidNumber_WithNegative_ReturnFalseWhen(int precision, int scale, string value)
+		{
+			var validator = new NumberValidator(precision, scale, false);
+			validator.IsValidNumber(value)
+				.Should()
+				.BeFalse();
+		}
+
+		[TestCaseSource(nameof(alwaysTrueCases))]
+		public void IsValidNumber_OnlyPositive_ReturnTrueWhen(int precision, int scale, string value)
+		{
+			var validator = new NumberValidator(precision, scale, true);
+			validator.IsValidNumber(value)
+				.Should()
+				.BeTrue();
+		}
+
+		[TestCaseSource(nameof(alwaysTrueCases))]
+		[TestCaseSource(nameof(negativeNumbersCases))]
+		public void IsValidNumber_WithNegative_ReturnTrueWhen(int precision, int scale, string value)
+		{
+			var validator = new NumberValidator(precision, scale, false);
+			validator.IsValidNumber(value)
+				.Should()
+				.BeTrue();
+		}
+
+		private static IEnumerable<TestCaseData> negativeNumbersCases = new[]
+		{
+			new TestCaseData(5, 4, "-0.01") {TestName = "Negative fracture number"},
+			new TestCaseData(5, 4, "-10") {TestName = "Negative integer number"},
+		};
+
+		private static IEnumerable<TestCaseData> alwaysTrueCases = new[]
+		{
+			new TestCaseData(5, 3, "12.34") {TestName = "Number shorter than precision"},
+			new TestCaseData(5, 3, "+1.23") {TestName = "Number shorter than precision (Sign affect length)"},
+			new TestCaseData(5, 3, "123.45") {TestName = "Number have same size with precision"},
+			new TestCaseData(5, 3, "+12.34") {TestName = "Number have same size with precision (Sign affect length)"},
+			new TestCaseData(5, 3, "1234") {TestName = "Int number shorter than precision"},
+			new TestCaseData(5, 3, "+123") {TestName = "Int number shorter than precision (Sign affect length)"},
+			new TestCaseData(5, 3, "12345") {TestName = "Int number is same size with precision"},
+			new TestCaseData(5, 3, "+1234") {TestName = "Int number is same size with precision (Sign affect length)"},
+			new TestCaseData(10, 4, "+0.1234") {TestName = "Fracture part is same size with scale (Sign not affect)"},
+			new TestCaseData(10, 4, "0.1234") {TestName = "Fracture part have same size with scale"},
+			new TestCaseData(10, 4, "0.123") {TestName = "Fracture part shorter than scale"},
+		};
+
+		private static IEnumerable<TestCaseData> alwaysFalseCases = new[]
+		{
+			new TestCaseData(5, 4, "123456") {TestName = "Int number longer than precision"},
+			new TestCaseData(5, 4, "+12345") {TestName = "Int number longer than precision (With plus sign)"},
+			new TestCaseData(5, 4, "-12345") {TestName = "Int number longer than precision (With minus sign)"},
+			new TestCaseData(5, 4, "123.456") {TestName = "Number longer than precision"},
+			new TestCaseData(5, 4, "+123.45") {TestName = "Number longer than precision (With plus sign)"},
+			new TestCaseData(5, 4, "-123.45") {TestName = "Number longer than precision (With minus sign)"},
+			new TestCaseData(10, 4, "0.12345") {TestName = "Fracture longer than scale"}
+		};
 	}
 
 	public class NumberValidator
