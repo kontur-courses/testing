@@ -1,10 +1,24 @@
 ﻿using FluentAssertions;
+using FluentAssertions.Equivalency;
 using NUnit.Framework;
 
 namespace HomeExercises
 {
 	public class ObjectComparison
 	{
+		/// <summary>
+		/// Альтернативное решение не даёт информации о том, какие данные были неверными.
+		/// Может вызвать переполнение стека вызовов.
+		/// При добавлении нового поля в классе Person нужно добавлять проверку в методе AreEqual.
+		///
+		/// FluentAssertions позволяет избавиться от вложенных вызовов методов.
+		/// Например: Assert.True(AreEqual(actualTsar, expectedTsar)).
+		/// Should() явно указывает на актуальное и ожидаемое значения.
+		/// Сообщение о неверном результате предоставляет полную информацию.
+		/// При добавлении нового поля типа Person его нужно сравнивать аналогично полю Parent.
+		/// Например: при добавлении Person Child.
+		/// В остальных случаях при добавлении нового поля изменения в тесте не требуются.
+		/// </summary>
 		[Test]
 		[Description("Проверка текущего царя")]
 		[Category("ToRefactor")]
@@ -15,16 +29,28 @@ namespace HomeExercises
 			var expectedTsar = new Person("Ivan IV The Terrible", 54, 170, 70,
 				new Person("Vasili III of Russia", 28, 170, 60, null));
 
-			// Перепишите код на использование Fluent Assertions.
-			Assert.AreEqual(actualTsar.Name, expectedTsar.Name);
-			Assert.AreEqual(actualTsar.Age, expectedTsar.Age);
-			Assert.AreEqual(actualTsar.Height, expectedTsar.Height);
-			Assert.AreEqual(actualTsar.Weight, expectedTsar.Weight);
+			actualTsar.Should().BeEquivalentTo(expectedTsar, ExcludeEquivalencyOptions);
 
-			Assert.AreEqual(expectedTsar.Parent!.Name, actualTsar.Parent!.Name);
-			Assert.AreEqual(expectedTsar.Parent.Age, actualTsar.Parent.Age);
-			Assert.AreEqual(expectedTsar.Parent.Height, actualTsar.Parent.Height);
-			Assert.AreEqual(expectedTsar.Parent.Parent, actualTsar.Parent.Parent);
+			CheckTsarParents(actualTsar, expectedTsar);
+		}
+
+		private static void CheckTsarParents(Person actualTsar, Person expectedTsar)
+		{
+			var actualTsarParent = actualTsar.Parent;
+			var expectedTsarParent = expectedTsar.Parent;
+			while (actualTsarParent != null || expectedTsarParent != null)
+			{
+				actualTsarParent.Should().BeEquivalentTo(expectedTsarParent, ExcludeEquivalencyOptions!);
+				actualTsarParent = actualTsarParent?.Parent;
+				expectedTsarParent = expectedTsarParent?.Parent;
+			}
+		}
+
+		private static EquivalencyAssertionOptions<Person> ExcludeEquivalencyOptions(EquivalencyAssertionOptions<Person> options)
+		{
+			return options
+				.Excluding(o => o.Id)
+				.Excluding(o => o.Parent);
 		}
 
 		[Test]
