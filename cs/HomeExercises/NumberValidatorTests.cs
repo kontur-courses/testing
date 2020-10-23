@@ -34,6 +34,10 @@ namespace HomeExercises
 
 
 		[TestCase(null, ExpectedResult = false, TestName = "Should_BeFalse_WhenNullReference")]
+		[TestCase("", ExpectedResult = false, TestName = "Should_BeFalse_WhenEmptyString")]
+		[TestCase(" ", ExpectedResult = false, TestName = "Should_BeFalse_WhenSpace")]
+		[TestCase(" 1", ExpectedResult = false, TestName = "Should_BeFalse_WhenStartsWithSpace")]
+		[TestCase("1 ", ExpectedResult = false, TestName = "Should_BeFalse_WhenEndsWithSpace")]
 		[TestCase("abc", ExpectedResult = false, TestName = "Should_BeFalse_WhenValueIsLettersOnly")]
 		[TestCase("1vc", ExpectedResult = false, TestName = "Should_BeFalse_WhenIntegerContainsLetters")]
 		[TestCase("1.2c", ExpectedResult = false, TestName = "Should_BeFalse_WhenFractContainsLetters")]
