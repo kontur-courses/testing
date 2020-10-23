@@ -65,7 +65,7 @@ namespace HomeExercises.NumberValidator_Task
 
 			var expectedResult = validator.IsValidNumber(value);
 			
-			Assert.AreEqual(actualResult, expectedResult);
+			Assert.AreEqual(expectedResult, actualResult);
 		}
 	}
 }
