@@ -5,11 +5,11 @@ namespace HomeExercises.NumberValidator_Task
 {
 	public class NumberValidatorTests
 	{
-		[TestCase(-1, 0, true,TestName = "When precision < 0")]
+		[TestCase(-1, 0, TestName = "When precision < 0")]
 		[TestCase(0, TestName = "When precision == 0")]
 		[TestCase(2, -1, TestName = "When scale < 0")]
-		[TestCase(2, 2, false, TestName = "When scale == precision")]
-		[TestCase(2, 3, true, TestName = "When scale > precision")]
+		[TestCase(2, 2, TestName = "When scale == precision")]
+		[TestCase(2, 3, TestName = "When scale > precision")]
 		public void СreateValidator_ThrowArgumentException_FlagOnlyPositiveDoesNotMatter(int precision, int scale = 0, 
 			bool onlyPositive = false)
 		{
@@ -17,7 +17,7 @@ namespace HomeExercises.NumberValidator_Task
 		}
 		
 		[TestCase(2, 0, TestName = "When precision > 0 and scale == 0")]
-		[TestCase(3, 2, false, TestName = "When precision > 0, scale > 0 and scale < precision")]
+		[TestCase(3, 2, TestName = "When precision > 0, scale > 0 and scale < precision")]
 		public void СreateValidator_NotException_FlagOnlyPositiveDoesNotMatter(int precision, int scale = 0, 
 			bool onlyPositive = false)
 		{
