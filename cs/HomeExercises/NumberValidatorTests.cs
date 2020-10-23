@@ -39,6 +39,25 @@ namespace HomeExercises
 			new NumberValidator(precision, scale, onlyPositive).IsValidNumber(input).Should().BeTrue();
 		}
 
+		[TestCase(3, 2, true, " ", TestName = "IsNotValidNumber_WhenEmptyInput")]
+		[TestCase(3, 2, true, null, TestName = "IsNotValidNumber_WhenNullInput")]
+		[TestCase(3, 2, true, "   0.1", TestName = "IsNotValidNumber_WhenEmptySpaceBeforeNumber")]
+		[TestCase(3, 2, true, "0.1   ", TestName = "IsNotValidNumber_WhenEmptySpaceAfterNumber")]
+		[TestCase(3, 2, true, "+ 0.1", TestName = "IsNotValidNumber_WhenEmptySpaceBetweenSignAndNumber")]
+		[TestCase(3, 2, true, "0.1af", TestName = "IsNotValidNumber_WhenInputContainsCharacters")]
+		[TestCase(3, 2, true, "ABCdeeeeeeffFFFff", TestName = "IsNotValidNumber_WhenTextInput")]
+		[TestCase(3, 1, true, "+0.00", TestName = "IsNotValidNumber_WhenInputBiggerThenPrecision")]
+		[TestCase(6, 2, true, "00.000", TestName = "IsNotValidNumber_WhenFracPartBiggerThenScale")]
+		[TestCase(6, 2, true, "-0.00", TestName = "IsNotValidNumber_WhenOnlyPositiveButInputIsNegativeNumber")]
+		[TestCase(6, 2, true, "++1.23", TestName = "IsNotValidNumber_WhenMoreThanOneSign")]
+		[TestCase(6, 2, true, "1,23,23", TestName = "IsNotValidNumber_WhenMoreThanOneComma")]
+		[TestCase(6, 2, true, "1.23.23", TestName = "IsNotValidNumber_WhenMoreThanOneDot")]
+		[TestCase(6, 2, true, "1.", TestName = "IsNotValidNumber_WhenIntNumberWithDot")]
+		[TestCase(6, 2, true, "1,", TestName = "IsNotValidNumber_WhenIntNumberWithComma")]
+		public void IsNotValidNumber(int precision, int scale, bool onlyPositive, string input)
+		{
+			new NumberValidator(precision, scale, onlyPositive).IsValidNumber(input).Should().BeFalse();
+		}
 	}
 
 	public class NumberValidator
