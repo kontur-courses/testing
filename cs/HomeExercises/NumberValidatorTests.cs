@@ -5,28 +5,72 @@ using NUnit.Framework;
 
 namespace HomeExercises
 {
-	public class NumberValidatorTests
-	{
-		[Test]
-		public void Test()
-		{
-			Assert.Throws<ArgumentException>(() => new NumberValidator(-1, 2, true));
-			Assert.DoesNotThrow(() => new NumberValidator(1, 0, true));
-			Assert.Throws<ArgumentException>(() => new NumberValidator(-1, 2, false));
-			Assert.DoesNotThrow(() => new NumberValidator(1, 0, true));
+		public class NumberValidatorTests {
+		private NumberValidator simpleValidator;
+		private NumberValidator positiveOnlyValidator;
+		private NumberValidator plainValidator;
 
-			Assert.IsTrue(new NumberValidator(17, 2, true).IsValidNumber("0.0"));
-			Assert.IsTrue(new NumberValidator(17, 2, true).IsValidNumber("0"));
-			Assert.IsTrue(new NumberValidator(17, 2, true).IsValidNumber("0.0"));
-			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("00.00"));
-			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("-0.00"));
-			Assert.IsTrue(new NumberValidator(17, 2, true).IsValidNumber("0.0"));
-			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("+0.00"));
-			Assert.IsTrue(new NumberValidator(4, 2, true).IsValidNumber("+1.23"));
-			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("+1.23"));
-			Assert.IsFalse(new NumberValidator(17, 2, true).IsValidNumber("0.000"));
-			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("-1.23"));
-			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("a.sd"));
+		[SetUp]
+		public void SetUp() {
+			simpleValidator = new NumberValidator(3);
+			plainValidator = new NumberValidator(3, 2);
+			positiveOnlyValidator = new NumberValidator(3, 2, true);
+		}
+
+		[TestCase(-1, 0, TestName = "Should_ArgumentException_WhenPrecisionIsNegative")]
+		[TestCase(0, 0, TestName = "Should_ArgumentException_WhenPrecisionIsZero")]
+		[TestCase(1, -1, TestName = "Should_ArgumentException_WhenScaleIsNegative")]
+		[TestCase(1, 2, TestName = "Should_ArgumentException_WhenScaleGreaterPrecision")]
+		public void Test_NumberValidatorConstructor_OnIncorrectInputs(int precision, int scale) {
+			Assert.Throws<ArgumentException>(() => new NumberValidator(precision, scale));
+		}
+		
+		[TestCase(1, 0, TestName = "Should_NotException_WhenPrecisionIsNegative")]
+		[TestCase(3, 2, TestName = "Should_NotException_WhenScaleIsNegative")]
+		[TestCase(100, 99, TestName = "Should_NotException_WhenScaleGreaterPrecision")]
+		public void Test_NumberValidatorConstructor_OnCorrectInputs(int precision, int scale) {
+			Assert.DoesNotThrow(() => new NumberValidator(precision, scale));
+		}
+
+
+		[TestCase(null, ExpectedResult = false, TestName = "Should_BeFalse_WhenNullReference")]
+		[TestCase("abc", ExpectedResult = false, TestName = "Should_BeFalse_WhenValueIsLettersOnly")]
+		[TestCase("1vc", ExpectedResult = false, TestName = "Should_BeFalse_WhenIntegerContainsLetters")]
+		[TestCase("1.2c", ExpectedResult = false, TestName = "Should_BeFalse_WhenFractContainsLetters")]
+		[TestCase("a.bc", ExpectedResult = false, TestName = "Should_BeFalse_WhenFractIsLettersOnly")]
+		[TestCase("+a.b", ExpectedResult = false, TestName = "Should_BeFalse_WhenLettersWithSign")]
+		[TestCase("+1.c", ExpectedResult = false, TestName = "Should_BeFalse_WhenSignedLettersAndNumbers")]
+		[TestCase("+-1", ExpectedResult = false, TestName = "Should_BeFalse_WhenTwiceSigns")]
+		[TestCase("9999", ExpectedResult = false, TestName = "Should_BeTrue_WhenTooBigValue")]
+		[TestCase("0.000", ExpectedResult = false, TestName = "Should_BeFalse_WhenTooBigFract")]
+		public bool Test_IsValidNumber_OnIncorrectInputs(string value) {
+			return simpleValidator.IsValidNumber(value);
+		}
+
+		[TestCase("0", ExpectedResult = true, TestName = "Should_BeTrue_WhenIntegerOnly")]
+		[TestCase("999", ExpectedResult = true, TestName = "Should_BeTrue_WhenMaxPossibleCorrectInteger")]
+		[TestCase("+10", ExpectedResult = true, TestName = "Should_BeTrue_WhenPositiveSignedInteger")]
+		[TestCase("-10", ExpectedResult = true, TestName = "Should_BeTrue_WhenNegativeSignedInteger")]
+
+		[TestCase("0.0", ExpectedResult = true, TestName = "Should_BeTrue_WhenSmallCorrectValue")]
+		[TestCase("0,0", ExpectedResult = true, TestName = "Should_BeTrue_WhenSeparatorIsComma")]
+		[TestCase("9.99", ExpectedResult = true, TestName = "Should_BeTrue_WhenMaxPossibleCorrectDecimal")]
+		[TestCase("+9.9", ExpectedResult = true, TestName = "Should_BeTrue_WhenPositiveSignedDecimal")]
+		[TestCase("-9.9", ExpectedResult = true, TestName = "Should_BeTrue_WhenNegativeSignedDecimal")]
+		public bool Test_IsValidNumber_CorrectInputs_SignDontMatter(string value) {
+			return plainValidator.IsValidNumber(value);
+		}
+
+		[TestCase("+1", ExpectedResult = true, TestName = "Should_BeTrue_WhenInputIsPositiveInt")]
+		[TestCase("+99", ExpectedResult = true, TestName = "Should_BeTrue_WhenInputIsMaxPositiveInt")]
+		[TestCase("+1.0", ExpectedResult = true, TestName = "Should_BeTrue_WhenInputIsPositiveDecimal")]
+		[TestCase("+9.9", ExpectedResult = true, TestName = "Should_BeTrue_WhenInputIsMaxPositiveDecimal")]
+		[TestCase("-1", ExpectedResult = false, TestName = "Should_BeFalse_WhenInputIsNegativeInt")]
+		[TestCase("-99", ExpectedResult = false, TestName = "Should_BeFalse_WhenInputIsMaxNegativeInt")]
+		[TestCase("-1.0", ExpectedResult = false, TestName = "Should_BeFalse_WhenInputIsNegativeDecimal")]
+		[TestCase("-9.9", ExpectedResult = false, TestName = "Should_BeFalse_WhenInputIsMaxNegativeDecimal")]
+		public bool Test_IsValidNumber_OnlyPositiveInputs(string value) {
+			return positiveOnlyValidator.IsValidNumber(value);
 		}
 	}
 
