@@ -18,20 +18,19 @@ namespace HomeExercises
 			positiveOnlyValidator = new NumberValidator(3, 2, true);
 		}
 
-		[Test]
-		public void Test_NumberValidatorConstructor_OnArgumentExceptions()
-		{
-			Assert.Multiple(() => {
-				const string? alarmForPrecision = "Precision must be positive integer!";
-				Assert.Throws<ArgumentException>(() => new NumberValidator(-1), alarmForPrecision);
-				Assert.Throws<ArgumentException>(() => new NumberValidator(0), alarmForPrecision);
-				Assert.DoesNotThrow(() => new NumberValidator(1), alarmForPrecision);
-				
-				const string? alarmForScale = "Scale must be non-negative integer!";
-				Assert.Throws<ArgumentException>(() => new NumberValidator(1, -1), alarmForScale);
-				Assert.Throws<ArgumentException>(() => new NumberValidator(1, 2), alarmForScale);
-				Assert.DoesNotThrow(() => new NumberValidator(2, 1), alarmForScale);
-			});
+		[TestCase(-1, 0, TestName = "Should_ArgumentException_WhenPrecisionIsNegative")]
+		[TestCase(0, 0, TestName = "Should_ArgumentException_WhenPrecisionIsZero")]
+		[TestCase(1, -1, TestName = "Should_ArgumentException_WhenScaleIsNegative")]
+		[TestCase(1, 2, TestName = "Should_ArgumentException_WhenScaleGreaterPrecision")]
+		public void Test_NumberValidatorConstructor_OnIncorrectInputs(int precision, int scale) {
+			Assert.Throws<ArgumentException>(() => new NumberValidator(precision, scale));
+		}
+		
+		[TestCase(1, 0, TestName = "Should_NotException_WhenPrecisionIsNegative")]
+		[TestCase(3, 2, TestName = "Should_NotException_WhenScaleIsNegative")]
+		[TestCase(100, 99, TestName = "Should_NotException_WhenScaleGreaterPrecision")]
+		public void Test_NumberValidatorConstructor_OnCorrectInputs(int precision, int scale) {
+			Assert.DoesNotThrow(() => new NumberValidator(precision, scale));
 		}
 
 
