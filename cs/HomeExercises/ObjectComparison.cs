@@ -20,7 +20,7 @@ namespace HomeExercises
 			actualTsar.Name.Should().Be(expectedTsar.Name);
 			actualTsar.Age.Should().Be(expectedTsar.Age);
 			actualTsar.Height.Should().Be(expectedTsar.Height);
-			actualTsar.Height.Should().Be(expectedTsar.Weight);
+			actualTsar.Weight.Should().Be(expectedTsar.Weight);
 
 			var actualParent = actualTsar.Parent!;
 			var expectedParent = expectedTsar.Parent!;
@@ -28,7 +28,7 @@ namespace HomeExercises
 			actualParent.Name.Should().Be(expectedParent.Name);
 			actualParent.Age.Should().Be(expectedParent.Age);
 			actualParent.Height.Should().Be(expectedParent.Height);
-			actualParent.Height.Should().Be(expectedParent.Weight);
+			actualParent.Weight.Should().Be(expectedParent.Weight);
 		}
 
 		[Test]
