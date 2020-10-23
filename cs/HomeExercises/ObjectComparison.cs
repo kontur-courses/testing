@@ -1,4 +1,5 @@
-﻿using FluentAssertions;
+﻿using System.Linq;
+using FluentAssertions;
 using NUnit.Framework;
 
 namespace HomeExercises
@@ -16,15 +17,18 @@ namespace HomeExercises
 				new Person("Vasili III of Russia", 28, 170, 60, null));
 
 			// Перепишите код на использование Fluent Assertions.
-			Assert.AreEqual(actualTsar.Name, expectedTsar.Name);
-			Assert.AreEqual(actualTsar.Age, expectedTsar.Age);
-			Assert.AreEqual(actualTsar.Height, expectedTsar.Height);
-			Assert.AreEqual(actualTsar.Weight, expectedTsar.Weight);
+			actualTsar.Name.Should().Be(expectedTsar.Name);
+			actualTsar.Age.Should().Be(expectedTsar.Age);
+			actualTsar.Height.Should().Be(expectedTsar.Height);
+			actualTsar.Height.Should().Be(expectedTsar.Weight);
 
-			Assert.AreEqual(expectedTsar.Parent!.Name, actualTsar.Parent!.Name);
-			Assert.AreEqual(expectedTsar.Parent.Age, actualTsar.Parent.Age);
-			Assert.AreEqual(expectedTsar.Parent.Height, actualTsar.Parent.Height);
-			Assert.AreEqual(expectedTsar.Parent.Parent, actualTsar.Parent.Parent);
+			var actualParent = actualTsar.Parent!;
+			var expectedParent = expectedTsar.Parent!;
+
+			actualParent.Name.Should().Be(expectedParent.Name);
+			actualParent.Age.Should().Be(expectedParent.Age);
+			actualParent.Height.Should().Be(expectedParent.Height);
+			actualParent.Height.Should().Be(expectedParent.Weight);
 		}
 
 		[Test]
@@ -37,6 +41,10 @@ namespace HomeExercises
 
 			// Какие недостатки у такого подхода? 
 			Assert.True(AreEqual(actualTsar, expectedTsar));
+			/*
+			 * если упадет то в сообщении будет "ждали тру, а было фолс", что неинформативно
+			 * не очень хорошо расширяем
+			 */
 		}
 
 		private bool AreEqual(Person? actual, Person? expected)
