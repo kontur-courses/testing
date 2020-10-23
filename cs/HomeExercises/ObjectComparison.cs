@@ -20,9 +20,6 @@ namespace HomeExercises
 			// Перепишите код на использование Fluent Assertions.
 			actualTsar.Should().BeEquivalentTo(expectedTsar,options => 
 				options.Excluding(memberinfo => memberinfo.SelectedMemberInfo.Name == "Id"));
-			actualTsar.Should().BeEquivalentTo(expectedTsar, options =>
-				options.Excluding(memberinfo => memberinfo.SelectedMemberPath.EndsWith("Id")));
-
 		}
 
 		[Test]
