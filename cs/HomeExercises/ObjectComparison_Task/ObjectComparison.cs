@@ -17,10 +17,9 @@ namespace HomeExercises.ObjectComparison_Task
 
 			// Перепишите код на использование Fluent Assertions.
 			actualTsar.Should().BeEquivalentTo(expectedTsar,
-				options => options.Excluding(memberInfo =>
+				options => options.AllowingInfiniteRecursion().Excluding(memberInfo =>
 					memberInfo.SelectedMemberInfo.DeclaringType == typeof(Person) &&
-					memberInfo.SelectedMemberInfo.Name == "Id"));
-			//либо можно использовать: memberInfo.SelectedMemberPath.EndsWith()
+					memberInfo.SelectedMemberInfo.Name == nameof(Person.Id)));
 		}
 
 		[Test]
