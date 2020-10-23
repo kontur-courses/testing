@@ -13,7 +13,8 @@ namespace HomeExercises.NumberValidator_Task
 		public void СreateValidator_ThrowArgumentException_FlagOnlyPositiveDoesNotMatter(int precision, int scale = 0, 
 			bool onlyPositive = false)
 		{
-			Assert.Throws<ArgumentException>(() => new NumberValidator(precision, scale, onlyPositive));
+			Assert.Throws<ArgumentException>(() => new NumberValidator(precision, scale, onlyPositive), 
+				$"Checking create validator when precision = {precision}, scale = {scale}");
 		}
 		
 		[TestCase(2, 0, TestName = "When precision > 0 and scale == 0")]
@@ -21,7 +22,8 @@ namespace HomeExercises.NumberValidator_Task
 		public void СreateValidator_NotException_FlagOnlyPositiveDoesNotMatter(int precision, int scale = 0, 
 			bool onlyPositive = false)
 		{
-			Assert.DoesNotThrow(() => new NumberValidator(precision, scale, onlyPositive));
+			Assert.DoesNotThrow(() => new NumberValidator(precision, scale, onlyPositive),
+				$"Checking create validator when precision = {precision}, scale = {scale}");
 		}
 		
 		[TestCase("", false,17, 2, 
@@ -73,7 +75,8 @@ namespace HomeExercises.NumberValidator_Task
 
 			var actualResult = validator.IsValidNumber(value);
 			
-			Assert.AreEqual(expectedResult, actualResult);
+			Assert.AreEqual(expectedResult, actualResult, 
+				$"Checking validity number when input value: \"{value}\", precision = {precision}, scale = {scale}, onlyPositive = {onlyPositive}");
 		}
 	}
 }
