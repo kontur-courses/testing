@@ -33,6 +33,9 @@ namespace HomeExercises
 
 			// Какие недостатки у такого подхода? 
 			Assert.True(AreEqual(actualTsar, expectedTsar));
+			// При падении данного теста будет выведено сообщение: Expected: True, But was: False
+			// Это является крайне неинформативным, будет трудно понять, где произошла ошибка
+			// Если программист добавит новые поля в Person, то в тест придется вносить целый ряд изменений
 		}
 
 		private bool AreEqual(Person? actual, Person? expected)
