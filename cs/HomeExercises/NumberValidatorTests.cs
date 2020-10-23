@@ -17,6 +17,14 @@ namespace HomeExercises
 			Action act = () => new NumberValidator(precision, scale, onlyPositive);
 			act.Should().Throw<ArgumentException>();
 		}
+
+		[TestCase(4, 2, true, TestName = "DoesNotThrowException_WhenPrecisionBiggerThenScale")]
+		[TestCase(2, 0, true, TestName = "DoesNotThrowException_WhenZeroScale")]
+		public void DoesNotThrowException(int precision, int scale, bool onlyPositive)
+		{
+			Action act = () => new NumberValidator(precision, scale, onlyPositive);
+			act.Should().NotThrow<ArgumentException>();
+		}
 	}
 
 	public class NumberValidator
