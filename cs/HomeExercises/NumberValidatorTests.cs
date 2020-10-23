@@ -7,6 +7,14 @@ namespace HomeExercises
 {
     public class NumberValidatorTests
     {
+        private NumberValidator numberValidator;
+
+        [SetUp]
+        public void SetUp()
+        {
+            numberValidator = new NumberValidator(6, 2);
+        }
+
         [Test]
         public void NumberValidator_ThrowsException_IfPrecisionIsNotPositive()
         {
@@ -42,9 +50,9 @@ namespace HomeExercises
         [Test]
         public void IsValidNumber_IsFalse_IfNumberIsNegativeWhenOnlyPositive()
         {
-            var numberValidator = new NumberValidator(6, 2, true);
+            var onlyPositiveNumberValidator = new NumberValidator(6, 2, true);
 
-            numberValidator.IsValidNumber("-0.1").Should().BeFalse();
+            onlyPositiveNumberValidator.IsValidNumber("-0.1").Should().BeFalse();
         }
 
         [Test]
@@ -58,24 +66,18 @@ namespace HomeExercises
         [TestCase("55,")]
         public void IsValidNumber_IsFalse_IfFormatIsIncorrect(string number)
         {
-            var numberValidator = GetDefaultNumberValidator();
-
             numberValidator.IsValidNumber(number).Should().BeFalse();
         }
 
         [Test]
         public void IsValidNumber_IsFalse_IfStringIsNull()
         {
-            var numberValidator = GetDefaultNumberValidator();
-
             numberValidator.IsValidNumber(null).Should().BeFalse();
         }
 
         [Test]
         public void IsValidNumber_IsFalse_IfStringIsEmpty()
         {
-            var numberValidator = GetDefaultNumberValidator();
-
             numberValidator.IsValidNumber(string.Empty).Should().BeFalse();
         }
 
@@ -88,64 +90,50 @@ namespace HomeExercises
         [TestCase("+1234.56")]
         public void IsValidNumber_IsFalse_IfNumberLengthMoreThanPrecision(string number)
         {
-            var numberValidator = GetDefaultNumberValidator();
-
             numberValidator.IsValidNumber(number).Should().BeFalse();
         }
 
         [Test]
         public void IsValidNumber_IsFalse_IfFractalPartLengthMoreThanScale()
         {
-            var numberValidator = GetDefaultNumberValidator();
-
             numberValidator.IsValidNumber("13.123").Should().BeFalse();
         }
 
         [Test]
         public void IsValidNumber_IsTrue_IfNumberIsNegativeWhenNotOnlyPositive()
         {
-            var numberValidator = GetDefaultNumberValidator();
-
             numberValidator.IsValidNumber("-123.5").Should().BeTrue();
         }
 
         [Test]
         public void IsValidNumber_IsTrue_IfNumberIsPositiveWhenNotOnlyPositive()
         {
-            var numberValidator = GetDefaultNumberValidator();
-
             numberValidator.IsValidNumber("123.5").Should().BeTrue();
         }
 
         [Test]
         public void IsValidNumber_IsTrue_IfNumberIsPositiveWhenOnlyPositive()
         {
-            var numberValidator = new NumberValidator(6, 2, true);
+            var onlyPositiveNumberValidator = new NumberValidator(6, 2, true);
 
-            numberValidator.IsValidNumber("123.5").Should().BeTrue();
+            onlyPositiveNumberValidator.IsValidNumber("123.5").Should().BeTrue();
         }
 
         [Test]
         public void IsValidNumber_IsTrue_IfNumberHasPlus()
         {
-            var numberValidator = GetDefaultNumberValidator();
-
             numberValidator.IsValidNumber("+123.5").Should().BeTrue();
         }
 
         [Test]
         public void IsValidNumber_IsTrue_IfFractalPartLengthEqualsScale()
         {
-            var numberValidator = GetDefaultNumberValidator();
-
             numberValidator.IsValidNumber("123.12").Should().BeTrue();
         }
 
         [Test]
         public void IsValidNumber_IsTrue_IfFractalPartIsEmpty()
         {
-            var numberValidator = GetDefaultNumberValidator();
-
             numberValidator.IsValidNumber("123").Should().BeTrue();
         }
 
@@ -156,8 +144,6 @@ namespace HomeExercises
         [TestCase("-0000")]
         public void IsValidNumber_IsTrue_IfNumberContainsOnlyZeros(string number)
         {
-            var numberValidator = GetDefaultNumberValidator();
-
             numberValidator.IsValidNumber(number).Should().BeTrue();
         }
 
@@ -170,8 +156,6 @@ namespace HomeExercises
         [TestCase("+1234.5")]
         public void IsValidNumber_IsTrue_IfNumberLengthEqualsPrecision(string number)
         {
-            var numberValidator = GetDefaultNumberValidator();
-
             numberValidator.IsValidNumber(number).Should().BeTrue();
         }
 
