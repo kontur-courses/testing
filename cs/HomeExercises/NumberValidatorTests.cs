@@ -10,11 +10,6 @@ namespace HomeExercises
 		[Test]
 		public void Test()
 		{
-			Assert.Throws<ArgumentException>(() => new NumberValidator(-1, 2, true));
-			Assert.DoesNotThrow(() => new NumberValidator(1, 0, true));
-			Assert.Throws<ArgumentException>(() => new NumberValidator(-1, 2, false));
-			Assert.DoesNotThrow(() => new NumberValidator(1, 0, true));
-
 			Assert.IsTrue(new NumberValidator(17, 2, true).IsValidNumber("0.0"));
 			Assert.IsTrue(new NumberValidator(17, 2, true).IsValidNumber("0"));
 			Assert.IsTrue(new NumberValidator(17, 2, true).IsValidNumber("0.0"));
@@ -27,6 +22,25 @@ namespace HomeExercises
 			Assert.IsFalse(new NumberValidator(17, 2, true).IsValidNumber("0.000"));
 			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("-1.23"));
 			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("a.sd"));
+		}
+
+		[TestCase(false, 2, 1, TestName = "Precision Greater Than Scale")]
+		[TestCase(false, 2, 0, TestName = "Scale Equals Zero")]
+		[TestCase(false, 2, 0, true, TestName = "Only Positive")]
+		[TestCase(true, 0, 1, TestName = "Precision Equals Zero")]
+		[TestCase(true, -1, 1, TestName = "Negative Precision")]
+		[TestCase(true, 2, -1, TestName = "Negative Scale")]
+		[TestCase(true, 2, 3, TestName = "Scale Greater Than Precision")]
+		[TestCase(true, 2, 2, TestName = "Scale Equals Precision")]
+		public void Creation(bool shouldThrow, int precision, int scale, bool onlyPositive = false)
+		{
+			Func<NumberValidator> creation = () => new NumberValidator(precision, scale, onlyPositive);
+			var message = $"precision={precision}, scale={scale}";
+
+			if (shouldThrow)
+				creation.Should().Throw<ArgumentException>(message);
+			else
+				creation.Should().NotThrow(message);
 		}
 	}
 
