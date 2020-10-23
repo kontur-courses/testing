@@ -8,33 +8,11 @@ namespace HomeExercises
 {
 	public class NumberValidatorTests
 	{
-		[Test]
-		public void Test()
-		{
-			Assert.Throws<ArgumentException>(() => new NumberValidator(-1, 2, true));
-			Assert.DoesNotThrow(() => new NumberValidator(1, 0, true));
-			Assert.Throws<ArgumentException>(() => new NumberValidator(-1, 2, false));
-			Assert.DoesNotThrow(() => new NumberValidator(1, 0, true));
-
-			Assert.IsTrue(new NumberValidator(17, 2, true).IsValidNumber("0.0"));
-			Assert.IsTrue(new NumberValidator(17, 2, true).IsValidNumber("0"));
-			// Assert.IsTrue(new NumberValidator(17, 2, true).IsValidNumber("0.0"));
-			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("00.00"));
-			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("-0.00"));
-			// Assert.IsTrue(new NumberValidator(17, 2, true).IsValidNumber("0.0"));
-			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("+0.00"));
-			Assert.IsTrue(new NumberValidator(4, 2, true).IsValidNumber("+1.23"));
-			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("+1.23"));
-			Assert.IsFalse(new NumberValidator(17, 2, true).IsValidNumber("0.000"));
-			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("-1.23"));
-			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("a.sd"));
-		}
-
-		[TestCase(-1, 0, true,TestName = "When precision < 0, onlyPositive don't matter")]
-		[TestCase(0, TestName = "When precision == 0, onlyPositive don't matter")]
+		[TestCase(-1, 0, true,TestName = "When precision < 0")]
+		[TestCase(0, TestName = "When precision == 0")]
 		[TestCase(2, -1, TestName = "When scale < 0, onlyPositive don't matter")]
-		[TestCase(2, 2, false, TestName = "When scale == precision, onlyPositive don't matter")]
-		[TestCase(2, 3, true, TestName = "When scale > precision, onlyPositive don't matter")]
+		[TestCase(2, 2, false, TestName = "When scale == precision")]
+		[TestCase(2, 3, true, TestName = "When scale > precision")]
 		public void СreateValidator_ThrowArgumentException_FlagOnlyPositiveDoesNotMatter(int precision, int scale = 0, 
 			bool onlyPositive = false)
 		{
