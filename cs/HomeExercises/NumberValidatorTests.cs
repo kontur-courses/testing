@@ -1,32 +1,101 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Text.RegularExpressions;
-using FluentAssertions;
 using NUnit.Framework;
 
 namespace HomeExercises
 {
 	public class NumberValidatorTests
 	{
-		[Test]
-		public void Test()
+		[TestCase(-1, 1, TestName = "Negative precision")]
+		[TestCase(0, 1, TestName = "Zero precision")]
+		[TestCase(1, 2, TestName = "Precision below scale")]
+		[TestCase(10, 10, TestName = "Scale same as precision")]
+		[TestCase(1, 0, true, false, TestName = "Valid does not throw")]
+		public void ConstructorTests(
+			int precision,
+			int scale,
+			bool onlyPositive = false,
+			bool throws = true)
 		{
-			Assert.Throws<ArgumentException>(() => new NumberValidator(-1, 2, true));
-			Assert.DoesNotThrow(() => new NumberValidator(1, 0, true));
-			Assert.Throws<ArgumentException>(() => new NumberValidator(-1, 2, false));
-			Assert.DoesNotThrow(() => new NumberValidator(1, 0, true));
+			// ReSharper disable once ObjectCreationAsStatement
+			void Construct() => new NumberValidator(precision, scale, onlyPositive);
+			if (throws)
+				Assert.Throws<ArgumentException>(Construct);
+			else
+				Assert.DoesNotThrow(Construct);
+		}
 
-			Assert.IsTrue(new NumberValidator(17, 2, true).IsValidNumber("0.0"));
-			Assert.IsTrue(new NumberValidator(17, 2, true).IsValidNumber("0"));
-			Assert.IsTrue(new NumberValidator(17, 2, true).IsValidNumber("0.0"));
-			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("00.00"));
-			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("-0.00"));
-			Assert.IsTrue(new NumberValidator(17, 2, true).IsValidNumber("0.0"));
-			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("+0.00"));
-			Assert.IsTrue(new NumberValidator(4, 2, true).IsValidNumber("+1.23"));
-			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("+1.23"));
-			Assert.IsFalse(new NumberValidator(17, 2, true).IsValidNumber("0.000"));
-			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("-1.23"));
-			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("a.sd"));
+
+		public static IEnumerable<TestCaseData> PrepareTestCases()
+		{
+			var data = new[]
+			{
+				GetTestCases(ValidatorLittleFraction, new[]
+				{
+					("0.000", false, "Excess fraction"),
+					("0", true, "No fraction"),
+					("0.0", true, "Less fraction"),
+				}),
+				GetTestCases(ValidatorSmallPrecision, new[]
+				{
+					("00.00", false, "Excess overall length"),
+					("+0.00", false, "Excess overall including positive sign"),
+					("-0.00", false, "Excess overall including negative sign"),
+					("0.00", true, "Exclude sign"),
+					("a.sd", false, "Illegal characters"),
+				}),
+				GetTestCases(() => ValidatorCustomSign(), new[]
+				{
+					("+1.23", true, "Positive number"),
+					("-1.23", false, "Negative when only positive"),
+				}),
+				GetTestCases(() => ValidatorCustomSign(false), new[]
+				{
+					("-1.23", true, "Negative number allowed"),
+				}),
+				GetTestCases(ValidatorSmallPrecision, new[]
+				{
+					("", false, "Empty"),
+				}),
+			};
+			foreach (var testCases in data)
+			{
+				foreach (var testCase in testCases)
+				{
+					yield return testCase;
+				}
+			}
+		}
+
+		private static IEnumerable<TestCaseData> GetTestCases(
+			Func<NumberValidator> getValidator,
+			IEnumerable<(string number, bool isValidExpected, string testName)> dataTuples)
+		{
+			foreach (var (number, isValidExpected, testName) in dataTuples)
+			{
+				var sut = getValidator();
+				var testData = new TestCaseData(sut, number, isValidExpected) {TestName = testName};
+				yield return testData;
+			}
+		}
+
+		private static NumberValidator ValidatorSmallPrecision()
+			=> new NumberValidator(3, 2, true);
+
+		private static NumberValidator ValidatorLittleFraction()
+			=> new NumberValidator(17, 2, true);
+
+		private static NumberValidator ValidatorCustomSign(bool onlyPositive = true)
+			=> new NumberValidator(4, 2, onlyPositive);
+
+
+		[TestCaseSource(nameof(PrepareTestCases))]
+		public void IsValidTests(NumberValidator sut, string input, bool isValid)
+		{
+			var actual = sut.IsValidNumber(input);
+
+			Assert.That(actual, Is.EqualTo(isValid), $"Validation of '{input}' was not correct");
 		}
 	}
 
