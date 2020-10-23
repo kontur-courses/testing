@@ -40,23 +40,24 @@ namespace HomeExercises
 				new Person("Vasili III of Russia", 28, 170, 60, null));
 
 			// Какие недостатки у такого подхода? 
-			Assert.True(AreEqual(actualTsar, expectedTsar));
+			AssertThatFieldsAreEqual(actualTsar, expectedTsar);
 			/*
 			 * если упадет то в сообщении будет "ждали тру, а было фолс", что неинформативно
 			 * не очень хорошо расширяем
 			 */
 		}
 
-		private bool AreEqual(Person? actual, Person? expected)
+		private void AssertThatFieldsAreEqual(Person? actual, Person? expected)
 		{
-			if (actual == expected) return true;
-			if (actual == null || expected == null) return false;
-			return
-				actual.Name == expected.Name
-				&& actual.Age == expected.Age
-				&& actual.Height == expected.Height
-				&& actual.Weight == expected.Weight
-				&& AreEqual(actual.Parent, expected.Parent);
+			actual.Should().NotBeNull();
+			expected.Should().NotBeNull();
+			actual.Should().NotBeEquivalentTo(expected);
+			
+			expected.Name.Should().Be(actual.Name);
+			expected.Age.Should().Be(actual.Age);
+			expected.Height.Should().Be(actual.Height);
+			expected.Weight.Should().Be(actual.Weight);
+			expected.Parent.Should().BeEquivalentTo(actual.Parent);
 		}
 	}
 
