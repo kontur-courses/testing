@@ -51,13 +51,13 @@ namespace HomeExercises
 		{
 			actual.Should().NotBeNull();
 			expected.Should().NotBeNull();
-			actual.Should().NotBeEquivalentTo(expected);
+			actual.Should().NotBe(expected);
 			
 			expected.Name.Should().Be(actual.Name);
 			expected.Age.Should().Be(actual.Age);
 			expected.Height.Should().Be(actual.Height);
 			expected.Weight.Should().Be(actual.Weight);
-			expected.Parent.Should().BeEquivalentTo(actual.Parent);
+			expected.Parent.Should().Equals(actual.Parent);
 		}
 	}
 
