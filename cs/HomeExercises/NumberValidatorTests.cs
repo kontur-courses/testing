@@ -25,6 +25,20 @@ namespace HomeExercises
 			Action act = () => new NumberValidator(precision, scale, onlyPositive);
 			act.Should().NotThrow<ArgumentException>();
 		}
+
+		[TestCase(4, 2, false, "0,1", TestName = "IsValidNumber_WhenFractNumberWithСomma")]
+		[TestCase(4, 2, false, "0.1", TestName = "IsValidNumber_WhenFractNumberWithDot")]
+		[TestCase(4, 2, true, "+0.0", TestName = "IsValidNumber_WhenPositiveFractNumber")]
+		[TestCase(4, 2, true, "+0", TestName = "IsValidNumber_WhenPositiveIntNumber")]
+		[TestCase(4, 2, false, "-0.0", TestName = "IsValidNumber_WhenNegativeFractNumber")]
+		[TestCase(4, 2, false, "-0", TestName = "IsValidNumber_WhenNegativeIntNumber")]
+		[TestCase(17, 2, false, "99999999999999", TestName = "IsValidNumber_WhenLargeIntNumber")]
+		[TestCase(30, 17, false, "99999999999999,9999999999999", TestName = "IsValidNumber_WhenLargeFractNumber")]
+		public void IsValidNumber(int precision, int scale, bool onlyPositive, string input)
+		{
+			new NumberValidator(precision, scale, onlyPositive).IsValidNumber(input).Should().BeTrue();
+		}
+
 	}
 
 	public class NumberValidator
