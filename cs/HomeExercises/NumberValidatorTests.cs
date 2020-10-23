@@ -34,7 +34,7 @@ namespace HomeExercises
 			});
 		}
 
-		
+
 		[TestCase(null, ExpectedResult = false, TestName = "Should_BeFalse_WhenNullReference")]
 		[TestCase("abc", ExpectedResult = false, TestName = "Should_BeFalse_WhenValueIsLettersOnly")]
 		[TestCase("1vc", ExpectedResult = false, TestName = "Should_BeFalse_WhenIntegerContainsLetters")]
@@ -45,8 +45,10 @@ namespace HomeExercises
 		[TestCase("+-1", ExpectedResult = false, TestName = "Should_BeFalse_WhenTwiceSigns")]
 		[TestCase("9999", ExpectedResult = false, TestName = "Should_BeTrue_WhenTooBigValue")]
 		[TestCase("0.000", ExpectedResult = false, TestName = "Should_BeFalse_WhenTooBigFract")]
-		public bool Test_IsValidNumber_OnIncorrectInputs(string value) => simpleValidator.IsValidNumber(value);
-		
+		public bool Test_IsValidNumber_OnIncorrectInputs(string value) {
+			return simpleValidator.IsValidNumber(value);
+		}
+
 		[TestCase("0", ExpectedResult = true, TestName = "Should_BeTrue_WhenIntegerOnly")]
 		[TestCase("999", ExpectedResult = true, TestName = "Should_BeTrue_WhenMaxPossibleCorrectInteger")]
 		[TestCase("+10", ExpectedResult = true, TestName = "Should_BeTrue_WhenPositiveSignedInteger")]
@@ -57,8 +59,10 @@ namespace HomeExercises
 		[TestCase("9.99", ExpectedResult = true, TestName = "Should_BeTrue_WhenMaxPossibleCorrectDecimal")]
 		[TestCase("+9.9", ExpectedResult = true, TestName = "Should_BeTrue_WhenPositiveSignedDecimal")]
 		[TestCase("-9.9", ExpectedResult = true, TestName = "Should_BeTrue_WhenNegativeSignedDecimal")]
-		public bool Test_IsValidNumber_CorrectInputs_SignDontMatter(string value) => plainValidator.IsValidNumber(value);
-		
+		public bool Test_IsValidNumber_CorrectInputs_SignDontMatter(string value) {
+			return plainValidator.IsValidNumber(value);
+		}
+
 		[TestCase("+1", ExpectedResult = true, TestName = "Should_BeTrue_WhenInputIsPositiveInt")]
 		[TestCase("+99", ExpectedResult = true, TestName = "Should_BeTrue_WhenInputIsMaxPositiveInt")]
 		[TestCase("+1.0", ExpectedResult = true, TestName = "Should_BeTrue_WhenInputIsPositiveDecimal")]
@@ -67,7 +71,9 @@ namespace HomeExercises
 		[TestCase("-99", ExpectedResult = false, TestName = "Should_BeFalse_WhenInputIsMaxNegativeInt")]
 		[TestCase("-1.0", ExpectedResult = false, TestName = "Should_BeFalse_WhenInputIsNegativeDecimal")]
 		[TestCase("-9.9", ExpectedResult = false, TestName = "Should_BeFalse_WhenInputIsMaxNegativeDecimal")]
-		public bool Test_IsValidNumber_OnlyPositiveInputs(string value) => positiveOnlyValidator.IsValidNumber(value);
+		public bool Test_IsValidNumber_OnlyPositiveInputs(string value) {
+			return positiveOnlyValidator.IsValidNumber(value);
+		}
 	}
 
 	public class NumberValidator
