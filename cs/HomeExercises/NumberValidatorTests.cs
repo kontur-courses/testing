@@ -159,6 +159,14 @@ namespace HomeExercises
             numberValidator.IsValidNumber(number).Should().BeTrue();
         }
 
+        [Test]
+        public void IsValidNumber_IsTrue_IfScaleIsZero()
+        {
+            var numberValidatorWithZeroScale = new NumberValidator(5);
+
+            numberValidatorWithZeroScale.IsValidNumber("123");
+        }
+
         private NumberValidator GetOnlyPositiveNumberValidator()
         {
             return new NumberValidator(6, 2, true);
