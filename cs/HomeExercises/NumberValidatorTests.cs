@@ -1,33 +1,44 @@
 ﻿using System;
 using System.Text.RegularExpressions;
+using FluentAssertions.Execution;
 using NUnit.Framework;
 
 namespace HomeExercises
 {
     public class NumberValidatorTests
     {
+
         [Test]
-        public void Test()
+        public void NumberValidatorConstructorMultipleTest()
         {
             Assert.Multiple(() =>
             {
                 Assert.Throws<ArgumentException>(() => new NumberValidator(-1, 2, true),
                     "precision should be positive");
                 
-                Assert.Throws<ArgumentException>(() => new NumberValidator(-1, 2, false),
+                Assert.Throws<ArgumentException>(() => new NumberValidator(-1, 2),
                     "precision should be positive");
                 
-                Assert.Throws<ArgumentException>(() => new NumberValidator(2, -1, false), "scale should be positive");
+                Assert.Throws<ArgumentException>(() => new NumberValidator(2, -1), "scale should be positive");
                 Assert.Throws<ArgumentException>(() => new NumberValidator(2, -1, true), "scale should be positive");
                 Assert.Throws<ArgumentException>(() => new NumberValidator(2, 3, true),
                     "scale should be less than precision");
                 
                 Assert.Throws<ArgumentException>(() => new NumberValidator(2, 2, true),
                     "scale should be less than precision");
+                
+                
 
                 Assert.DoesNotThrow(() => new NumberValidator(1, 0, true), "scale could be 0");
-                Assert.DoesNotThrow(() => new NumberValidator(1, 0, false), "scale could be 0");
+                Assert.DoesNotThrow(() => new NumberValidator(1, 0), "scale could be 0");
+            });
+        }
 
+        [Test]
+        public void NumberValidationMultiTest()
+        {
+            Assert.Multiple(() =>
+            {
                 Assert.IsTrue(new NumberValidator(4, 2, true).IsValidNumber("+1.23"),
                     "correct result for insignificant sign");
 
