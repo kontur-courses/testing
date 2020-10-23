@@ -1,4 +1,4 @@
-﻿namespace HomeExercises
+﻿namespace HomeExercises.ObjectComparison_Task
 {
 	public class TsarRegistry
 	{

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Text.RegularExpressions;
 
-namespace HomeExercises
+namespace HomeExercises.NumberValidator_Task
 {
 	public class NumberValidator
 	{
