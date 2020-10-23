@@ -66,12 +66,12 @@ namespace HomeExercises.NumberValidator_Task
 			TestName = "True when int+fracPart <= precision and positive is false")]
 		[TestCase("+55.010", true,17, 3, true, 
 			TestName = "True when int+fracPart < precision and " + "positive is true")]
-		public void CheckValidNumber_TrueOrFalse(string value, bool actualResult, 
+		public void CheckValidNumber_TrueOrFalse(string value, bool expectedResult, 
 			int precision, int scale = 0, bool onlyPositive = false)
 		{
 			var validator = new NumberValidator(precision, scale, onlyPositive);
 
-			var expectedResult = validator.IsValidNumber(value);
+			var actualResult = validator.IsValidNumber(value);
 			
 			Assert.AreEqual(expectedResult, actualResult);
 		}
