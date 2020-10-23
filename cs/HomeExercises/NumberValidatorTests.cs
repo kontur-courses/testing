@@ -28,6 +28,38 @@ namespace HomeExercises
 			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("-1.23"));
 			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("a.sd"));
 		}
+
+		[Test]
+		public void NumberValidator_ThrowsException_IfPrecisionIsNotPositive()
+		{
+			Action act = () => new NumberValidator(0, 2, true);
+
+			act.Should().Throw<ArgumentException>();
+		}
+		
+		[Test]
+		public void NumberValidator_ThrowsException_IfScaleIsNegative()
+		{
+			Action act = () => new NumberValidator(2, -1, true);
+
+			act.Should().Throw<ArgumentException>();
+		}
+		
+		[Test]
+		public void NumberValidator_ThrowsException_IfScaleIsNotLessThanPrecision()
+		{
+			Action act = () => new NumberValidator(3, 3, true);
+
+			act.Should().Throw<ArgumentException>();
+		}
+		
+		[Test]
+		public void NumberValidator_NotThrowsException_IfArgumentsIsCorrect()
+		{
+			Action act = () => new NumberValidator(3, 2, true);
+
+			act.Should().NotThrow();
+		}
 	}
 
 	public class NumberValidator
