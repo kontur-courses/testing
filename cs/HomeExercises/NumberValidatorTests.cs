@@ -25,9 +25,15 @@ namespace HomeExercises
 			Assert.Throws<ArgumentException>(() => new NumberValidator(precision, scale));
 		}
 		
+<<<<<<< HEAD
 		[TestCase(1, 0, TestName = "Should_NotException_WhenScaleIsZero")]
 		[TestCase(3, 2, TestName = "Should_NotException_WhenScaleLessPrecision")]
 		[TestCase(100, 99, TestName = "Should_NotException_WhenPrecisionScaleAreBigAndCorrect")]
+=======
+		[TestCase(1, 0, TestName = "Should_NotException_WhenPrecisionIsNegative")]
+		[TestCase(3, 2, TestName = "Should_NotException_WhenScaleIsNegative")]
+		[TestCase(100, 99, TestName = "Should_NotException_WhenScaleGreaterPrecision")]
+>>>>>>> 4375c8585f50df411a2da7b32b93c51d57fa7f98
 		public void Test_NumberValidatorConstructor_OnCorrectInputs(int precision, int scale) {
 			Assert.DoesNotThrow(() => new NumberValidator(precision, scale));
 		}
