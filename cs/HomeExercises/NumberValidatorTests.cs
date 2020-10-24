@@ -62,7 +62,7 @@ namespace HomeExercises
 
 		[TestCase("-1")]
 		[TestCase("-10")]
-		public void IsValidNumberWithOnlyPositiveFlag_ReturnsFalse_OnNegativeNumber(string number)
+		public void IsValidNumber_ReturnsFalse_WithOnlyPositiveFlagOnNegativeNumber(string number)
 		{
 			new NumberValidator(3, 2, true).IsValidNumber(number).Should().BeFalse();
 		}
