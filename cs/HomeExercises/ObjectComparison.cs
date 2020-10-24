@@ -17,10 +17,10 @@ namespace HomeExercises
 
 			// Перепишите код на использование Fluent Assertions.
 			actualTsar.Should().BeEquivalentTo(
-				expectedTsar, options => options
-				.AllowingInfiniteRecursion()
-				.Excluding(ctx => ctx.SelectedMemberPath.EndsWith("Id"))
-				);
+				expectedTsar, 
+				options => options
+					.AllowingInfiniteRecursion()
+					.Excluding(ctx => ctx.SelectedMemberPath.EndsWith(nameof(Person.Id))));
 		}
 
 		[Test]
