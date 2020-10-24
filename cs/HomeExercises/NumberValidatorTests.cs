@@ -18,19 +18,12 @@ namespace HomeExercises
 		}
 
 		[TestCase("")]
-		[TestCase("a.sd")]
 		[TestCase("a,sd")]
-		[TestCase(".")]
 		[TestCase(",")]
-		[TestCase("0.")]
 		[TestCase("0,")]
-		[TestCase(".0")]
 		[TestCase(",0")]
 		[TestCase("+")]
 		[TestCase("-")]
-		[TestCase("-0")]
-		[TestCase("+0")]
-		[TestCase("02")]
 		public void IsValidNumber_ReturnsFalse_OnNotNumber(string notNumber)
 		{
 			new NumberValidator(17, 2, false).IsValidNumber(notNumber).Should().BeFalse();
@@ -74,16 +67,11 @@ namespace HomeExercises
 			new NumberValidator(3, 2, true).IsValidNumber(number).Should().BeFalse();
 		}
 
-		[Test]
-		public void IsValidNumber_ReturnsTrue_OnCorrectNumberWithComma()
+		[TestCase("0,12")]
+		[TestCase("0.12")]
+		public void IsValidNumber_ReturnsTrue_OnCorrectNumberWithCorrectSeparator(string number)
 		{
-			new NumberValidator(3, 2, true).IsValidNumber("0,12").Should().BeTrue();
-		}
-
-		[Test]
-		public void IsValidNumber_ReturnsTrue_OnCorrectNumberWithPeriod()
-		{
-			new NumberValidator(3, 2, true).IsValidNumber("0.12").Should().BeTrue();
+			new NumberValidator(3, 2, true).IsValidNumber(number).Should().BeTrue();
 		}
 	}
 }
