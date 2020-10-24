@@ -1,11 +1,20 @@
 ﻿using System.Linq;
 using FluentAssertions;
+using FluentAssertions.Equivalency;
 using NUnit.Framework;
 
 namespace HomeExercises
 {
 	public class ObjectComparison
 	{
+		
+		private static EquivalencyAssertionOptions<Person> ExcludingIdAndParent(EquivalencyAssertionOptions<Person> options)
+		{
+			return options
+				.Excluding(person => person.Id)
+				.Excluding(person => person.Parent);
+		}
+		
 		[Test]
 		[Description("Проверка текущего царя")]
 		[Category("ToRefactor")]
@@ -39,25 +48,15 @@ namespace HomeExercises
 			var expectedTsar = new Person("Ivan IV The Terrible", 54, 170, 70,
 				new Person("Vasili III of Russia", 28, 170, 60, null));
 
-			// Какие недостатки у такого подхода? 
-			AssertThatFieldsAreEqual(actualTsar, expectedTsar);
-			/*
-			 * если упадет то в сообщении будет "ждали тру, а было фолс", что неинформативно
-			 * не очень хорошо расширяем
-			 */
-		}
-
-		private void AssertThatFieldsAreEqual(Person? actual, Person? expected)
-		{
-			actual.Should().NotBeNull();
-			expected.Should().NotBeNull();
-			actual.Should().NotBe(expected);
+			actualTsar.Should().BeEquivalentTo(expectedTsar, ExcludingIdAndParent);
+			actualTsar.Parent.Should().BeEquivalentTo(expectedTsar.Parent, ExcludingIdAndParent);
 			
-			expected.Name.Should().Be(actual.Name);
-			expected.Age.Should().Be(actual.Age);
-			expected.Height.Should().Be(actual.Height);
-			expected.Weight.Should().Be(actual.Weight);
-			expected.Parent.Should().Equals(actual.Parent);
+			/* Почему это решение лучше:
+			 * 1) Легко расширяемо - нужно будет только дописывать новые свойства в expectedTsar
+			 * 2) Информативно при ошибке - дает информацию какие свойства отличаются
+			 * 3) Код стал более читаемым
+			 * 4) Тест продолжает корректно работать
+			 */
 		}
 	}
 
