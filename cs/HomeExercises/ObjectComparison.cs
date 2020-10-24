@@ -16,22 +16,11 @@ namespace HomeExercises
 				new Person("Vasili III of Russia", 28, 170, 60, null));
 
 			// Перепишите код на использование Fluent Assertions.
-			CheckPerson(actualTsar, expectedTsar);
-		}
-
-		private void CheckPerson(Person? actualPerson, Person? expectedPerson)
-		{
-			if (expectedPerson == null)
-			{
-				actualPerson.Should().BeNull();
-				return;
-			}
-			actualPerson.Should().NotBeNull();
-			actualPerson!.Name.Should().Be(expectedPerson!.Name);
-			actualPerson.Age.Should().Be(expectedPerson.Age);
-			actualPerson.Height.Should().Be(expectedPerson.Height);
-			actualPerson.Weight.Should().Be(expectedPerson.Weight);
-			CheckPerson(actualPerson.Parent, expectedPerson.Parent);
+			actualTsar.Should().BeEquivalentTo(
+				expectedTsar, options => options
+				.AllowingInfiniteRecursion()
+				.Excluding(ctx => ctx.SelectedMemberPath.EndsWith("Id"))
+				);
 		}
 
 		[Test]
@@ -52,6 +41,8 @@ namespace HomeExercises
 			требуют каких-то кастомных сравнивателей. Например, массивы, которые нам 
 			зачем-то понадобилось сравнивать без учета порядка - с Fluent Assertions 
 			сможем написать понятно в одну строчку, и не придется изобретать велосипед. 
+
+			Upd. Теперь в CheckCurrentTsar() поля не сравниваются вручную.
 			*/
 			Assert.True(AreEqual(actualTsar, expectedTsar));
 		}
