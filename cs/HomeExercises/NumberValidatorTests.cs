@@ -14,7 +14,7 @@ namespace HomeExercises
         [TestCase(4, 2, true, "+1.23", TestName = "PositiveNumber")]
         [TestCase(4, 2, false, "-1.23", TestName = "NegativeNumberWithNotOnlyPositiveValidator")]
         [TestCase(3, 2, true, "0,00", TestName = "CommaSeparator")]
-        public void IsValidNumber_ReturnsTrue_When(
+        public void IsValidNumber_ReturnsTrue(
                 int precision, int scale, bool onlyPositive, string numberValue)
         {
             var validationResult = new NumberValidator(precision, scale, onlyPositive)
@@ -22,7 +22,6 @@ namespace HomeExercises
 
             validationResult.Should().BeTrue();
         }
-
 
         [Test]
         [TestCase(3, 2, true, null, TestName = "NullString")]
@@ -37,7 +36,7 @@ namespace HomeExercises
         [TestCase(2, 1, true, "+1.0", TestName = "SingAffectsDigitsAmount")]
         [TestCase(5, 2, true, "0.000", TestName = "ScaleBiggerThanValidatorScale")]
         [TestCase(3, 2, true, "00.00", TestName = "PrecisionBiggerThanValidatorPrecision")]
-        public void IsValidNumber_ReturnsFalse_When(
+        public void IsValidNumber_ReturnsFalse(
                 int precision, int scale, bool onlyPositive, string numberValue)
         {
             var validationResult = new NumberValidator(precision, scale, onlyPositive)
@@ -47,12 +46,12 @@ namespace HomeExercises
         }
 
         [Test]
-        [TestCase(-1, 0, true, TestName = "WhenNegativePrecision")]
-        [TestCase(0, 0, true, TestName = "WhenZeroPrecision")]
-        [TestCase(1, -1, true, TestName = "WhenNegativeScale")]
-        [TestCase(1, 1, true, TestName = "WhenPrecisionEqualToScale")]
-        [TestCase(1, 2, true, TestName = "WhenPrecisionLessThanScale")]
-        public void ValidatorConstructor_ShouldThrowArgumentException(
+        [TestCase(-1, 0, true, TestName = "NegativePrecision")]
+        [TestCase(0, 0, true, TestName = "ZeroPrecision")]
+        [TestCase(1, -1, true, TestName = "NegativeScale")]
+        [TestCase(1, 1, true, TestName = "PrecisionEqualToScale")]
+        [TestCase(1, 2, true, TestName = "PrecisionLessThanScale")]
+        public void NumberValidatorConstructor_ShouldThrowArgumentException(
             int precision, int scale, bool onlyPositive)
         {
             Assert.Throws<ArgumentException>(() =>
