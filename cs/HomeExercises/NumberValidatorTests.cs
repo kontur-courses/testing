@@ -6,11 +6,11 @@ namespace HomeExercises
 {
 	public class NumberValidatorTests
 	{
-		[TestCase(0, 1, Description = "Zero precision")]
-		[TestCase(-1, 1, Description = "Negative precision")]
-		[TestCase(2, -1, Description = "Negative scale")]
-		[TestCase(2, 2, Description = "Scale is equal to precision")]
-		[TestCase(2, 3, Description = "Scale is less than precision")]
+		[TestCase(0, 1, TestName = "Zero precision")]
+		[TestCase(-1, 1, TestName = "Negative precision")]
+		[TestCase(2, -1, TestName = "Negative scale")]
+		[TestCase(2, 2, TestName = "Scale is equal to precision")]
+		[TestCase(2, 3, TestName = "Scale is less than precision")]
 		public void Constructor_ThrowsArgumentException_OnNotCorrectArguments(int precision, int scale)
 		{
 			Action action = () => new NumberValidator(precision, scale);
