@@ -1,5 +1,6 @@
-﻿using FluentAssertions;
-using FluentAssertions.Equivalency;
+﻿using System;
+using System.Linq.Expressions;
+using FluentAssertions;
 using NUnit.Framework;
 
 namespace HomeExercises
@@ -15,9 +16,8 @@ namespace HomeExercises
 		/// Например: Assert.True(AreEqual(actualTsar, expectedTsar)).
 		/// Should() явно указывает на актуальное и ожидаемое значения.
 		/// Сообщение о неверном результате предоставляет полную информацию.
-		/// При добавлении нового поля типа Person его нужно сравнивать аналогично полю Parent.
-		/// Например: при добавлении Person Child.
-		/// В остальных случаях при добавлении нового поля изменения в тесте не требуются.
+		/// Обнаружение цикличных ссылок.
+		/// При добавлении нового поля нет необходимости вносить изменения в тест.
 		/// </summary>
 		[Test]
 		[Description("Проверка текущего царя")]
@@ -28,29 +28,17 @@ namespace HomeExercises
 
 			var expectedTsar = new Person("Ivan IV The Terrible", 54, 170, 70,
 				new Person("Vasili III of Russia", 28, 170, 60, null));
-
-			actualTsar.Should().BeEquivalentTo(expectedTsar, ExcludeEquivalencyOptions);
-
-			CheckTsarParents(actualTsar, expectedTsar);
+			
+			var ignoreField = GetFieldName<Person, int>(person => person.Id);
+			actualTsar.Should().BeEquivalentTo(expectedTsar, options => options
+				.Using<int>(o => { })
+				.When(o => o.SelectedMemberPath.EndsWith(ignoreField)));
 		}
 
-		private static void CheckTsarParents(Person actualTsar, Person expectedTsar)
+		private static string GetFieldName<T, TResult>(Expression<Func<T, TResult>> f)
 		{
-			var actualTsarParent = actualTsar.Parent;
-			var expectedTsarParent = expectedTsar.Parent;
-			while (actualTsarParent != null || expectedTsarParent != null)
-			{
-				actualTsarParent.Should().BeEquivalentTo(expectedTsarParent, ExcludeEquivalencyOptions!);
-				actualTsarParent = actualTsarParent?.Parent;
-				expectedTsarParent = expectedTsarParent?.Parent;
-			}
-		}
-
-		private static EquivalencyAssertionOptions<Person> ExcludeEquivalencyOptions(EquivalencyAssertionOptions<Person> options)
-		{
-			return options
-				.Excluding(o => o.Id)
-				.Excluding(o => o.Parent);
+			var member = f.Body as MemberExpression;
+			return member?.Member.Name!;
 		}
 
 		[Test]
