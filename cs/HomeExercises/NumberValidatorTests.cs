@@ -7,26 +7,82 @@ namespace HomeExercises
 {
 	public class NumberValidatorTests
 	{
-		[Test]
-		public void Test()
+		[TestCase(-1, 2, true, TestName = "NegativePrecision")]
+		[TestCase(0, 2, true, TestName = "ZeroPrecision")]
+		[TestCase(1, -1, true, TestName = "NegativeScale")]
+		[TestCase(1, 2, true, TestName = "ScaleMoreThenPrecision")]
+		public void ThrowsArgumentException_OnWrongData(int precision, int scale, bool onlyPositive)
 		{
-			Assert.Throws<ArgumentException>(() => new NumberValidator(-1, 2, true));
-			Assert.DoesNotThrow(() => new NumberValidator(1, 0, true));
-			Assert.Throws<ArgumentException>(() => new NumberValidator(-1, 2, false));
-			Assert.DoesNotThrow(() => new NumberValidator(1, 0, true));
+			Assert.Throws<ArgumentException>(() => new NumberValidator(precision, scale, onlyPositive));
+		}
 
-			Assert.IsTrue(new NumberValidator(17, 2, true).IsValidNumber("0.0"));
-			Assert.IsTrue(new NumberValidator(17, 2, true).IsValidNumber("0"));
-			Assert.IsTrue(new NumberValidator(17, 2, true).IsValidNumber("0.0"));
-			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("00.00"));
-			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("-0.00"));
-			Assert.IsTrue(new NumberValidator(17, 2, true).IsValidNumber("0.0"));
-			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("+0.00"));
-			Assert.IsTrue(new NumberValidator(4, 2, true).IsValidNumber("+1.23"));
-			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("+1.23"));
-			Assert.IsFalse(new NumberValidator(17, 2, true).IsValidNumber("0.000"));
-			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("-1.23"));
-			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("a.sd"));
+		[TestCase("a", TestName = "OneLetter")]
+		[TestCase("-a", TestName = "NegativeOneLetter")]
+		[TestCase("a.", TestName = "OneLetterBeforeDot")]
+		[TestCase(".a", TestName = "OneLetterAfterDot")]
+		[TestCase("a.a", TestName = "TwoLettersWithDot")]
+		[TestCase("a,", TestName = "OneLetterBeforeComma")]
+		[TestCase(",a", TestName = "OneLetterAfterComma")]
+		[TestCase("a,a", TestName = "TwoLettersWithComma")]
+		[TestCase(",", TestName = "Comma")]
+		[TestCase(".", TestName = "Dot")]
+		[TestCase("", TestName = "Empty")]
+		[TestCase(null, TestName = "null")]
+		public void ValidNumber_ReturnFalseNotOnNumbers(string checkedString)
+		{
+			var numberValidator = new NumberValidator(17, 2, true);
+			numberValidator.IsValidNumber(checkedString).Should().BeFalse();
+		}
+
+		[TestCase("1.5", TestName = "OneDigitAfterDot")]
+		[TestCase("1.05", TestName = "TwoDigitsAfterDot")]
+		[TestCase("1", TestName = "Integer")]
+		[TestCase("1,5", TestName = "OneDigitAfterComma")]
+		[TestCase("1,05", TestName = "TwoDigitsAfterComma")]
+		[TestCase("+1.5", TestName = "OneDigitAfterDotWithPlus")]
+		[TestCase("+1.05", TestName = "TwoDigitsAfterDotWithPlus")]
+		[TestCase("+1", TestName = "IntegerWithPlus")]
+		[TestCase("+1,5", TestName = "OneDigitAfterCommaWithPlus")]
+		[TestCase("+1,05", TestName = "TwoDigitsAfterCommaWithPlus")]
+		public void CorrectWork_OnOnlyPositiveBigPrecisionAndScaleTwo(string checkedNumber)
+		{
+			var numberValidator = new NumberValidator(17, 2, true);
+			numberValidator.IsValidNumber(checkedNumber).Should().BeTrue();
+		}
+
+		[Test]
+		public void OnlyPositiveNumberValidator_ShouldBeFalse_OnNegativeNumber()
+		{
+			new NumberValidator(17, 2, true).IsValidNumber("-1");
+		}
+
+		
+		[TestCase("1.05", TestName = "ThreeDigitsWithDot")]
+		[TestCase("100", TestName = "ThreeDigits")]
+		[TestCase("+100", TestName = "ThreeDigitsWithPlus")]
+		[TestCase("+10,0", TestName = "ThreeDigitsWithPlusAndComma")]
+		[TestCase("+10.0", TestName = "ThreeDigitsWithPlusAndDot")]
+		[TestCase("1,05", TestName = "ThreeDigitsWithComma")]
+		[TestCase("-1.5", TestName = "TwoDigitsWithDotAndMinus")]
+		[TestCase("-10", TestName = "TwoDigitsWithMinus")]
+		public void CorrectWork_OnNotOnlyPositive_PrecisionThree_ScaleTwo(string checkedNumber)
+		{
+			var numberValidator = new NumberValidator(3, 2, false);
+			numberValidator.IsValidNumber(checkedNumber).Should().BeTrue();
+		}
+
+		[TestCase("-100", TestName = "NegativeInteger")]
+		[TestCase("-1.00", TestName = "ThreeDigitsWithDotAndMinus")]
+		[TestCase("-1,00", TestName = "ThreeDigitsWithCommaAndMinus")]
+		[TestCase("1000", TestName = "PositiveInteger")]
+		[TestCase("10.00", TestName = "FourDigitsAntTwoDigitsAfterDot")]
+		[TestCase("10,00", TestName = "FourDigitsAntTwoDigitsAfterComma")]
+		[TestCase("1.000", TestName = "FourDigitsAntThreeDigitsAfterDot")]
+		[TestCase("1,000", TestName = "FourDigitsAntThreeDigitsAfterComma")]
+		public void PrecisionThree_ScaleTwo_NotOnlyPositive_ShouldBeFalseOnTooLongNumbers(string checkedNumber)
+		{
+			var numberValidator = new NumberValidator(3, 2, false);
+			numberValidator.IsValidNumber(checkedNumber).Should().BeFalse();
 		}
 	}
 
