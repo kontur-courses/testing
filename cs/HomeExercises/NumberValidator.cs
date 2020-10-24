@@ -15,11 +15,16 @@ namespace HomeExercises
 			this.precision = precision;
 			this.scale = scale;
 			this.onlyPositive = onlyPositive;
+			numberRegex = TryGetNumberRegex(precision, scale);
+		}
+
+		private Regex TryGetNumberRegex(int precision, int scale)
+		{
 			if (precision <= 0)
 				throw new ArgumentException("precision must be a positive number");
 			if (scale < 0 || scale >= precision)
-				throw new ArgumentException("precision must be a non-negative number less or equal than precision");
-			numberRegex = new Regex(@"^([+-]?)(\d+)([.,](\d+))?$", RegexOptions.IgnoreCase);
+				throw new ArgumentException("scale must be a non-negative number less or equal than precision");
+			return new Regex(@"^([+-]?)(\d+)([.,](\d+))?$", RegexOptions.IgnoreCase);
 		}
 
 		public bool IsValidNumber(string value)
