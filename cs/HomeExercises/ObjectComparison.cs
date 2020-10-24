@@ -16,15 +16,22 @@ namespace HomeExercises
 				new Person("Vasili III of Russia", 28, 170, 60, null));
 
 			// Перепишите код на использование Fluent Assertions.
-			Assert.AreEqual(actualTsar.Name, expectedTsar.Name);
-			Assert.AreEqual(actualTsar.Age, expectedTsar.Age);
-			Assert.AreEqual(actualTsar.Height, expectedTsar.Height);
-			Assert.AreEqual(actualTsar.Weight, expectedTsar.Weight);
+			CheckPerson(actualTsar, expectedTsar);
+		}
 
-			Assert.AreEqual(expectedTsar.Parent!.Name, actualTsar.Parent!.Name);
-			Assert.AreEqual(expectedTsar.Parent.Age, actualTsar.Parent.Age);
-			Assert.AreEqual(expectedTsar.Parent.Height, actualTsar.Parent.Height);
-			Assert.AreEqual(expectedTsar.Parent.Parent, actualTsar.Parent.Parent);
+		private void CheckPerson(Person? actualPerson, Person? expectedPerson)
+		{
+			if (expectedPerson == null)
+			{
+				actualPerson.Should().BeNull();
+				return;
+			}
+			actualPerson.Should().NotBeNull();
+			actualPerson!.Name.Should().Be(expectedPerson!.Name);
+			actualPerson.Age.Should().Be(expectedPerson.Age);
+			actualPerson.Height.Should().Be(expectedPerson.Height);
+			actualPerson.Weight.Should().Be(expectedPerson.Weight);
+			CheckPerson(actualPerson.Parent, expectedPerson.Parent);
 		}
 
 		[Test]
@@ -35,7 +42,17 @@ namespace HomeExercises
 			var expectedTsar = new Person("Ivan IV The Terrible", 54, 170, 70,
 				new Person("Vasili III of Russia", 28, 170, 60, null));
 
-			// Какие недостатки у такого подхода? 
+			// Какие недостатки у такого подхода?
+			/*
+			1) Если тест упадет, мы не узнаем, какие именно значения не совпадают,
+			 то есть нам придется сверять поля вручную.
+			2) Решение с FluentAssertions куда лучше читается и легче понимается.
+			3) Добавление новых свойств в класс Person может привести к необходимости 
+			писать много кода, если эти свойства не сравниваются простым "==", а 
+			требуют каких-то кастомных сравнивателей. Например, массивы, которые нам 
+			зачем-то понадобилось сравнивать без учета порядка - с Fluent Assertions 
+			сможем написать понятно в одну строчку, и не придется изобретать велосипед. 
+			*/
 			Assert.True(AreEqual(actualTsar, expectedTsar));
 		}
 
