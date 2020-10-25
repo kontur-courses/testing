@@ -7,14 +7,11 @@ namespace HomeExercises
 {
 	public class NumberValidatorTests
 	{
-		private const string WrongPrecisionMessage = "precision must be a positive number";
-		private const string WrongScaleMessage = "scale must be a non-negative number less than precision";
-		
-		[TestCase(-1, 2, true, ExpectedResult = WrongPrecisionMessage, TestName = "NegativePrecision")]
-		[TestCase(0, 2, true, ExpectedResult = WrongPrecisionMessage, TestName = "ZeroPrecision")]
-		[TestCase(1, -1, true, ExpectedResult = WrongScaleMessage, TestName = "NegativeScale")]
-		[TestCase(1, 2, true, ExpectedResult = WrongScaleMessage, TestName = "ScaleMoreThenPrecision")]
-		[TestCase(1, 1, true, ExpectedResult = WrongScaleMessage, TestName = "ScaleEqualPrecision")]
+		[TestCase(-1, 2, true, ExpectedResult = "precision must be a positive number", TestName = "NegativePrecision")]
+		[TestCase(0, 2, true, ExpectedResult = "precision must be a positive number", TestName = "ZeroPrecision")]
+		[TestCase(1, -1, true, ExpectedResult = "scale must be a non-negative number less than precision", TestName = "NegativeScale")]
+		[TestCase(1, 2, true, ExpectedResult = "scale must be a non-negative number less than precision", TestName = "ScaleMoreThenPrecision")]
+		[TestCase(1, 1, true, ExpectedResult = "scale must be a non-negative number less than precision", TestName = "ScaleEqualPrecision")]
 		public string ThrowsArgumentException_OnWrongData(int precision, int scale, bool onlyPositive)
 		{
 			try
