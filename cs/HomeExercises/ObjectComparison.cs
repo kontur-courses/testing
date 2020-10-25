@@ -1,13 +1,20 @@
-﻿using FluentAssertions;
+﻿using System.Collections.Generic;
+using System.Linq;
+using System.Reflection;
+using FluentAssertions;
 using NUnit.Framework;
 
 namespace HomeExercises
 {
 	public class ObjectComparison
 	{
+		private static readonly HashSet<string> exclude = new HashSet<string>()
+		{
+			nameof(Person.Id)
+		};
+
 		[Test]
 		[Description("Проверка текущего царя")]
-		[Category("ToRefactor")]
 		public void CheckCurrentTsar()
 		{
 			var actualTsar = TsarRegistry.GetCurrentTsar();
@@ -15,16 +22,33 @@ namespace HomeExercises
 			var expectedTsar = new Person("Ivan IV The Terrible", 54, 170, 70,
 				new Person("Vasili III of Russia", 28, 170, 60, null));
 
-			// Перепишите код на использование Fluent Assertions.
-			Assert.AreEqual(actualTsar.Name, expectedTsar.Name);
-			Assert.AreEqual(actualTsar.Age, expectedTsar.Age);
-			Assert.AreEqual(actualTsar.Height, expectedTsar.Height);
-			Assert.AreEqual(actualTsar.Weight, expectedTsar.Weight);
+			AssertPerson(expectedTsar, actualTsar);
+		}
 
-			Assert.AreEqual(expectedTsar.Parent!.Name, actualTsar.Parent!.Name);
-			Assert.AreEqual(expectedTsar.Parent.Age, actualTsar.Parent.Age);
-			Assert.AreEqual(expectedTsar.Parent.Height, actualTsar.Parent.Height);
-			Assert.AreEqual(expectedTsar.Parent.Parent, actualTsar.Parent.Parent);
+		// В моём решении проверяются все поля, которые существуют на данный момент,
+		// которые публичные и которых нет в исключениях.
+		// Также при возникновении ошибки будет видно почему тест упал
+		public void AssertPerson(Person? expected, Person? actual)
+		{
+			if (expected == null || actual == null)
+			{
+				expected.Should().Be(null);
+				actual.Should().Be(null);
+				return;
+			}
+			var fields = expected.GetType()
+				.GetFields(BindingFlags.Instance | BindingFlags.Public)
+				.Where(field => !exclude.Contains(field.Name));
+			foreach (var field in fields)
+			{
+				var expectedValue = field.GetValue(expected);
+				var actualValue = field.GetValue(actual);
+
+				if (field.FieldType == typeof(Person))
+					AssertPerson(expectedValue as Person, actualValue as Person);
+				else 
+					expectedValue.Should().Be(actualValue);
+			}
 		}
 
 		[Test]
@@ -35,7 +59,11 @@ namespace HomeExercises
 			var expectedTsar = new Person("Ivan IV The Terrible", 54, 170, 70,
 				new Person("Vasili III of Russia", 28, 170, 60, null));
 
-			// Какие недостатки у такого подхода? 
+			// Какие недостатки у такого подхода?
+			// 1. Новое поле/свойство - новое изменение теста
+			//    Так как все поля класса перечисляются в AreEqual
+			// 2. Assert только один, и он - проверка boolean
+			//    Если в чём-то произойдёт ошибка, будет непонятно из-за чего
 			Assert.True(AreEqual(actualTsar, expectedTsar));
 		}
 
