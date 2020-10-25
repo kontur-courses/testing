@@ -18,7 +18,7 @@ namespace HomeExercises.NumberValidator_Task
 			if (precision <= 0)
 				throw new ArgumentException("precision must be a positive number");
 			if (scale < 0 || scale >= precision)
-				throw new ArgumentException("precision must be a non-negative number less or equal than precision");
+				throw new ArgumentException("scale must be a non-negative number less than precision");
 			numberRegex = new Regex(@"^([+-]?)(\d+)([.,](\d+))?$", RegexOptions.IgnoreCase);
 		}
 
@@ -26,7 +26,7 @@ namespace HomeExercises.NumberValidator_Task
 		{
 			// Проверяем соответствие входного значения формату N(m,k), в соответствии с правилом, 
 			// описанным в Формате описи документов, направляемых в налоговый орган в электронном виде по телекоммуникационным каналам связи:
-			// Формат числового значения указывается в виде N(m.к), где m – максимальное количество знаков в числе, включая знак (для отрицательного числа), 
+			// Формат числового значения указывается в виде N(m.к), где m – максимальное количество знаков в числе, включая знак (для отрицательного и положительного числа), 
 			// целую и дробную часть числа без разделяющей десятичной точки, k – максимальное число знаков дробной части числа. 
 			// Если число знаков дробной части числа равно 0 (т.е. число целое), то формат числового значения имеет вид N(m).
 
