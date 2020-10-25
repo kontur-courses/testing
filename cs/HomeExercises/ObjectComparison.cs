@@ -17,6 +17,7 @@ namespace HomeExercises
 
             var expectedTsar = new Person("Ivan IV The Terrible", 54, 170, 70,
                 new Person("Vasili III of Russia", 28, 170, 60, null));
+            
             actualTsar.Should()
                 .BeEquivalentTo(expectedTsar,
                     options => options.IncludingNestedObjects()
@@ -32,7 +33,7 @@ namespace HomeExercises
                 new Person("Vasili III of Russia", 28, 170, 60, null));
 
             // Какие недостатки у такого подхода?
-            //Ответ:
+            //
             //1. Непонятно, в каком конкретно из полей объекта ошибка.
             //2. При изменении класса Person нужно будет изменять и метод AreEqual.
             // В решении с fluentAssertions нужно будет изменять тесты только в случае добавления поля,
