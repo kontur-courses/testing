@@ -8,7 +8,7 @@
 		public readonly string Name;
 		public readonly int Weight;
 		public int Id;
-		public Person? Parent;
+		public readonly Person? Parent;
 
 		public Person(string name, int age, int height, int weight, Person? parent)
 		{

@@ -12,7 +12,7 @@ namespace HomeExercises
 		private readonly int precision;
 		private readonly int scale;
 
-		public NumberValidator(int precision, int scale = 0, bool onlyPositive = false)
+		private NumberValidator(int precision, int scale = 0, bool onlyPositive = false)
 		{
 			this.precision = precision;
 			this.scale = scale;
