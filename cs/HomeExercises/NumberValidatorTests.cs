@@ -26,6 +26,12 @@ namespace HomeExercises
         }
 
         [Test]
+        public void Ctor_NotThrowException_WhenDataIsCorrect()
+        {
+            Assert.DoesNotThrow(() => new NumberValidator(5, 3, true));
+        }
+
+        [Test]
         public void IsValidNumber_True_FloatNumberWithDot()
         {
             new NumberValidator(17, 2, true).IsValidNumber("0.0").Should().BeTrue();
