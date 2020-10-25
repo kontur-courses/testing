@@ -8,80 +8,80 @@ namespace HomeExercises
     public class NumberValidatorTests
     {
         [Test]
-        public void NumberValidator_ThrowArgumentException_WhenPrecisionNotPositive()
+        public void Ctor_ThrowArgumentException_WhenPrecisionNotPositive()
         {
             Assert.Throws<ArgumentException>(() => new NumberValidator(-1, 2, true));
         }
 
         [Test]
-        public void NumberValidator_ThrowArgumentException_WhenScaleMoreThenPrecision()
+        public void Ctor_ThrowArgumentException_WhenScaleMoreThenPrecision()
         {
             Assert.Throws<ArgumentException>(() => new NumberValidator(1, 2, true));
         }
 
         [Test]
-        public void NumberValidator_ThrowArgumentException_WhenScaleNegative()
+        public void Ctor_ThrowArgumentException_WhenScaleNegative()
         {
             Assert.Throws<ArgumentException>(() => new NumberValidator(1, -1, true));
         }
 
         [Test]
-        public void NumberValidator_IsValidate_FloatNumber()
+        public void IsValidNumber_True_FloatNumberWithDot()
         {
             new NumberValidator(17, 2, true).IsValidNumber("0.0").Should().BeTrue();
         }
 
         [Test]
-        public void NumberValidator_IsValidate_FloatNumberWithComma()
+        public void IsValidNumber_True_FloatNumberWithComma()
         {
             new NumberValidator(17, 2, true).IsValidNumber("0,0").Should().BeTrue();
         }
 
         [Test]
-        public void NumberValidator_IsValidate_PositiveNumberWhithPlus()
+        public void IsValidNumber_True_PositiveFloatNumberWhithPlus()
         {
             new NumberValidator(17, 2, true).IsValidNumber("+0.0").Should().BeTrue();
         }
 
         [Test]
-        public void NumberValidator_IsValidate_PositiveIntNumber()
+        public void IsValidNumber_True_PositiveIntNumber()
         {
             new NumberValidator(17, 2, true).IsValidNumber("0").Should().BeTrue();
         }
 
         [Test]
-        public void NumberValidator_IsValidate_NegativeFloatNumber()
+        public void IsValidNumber_True_NegativeFloatNumber()
         {
             new NumberValidator(17, 2, false).IsValidNumber("-0.0").Should().BeTrue();
         }
 
         [Test]
-        public void NumberValidator_IsNotValidate_NotNumber()
+        public void IsValidNumber_False_NotNumber()
         {
             var line = "abc";
             new NumberValidator(17, 2, true).IsValidNumber("abc").Should().BeFalse(line);
         }
 
         [Test]
-        public void NumberValidator_IsNotValidate_Negative_WhenOnlyPositive()
+        public void IsValidNumber_False_Negative_WhenOnlyPositive()
         {
             new NumberValidator(17, 2, true).IsValidNumber("-1.0").Should().BeFalse();
         }
 
         [Test]
-        public void NumberValidator_IsNotValidate_WhenMultipleDots()
+        public void IsValidNumber_False_WhenMultipleDots()
         {
             new NumberValidator(17, 10, true).IsValidNumber("1.0.0").Should().BeFalse();
         }
 
         [Test]
-        public void NumberValidator_IsNotValidate_WhenLengthMoreThenPrecision()
+        public void IsValidNumber_False_WhenLengthMoreThenPrecision()
         {
             new NumberValidator(3, 2, true).IsValidNumber("+0.00").Should().BeFalse();
         }
 
         [Test]
-        public void NumberValidator_IsNotValidate_WhenFracPartMoreThenScale()
+        public void IsValidNumber_False_WhenFracPartMoreThenScale()
         {
             new NumberValidator(17, 2, true).IsValidNumber("0.000").Should().BeFalse();
         }
