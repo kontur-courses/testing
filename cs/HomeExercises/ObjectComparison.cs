@@ -7,19 +7,29 @@ namespace HomeExercises
 {
 	public class ObjectComparison
 	{
-		[Test]
-		[Description("Проверка текущего царя")]
-		public void CheckCurrentTsar()
+		private Func<EquivalencyAssertionOptions<Person>,
+			EquivalencyAssertionOptions<Person>> setPersonEqOption;
+		
+		[SetUp]
+		public void SetUp()
 		{
-			Func<EquivalencyAssertionOptions<Person>,
-				EquivalencyAssertionOptions<Person>> setPersonEqOption = options =>
+			/* Решил вынести назначение опций сравнения класса Person в приватное поле класса,
+			 * поскольку хотя сейчас и один тест использует эти опции, в будущем может потребоваться
+			 * больше тестов на сравнение, и, как следствие, чаще будет использовано это поле
+			 */
+			setPersonEqOption = options =>
 			{
 				options.Excluding(ctx =>
 						ctx.SelectedMemberInfo.Name.Equals("Id"))
 					.AllowingInfiniteRecursion();
 				return options;
 			};
-			
+		}
+		
+		[Test]
+		[Description("Проверка текущего царя")]
+		public void CheckCurrentTsar()
+		{
 			var actualTsar = TsarRegistry.GetCurrentTsar();
 
 			var expectedTsar = new Person("Ivan IV The Terrible", 54, 170, 70,
