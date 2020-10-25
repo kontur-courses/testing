@@ -1,4 +1,6 @@
-﻿using FluentAssertions;
+﻿using System;
+using System.Diagnostics;
+using FluentAssertions;
 using NUnit.Framework;
 
 namespace HomeExercises
@@ -17,8 +19,8 @@ namespace HomeExercises
 
 			actualTsar.Should().BeEquivalentTo(expectedTsar,
 			                                   options => options.Excluding(person
-				                                                                => person.SelectedMemberInfo.Name == nameof(Person.Id)
-				                                                                   && person.GetType() == typeof(Person)));
+				                                                                => person.SelectedMemberInfo.Name == "Id" 
+				                                                                   && person.SelectedMemberInfo.DeclaringType == typeof(Person)));
 		}
 
 		[Test]
