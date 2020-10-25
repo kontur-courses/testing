@@ -7,13 +7,25 @@ namespace HomeExercises
 {
 	public class NumberValidatorTests
 	{
-		[TestCase(-1, 2, true, TestName = "NegativePrecision")]
-		[TestCase(0, 2, true, TestName = "ZeroPrecision")]
-		[TestCase(1, -1, true, TestName = "NegativeScale")]
-		[TestCase(1, 2, true, TestName = "ScaleMoreThenPrecision")]
-		public void ThrowsArgumentException_OnWrongData(int precision, int scale, bool onlyPositive)
+		private const string WrongPrecisionMessage = "precision must be a positive number";
+		private const string WrongScaleMessage = "scale must be a non-negative number less than precision";
+		
+		[TestCase(-1, 2, true, ExpectedResult = WrongPrecisionMessage, TestName = "NegativePrecision")]
+		[TestCase(0, 2, true, ExpectedResult = WrongPrecisionMessage, TestName = "ZeroPrecision")]
+		[TestCase(1, -1, true, ExpectedResult = WrongScaleMessage, TestName = "NegativeScale")]
+		[TestCase(1, 2, true, ExpectedResult = WrongScaleMessage, TestName = "ScaleMoreThenPrecision")]
+		[TestCase(1, 1, true, ExpectedResult = WrongScaleMessage, TestName = "ScaleEqualPrecision")]
+		public string ThrowsArgumentException_OnWrongData(int precision, int scale, bool onlyPositive)
 		{
-			Assert.Throws<ArgumentException>(() => new NumberValidator(precision, scale, onlyPositive));
+			try
+			{
+				var numberValidator = new NumberValidator(precision, scale, onlyPositive);
+			}
+			catch (ArgumentException e)
+			{
+				return e.Message;
+			}
+			return "";
 		}
 
 		[TestCase("a", TestName = "OneLetter")]
@@ -27,13 +39,44 @@ namespace HomeExercises
 		[TestCase(",", TestName = "Comma")]
 		[TestCase(".", TestName = "Dot")]
 		[TestCase("", TestName = "Empty")]
+		[TestCase(" ", TestName = "WhiteSpace")]
+		[TestCase("\n", TestName = "NewLine")]
+		[TestCase("\0", TestName = "ZeroSymbol")]
 		[TestCase(null, TestName = "null")]
-		public void ValidNumber_ReturnFalseNotOnNumbers(string checkedString)
+		public void ReturnFalseNotOnNumbers(string checkedString)
 		{
 			var numberValidator = new NumberValidator(17, 2, true);
 			numberValidator.IsValidNumber(checkedString).Should().BeFalse();
 		}
 
+		[Test]
+		public void OnlyPositiveNumberValidator_ShouldBeFalse_OnNegativeNumber()
+		{
+			new NumberValidator(17, 2, true).IsValidNumber("-1");
+		}
+
+		[TestCase("-100", TestName = "NegativeInteger")]
+		[TestCase("1000", TestName = "PositiveInteger")]
+		[TestCase("-1.00", TestName = "NegativeNumberWithTwoDigitsAfterDot")]
+		[TestCase("-1,00", TestName = "NegativeNumberWithTwoDigitsAfterComma")]
+		[TestCase("10.00", TestName = "TwoDigitsAfterDot")]
+		[TestCase("10,00", TestName = "TwoDigitsAfterComma")]
+		public void ShouldBeFalseOnTooLongPrecisionNumbers(string checkedNumber)
+		{
+			var numberValidator = new NumberValidator(3, 2, false);
+			numberValidator.IsValidNumber(checkedNumber).Should().BeFalse();
+		}
+
+		[TestCase("1.000", TestName = "WithDot")]
+		[TestCase("1,000", TestName = "WithComma")]
+		[TestCase("-1.000", TestName = "NegativeWithDot")]
+		[TestCase("-1,000", TestName = "NegativeWithComma")]
+		public void ShouldBeFalseOnTooLongScaleNumbers(string checkedNumber)
+		{
+			var numberValidator = new NumberValidator(10, 2, false);
+			numberValidator.IsValidNumber(checkedNumber).Should().BeFalse();
+		}
+		
 		[TestCase("1.5", TestName = "OneDigitAfterDot")]
 		[TestCase("1.05", TestName = "TwoDigitsAfterDot")]
 		[TestCase("1", TestName = "Integer")]
@@ -44,45 +87,24 @@ namespace HomeExercises
 		[TestCase("+1", TestName = "IntegerWithPlus")]
 		[TestCase("+1,5", TestName = "OneDigitAfterCommaWithPlus")]
 		[TestCase("+1,05", TestName = "TwoDigitsAfterCommaWithPlus")]
-		public void CorrectWork_OnOnlyPositiveBigPrecisionAndScaleTwo(string checkedNumber)
+		public void OnlyPositiveValidator_ShouldValidate(string checkedNumber)
 		{
 			var numberValidator = new NumberValidator(17, 2, true);
 			numberValidator.IsValidNumber(checkedNumber).Should().BeTrue();
 		}
-
-		[Test]
-		public void OnlyPositiveNumberValidator_ShouldBeFalse_OnNegativeNumber()
-		{
-			new NumberValidator(17, 2, true).IsValidNumber("-1");
-		}
-
 		
-		[TestCase("1.05", TestName = "ThreeDigitsWithDot")]
-		[TestCase("100", TestName = "ThreeDigits")]
-		[TestCase("+100", TestName = "ThreeDigitsWithPlus")]
-		[TestCase("+10,0", TestName = "ThreeDigitsWithPlusAndComma")]
-		[TestCase("+10.0", TestName = "ThreeDigitsWithPlusAndDot")]
-		[TestCase("1,05", TestName = "ThreeDigitsWithComma")]
-		[TestCase("-1.5", TestName = "TwoDigitsWithDotAndMinus")]
-		[TestCase("-10", TestName = "TwoDigitsWithMinus")]
-		public void CorrectWork_OnNotOnlyPositive_PrecisionThree_ScaleTwo(string checkedNumber)
+		[TestCase("1.05", TestName = "TwoDigitsAfterDot")]
+		[TestCase("100", TestName = "Integer")]
+		[TestCase("+100", TestName = "IntegerWithPlus")]
+		[TestCase("+10,0", TestName = "OneDigitAfterComma_WithPlus")]
+		[TestCase("+10.0", TestName = "OneDigitAfterDot_WithPlus")]
+		[TestCase("1,05", TestName = "TwoDigitsAfterComma")]
+		[TestCase("-1.5", TestName = "NegativeWithOneDigitAfterDot")]
+		[TestCase("-10", TestName = "NegativeInteger")]
+		public void NotOnlyPositiveValidator_ShouldValidate(string checkedNumber)
 		{
 			var numberValidator = new NumberValidator(3, 2, false);
 			numberValidator.IsValidNumber(checkedNumber).Should().BeTrue();
-		}
-
-		[TestCase("-100", TestName = "NegativeInteger")]
-		[TestCase("-1.00", TestName = "ThreeDigitsWithDotAndMinus")]
-		[TestCase("-1,00", TestName = "ThreeDigitsWithCommaAndMinus")]
-		[TestCase("1000", TestName = "PositiveInteger")]
-		[TestCase("10.00", TestName = "FourDigitsAntTwoDigitsAfterDot")]
-		[TestCase("10,00", TestName = "FourDigitsAntTwoDigitsAfterComma")]
-		[TestCase("1.000", TestName = "FourDigitsAntThreeDigitsAfterDot")]
-		[TestCase("1,000", TestName = "FourDigitsAntThreeDigitsAfterComma")]
-		public void PrecisionThree_ScaleTwo_NotOnlyPositive_ShouldBeFalseOnTooLongNumbers(string checkedNumber)
-		{
-			var numberValidator = new NumberValidator(3, 2, false);
-			numberValidator.IsValidNumber(checkedNumber).Should().BeFalse();
 		}
 	}
 
@@ -101,7 +123,7 @@ namespace HomeExercises
 			if (precision <= 0)
 				throw new ArgumentException("precision must be a positive number");
 			if (scale < 0 || scale >= precision)
-				throw new ArgumentException("precision must be a non-negative number less or equal than precision");
+				throw new ArgumentException("scale must be a non-negative number less than precision");
 			numberRegex = new Regex(@"^([+-]?)(\d+)([.,](\d+))?$", RegexOptions.IgnoreCase);
 		}
 
