@@ -47,7 +47,7 @@ namespace TestsForHomeExercises
             Assert.True(AreEqual(actualTsar, expectedTsar));
         }
 
-        private bool AreEqual(Person actual, Person expected)
+        private bool AreEqual(Person? actual, Person? expected)
         {
             if (actual == expected) return true;
             if (actual == null || expected == null) return false;
