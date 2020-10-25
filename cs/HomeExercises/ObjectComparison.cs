@@ -37,6 +37,10 @@ namespace HomeExercises
 
 			// Какие недостатки у такого подхода? 
 			Assert.True(AreEqual(actualTsar, expectedTsar));
+			// Главный недостаток в том, что, если что-то сломалось и мы получили false, то мы не узнаем какое значение
+			// и где оно не совпало
+			// Еще один недостаток заключается в том, что при добавлении новых свойств и полей нужно каждый раз
+			// прописывать новую строку в блоке return
 		}
 
 		private bool AreEqual(Person? actual, Person? expected)
@@ -49,6 +53,22 @@ namespace HomeExercises
 				&& actual.Height == expected.Height
 				&& actual.Weight == expected.Weight
 				&& AreEqual(actual.Parent, expected.Parent);
+		}
+
+		[Test]
+		public void RefactoredCheckCurrentTsar()
+		{
+			// Мой подход лучше тем, что, при падении теста, видно, на каких данных он упал
+			// Так же расширение класса не приведет к изменению теста. Приведет только в случае, если в класс добавить
+			// экземляр другого класса, в котором есть поле Id, и которое нужно проверить, потому что код ниже
+			// не учитывает все поля с названием Id независимо от того, в каком они классе расположены
+			var actualTsar = TsarRegistry.GetCurrentTsar();
+
+			var expectedTsar = new Person("Ivan IV The Terrible", 54, 170, 70,
+				new Person("Vasili III of Russia", 28, 170, 60, null));
+
+			actualTsar.Should().BeEquivalentTo(expectedTsar, options =>
+				options.Excluding(ctx => ctx.SelectedMemberInfo.Name.Equals("Id")));
 		}
 	}
 
