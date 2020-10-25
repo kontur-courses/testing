@@ -1,6 +1,7 @@
 ﻿using System;
-using System.Linq.Expressions;
+using System.Collections.Generic;
 using FluentAssertions;
+using FluentAssertions.Equivalency;
 using NUnit.Framework;
 
 namespace HomeExercises
@@ -19,6 +20,14 @@ namespace HomeExercises
 		/// Обнаружение цикличных ссылок.
 		/// При добавлении нового поля нет необходимости вносить изменения в тест.
 		/// </summary>
+		private static readonly HashSet<string> FieldsToIgnore = new HashSet<string>
+		{
+			nameof(Person.Id)
+		};
+
+		private static bool IsFieldToIgnore(SelectedMemberInfo info) =>
+			info != null && FieldsToIgnore.Contains(info.Name);
+		
 		[Test]
 		[Description("Проверка текущего царя")]
 		[Category("ToRefactor")]
@@ -28,17 +37,10 @@ namespace HomeExercises
 
 			var expectedTsar = new Person("Ivan IV The Terrible", 54, 170, 70,
 				new Person("Vasili III of Russia", 28, 170, 60, null));
-			
-			var ignoreField = GetFieldName<Person, int>(person => person.Id);
+
 			actualTsar.Should().BeEquivalentTo(expectedTsar, options => options
 				.Using<int>(o => { })
-				.When(o => o.SelectedMemberPath.EndsWith(ignoreField)));
-		}
-
-		private static string GetFieldName<T, TResult>(Expression<Func<T, TResult>> f)
-		{
-			var member = f.Body as MemberExpression;
-			return member?.Member.Name!;
+				.When(f => IsFieldToIgnore(f.SelectedMemberInfo)));
 		}
 
 		[Test]
