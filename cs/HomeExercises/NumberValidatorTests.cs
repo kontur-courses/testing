@@ -8,25 +8,75 @@ namespace HomeExercises
 	public class NumberValidatorTests
 	{
 		[Test]
-		public void Test()
+		public void NumberValidatorConstructor_ThrowArgumentException_WhenPrecisionNegative()
 		{
 			Assert.Throws<ArgumentException>(() => new NumberValidator(-1, 2, true));
-			Assert.DoesNotThrow(() => new NumberValidator(1, 0, true));
-			Assert.Throws<ArgumentException>(() => new NumberValidator(-1, 2, false));
-			Assert.DoesNotThrow(() => new NumberValidator(1, 0, true));
+		}
 
+		[Test]
+		public void NumberValidatorConstructor_ThrowArgumentException_WhenScaleNegative()
+		{
+			Assert.Throws<ArgumentException>(() => new NumberValidator(4, -1, true));
+		}
+
+		[Test]
+		public void NumberValidatorConstructor_ThrowArgumentException_WhenScaleMorePrecision()
+		{
+			Assert.Throws<ArgumentException>(() => new NumberValidator(1, 8, true));
+		}
+
+		[Test]
+		public void NumberValidator_ReturnTrue_OnValidString()
+		{
 			Assert.IsTrue(new NumberValidator(17, 2, true).IsValidNumber("0.0"));
-			Assert.IsTrue(new NumberValidator(17, 2, true).IsValidNumber("0"));
-			Assert.IsTrue(new NumberValidator(17, 2, true).IsValidNumber("0.0"));
+		}
+
+		[Test]
+		public void NumberValidator_ReturnFalse_WhenStringToLong()
+		{
 			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("00.00"));
-			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("-0.00"));
-			Assert.IsTrue(new NumberValidator(17, 2, true).IsValidNumber("0.0"));
+		}
+
+		[Test]
+		public void NumberValidator_ReturnFalse_OnNegativeValueWhenOnlyPositive()
+		{
+			Assert.IsFalse(new NumberValidator(5, 2, true).IsValidNumber("-0.00"));
+		}
+
+		[Test]
+		public void NumberValidator_ReturnFalse_WhenLengthMoreAtPlusSign()
+		{
 			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("+0.00"));
-			Assert.IsTrue(new NumberValidator(4, 2, true).IsValidNumber("+1.23"));
-			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("+1.23"));
+		}
+
+		[Test]
+		public void NumberValidator_ReturnFalse_WhenLengthMoreAtNonSignificantZeros()
+		{
 			Assert.IsFalse(new NumberValidator(17, 2, true).IsValidNumber("0.000"));
-			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("-1.23"));
+		}
+
+		[Test]
+		public void NumberValidator_ReturnFalse_OnStringWithOnlyLetters()
+		{
 			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("a.sd"));
+		}
+
+		[Test]
+		public void NumberValidator_ReturnFalse_OnStringWithLetter()
+		{
+			Assert.IsFalse(new NumberValidator(8, 7, true).IsValidNumber("4.44d"));
+		}
+
+		[Test]
+		public void NumberValidator_ReturnFalse_OnNull()
+		{
+			Assert.IsFalse(new NumberValidator(5, 2, true).IsValidNumber(null));
+		}
+
+		[Test]
+		public void NumberValidator_ReturnFalse_OnEmptyString()
+		{
+			Assert.IsFalse(new NumberValidator(5, 2, true).IsValidNumber(""));
 		}
 	}
 
