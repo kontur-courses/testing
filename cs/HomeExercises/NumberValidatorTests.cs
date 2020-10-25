@@ -11,6 +11,14 @@ namespace HomeExercises
         public void Ctor_ThrowArgumentException_WhenPrecisionNotPositive()
         {
             Assert.Throws<ArgumentException>(() => new NumberValidator(-1, 2, true));
+            try
+            {
+                var numberValidator = new NumberValidator(-1, 2, true);
+            }
+            catch(Exception e)
+            {
+                e.Message.Should().Be("precision must be a positive number");
+            }
         }
 
         [Test]
