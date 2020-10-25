@@ -1,4 +1,6 @@
-﻿using FluentAssertions;
+﻿using System;
+using FluentAssertions;
+using FluentAssertions.Equivalency;
 using NUnit.Framework;
 
 namespace HomeExercises
@@ -9,17 +11,26 @@ namespace HomeExercises
 		[Description("Проверка текущего царя")]
 		public void CheckCurrentTsar()
 		{
-			AssertionOptions.AssertEquivalencyUsing(options =>
-				options.Excluding(ctx => 
+			Func<EquivalencyAssertionOptions<Person>,
+				EquivalencyAssertionOptions<Person>> setPersonEqOption = options =>
+			{
+				options.Excluding(ctx =>
 						ctx.SelectedMemberInfo.Name.Equals("Id"))
-					.AllowingInfiniteRecursion());
+					.AllowingInfiniteRecursion();
+				return options;
+			};
 			
 			var actualTsar = TsarRegistry.GetCurrentTsar();
 
 			var expectedTsar = new Person("Ivan IV The Terrible", 54, 170, 70,
 				new Person("Vasili III of Russia", 28, 170, 60, null));
 
-			actualTsar.Should().BeEquivalentTo(expectedTsar);
+			actualTsar.Should().BeEquivalentTo(expectedTsar, 
+				opt => setPersonEqOption(opt));
+			
+			// Раскомментируйте эту строку, чтобы убедиться, что тест не пройдет, если не прописать опции
+			// Если бы менялись глобальные опции, возникали бы нежелательные эффекты в последующих проверках
+			// actualTsar.Should().BeEquivalentTo(expectedTsar);
 		}
 
 		[Test]
