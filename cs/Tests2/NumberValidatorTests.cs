@@ -99,5 +99,17 @@ namespace TestsForHomeExercises
         {
             new NumberValidator(17, 2, true).IsValidNumber("0.000").Should().BeFalse();
         }
+
+        [Test]
+        public void IsValidNumber_False_Null()
+        {
+            new NumberValidator(17, 2, true).IsValidNumber(null).Should().BeFalse();
+        }
+
+        [Test]
+        public void IsValidNumber_False_EmptyString()
+        {
+            new NumberValidator(17, 2, true).IsValidNumber("").Should().BeFalse();
+        }
     }
 }
