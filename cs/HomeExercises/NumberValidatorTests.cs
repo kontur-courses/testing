@@ -1,7 +1,4 @@
-﻿using System;
-using System.Text.RegularExpressions;
-using FluentAssertions;
-using NUnit.Framework;
+﻿using NUnit.Framework;
 
 namespace HomeExercises
 {
@@ -9,43 +6,14 @@ namespace HomeExercises
 	{
 		public class ConstuctorTest
 		{
-			[TestCase(-1, 3)]
-			[TestCase(-1, 0, true)]
-			[TestCase(-1, -7)]
-			[TestCase(-6, 5)]
-			[TestCase(0, 0, true)]
-			[TestCase(0, 4)]
-			[TestCase(0, -1, true)]
-			public void Test_PrecisionMustBePositive(int precesion, int scale, bool onlyPositive = false)
+			[TestCase(1, 0)]
+			[TestCase(3, 1)]
+			[TestCase(15, 14)]
+			[TestCase(15, 7)]
+			[TestCase(4, 2)]
+			public void Test_ScaleMustBeBetweenZeroAndPrecision(int precision, int scale)
 			{
-				Assert.Throws<ArgumentException>(() => new NumberValidator(precesion, scale, onlyPositive));
-			}
-
-			[TestCase(3, -1)]
-			[TestCase(3, -7, true)]
-			[TestCase(17, -16)]
-			public void Test_ScaleMustBeNonNegative(int precesion, int scale, bool onlyPositive = false)
-			{
-				Assert.Throws<ArgumentException>(() => new NumberValidator(precesion, scale, onlyPositive));
-			}
-
-			[TestCase(3, 4)]
-			[TestCase(1, 3)]
-			[TestCase(17, 18)]
-			[TestCase(9, 9)]
-			public void Test_ScaleMustBeLessThanPrecision(int precesion, int scale)
-			{
-				Assert.Throws<ArgumentException>(() => new NumberValidator(precesion, scale));
-			}
-
-			[TestCase(1, 0, true)]
-			[TestCase(3, 1, false)]
-			[TestCase(15, 14, false)]
-			[TestCase(15, 7, true)]
-			[TestCase(4, 2, true)]
-			public void Test_PrecisionIsPositiv_ScaleBetweenZeroAndPrecision_IsValid(int precision, int scale, bool isOnlyPositive)
-			{
-				Assert.DoesNotThrow(() => new NumberValidator(precision, scale, isOnlyPositive));
+				Assert.DoesNotThrow(() => new NumberValidator(precision, scale));
 			}
 		}
 
@@ -77,17 +45,15 @@ namespace HomeExercises
 				Assert.IsFalse(standartValidator.IsValidNumber(""));	
 			}
 		
-			[TestCase("1.0", true)]
-			[TestCase("1,0", true)]
-			[TestCase("-7.15", true)]
-			[TestCase("-0,15", true)]
-			[TestCase("1:0", false)]
-			[TestCase("1'1", false)]
-			[TestCase("8;15", false)]
-			[TestCase("9-3", false)]
-			public void Test_OnlyDotOrCommaMustBeSeparator(string str, bool expectedValid)
+			[TestCase("1.0", ExpectedResult = true)]
+			[TestCase("1,0", ExpectedResult = true)]
+			[TestCase("-7.15", ExpectedResult = true)]
+			[TestCase("-0,15", ExpectedResult = true)]
+			[TestCase("1:0", ExpectedResult = false)]
+			[TestCase("9-3", ExpectedResult = false)]
+			public bool Test_OnlyDotOrCommaMustBeSeparator(string str)
 			{
-				Assert.AreEqual(standartValidator.IsValidNumber(str), expectedValid);
+				return standartValidator.IsValidNumber(str);
 			}
 
 			[TestCase("1.0")]
@@ -239,54 +205,6 @@ namespace HomeExercises
 			{
 				Assert.IsTrue(new NumberValidator(10, 9, false).IsValidNumber(str));
 			}
-		}
-	}
-
-	public class NumberValidator
-	{
-		private readonly Regex numberRegex;
-		private readonly bool onlyPositive;
-		private readonly int precision;
-		private readonly int scale;
-
-		public NumberValidator(int precision, int scale = 0, bool onlyPositive = false)
-		{
-			this.precision = precision;
-			this.scale = scale;
-			this.onlyPositive = onlyPositive;
-			if (precision <= 0)
-				throw new ArgumentException("precision must be a positive number");
-			if (scale < 0 || scale >= precision)
-				throw new ArgumentException("precision must be a non-negative number less or equal than precision");
-			numberRegex = new Regex(@"^([+-]?)(\d+)([.,](\d+))?$", RegexOptions.IgnoreCase);
-		}
-
-		public bool IsValidNumber(string value)
-		{
-			// Проверяем соответствие входного значения формату N(m,k), в соответствии с правилом, 
-			// описанным в Формате описи документов, направляемых в налоговый орган в электронном виде по телекоммуникационным каналам связи:
-			// Формат числового значения указывается в виде N(m.к), где m – максимальное количество знаков в числе, включая знак (для отрицательного числа), 
-			// целую и дробную часть числа без разделяющей десятичной точки, k – максимальное число знаков дробной части числа. 
-			// Если число знаков дробной части числа равно 0 (т.е. число целое), то формат числового значения имеет вид N(m).
-
-			if (string.IsNullOrEmpty(value))
-				return false;
-
-			var match = numberRegex.Match(value);
-			if (!match.Success)
-				return false;
-
-			// Знак и целая часть
-			var intPart = match.Groups[1].Value.Length + match.Groups[2].Value.Length;
-			// Дробная часть
-			var fracPart = match.Groups[4].Value.Length;
-
-			if (intPart + fracPart > precision || fracPart > scale)
-				return false;
-
-			if (onlyPositive && match.Groups[1].Value == "-")
-				return false;
-			return true;
 		}
 	}
 }

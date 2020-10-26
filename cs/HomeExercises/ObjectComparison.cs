@@ -1,6 +1,5 @@
 ﻿using FluentAssertions;
 using NUnit.Framework;
-using System.Linq;
 
 namespace HomeExercises
 {
@@ -15,35 +14,15 @@ namespace HomeExercises
 
 			var expectedTsar = new Person("Ivan IV The Terrible", 54, 170, 70,
 				new Person("Vasili III of Russia", 28, 170, 60, null));
-
 			// Перепишите код на использование Fluent Assertions.
-			PersonEquals(actualTsar, expectedTsar);
-			PersonEquals(actualTsar.Parent, expectedTsar.Parent);
+			actualTsar.Should().BeEquivalentTo(expectedTsar, options => 
+			options.Excluding(p => p.SelectedMemberInfo.DeclaringType == typeof(Person) && p.SelectedMemberInfo.Name == "Id"));
 			// Почему лучше? 
 			// Первое - граммотное сообщение об ошибке
-			// Второе - если появится новое поле, то его можно легко добавить в проверку в PersonEquals
-			// actualTsar.NewField.Should().Be(expectedTsar.NewField, "becouse");
-			// если же появилось поле типа Person (например второй родитель), 
-			// то в CheckCurrentTsar легко добавить проверку PersonEquals(actualPerson.NewParent, expectedPerson.NewParent)
-			// тем самым обходя рекурсивное рассмотрение (если это нужно), 
-			// если нужно рекурсивно смотреть то проверку можно осуществить в PersonEquals,
-			// однако, если у нас есть поле типа "брат"/"сестра" то рекурсивный подход зациклится и заполнит стек
-			// поэтому есть смысл дать проверяющему самостоятельно разобраться как именно и до какого момента он желает проверять Person.
-		}
-
-		private void PersonEquals(Person actualPerson, Person expectedPerson, bool isRecurs = false)
-		{
-			if(ReferenceEquals(actualPerson, expectedPerson))
-				return;
-			if(actualPerson == null && expectedPerson == null)
-				return;
-			new[] { actualPerson, expectedPerson }.Should().NotContain(p => p == null);
-			actualPerson.Name.Should().Be(expectedPerson.Name, "actualName = expectedName");
-			actualPerson.Age.Should().Be(expectedPerson.Age, "actualAge = expectedAge");
-			actualPerson.Height.Should().Be(expectedPerson.Height, "actualHeight = expectedHeight");
-			actualPerson.Weight.Should().Be(expectedPerson.Weight, "actualWeight = expectedWeight");
-			if (isRecurs)
-				PersonEquals(actualPerson.Parent, expectedPerson.Parent, true);
+			// Второе - если появится новое поле, то код никак не изменится))
+			// если же появилось поле типа Person (например второй родитель), то сравние пойдет рекурсивно по всем полям.
+			// кроме того поле Id не проверяется только у объектов типа Person
+			// если в Person будет инкапсулированно поле другого типа с Id, то Id будет сравниваться
 		}
 
 		[Test]
@@ -57,7 +36,7 @@ namespace HomeExercises
 			// Какие недостатки у такого подхода? 
 			// Если проверка не прошла, то выведет сообщение вида "ожидалась истина, а была ложь"
 			// Что затрудняет понимание теста и сравнения объектов
-			// Кроме того метод рекурсивно проверяет все гениалогическое древо 
+			// Кроме того метод нерасширяем для Person - т.е. нельзя добавить новые поля. 
 			Assert.True(AreEqual(actualTsar, expectedTsar));
 		}
 
@@ -74,12 +53,13 @@ namespace HomeExercises
 		}
 	}
 
+
 	public class TsarRegistry
 	{
 		public static Person GetCurrentTsar()
 		{
 			return new Person(
-				"Ivan IV The Terrible", 54, 170, 70,
+				"Ivan IV The Terrible", 54, 170, 70, 
 				new Person("Vasili III of Russia", 28, 170, 60, null));
 		}
 	}
