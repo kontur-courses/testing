@@ -30,70 +30,59 @@ namespace HomeExercises
 		}
 		
 		[Test]
-		[TestCase(1, 0, true)]
-		public void DontThrowException_WhenPositivePrecisionAndNonNegativeScale(int precision, int scale, bool onlyPositive)
+		public void ShouldntThrowException_WhenPositivePrecisionAndNonNegativeScale()
 		{
-			Action action = () => { new NumberValidator(precision, scale, onlyPositive); };
+			Action action = () => { new NumberValidator(1, 0, true); };
 			action.Should().NotThrow();
 		}
 		
 		[Test]
-		[TestCase(-1, 0, true)]
-		public void ThrowException_WhenNegativePrecision(int precision, int scale, bool onlyPositive)
+		public void ShouldThrowException_WhenNegativePrecision()
 		{
-			Action action = () => { new NumberValidator(precision, scale, onlyPositive); };
+			Action action = () => { new NumberValidator(-1, 0, true); };
 			action.Should().Throw<ArgumentException>().WithMessage("precision must be a positive number");
 		}
-		
+
 		[Test]
 		[TestCase(1, -1, true)]
-		public void ThrowException_WhenNegativeScale(int precision, int scale, bool onlyPositive)
-		{
-			Action action = () => { new NumberValidator(precision, scale, onlyPositive); };
-			action.Should().Throw<ArgumentException>().WithMessage("precision must be a non-negative number less or equal than precision");
-		}
-		
-		[Test]
 		[TestCase(2, 3, true)]
 		[TestCase(3, 3, true)]
-		public void ThrowException_WhenPrecisionLessThenOrEqualToScale(int precision, int scale, bool onlyPositive)
+		public void ShouldThrowException_WhenPrecisionLessThenOrEqualToScale(int precision, int scale, bool onlyPositive)
 		{
 			Action action = () => { new NumberValidator(precision, scale, onlyPositive); };
 			action.Should().Throw<ArgumentException>().WithMessage("precision must be a non-negative number less or equal than precision");
 		}
 		
 		[Test]
-		[TestCase(3, 2, true, null)]
-		[TestCase(3, 2, true, "")]
-		public void False_WhenEmptyOrNullValue(int precision, int scale, bool onlyPositive, string value)
+		[TestCase(null)]
+		[TestCase("")]
+		public void False_WhenEmptyOrNullValue(string value)
 		{
-			new NumberValidator(precision, scale, onlyPositive).IsValidNumber(value).Should().BeFalse();
+			new NumberValidator(3, 2, true).IsValidNumber(value).Should().BeFalse();
 		}
 		
 		[Test]
-		[TestCase(3, 2, true, "-2.0")]
-		public void False_WhenGivenNegativeNumberToOnlyPositiveValidator(int precision, int scale, bool onlyPositive, string value)
+		public void False_WhenGivenNegativeNumberToOnlyPositiveValidator()
 		{
-			new NumberValidator(precision, scale, onlyPositive).IsValidNumber(value).Should().BeFalse();
+			new NumberValidator(3, 2, true).IsValidNumber("-2.0").Should().BeFalse();
 		}
 		
 		[Test]
-		[TestCase(3, 2, true, "-2.0a")]
-		[TestCase(3, 2, true, "a2.0")]
-		[TestCase(3, 2, true, "   ")]
-		[TestCase(3, 2, true, "string")]
-		[TestCase(3, 2, true, "s.g")]
-		[TestCase(3, 2, true, "string\n2.0")]
-		public void False_WhenGivenNoneNumericString(int precision, int scale, bool onlyPositive, string value)
+		[TestCase("-2.0a")]
+		[TestCase("a2.0")]
+		[TestCase("   ")]
+		[TestCase("string")]
+		[TestCase("s.g")]
+		[TestCase("string\n2.0")]
+		public void False_WhenGivenNoneNumericString(string value)
 		{
-			new NumberValidator(precision, scale, onlyPositive).IsValidNumber(value).Should().BeFalse();
+			new NumberValidator(3, 2, true).IsValidNumber(value).Should().BeFalse();
 		}
 		
 		[Test]
-		[TestCase(5, 2, true, "2.011")]
-		public void False_WhenFractionalLengthGraterThenScale(int precision, int scale, bool onlyPositive, string value)
+		public void False_WhenFractionalLengthGreaterThenScale()
 		{
-			new NumberValidator(precision, scale, onlyPositive).IsValidNumber(value).Should().BeFalse();
+			new NumberValidator(5, 2, true).IsValidNumber("2.011").Should().BeFalse();
 		}
 		
 		[Test]
@@ -102,7 +91,7 @@ namespace HomeExercises
 		[TestCase(3, 2, false, "-0.00")]
 		[TestCase(3, 0, true, "0000")]
 		[TestCase(4, 0, false, "-0000")]
-		public void False_WhenNumberLengthGraterThenPrecision(int precision, int scale, bool onlyPositive, string value)
+		public void False_WhenNumberLengthGreaterThenPrecision(int precision, int scale, bool onlyPositive, string value)
 		{
 			new NumberValidator(precision, scale, onlyPositive).IsValidNumber(value).Should().BeFalse();
 		}
@@ -123,10 +112,8 @@ namespace HomeExercises
 		[TestCase(5, 3, false, "-1.000")]
 		[TestCase(5, 1, true, "+110.0")]
 		[TestCase(5, 1, false, "-110.0")]
-		[TestCase(5, 1, false, "+110.0")]
 		[TestCase(5, 1, false, "+110,0")]
 		[TestCase(5, 0, true, "+110")]
-		[TestCase(30, 10, true, "435436234714712456.128985628")]
 		public void True_OnCorrectNumbers(int precision, int scale, bool onlyPositive, string value)
 		{
 			new NumberValidator(precision, scale, onlyPositive).IsValidNumber(value).Should().BeTrue();
