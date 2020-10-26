@@ -1,5 +1,4 @@
-﻿using System.Linq;
-using FluentAssertions;
+﻿using FluentAssertions;
 using NUnit.Framework;
 
 namespace HomeExercises
@@ -19,34 +18,12 @@ namespace HomeExercises
             var expectedTsar = new Person("Ivan IV The Terrible", 54, 170, 70,
                 new Person("Vasili III of Russia", 28, 170, 60, null));
 
-            CheckPerson(actualTsar, expectedTsar);
-        }
-
-        private void CheckPerson(Person? actualPerson, Person? expectedPerson)
-        {
-            if (actualPerson == expectedPerson)
-                return;
-            var stringParentsForFault = string.Concat(Enumerable.Repeat(".Parent", ancestorLevel));
-            if (actualPerson == null || expectedPerson == null)
-            {
-                actualPerson.Should().NotBeNull($"expectedPerson{stringParentsForFault} is not null");
-                actualPerson.Should().BeNull($"expectedPerson{stringParentsForFault} is null");
-            }
-
-            var fields = typeof(Person).GetFields();
-            foreach (var field in fields.Where(x => x.Name != "Id"))
-                if (field.FieldType == typeof(Person))
-                {
-                    ancestorLevel++;
-                    CheckPerson((Person?) field.GetValue(actualPerson),
-                        (Person?) field.GetValue(expectedPerson));
-                }
-                else
-                {
-                    field.GetValue(actualPerson).Should().Be(field.GetValue(expectedPerson),
-                        $"actualPerson{stringParentsForFault}.{field.Name}" +
-                        $" should be equals to expectedPerson{stringParentsForFault}.{field.Name}");
-                }
+            actualTsar.Should().BeEquivalentTo(
+                expectedTsar,
+                options => options.Excluding(
+                    ctx => ctx.SelectedMemberInfo.Name == nameof(Person.Id)
+                )
+            );
         }
 
         [Test]
