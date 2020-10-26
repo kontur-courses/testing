@@ -32,9 +32,17 @@ namespace HomeExercises
         }
 
         [Test]
-        public void NumberValidator_ThrowsException_IfScaleIsNotLessThanPrecision()
+        public void NumberValidator_ThrowsException_IfScaleEqualsPrecision()
         {
             Action act = () => new NumberValidator(3, 3);
+
+            act.Should().Throw<ArgumentException>();
+        }
+        
+        [Test]
+        public void NumberValidator_ThrowsException_IfScaleMoreThanPrecision()
+        {
+            Action act = () => new NumberValidator(3, 4);
 
             act.Should().Throw<ArgumentException>();
         }
