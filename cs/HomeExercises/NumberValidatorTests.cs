@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text.RegularExpressions;
 using NUnit.Framework;
 
 namespace HomeExercises
@@ -17,27 +16,25 @@ namespace HomeExercises
 			int precision,
 			int scale,
 			bool onlyPositive = false,
-			bool numberValidatorThrows = true)
+			bool shouldThrow = true)
 		{
-			void Construct() => new NumberValidator(precision, scale, onlyPositive);
-			if (numberValidatorThrows)
+			void Construct() => _ = new NumberValidator(precision, scale, onlyPositive);
+			if (shouldThrow)
 				Assert.Throws<ArgumentException>(Construct);
 			else
 				Assert.DoesNotThrow(Construct);
 		}
 
-
 		private static IEnumerable<TestCaseData> PrepareTestCases()
 		{
-			var data = new[]
-			{
-				GetTestCases(ValidatorLittleFraction(), new[]
+			(NumberValidator validator, (string number, bool isValidNumberExpected, string testName)[] testData)[] tests = {
+				(ValidatorLittleFraction, new[]
 				{
 					("0.000", false, "Excess fraction"),
 					("0", true, "No fraction"),
 					("0.0", true, "Less fraction"),
 				}),
-				GetTestCases(ValidatorSmallPrecision(), new[]
+				(ValidatorSmallPrecision, new[]
 				{
 					("00.00", false, "Excess overall length"),
 					("+0.00", false, "Excess overall including positive sign"),
@@ -45,51 +42,44 @@ namespace HomeExercises
 					("0.00", true, "Exclude sign"),
 					("a.sd", false, "Illegal characters"),
 				}),
-				GetTestCases(ValidatorCustomSign(), new[]
+				(ValidatorPositiveOnly, new[]
 				{
 					("+1.23", true, "Positive number"),
 					("-1.23", false, "Negative when only positive"),
 				}),
-				GetTestCases(ValidatorCustomSign(false), new[]
+				(ValidatorAllSigns, new[]
 				{
 					("-1.23", true, "Negative number allowed"),
 				}),
-				GetTestCases(ValidatorSmallPrecision(), new[]
+				(ValidatorSmallPrecision, new[]
 				{
 					("", false, "Empty"),
 				}),
 			};
-			return data.SelectMany(testCases => testCases);
+			return tests.SelectMany(testCases 
+				=> testCases.testData.Select(test
+					=> new TestCaseData(testCases.validator, test.number, test.isValidNumberExpected) {TestName = test.testName}));
 		}
 
-		private static IEnumerable<TestCaseData> GetTestCases(
-			NumberValidator validator,
-			IEnumerable<(string number, bool isValidExpected, string testName)> testData)
-		{
-			return testData.Select(data =>
-			{
-				var (number, isValidExpected, testName) = data;
-				var testCase = new TestCaseData(validator, number, isValidExpected) {TestName = testName};
-				return testCase;
-			});
-		}
-
-		private static NumberValidator ValidatorSmallPrecision()
-			=> new NumberValidator(3, 2, true);
-
-		private static NumberValidator ValidatorLittleFraction()
-			=> new NumberValidator(17, 2, true);
-
-		private static NumberValidator ValidatorCustomSign(bool onlyPositive = true)
-			=> new NumberValidator(4, 2, onlyPositive);
+		private static readonly NumberValidator ValidatorSmallPrecision 
+			= new NumberValidator(3, 2, true);
+		
+		private static readonly NumberValidator ValidatorLittleFraction
+			= new NumberValidator(17, 2, true);
+		
+		private static NumberValidator ValidatorPositiveOnly
+			=> new NumberValidator(4, 2, true);
+		
+		private static NumberValidator ValidatorAllSigns
+			=> new NumberValidator(4, 2);
 
 
 		[TestCaseSource(nameof(PrepareTestCases))]
-		public void TestNumberValidation(NumberValidator sut, string input, bool isValid)
+		public void TestNumberValidation(NumberValidator validator, string input, bool isValidNumber)
 		{
-			var actual = sut.IsValidNumber(input);
+			var actual = validator.IsValidNumber(input);
 
-			Assert.That(actual, Is.EqualTo(isValid), $"Validation of '{input}' was not correct");
+			Assert.That(actual, Is.EqualTo(isValidNumber), $"Validation of '{input}' was not correct");
 		}
 	}
 }
