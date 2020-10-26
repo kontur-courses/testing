@@ -7,28 +7,22 @@ namespace HomeExercises
 {
 	public class NumberValidatorTests
 	{
-		[Test]
-		public void NumberValidatorConstructor_ThrowArgumentException_WhenPrecisionNegative()
+		[TestCase(-1, 0, TestName = "Throws when precision < 0 and  scale <precision")]
+		[TestCase(-1, -2, TestName = "Throws when precision < 0 and  scale =0")]
+		[TestCase(1, 2, TestName = "Throws when scale > precision ")]
+		[TestCase(1, -1, TestName = "Throws when scale <0 ")]
+		[TestCase(1, 1, TestName = "Throws when scale == precision ")]
+		[TestCase(0, 0, TestName = "Throws when precision == 0 ")]
+		public void NumberValidatorConstructor_ThrowArgumentException(int precision, int scale, bool onlyPositive = false)
 		{
-			Assert.Throws<ArgumentException>(() => new NumberValidator(-1, 2, true));
+			Assert.Throws<ArgumentException>(() => new NumberValidator(precision, scale, onlyPositive));
 		}
 
-		[Test]
-		public void NumberValidatorConstructor_ThrowArgumentException_WhenScaleNegative()
+		[TestCase(2, 0, TestName = "Throws when precision >0 and scale == 0 ")]
+		[TestCase(2, 1, TestName = "Throws when precision >0 and scale > 0 and precision > scale")]
+		public void NumberValidatorConstructor_NotThrowArgumentException(int precision, int scale, bool onlyPositive = false)
 		{
-			Assert.Throws<ArgumentException>(() => new NumberValidator(4, -1, true));
-		}
-
-		[Test]
-		public void NumberValidatorConstructor_ThrowArgumentException_WhenScaleMorePrecision()
-		{
-			Assert.Throws<ArgumentException>(() => new NumberValidator(1, 8, true));
-		}
-
-		[Test]
-		public void NumberValidatorConstructor_ThrowArgumentException_WhenScaleEqualsToPrecision()
-		{
-			Assert.Throws<ArgumentException>(() => new NumberValidator(1, 1, true));
+			Assert.DoesNotThrow(() => new NumberValidator(precision, scale, onlyPositive));
 		}
 
 		[TestCase("2.4", 17, 2, TestName = "Valid string")]
