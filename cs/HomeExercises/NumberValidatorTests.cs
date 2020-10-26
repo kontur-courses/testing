@@ -15,11 +15,11 @@ namespace HomeExercises
             numberValidator = new NumberValidator(6, 2);
         }
 
-        [TestCase(0,2, TestName = "precision is zero")]
-        [TestCase(-1,2, TestName = "precision is negative")]
-        [TestCase(2,-1, TestName = "scale is negative")]
-        [TestCase(2,2, TestName = "scale equals precision")]
-        [TestCase(2,3, TestName = "scale is more than precision")]
+        [TestCase(0, 2, TestName = "precision is zero")]
+        [TestCase(-1, 2, TestName = "precision is negative")]
+        [TestCase(2, -1, TestName = "scale is negative")]
+        [TestCase(2, 2, TestName = "scale equals precision")]
+        [TestCase(2, 3, TestName = "scale is more than precision")]
         public void Constructor_ThrowsArgumentException(int precision, int scale)
         {
             Action act = () => new NumberValidator(0, 2);
@@ -42,7 +42,7 @@ namespace HomeExercises
 
             onlyPositiveNumberValidator.IsValidNumber("-0.1").Should().BeFalse();
         }
-        
+
         [TestCase(".05")]
         [TestCase("-+5")]
         [TestCase("5:2")]
@@ -63,7 +63,7 @@ namespace HomeExercises
         {
             numberValidator.IsValidNumber(number).Should().BeFalse();
         }
-        
+
         [TestCase("1234567")]
         [TestCase("12345.67")]
         [TestCase("-123456")]
@@ -92,7 +92,7 @@ namespace HomeExercises
 
             onlyPositiveNumberValidator.IsValidNumber("123.5").Should().BeTrue();
         }
-        
+
         [TestCase("0000")]
         [TestCase("0000.0")]
         [TestCase("+0000")]
@@ -101,7 +101,7 @@ namespace HomeExercises
         {
             numberValidator.IsValidNumber(number).Should().BeTrue();
         }
-        
+
         [TestCase("123456")]
         [TestCase("12345.6")]
         [TestCase("-12345")]
