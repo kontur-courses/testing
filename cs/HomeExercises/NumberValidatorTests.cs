@@ -7,22 +7,16 @@ namespace HomeExercises
 {
 	public class NumberValidatorTests
 	{
-		[TestCase(-1, 2, true, ExpectedResult = "precision must be a positive number", TestName = "NegativePrecision")]
-		[TestCase(0, 2, true, ExpectedResult = "precision must be a positive number", TestName = "ZeroPrecision")]
-		[TestCase(1, -1, true, ExpectedResult = "scale must be a non-negative number less than precision", TestName = "NegativeScale")]
-		[TestCase(1, 2, true, ExpectedResult = "scale must be a non-negative number less than precision", TestName = "ScaleMoreThenPrecision")]
-		[TestCase(1, 1, true, ExpectedResult = "scale must be a non-negative number less than precision", TestName = "ScaleEqualPrecision")]
-		public string ThrowsArgumentException_OnWrongData(int precision, int scale, bool onlyPositive)
+		[TestCase(-1, 2, true, "precision must be a positive number", TestName = "NegativePrecision")]
+		[TestCase(0, 2, true, "precision must be a positive number", TestName = "ZeroPrecision")]
+		[TestCase(1, -1, true, "scale must be a non-negative number less than precision", TestName = "NegativeScale")]
+		[TestCase(1, 2, true, "scale must be a non-negative number less than precision", TestName = "ScaleMoreThenPrecision")]
+		[TestCase(1, 1, true, "scale must be a non-negative number less than precision", TestName = "ScaleEqualPrecision")]
+		public void Creating_ThrowsArgumentException_OnWrongData(int precision, int scale, bool onlyPositive, string message)
 		{
-			try
-			{
-				var numberValidator = new NumberValidator(precision, scale, onlyPositive);
-			}
-			catch (ArgumentException e)
-			{
-				return e.Message;
-			}
-			return "";
+			Action act = () => new NumberValidator(precision, scale, onlyPositive);
+			act.Should().Throw<ArgumentException>()
+				.WithMessage(message);
 		}
 
 		[TestCase("a", TestName = "OneLetter")]
@@ -40,14 +34,20 @@ namespace HomeExercises
 		[TestCase("\n", TestName = "NewLine")]
 		[TestCase("\0", TestName = "ZeroSymbol")]
 		[TestCase(null, TestName = "null")]
-		public void ReturnFalseNotOnNumbers(string checkedString)
+		[TestCase("++1", TestName = "DoublePlus")]
+		[TestCase("--1", TestName = "DoubleMinus")]
+		[TestCase("+-1", TestName = "PlusMinus")]
+		[TestCase("1..5", TestName = "TwoDotsInNumber")]
+		[TestCase("1,,5", TestName = "TwoCommaInNumber")]
+		[TestCase("10000000000000000000000000000000000000000000000000000000000000000000", TestName = "BigInteger")]
+		public void IsValidNumber_ReturnFalseNotOnNumbers(string checkedString)
 		{
 			var numberValidator = new NumberValidator(17, 2, true);
 			numberValidator.IsValidNumber(checkedString).Should().BeFalse();
 		}
 
 		[Test]
-		public void OnlyPositiveNumberValidator_ShouldBeFalse_OnNegativeNumber()
+		public void OnlyPositiveValidator_IsValidNumber_ShouldBeFalse_OnNegativeNumber()
 		{
 			new NumberValidator(17, 2, true).IsValidNumber("-1");
 		}
@@ -58,7 +58,7 @@ namespace HomeExercises
 		[TestCase("-1,00", TestName = "NegativeNumberWithTwoDigitsAfterComma")]
 		[TestCase("10.00", TestName = "TwoDigitsAfterDot")]
 		[TestCase("10,00", TestName = "TwoDigitsAfterComma")]
-		public void ShouldBeFalseOnTooLongPrecisionNumbers(string checkedNumber)
+		public void IsValidNumber_ShouldBeFalseOnTooLongPrecisionNumbers(string checkedNumber)
 		{
 			var numberValidator = new NumberValidator(3, 2, false);
 			numberValidator.IsValidNumber(checkedNumber).Should().BeFalse();
@@ -68,7 +68,7 @@ namespace HomeExercises
 		[TestCase("1,000", TestName = "WithComma")]
 		[TestCase("-1.000", TestName = "NegativeWithDot")]
 		[TestCase("-1,000", TestName = "NegativeWithComma")]
-		public void ShouldBeFalseOnTooLongScaleNumbers(string checkedNumber)
+		public void IsValidNumber_ShouldBeFalseOnTooLongScaleNumbers(string checkedNumber)
 		{
 			var numberValidator = new NumberValidator(10, 2, false);
 			numberValidator.IsValidNumber(checkedNumber).Should().BeFalse();

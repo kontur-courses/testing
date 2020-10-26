@@ -15,20 +15,9 @@ namespace HomeExercises
 			var expectedTsar = new Person("Ivan IV The Terrible", 54, 170, 70,
 				new Person("Vasili III of Russia", 28, 170, 60, null));
 			
-			ShouldBeEqualPersons(expectedTsar, actualTsar);
+			expectedTsar.Should().BeEquivalentTo(actualTsar, options => options
+				.Excluding(person => person.SelectedMemberPath.EndsWith("Id") ));
 		}
-
-		private void ShouldBeEqualPersons(Person expected, Person actual)
-		{
-			expected.Should().BeEquivalentTo(actual, options => options
-				.Excluding(person => person.Id)
-				.Excluding(person => person.Parent));
-			if (expected.Parent != null && actual.Parent != null)
-			{
-				ShouldBeEqualPersons(expected.Parent, actual.Parent);
-			}
-		}
-
 
 		[Test]
 		[Description("Альтернативное решение. Какие у него недостатки?")]
