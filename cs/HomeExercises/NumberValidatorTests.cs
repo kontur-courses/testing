@@ -16,9 +16,17 @@ namespace HomeExercises
         }
 
         [Test]
-        public void NumberValidator_ThrowsException_IfPrecisionIsNotPositive()
+        public void NumberValidator_ThrowsException_IfPrecisionIsZero()
         {
             Action act = () => new NumberValidator(0, 2);
+
+            act.Should().Throw<ArgumentException>();
+        }
+        
+        [Test]
+        public void NumberValidator_ThrowsException_IfPrecisionIsNegative()
+        {
+            Action act = () => new NumberValidator(-1, 2);
 
             act.Should().Throw<ArgumentException>();
         }
