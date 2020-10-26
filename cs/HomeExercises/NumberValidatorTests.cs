@@ -32,6 +32,10 @@ namespace HomeExercises
 		}
 
 		[TestCase("2.4", 17, 2, TestName = "Valid string")]
+		[TestCase("0.1", 2, 1, TestName = "Valid string less then 0")]
+		[TestCase("2", 17, 0, TestName = "Valid string without dot")]
+		[TestCase("-12.1", 17, 2, TestName = "Valid string with negative number")]
+		[TestCase("12.1", 17, 2, true, TestName = "Valid string with positive number when only positive")]
 		public void IsValidNumber_Valid(string line, int precision, int scale, bool onlyPositive = false)
 		{
 			new NumberValidator(precision, scale, onlyPositive).IsValidNumber(line).Should().BeTrue();
