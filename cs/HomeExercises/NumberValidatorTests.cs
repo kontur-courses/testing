@@ -5,78 +5,53 @@ using NUnit.Framework;
 
 namespace HomeExercises
 {
-	public class NumberValidatorTests
+	
+	public class CreationNumberValidatorTests
 	{
 
-		[Test]
-		public void PrecisionIsNegative_ThrowsArgumentException()
+		[TestCase(3,2,true,TestName = "PrecisionIsPositive_NotThrowsArgumentException")]
+		public void NoExceptionThrow(int precision,int scale, bool onlyPositive = true)
 		{
-			Assert.Throws<ArgumentException>(() => new NumberValidator(-1, -3));
+			Action act = () => new NumberValidator(precision, scale);
+
+			act.Should().NotThrow<ArgumentException>();
 		}
 
-		[Test]
-		public void PrecisionIsPositive_NotThrowsArgumentException()
+		[TestCase(2, 2, TestName = "PrecisionEqualScale_ThrowsArgumentException")]
+		[TestCase(-1, -3, TestName = "PrecisionIsNegative_ThrowsArgumentException")]
+		[TestCase(0, -3, TestName = "PrecisionIsZero_ThrowsArgumentException")]
+		[TestCase(1, 2, TestName = "PrecisionLessScale_ThrowsArgumentException")]
+		[TestCase(1, -3, TestName = "ScaleIsNegative_ThrowsArgumentException")]
+		public void ExceptionThrow(int precision, int scale)
 		{
-			Assert.DoesNotThrow(() => new NumberValidator(3, 2));
-		}
+			Action act = () => new NumberValidator(precision, scale);
 
-		[Test]
-		public void PrecisionLessScale_ThrowsArgumentException()
-		{
-			Assert.Throws<ArgumentException>(() => new NumberValidator(1, 2));
+			act.Should().Throw<ArgumentException>();
 		}
+	}
 
-		[Test]
-		public void PrecisionEqualScale_ThrowsArgumentException()
+	[TestFixture]
+	public class IsValidNumberTests 
+	{
+		[TestCase(false, "", TestName = "EmptyLine_False")]
+		[TestCase(false, null, TestName = "NullLine_False")]
+		[TestCase(false, "+111.00", true, 3, 2, TestName = "IntPartPlusFracPartMoreThanPrecision_False")]
+		[TestCase(false, "-111.00", true, 3, 2, TestName = " IsPositiveButLineWithMinus_False")]
+		[TestCase(false, "-11.0", TestName = "FracPartMoreThanScale_False")]
+		[TestCase(true, "+1", TestName = "RegexLineWithMinus_True")]
+		[TestCase(true, "-1", false, TestName = "RegexLineWithPlus_True")]//
+		[TestCase(true, "1.0", TestName = "RegexLineWithDot_True")]
+		[TestCase(true, "1,0", TestName = "RegexLineWithComma_True")]
+		[TestCase(false, "1.,0", TestName = "RegexLineWithCommaAndDot_False")]
+		[TestCase(false, "aa1.aa0aa", TestName = "RegexLineWithLetters_False")]
+		public void IsValidNumber(bool expectedResult, string value, bool onlyPositive = true, int precision = 17, int scale = 2)
 		{
-			Assert.Throws<ArgumentException>(() => new NumberValidator(2, 2));
-		}
-
-		[Test]
-		public void EmptyLine_False()
-		{
-			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber(""));
-		}
-
-		[Test]
-		public void NullLine_False()
-		{
-			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber(null));
-		}
-
-		[Test]
-		public void IntPartPlusFracPartMoreThanPrecision_False()
-		{
-			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("+111.00"));
-		}
-
-		[Test]
-		public void IsPositiveButLineWithMinus_False()
-		{
-			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("-111.00"));
-		}
-
-		[Test]
-		public void FracPartMoreThanScale_False()
-		{
-			Assert.IsFalse(new NumberValidator(5, 2, true).IsValidNumber("-11.0"));
-		}
-
-		[TestCase(true, true,"+1", TestName = "RegexLineWithMinus_True")]
-		[TestCase( false, true, "-1", TestName = "RegexLineWithPlus_True")]
-		[TestCase(true,true,"1.0", TestName = "RegexLineWithDot_True")]
-		[TestCase( true, true, "1,0", TestName = "RegexLineWithComma_True")]
-		[TestCase(true, false, "1.,0", TestName = "RegexLineWithCommaAndDot_False")]
-		[TestCase(true, false, "aa1.aa0aa", TestName = "RegexLineWithLetters_False")]
-		public void Regex( bool onlyPositive, bool expectedResult, string value)
-		{
-			var validator = new NumberValidator(17, 2, onlyPositive);
+			var validator = new NumberValidator(precision, scale, onlyPositive);
 
 			var actualResult = validator.IsValidNumber(value);
 
-			Assert.AreEqual(expectedResult, actualResult);
+			actualResult.Should().Be(expectedResult);
 		}
-
 	}
 
 	public class NumberValidator
