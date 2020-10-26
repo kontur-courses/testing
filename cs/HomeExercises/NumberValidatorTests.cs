@@ -7,27 +7,27 @@ namespace HomeExercises
 {
 	public class NumberValidatorTests
 	{
-		[TestCase(-1, 2, true, true, TestName = "Negative precision")]
-		[TestCase(0, 2, false, true, TestName = "Zero precision")]
-		[TestCase(2, -1, false, true, TestName = "Negative scale")]
-		[TestCase(3, 0, true, false, TestName = "Zero scale")]
-		[TestCase(10, 5, false, false, TestName = "Natural scale")]
-		[TestCase(1, 0, true, false, TestName = "Positive precision")]
-		public void ThrowException_When(
-			int precision, int scale, bool onlyPositive, bool shouldThrowException)
+		[TestCase(-1, 2, true, TestName = "Negative precision")]
+		[TestCase(0, 2, false, TestName = "Zero precision")]
+		[TestCase(2, -1, false, TestName = "Negative scale")]
+		public void ThrowException_When(int precision, int scale, bool onlyPositive)
 		{
 			Func<NumberValidator> validator = () => new NumberValidator(precision, scale, onlyPositive);
 
-			if (shouldThrowException)
-			{
-				validator.Should().Throw<ArgumentException>();
-			}
-			else
-			{
-				validator.Should().NotThrow<ArgumentException>();
-			}
+			validator.Should().Throw<ArgumentException>();
 		}
 
+		[TestCase(3, 0, true, TestName = "Zero scale")]
+		[TestCase(10, 5, false, TestName = "Natural scale")]
+		[TestCase(1, 0, true, TestName = "Positive precision")]
+		public void NotThrowException_When(int precision, int scale, bool onlyPositive)
+		{
+			Func<NumberValidator> validator = () => new NumberValidator(precision, scale, onlyPositive);
+
+			validator.Should().NotThrow<ArgumentException>();
+		}
+
+		[Timeout(100)]
 		[TestCase("+1337", 4, 2, false, false, TestName = "Integer is bigger than precision")]
 		[TestCase("-12,34", 4, 2, false, false,TestName = "Double is bigger than precision")]
 		[TestCase("123+", 4, 2, false, false, TestName = "Sign after number")]
@@ -49,6 +49,8 @@ namespace HomeExercises
 		[TestCase(" ", 4, 2, false, false, TestName = "String is empty")]
 		[TestCase("+3,", 4, 2, false, false, TestName = "No digits after separator")]
 		[TestCase("1.2,3", 6, 3, false, false, TestName = "More than one separator")]
+		[TestCase(".", 4, 3, false, false, TestName = "Only separator")]
+		[TestCase("6..9", 4, 3, false, false, TestName = "Two separators in a row")]
 		[TestCase("13,10", 4, 2, false, true, TestName = "Scale equals fractional part")]
 		[TestCase("-5,1", 20, 10, false, true, TestName = "Scale is bigger than fractional part")]
 		[TestCase("+12", 4, 2, false, true, TestName = "Positive integer")]
@@ -72,22 +74,6 @@ namespace HomeExercises
 			var numberValidator = new NumberValidator(precision, scale, onlyPositive);
 
 			numberValidator.IsValidNumber(number).Should().Be(testResult);
-		}
-
-		[Test, Timeout(500)]
-		public void IsValidNumber_WorkFast_OnBigNumbers()
-		{
-			var precision = 100000;
-			var validator = new NumberValidator(precision);
-
-			for (var i = 0; i < 1000; ++i)
-			{
-				for (var j = 0; j < 100; ++j)
-				{
-					var number = i + j;
-					validator.IsValidNumber(number.ToString());
-				}
-			}
 		}
 	}
 }
