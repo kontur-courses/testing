@@ -58,16 +58,12 @@ namespace HomeExercises
             numberValidator.IsValidNumber(number).Should().BeFalse();
         }
 
-        [Test]
-        public void IsValidNumber_IsFalse_IfStringIsNull()
+        [TestCase(null, TestName = "string is null")]
+        [TestCase("", TestName = "string is empty")]
+        [TestCase("13.123", TestName = "fractal part length is more than scale")]
+        public void IsValidNumber_IsFalse(string number)
         {
-            numberValidator.IsValidNumber(null).Should().BeFalse();
-        }
-
-        [Test]
-        public void IsValidNumber_IsFalse_IfStringIsEmpty()
-        {
-            numberValidator.IsValidNumber(string.Empty).Should().BeFalse();
+            numberValidator.IsValidNumber(number).Should().BeFalse();
         }
 
         [Test]
@@ -80,12 +76,6 @@ namespace HomeExercises
         public void IsValidNumber_IsFalse_IfNumberLengthMoreThanPrecision(string number)
         {
             numberValidator.IsValidNumber(number).Should().BeFalse();
-        }
-
-        [Test]
-        public void IsValidNumber_IsFalse_IfFractalPartLengthMoreThanScale()
-        {
-            numberValidator.IsValidNumber("13.123").Should().BeFalse();
         }
 
         [Test]
