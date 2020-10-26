@@ -1,5 +1,4 @@
 ﻿using System;
-using System.ComponentModel;
 using System.Text.RegularExpressions;
 using FluentAssertions;
 using NUnit.Framework;
@@ -78,16 +77,14 @@ namespace HomeExercises
             numberValidator.IsValidNumber(number).Should().BeFalse();
         }
 
-        [Test]
-        public void IsValidNumber_IsTrue_IfNumberIsNegativeWhenNotOnlyPositive()
+        [TestCase("-123.5", TestName = "number is negative when not only-positive")]
+        [TestCase("123.5", TestName = "number is positive when not only-positive")]
+        [TestCase("+123.5", TestName = "number has plus")]
+        [TestCase("123.12", TestName = "fractal part length equals scale")]
+        [TestCase("123", TestName = "fractal part is empty")]
+        public void IsValidNumber_IsTrue(string number)
         {
-            numberValidator.IsValidNumber("-123.5").Should().BeTrue();
-        }
-
-        [Test]
-        public void IsValidNumber_IsTrue_IfNumberIsPositiveWhenNotOnlyPositive()
-        {
-            numberValidator.IsValidNumber("123.5").Should().BeTrue();
+            numberValidator.IsValidNumber(number).Should().BeTrue();
         }
 
         [Test]
@@ -96,24 +93,6 @@ namespace HomeExercises
             var onlyPositiveNumberValidator = new NumberValidator(6, 2, true);
 
             onlyPositiveNumberValidator.IsValidNumber("123.5").Should().BeTrue();
-        }
-
-        [Test]
-        public void IsValidNumber_IsTrue_IfNumberHasPlus()
-        {
-            numberValidator.IsValidNumber("+123.5").Should().BeTrue();
-        }
-
-        [Test]
-        public void IsValidNumber_IsTrue_IfFractalPartLengthEqualsScale()
-        {
-            numberValidator.IsValidNumber("123.12").Should().BeTrue();
-        }
-
-        [Test]
-        public void IsValidNumber_IsTrue_IfFractalPartIsEmpty()
-        {
-            numberValidator.IsValidNumber("123").Should().BeTrue();
         }
 
         [Test]
