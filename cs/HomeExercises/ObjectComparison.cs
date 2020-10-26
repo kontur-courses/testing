@@ -3,14 +3,6 @@ using NUnit.Framework;
 
 namespace HomeExercises
 {
-	// bug: Program does not contain a static 'Main' method suitable for an entry point
-	public class Program
-	{
-		public static void Main()
-		{
-		}
-	}
-
 	public class ObjectComparison
 	{
 		[Test]
@@ -24,8 +16,8 @@ namespace HomeExercises
 			var actualTsar = TsarRegistry.GetCurrentTsar();
 			
 			actualTsar.Should().BeEquivalentTo(expectedTsar, options => options
-				.Excluding(t => t.Id)
-				.Excluding(t => t.Parent!.Id)
+				.Excluding(su => su.SelectedMemberInfo.Name == "Id")
+				.AllowingInfiniteRecursion() // Fluent Assertions will recurse up to 10 levels deep by default
 			);
 		}
 
@@ -41,7 +33,7 @@ namespace HomeExercises
 			/*
 			 * 1) Сохранить правильность теста при изменении Person возможно с правками AreEqual.
 			 * 2) Читабельность снижается ввиду анализа различных условных и логических операторов.
-			 * 3) В случае падения теста вывод трэйса ошибки не предусмотрен.
+			 * 3) В случае падения теста понять какие поля не совпали - невозможно.
 			 */
 			Assert.True(AreEqual(actualTsar, expectedTsar));
 		}
@@ -74,7 +66,6 @@ namespace HomeExercises
 		public static int IdCounter = 0;
 		public int Age, Height, Weight;
 		public string Name;
-		public string Name2;
 		public Person? Parent;
 		public int Id;
 
