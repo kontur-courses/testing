@@ -16,7 +16,8 @@ namespace HomeExercises
 				new Person("Vasili III of Russia", 28, 170, 60, null));
 			// Перепишите код на использование Fluent Assertions.
 			actualTsar.Should().BeEquivalentTo(expectedTsar, options => 
-			options.Excluding(p => p.SelectedMemberInfo.DeclaringType == typeof(Person) && p.SelectedMemberInfo.Name.Contains("Id")));
+			options.Excluding(p => p.SelectedMemberInfo.DeclaringType == typeof(Person) && 
+								   p.SelectedMemberInfo.Name == nameof(Person.Id)));
 			// Почему лучше?
 			// Первое - граммотное сообщение об ошибке
 			// Второе - если появится новое поле, то код никак не изменится))
