@@ -25,7 +25,8 @@ namespace HomeExercises
 		[TestCase(7, 2, true)]
 		public void Ctor_OnGoodParameters_NotThrows(int precision, int scale = 0, bool onlyPositive = false)
 		{
-			((Action) (() => new NumberValidator(precision, scale, onlyPositive))).Should().NotThrow<ArgumentException>();
+			((Action) (() => new NumberValidator(precision, scale, onlyPositive))).Should()
+				.NotThrow<ArgumentException>();
 		}
 
 		[Test]
@@ -38,7 +39,7 @@ namespace HomeExercises
 			validator.IsValidNumber("123").Should().BeTrue();
 			validator.IsValidNumber("12345").Should().BeTrue();
 			validator.IsValidNumber("1234567").Should().BeTrue();
-			
+
 			validator = new NumberValidator(7, 5, false);
 			validator.IsValidNumber("0").Should().BeTrue();
 			validator.IsValidNumber("000").Should().BeTrue();
@@ -47,7 +48,7 @@ namespace HomeExercises
 			validator.IsValidNumber("12345").Should().BeTrue();
 			validator.IsValidNumber("1234567").Should().BeTrue();
 		}
-		
+
 		[Test]
 		public void IsValidNumber_OnNotNegativeIntegersWithSign_ShouldBeTrue()
 		{
@@ -58,7 +59,7 @@ namespace HomeExercises
 			validator.IsValidNumber("+123").Should().BeTrue();
 			validator.IsValidNumber("+12345").Should().BeTrue();
 			validator.IsValidNumber("+123456").Should().BeTrue();
-			
+
 			validator = new NumberValidator(7, 5, false);
 			validator.IsValidNumber("+0").Should().BeTrue();
 			validator.IsValidNumber("+000").Should().BeTrue();
@@ -67,7 +68,7 @@ namespace HomeExercises
 			validator.IsValidNumber("+12345").Should().BeTrue();
 			validator.IsValidNumber("+123456").Should().BeTrue();
 		}
-		
+
 		[Test]
 		public void IsValidNumber_OnGoodNegativeIntegers_ShouldBeTrue()
 		{
@@ -77,7 +78,7 @@ namespace HomeExercises
 			validator.IsValidNumber("-12345").Should().BeTrue();
 			validator.IsValidNumber("-123456").Should().BeTrue();
 		}
-		
+
 		[Test]
 		public void IsValidNumber_OnUnexpectedNegativeIntegers_ShouldBeFalse()
 		{
@@ -94,7 +95,7 @@ namespace HomeExercises
 			var validator = new NumberValidator(7, 5, true);
 			validator.IsValidNumber("12345678").Should().BeFalse();
 			validator.IsValidNumber("1234567890123456").Should().BeFalse();
-			
+
 			validator = new NumberValidator(7, 5, false);
 			validator.IsValidNumber("-1234567").Should().BeFalse();
 			validator.IsValidNumber("-1234567890123456").Should().BeFalse();
@@ -109,7 +110,7 @@ namespace HomeExercises
 			validator.IsValidNumber("00.000").Should().BeTrue();
 			validator.IsValidNumber("123.4567").Should().BeTrue();
 			validator.IsValidNumber("023.0567").Should().BeTrue();
-			
+
 			validator = new NumberValidator(7, 5, false);
 			validator.IsValidNumber("0.0").Should().BeTrue();
 			validator.IsValidNumber("00.0").Should().BeTrue();
@@ -117,7 +118,7 @@ namespace HomeExercises
 			validator.IsValidNumber("123.4567").Should().BeTrue();
 			validator.IsValidNumber("023.0567").Should().BeTrue();
 		}
-		
+
 		[Test]
 		public void IsValidNumber_OnGoodNotNegativeFloatsWithSign_ShouldBeTrue()
 		{
@@ -127,7 +128,7 @@ namespace HomeExercises
 			validator.IsValidNumber("+00.000").Should().BeTrue();
 			validator.IsValidNumber("+123.456").Should().BeTrue();
 			validator.IsValidNumber("+023.056").Should().BeTrue();
-			
+
 			validator = new NumberValidator(7, 5, false);
 			validator.IsValidNumber("+0.0").Should().BeTrue();
 			validator.IsValidNumber("+00.0").Should().BeTrue();
@@ -135,7 +136,7 @@ namespace HomeExercises
 			validator.IsValidNumber("+123.456").Should().BeTrue();
 			validator.IsValidNumber("+023.056").Should().BeTrue();
 		}
-		
+
 		[Test]
 		public void IsValidNumber_OnUnexpectedFloats_ShouldBeFalse()
 		{
@@ -146,7 +147,7 @@ namespace HomeExercises
 			validator.IsValidNumber("-123.456").Should().BeFalse();
 			validator.IsValidNumber("-023.056").Should().BeFalse();
 		}
-		
+
 		[Test]
 		public void IsValidNumber_OnTooLargeFloats_ShouldBeFalse()
 		{
@@ -154,7 +155,7 @@ namespace HomeExercises
 			validator.IsValidNumber("123.45678").Should().BeFalse();
 			validator.IsValidNumber("1.123456").Should().BeFalse();
 			validator.IsValidNumber("123456.123456").Should().BeFalse();
-			
+
 			validator = new NumberValidator(7, 5, false);
 			validator.IsValidNumber("123.45678").Should().BeFalse();
 			validator.IsValidNumber("1.123456").Should().BeFalse();
@@ -191,7 +192,7 @@ namespace HomeExercises
 			validator.IsValidNumber("0.").Should().BeFalse();
 			validator.IsValidNumber(".").Should().BeFalse();
 			validator.IsValidNumber(",").Should().BeFalse();
-			
+
 			validator.IsValidNumber("abc").Should().BeFalse();
 			validator.IsValidNumber("abc.def").Should().BeFalse();
 			validator.IsValidNumber("Hi").Should().BeFalse();
