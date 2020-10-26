@@ -5,82 +5,78 @@ using NUnit.Framework;
 
 namespace HomeExercises
 {
+	
 	public class NumberValidatorTests
 	{
-		[TestCase("0", 4, 2, TestName = "Unsigned number without fractional part")]
-		[TestCase("+0", 4, 2, TestName = "Positive number without fractional part")]
-		[TestCase("-0", 4, 2, TestName = "Negative number without fractional part")]
-		[TestCase("0.0", 4, 2, TestName = "Unsigned number with separator dot and fractional part length 1")]
-		[TestCase("0,0", 4, 2, TestName = "Unsigned number with separator comma and fractional part length 1")]
-		[TestCase("+0.0", 4, 2, TestName = "Positive number with fractional part length 1")]
-		[TestCase("-0.0", 4, 2, TestName = "Negative number with fractional part length 1")]
-		[TestCase("010", 4, 2, TestName = "Unsigned number starts with 0 without fractional part")]
-		[TestCase("+010", 4, 2, TestName = "Positive number starts with 0 without fractional part")]
-		[TestCase("-010", 4, 2, TestName = "Negative number starts with 0 without fractional part")]
-		[TestCase("01.0", 4, 2, TestName = "Unsigned number starts with 0 with fractional part")]
-		[TestCase("-01.0", 4, 2, TestName = "Negative number starts with 0 with fractional part")]
-		[TestCase("+01.0", 4, 2, TestName = "Positive number starts with 0 with fractional part")]
-		[TestCase("1.45", 4, 2, TestName = "Unsigned number with fractional part length more 1")]
-		[TestCase("1.00000", 10, 9, TestName = "Fractional part consists only of zeros")]
-		[TestCase("+1.45", 4, 2, TestName = "Positive number with fractional part length more 1")]
-		[TestCase("-1.45", 4, 2, TestName = "Negative number with fractional part length more 1")]
-		[TestCase("൨", 4, 2, TestName = "Malayalam numbers")]
-		[TestCase("۴", 4, 2, TestName = "Eastern Arabic numerals")]
-		[TestCase("٥", 4, 2, TestName = "Arabic numerals")]
-		[TestCase("000", 4, 2, TestName = "Number consists of only zeros without fractional part")]
-		[TestCase("11", 2, 1, TestName = "Precision of number equal to specified precision/without fractional part")]
-		[TestCase("11.11", 5, 2, TestName = "Scale of number equal to specified scale")]
-		[TestCase("11.11", 5, 3, TestName = "Scale of number less than specified scale")]
-		[TestCase("+11", 5, 3,true,  TestName = "Positive number when only positive")]
-		[TestCase("11", 5, 3,true, TestName = "Unsigned number when only positive")]
-		[TestCase("0", 5, 3,true, TestName = "Zero when only positive")]
+		[TestCase("1", 4, 2, TestName = "When unsigned number without fractional part")]
+		[TestCase("+1", 4, 2, TestName = "When positive number without fractional part")]
+		[TestCase("-1", 4, 2, TestName = "When negative number without fractional part")]
+		[TestCase("1.1", 4, 2, TestName = "When unsigned number with fractional part length 1")]
+		[TestCase("1.11", 4, 2, TestName = "When unsigned number with fractional part length greater than 1")]
+		[TestCase("1,11", 4, 2, TestName = "When unsigned number with separator comma")]
+		[TestCase("+1.11", 4, 2, TestName = "When positive number with fractional part")]
+		[TestCase("-1.11", 4, 2, TestName = "When negative number with fractional part")]
+		[TestCase("010", 4, 2, TestName = "When unsigned number starts with 0 without fractional part")]
+		[TestCase("+010", 4, 2, TestName = "When positive number starts with 0 without fractional part")]
+		[TestCase("-010", 4, 2, TestName = "When negative number starts with 0 without fractional part")]
+		[TestCase("01.1", 4, 2, TestName = "When unsigned number starts with 0 with fractional part")]
+		[TestCase("-01.1", 4, 2, TestName = "When negative number starts with 0 with fractional part")]
+		[TestCase("+01.0", 4, 2, TestName = "When positive number starts with 0 with fractional part")]
+		[TestCase("൨", 4, 2, TestName = "When Malayalam numerals")]
+		[TestCase("۴", 4, 2, TestName = "When Eastern Arabic numerals")]
+		[TestCase("٥", 4, 2, TestName = "When Arabic numerals")]
+		[TestCase("000", 4, 2, TestName = "When number consists of only zeros without fractional part")]
+		[TestCase("1.00000", 10, 9, TestName = "When fractional part consists only of zeros")]
+		[TestCase("9223372036854775807", 100, 9, TestName = "When number is long.MaxValue")]
+		[TestCase("55", 2, 1, TestName = "When precision of number is equal to specified precision")]
+		[TestCase("11.11", 5, 2, TestName = "When scale of number is equal to specified scale")]
+		[TestCase("11.11", 5, 3, TestName = "When scale of number less than specified scale")]
+		[TestCase("+11", 5, 3, true, TestName = "When positive number and only positive on")]
+		[TestCase("11", 5, 3, true, TestName = "When unsigned number and only positive on")]
+		[TestCase("0", 5, 3, true, TestName = "When number is zero and only positive on")]
 		// Нет поддержки римских цифр.
 
-		public void IsValidNumber_ValidNumber_True(string number, int precision, int scale = 0, bool onlyPositive = false)
+		public void IsValidNumber_Validates(string number, int precision, int scale = 0, bool onlyPositive = false)
 		{
-			Assert.IsTrue(new NumberValidator(precision, scale, onlyPositive).IsValidNumber(number));
+			new NumberValidator(precision, scale, onlyPositive).IsValidNumber(number).Should().BeTrue();
 		}
-		[TestCase(".0", 4, 2, TestName = "Number starts with dot")]
-		[TestCase(",0", 4, 2, TestName = "Number starts with comma")]
-		[TestCase("++0", 4, 2, TestName = "Number starts with double sign")]
-		[TestCase(null, 4, 2, TestName = "Is null")]
-		[TestCase("", 4, 2, TestName = "Is empty string")]
-		[TestCase ("Danil", 4, 2, TestName = "Is not digit/english letters")]
-		[TestCase ("ć", 4, 2, TestName = "Is not digit/poland letters")]
-		[TestCase ("0.", 4, 2, TestName = "Number ends with dot")]
-		[TestCase ("0,", 4, 2, TestName = "Number ends with comma")]
-		[TestCase ("0!0", 4, 2, TestName = "Another separator")]
-		[TestCase ("1..001", 4, 2, TestName = "Contains 2 dots side by side")]
-		[TestCase ("1,,001", 4, 2, TestName = "Contains 2 commas side by side")]
-		[TestCase ("@1.1", 4, 2, TestName = "Number starts with not digit")]
-		[TestCase ("1.@1", 4, 2, TestName = "Number contains not digit, dot or comma")]
-		[TestCase ("111", 2, 1, TestName = "Precision of number greater than specified precision")]
-		[TestCase ("11.11", 5, 1, TestName = "Scale of number greater than specified scale")]
-		[TestCase ("-5", 5, 1, true, TestName = "Negative number when only positive")]
 
-		public void IsValidNumber_InvalidNumber_False(string number, int precision, int scale = 0, bool onlyPositive = false)
+		[TestCase(".0", 4, 2, TestName = "When number starts with dot")]
+		[TestCase(",0", 4, 2, TestName = "When number starts with comma")]
+		[TestCase("0.", 4, 2, TestName = "Number ends with dot")]
+		[TestCase("0,", 4, 2, TestName = "Number ends with comma")]
+		[TestCase("++0", 4, 2, TestName = "When number starts with double sign")]
+		[TestCase("0+", 4, 2, TestName = "When number ends with sign")]
+		[TestCase(null, 4, 2, TestName = "When number is null")]
+		[TestCase("", 4, 2, TestName = "When number is empty string")]
+		[TestCase("Danil", 4, 2, TestName = "When number is word without dot")]
+		[TestCase("Da.nil", 4, 2, TestName = "When number is word with dot")]
+		[TestCase("0!0", 4, 2, TestName = "When number has different separator")]
+		[TestCase("1..001", 4, 2, TestName = "When number contains more than 1 dots next to each other")]
+		[TestCase("1.00.1", 4, 2, TestName = "When number contains more than 1 dot in different locations")]
+		[TestCase("1,,001", 4, 2, TestName = "When number contains more than 1 commas next to each other")]
+		[TestCase("1,00,1", 4, 2, TestName = "When number contains more than 1 comma in different locations")]
+		[TestCase("@1.1", 4, 2, TestName = "When number starts with not digit or sign")]
+		[TestCase("1.@1", 4, 2, TestName = "When number contains symbol not digit, dot or comma")]
+		[TestCase("1.g1", 4, 2, TestName = "When number contains letter")]
+		[TestCase("1. 1", 4, 2, TestName = "When number contains space")]
+		[TestCase("1.⁣1", 4, 2, TestName = "When valid number contains empty symbol")]
+		[TestCase("1.\n⁣1", 4, 2, TestName = "When valid number contains control char \\n in middle")]
+		[TestCase("1.1\n⁣", 4, 2, TestName = "When valid number contains control char \\n at the end")]
+		public void IsValidNumber_Invalidates(string number, int precision, int scale = 0, bool onlyPositive = false)
 		{
 			new NumberValidator(precision, scale, onlyPositive).IsValidNumber(number).Should().BeFalse(null, number);
 		}
-
-		[TestCase(-1, 5, TestName = "Precision is negative number")]
-		[TestCase(0, 5, TestName = "Precision is zero")]
-		[TestCase(5, -1, TestName = "Scale is negative number")]
-		[TestCase(5, 5, TestName = "Scale equal to precision")]
-		[TestCase(5, 6, TestName = "Scale greater than precision")]
-		[TestCase(0, 0, TestName = "Scale and precision is zero")]
-		public void CreateNumberValidator_IncorrectArguments_Throw(int precision, int scale = 0)
+		
+		[TestCase(0, 0, "precision must be a positive number", TestName = "When precision is zero")]
+		[TestCase(-5, 0, "precision must be a positive number", TestName = "When precision is negative number")]
+		[TestCase(1, 2, "precision must be a non-negative number less or equal than precision", TestName = "When scale greater than precision")]
+		[TestCase(5, 5, "precision must be a non-negative number less or equal than precision", TestName = "When scale equal to precision")]
+		[TestCase(5, -4, "precision must be a non-negative number less or equal than precision", TestName = "When scale is negative number")]
+		public void NumberValidatorConstructor_ThrowException(int precision, int scale, string message)
 		{
-			Assert.Throws<ArgumentException>(() => new NumberValidator(precision, scale));
-		}
-
-		[TestCase(5, 4,false, TestName = "Precision and scale is positive numbers, onlyPositive = false/precision>scale")]
-		[TestCase(5, 4,true, TestName = "Precision and scale is positive numbers, onlyPositive = true/precision>scale")]
-		[TestCase(5, 0,false, TestName = "Precision is positive and scale is zero, onlyPositive = false/precision>scale")]
-		[TestCase(5, 0,true, TestName = "Precision is positive and scale is zero, onlyPositive = true/precision>scale")]
-		public void CreateNumberValidator_CorrectArguments_DoesNotThrow(int precision, int scale, bool onlyPositive)
-		{
-			Assert.DoesNotThrow(() => new NumberValidator(precision, scale, onlyPositive));
+			Action action = () => new NumberValidator(precision, scale);
+			action.Should().Throw<ArgumentException>().WithMessage(message);
 		}
 	}
 
