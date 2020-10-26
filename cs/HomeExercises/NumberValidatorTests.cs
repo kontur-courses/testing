@@ -1,13 +1,11 @@
 ﻿using System;
 using System.Text.RegularExpressions;
-using FluentAssertions.Execution;
 using NUnit.Framework;
 
 namespace HomeExercises
 {
     public class NumberValidatorTests
     {
-
         [Test]
         public void NumberValidatorConstructorMultipleTest()
         {
@@ -15,19 +13,14 @@ namespace HomeExercises
             {
                 Assert.Throws<ArgumentException>(() => new NumberValidator(-1, 2, true),
                     "precision should be positive");
-                
-                Assert.Throws<ArgumentException>(() => new NumberValidator(-1, 2),
-                    "precision should be positive");
-                
+
                 Assert.Throws<ArgumentException>(() => new NumberValidator(2, -1), "scale should be positive");
-                Assert.Throws<ArgumentException>(() => new NumberValidator(2, -1, true), "scale should be positive");
                 Assert.Throws<ArgumentException>(() => new NumberValidator(2, 3, true),
                     "scale should be less than precision");
-                
+
                 Assert.Throws<ArgumentException>(() => new NumberValidator(2, 2, true),
-                    "scale should be less than precision");
-                
-                
+                    "scale couldn't be same as precision");
+
 
                 Assert.DoesNotThrow(() => new NumberValidator(1, 0, true), "scale could be 0");
                 Assert.DoesNotThrow(() => new NumberValidator(1, 0), "scale could be 0");
@@ -40,7 +33,9 @@ namespace HomeExercises
             Assert.Multiple(() =>
             {
                 Assert.IsTrue(new NumberValidator(4, 2, true).IsValidNumber("+1.23"),
-                    "correct result for insignificant sign");
+                    "correct result for insignificant sign"); //насчет "звучит как "исправить результат""
+                //google translate переводит как "правильный результат для незначащего знака", что и задумывалось
+                //не учитывая корявость машинного перевода
 
 
                 var validator = new NumberValidator(17, 2, true);
@@ -50,11 +45,12 @@ namespace HomeExercises
                 Assert.True(validator.IsValidNumber("0"), "number may not have a fractional part");
                 Assert.IsFalse(validator.IsValidNumber("0.000"),
                     "number of fractional part digits should be less than scale");
-                
+
                 Assert.IsTrue(validator.IsValidNumber("0.0"), "the number can have an insignificant fractional part");
                 Assert.IsTrue(validator.IsValidNumber("1"), "should accept positive numbers");
                 Assert.IsTrue(new NumberValidator(4, 1, false).IsValidNumber("1"), "should accept positive numbers");
-                Assert.IsFalse(validator.IsValidNumber("-1"), "should filtrate negative numbers");
+                Assert.IsFalse(validator.IsValidNumber("-1"),
+                    "should deny negative numbers, if valid number should be positive");
                 Assert.IsFalse(validator.IsValidNumber(".1"), "before . should be at least 1 digit");
                 Assert.IsFalse(validator.IsValidNumber("1."), "after . should be at least 1 digit");
                 Assert.IsTrue(validator.IsValidNumber("1,2"), "should work with comma");
@@ -63,19 +59,17 @@ namespace HomeExercises
 
 
                 Assert.IsFalse(validator.IsValidNumber("+0.00"),
-                    "number of digits with sign should be less than precision");
-                
+                    "number invalid if number of digits with sign more than precision");
+
                 Assert.IsFalse(validator.IsValidNumber("-0.00"),
-                    "number of digits with sign should be less than precision");
-                
-                Assert.IsFalse(validator.IsValidNumber("+1.23"),
-                    "number of digits with sign should be less than precision");
-                
-                Assert.IsFalse(validator.IsValidNumber("-1.23"),
-                    "number of digits with sign should be less than precision");
-                
+                    "number invalid if number of digits with sign more than precision");
+
                 Assert.IsFalse(validator.IsValidNumber("00.00"), "number of digits should be less than precision");
-                Assert.IsFalse(validator.IsValidNumber("a.sd"), "string should not contains letters");
+                Assert.IsFalse(validator.IsValidNumber("-a.sd"), "number should contain digits");
+                Assert.IsFalse(validator.IsValidNumber("1.a"), "number should not contain letters");
+                Assert.IsFalse(validator.IsValidNumber(" 1"), "number should not contain spaces in the beginning");
+                Assert.IsFalse(validator.IsValidNumber("1 "), "number must not contain trailing spaces");
+                Assert.IsFalse(validator.IsValidNumber("-+1"), "number could have only one sign");
             });
         }
     }
