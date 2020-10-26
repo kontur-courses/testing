@@ -67,7 +67,7 @@ namespace HomeExercises
         [Test]
         public void IsValidNumber_IsFalse_IfNumberIsNegativeWhenOnlyPositive()
         {
-            var onlyPositiveNumberValidator = GetOnlyPositiveNumberValidator();
+            var onlyPositiveNumberValidator = new NumberValidator(6, 2, true);
 
             onlyPositiveNumberValidator.IsValidNumber("-0.1").Should().BeFalse();
         }
@@ -131,7 +131,7 @@ namespace HomeExercises
         [Test]
         public void IsValidNumber_IsTrue_IfNumberIsPositiveWhenOnlyPositive()
         {
-            var onlyPositiveNumberValidator = GetOnlyPositiveNumberValidator();
+            var onlyPositiveNumberValidator = new NumberValidator(6, 2, true);
 
             onlyPositiveNumberValidator.IsValidNumber("123.5").Should().BeTrue();
         }
@@ -182,11 +182,6 @@ namespace HomeExercises
             var numberValidatorWithZeroScale = new NumberValidator(5);
 
             numberValidatorWithZeroScale.IsValidNumber("123");
-        }
-
-        private NumberValidator GetOnlyPositiveNumberValidator()
-        {
-            return new NumberValidator(6, 2, true);
         }
     }
 
