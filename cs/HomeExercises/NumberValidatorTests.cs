@@ -11,8 +11,8 @@ namespace HomeExercises
 			bool onlyPositive = false, string? isValidNumberParameter = null)
 		{
 			var message = $"precision = {precision}\n" +
-			                      $"scale = {scale}\n" +
-			                      $"onlyPositive = {onlyPositive}\n";
+			              $"scale = {scale}\n" +
+			              $"onlyPositive = {onlyPositive}\n";
 			if (isValidNumberParameter != null)
 				message += $"IsValidNumber parameter = {isValidNumberParameter}\n";
 			return message;
@@ -34,7 +34,7 @@ namespace HomeExercises
 				() => new NumberValidator(precision),
 				CreateTestMessage(precision));
 		}
-		
+
 		[Test]
 		public void Ctor_ScaleLessThanZero_ThrowException()
 		{
@@ -42,7 +42,7 @@ namespace HomeExercises
 				() => new NumberValidator(2, -1),
 				CreateTestMessage(2, -1));
 		}
-		
+
 		[TestCase(2, 3, TestName = "ScaleGreaterThanPrecision")]
 		[TestCase(2, 2, TestName = "ScaleEqualPrecision")]
 		public void Ctor_ScaleGreaterOrEqualPrecision_ThrowException(int precision, int scale)
@@ -57,7 +57,7 @@ namespace HomeExercises
 		public void IsValidNumber_GotNullOrEmpty_ReturnFalse(string isValidNumberParameter)
 		{
 			var validator = new NumberValidator(17);
-			
+
 			Assert.IsFalse(validator.IsValidNumber(isValidNumberParameter));
 		}
 
@@ -82,7 +82,7 @@ namespace HomeExercises
 			var validator = new NumberValidator(10, 1);
 
 			Assert.IsFalse(validator.IsValidNumber("1.23"),
-				CreateTestMessage(10, 1,  isValidNumberParameter: "1.23"));
+				CreateTestMessage(10, 1, isValidNumberParameter: "1.23"));
 		}
 
 		[Test]
@@ -91,7 +91,7 @@ namespace HomeExercises
 			var validator = new NumberValidator(3, 2);
 
 			Assert.IsFalse(validator.IsValidNumber("12.34"),
-				CreateTestMessage(3, 2,  isValidNumberParameter: "12.34"));
+				CreateTestMessage(3, 2, isValidNumberParameter: "12.34"));
 		}
 
 		[TestCase(".", TestName = "SeparatorIsDot")]
@@ -101,9 +101,9 @@ namespace HomeExercises
 			var validator = new NumberValidator(2, 1);
 
 			Assert.IsTrue(validator.IsValidNumber($"0{separator}0"),
-				CreateTestMessage(2,1, isValidNumberParameter: $"0{separator}0"));
+				CreateTestMessage(2, 1, isValidNumberParameter: $"0{separator}0"));
 		}
-		
+
 		[TestCase(".", TestName = "SeparatorIsDot")]
 		[TestCase(",", TestName = "SeparatorIsComma")]
 		public void IsValidNumber_SeparatorCanBeDotOrComma(string separator)
@@ -111,7 +111,7 @@ namespace HomeExercises
 			var validator = new NumberValidator(5, 2);
 
 			Assert.IsTrue(validator.IsValidNumber($"0{separator}0"),
-				CreateTestMessage(5,2, isValidNumberParameter: $"0{separator}0"));
+				CreateTestMessage(5, 2, isValidNumberParameter: $"0{separator}0"));
 		}
 
 		[TestCase("+", TestName = "PlusIsCounted")]
@@ -119,7 +119,7 @@ namespace HomeExercises
 		public void IsValidNumber_SignOfNumberIncludeInPrecision(string sign)
 		{
 			var validator = new NumberValidator(3, 2);
-			
+
 			Assert.IsFalse(validator.IsValidNumber(sign + "1.23"),
 				CreateTestMessage(3, 2, isValidNumberParameter: sign + "1.23"));
 		}
@@ -128,25 +128,25 @@ namespace HomeExercises
 		public void IsValidNumber_GotNegativeNumberWhenExpectOnlyPositive_ReturnFalse()
 		{
 			var validator = new NumberValidator(5, onlyPositive: true);
-			
+
 			Assert.IsFalse(validator.IsValidNumber("-12"),
-				CreateTestMessage(5, onlyPositive: true, isValidNumberParameter: "-12")); 
+				CreateTestMessage(5, onlyPositive: true, isValidNumberParameter: "-12"));
 		}
 
 		[Test]
 		public void IsValidNumber_WhenScaleIsNotZero_ParameterCanBeWithoutDecimalPart()
 		{
 			var validator = new NumberValidator(10, 2);
-			
+
 			Assert.IsTrue(validator.IsValidNumber("123"),
-				CreateTestMessage(10,2, isValidNumberParameter: "123")); 
+				CreateTestMessage(10, 2, isValidNumberParameter: "123"));
 		}
 
 		[Test]
 		public void IsValidNumber_WhenGotValidNumber_ReturnTrue()
 		{
 			var validator = new NumberValidator(17, 2, true);
-			
+
 			Assert.IsTrue(validator.IsValidNumber("0.0"),
 				CreateTestMessage(17, 2, true, "0.0"));
 		}
