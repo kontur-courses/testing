@@ -22,7 +22,7 @@ namespace HomeExercises
         [TestCase(2, 3, TestName = "scale is more than precision")]
         public void Constructor_ThrowsArgumentException(int precision, int scale)
         {
-            Action act = () => new NumberValidator(0, 2);
+            Action act = () => new NumberValidator(precision, scale);
 
             act.Should().Throw<ArgumentException>();
         }
