@@ -27,27 +27,45 @@ namespace TestsForHomeExercises
 			Assert.DoesNotThrow(() => new NumberValidator(5, 3, true));
 		}
 
-		[TestCase(17, 2, true, "0.0", TestName = "IsValidNumber_True_PositiveFloatNumberWithDot")]
-		[TestCase(17, 2, true, "0,0", TestName = "IsValidNumber_True_PositiveFloatNumberWithComma")]
-		[TestCase(17, 2, true, "+0.0", TestName = "IsValidNumber_True_PositiveFloatNumberWhithPlus")]
-		[TestCase(17, 2, true, "0", TestName = "IsValidNumber_True_PositiveIntNumber")]
-		[TestCase(17, 2, true, "+0", TestName = "IsValidNumber_True_PositiveIntNumberWhithPlus")]
-		[TestCase(17, 2, false, "-0.0", TestName = "IsValidNumber_True_NegativeFloatNumber")]
-		[TestCase(17, 2, false, "-0", TestName = "IsValidNumber_True_NegativeIntNumber")]
-		public void IsValidNumber_True(int precision, int scale, bool onlyPositive, string numberToValidate)
+		[TestCase("0.0", TestName = "IsValidNumber_True_PositiveFloatNumberWithDot")]
+		[TestCase("0,0", TestName = "IsValidNumber_True_PositiveFloatNumberWithComma")]
+		[TestCase("+0.0", TestName = "IsValidNumber_True_PositiveFloatNumberWhithPlus")]
+		[TestCase("0", TestName = "IsValidNumber_True_PositiveIntNumber")]
+		[TestCase("+0", TestName = "IsValidNumber_True_PositiveIntNumberWhithPlus")]
+		public void IsValidNumber_True_Positive(string numberToValidate)
 		{
-			new NumberValidator(precision, scale, onlyPositive).IsValidNumber(numberToValidate).Should().BeTrue();
+			new NumberValidator(17, 2, true).IsValidNumber(numberToValidate).Should().BeTrue();
 		}
 
-		[TestCase(17, 2, true, "abc", TestName = "IsValidNumber_False_NotNumber")]
-		[TestCase(17, 2, true, "-1.0", TestName = "IsValidNumber_False_NegativeFloat_WhenOnlyPositive")]
-		[TestCase(17, 2, true, "-1", TestName = "IsValidNumber_False_NegativeInt_WhenOnlyPositive")]
-		[TestCase(17, 2, true, "0.0.0", TestName = "IsValidNumber_False_WhenMultipleDots")]
+
+		[TestCase("-0.0", TestName = "IsValidNumber_True_NegativeFloatNumber")]
+		[TestCase("-0", TestName = "IsValidNumber_True_NegativeIntNumber")]
+		public void IsValidNumber_True_Negative(string numberToValidate)
+		{
+			new NumberValidator(17, 2).IsValidNumber(numberToValidate).Should().BeTrue();
+		}
+
+		[TestCase("0.0.0", TestName = "IsValidNumber_False_WhenMultipleDots")]
+		[TestCase("abc", TestName = "IsValidNumber_False_WhenText")]
+		[TestCase(null, TestName = "IsValidNumber_False_Null")]
+		[TestCase("", TestName = "IsValidNumber_False_EmptyString")]
+		[TestCase("0.", TestName = "IsValidNumber_False_PositiveFloatNumberWhithoutFracPart")]
+		public void IsValidNumber_False_NotNumber(string objectToValidate)
+		{
+			new NumberValidator(17, 2).IsValidNumber(objectToValidate).Should().BeFalse();
+		}
+
+		[TestCase("-1.0", TestName = "IsValidNumber_False_NegativeFloat_WhenOnlyPositive")]
+		[TestCase("-1", TestName = "IsValidNumber_False_NegativeInt_WhenOnlyPositive")]
+		public void IsValidNumber_False_Negative_WhenOnlyPositive(string numberToValidate)
+		{
+			new NumberValidator(17, 5, true).IsValidNumber(numberToValidate).Should().BeFalse();
+		}
+
 		[TestCase(3, 2, true, "+0.00", TestName = "IsValidNumber_False_WhenLengthMoreThenPrecision")]
 		[TestCase(17, 2, true, "0.000", TestName = "IsValidNumber_False_WhenFracPartMoreThenScale")]
-		[TestCase(17, 2, true, null, TestName = "IsValidNumber_False_Null")]
-		[TestCase(17, 2, true, "", TestName = "IsValidNumber_False_EmptyString")]
-		public void IsValidNumber_False(int precision, int scale, bool onlyPositive, string numberToValidate)
+		public void IsValidNumber_False_BecauseOfLength(int precision, int scale, bool onlyPositive,
+			string numberToValidate)
 		{
 			new NumberValidator(precision, scale, onlyPositive).IsValidNumber(numberToValidate).Should().BeFalse();
 		}
