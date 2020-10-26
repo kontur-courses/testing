@@ -12,15 +12,21 @@ namespace HomeExercises
         [TestCase(1, 2, TestName = "ScaleGreaterPrecision")]
         public void NumberValidatorConstructor_OnIncorrectInputs_ThrowArgumentException(int precision, int scale)
         {
-            Assert.Throws<ArgumentException>(() => new NumberValidator(precision, scale));
+            Assert.Throws<ArgumentException>(() =>
+            {
+                _ = new NumberValidator(precision, scale);
+            });
         }
 
         [TestCase(1, 0, TestName = "WhenScaleIsZero")]
         [TestCase(3, 2, TestName = "WhenScaleLessPrecision")]
         [TestCase(1000, 999, TestName = "WhenScalePrecisionBigAndCorrect")]
-        public void Test_NumberValidatorConstructor_OnCorrectInputs(int precision, int scale)
+        public void NumberValidatorConstructor_OnCorrectInputs_DoesNotThrow(int precision, int scale)
         {
-            Assert.DoesNotThrow(() => new NumberValidator(precision, scale));
+            Assert.DoesNotThrow(() =>
+            {
+                _ = new NumberValidator(precision, scale);
+            });
         }
 
 
@@ -39,7 +45,7 @@ namespace HomeExercises
         [TestCase("+-1", TestName = "TwiceSigns")]
         [TestCase("9999", TestName = "TooBigValue")]
         [TestCase("0.000", TestName = "TooBigFractionalPart")]
-        public void IsValidNumber_OnIncorrectInputs_False(string value)
+        public void IsValidNumber_OnIncorrectInputs_ReturnFalse(string value)
         {
             Assert.IsFalse(new NumberValidator(3, 2).IsValidNumber(value));
         }
@@ -49,11 +55,11 @@ namespace HomeExercises
         [TestCase("+10", TestName = "PositiveSignedInteger")]
         [TestCase("-10", TestName = "NegativeSignedInteger")]
         [TestCase("0.0", TestName = "SmallCorrectValue")]
-        [TestCase("0,0", TestName = "SeparatorIsComma")] 
+        [TestCase("0,0", TestName = "SeparatorIsComma")]
         [TestCase("9.99", TestName = "MaxPossibleCorrectDecimal")]
         [TestCase("+9.9", TestName = "PositiveSignedDecimal")]
         [TestCase("-9.9", TestName = "NegativeSignedDecimal")]
-        public void IsValidNumber_OnCorrectInputs_WhenSignDoesntMatter_True(string value)
+        public void IsValidNumber_OnCorrectInputsAndSignDoesntMatter_ReturnTrue(string value)
         {
             Assert.IsTrue(new NumberValidator(3, 2).IsValidNumber(value));
         }
@@ -63,7 +69,7 @@ namespace HomeExercises
         [TestCase("+99", TestName = "MaxPositiveInt")]
         [TestCase("+1.0", TestName = "PositiveDecimal")]
         [TestCase("+9.9", TestName = "MaxPositiveDecimal")]
-        public void IsValidNumber_OnPositiveInputs_WhenOnlyPositiveValidator_True(string value)
+        public void IsValidNumber_OnPositiveInputs_WhenOnlyPositiveValidator_ReturnTrue(string value)
         {
             Assert.IsTrue(new NumberValidator(3, 2, true).IsValidNumber(value));
         }
@@ -72,7 +78,7 @@ namespace HomeExercises
         [TestCase("-99", TestName = "MaxNegativeInt")]
         [TestCase("-1.0", TestName = "NegativeDecimal")]
         [TestCase("-9.9", TestName = "MaxNegativeDecimal")]
-        public void IsValidNumber_OnNegativeInputs_WhenOnlyPositiveValidator_False(string value)
+        public void IsValidNumber_OnNegativeInputs_WhenOnlyPositiveValidator_ReturnFalse(string value)
         {
             Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber(value));
         }
