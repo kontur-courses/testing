@@ -7,18 +7,11 @@ namespace TestsForHomeExercises
 {
     public class NumberValidatorTests
     {
-        [Test]
+	    [Test]
         public void Ctor_ThrowArgumentException_WhenPrecisionNotPositive()
         {
-            Assert.Throws<ArgumentException>(() => new NumberValidator(-1, 2, true));
-            try
-            {
-                var numberValidator = new NumberValidator(-1, 2, true);
-            }
-            catch (Exception e)
-            {
-                e.Message.Should().Be("precision must be a positive number");
-            }
+	        var exception = Assert.Throws<ArgumentException>(() => new NumberValidator(-1, 2, true));
+	        exception.Message.Should().Be("precision must be a positive number");
         }
 
         [TestCase (1,2,true, TestName = "Ctor_ThrowArgumentException_ScaleMoreThenPrecision")]
