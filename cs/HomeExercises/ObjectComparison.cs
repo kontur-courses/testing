@@ -5,14 +5,11 @@ namespace HomeExercises
 {
     public class ObjectComparison
     {
-        private int ancestorLevel;
-
         [Test]
         [Description("Проверка текущего царя")]
         [Category("ToRefactor")]
         public void CheckCurrentTsar()
         {
-            ancestorLevel = 0;
             var actualTsar = TsarRegistry.GetCurrentTsar();
 
             var expectedTsar = new Person("Ivan IV The Terrible", 54, 170, 70,
