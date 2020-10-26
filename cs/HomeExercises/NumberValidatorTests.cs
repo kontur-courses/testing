@@ -13,14 +13,14 @@ namespace HomeExercises
 		[TestCase(1, -1, TestName = "Throws when scale <0 ")]
 		[TestCase(1, 1, TestName = "Throws when scale == precision ")]
 		[TestCase(0, 0, TestName = "Throws when precision == 0 ")]
-		public void NumberValidatorConstructor_ThrowArgumentException(int precision, int scale, bool onlyPositive = false)
+		public void Constructor_ThrowArgumentException(int precision, int scale, bool onlyPositive = false)
 		{
 			Assert.Throws<ArgumentException>(() => new NumberValidator(precision, scale, onlyPositive));
 		}
 
 		[TestCase(2, 0, TestName = "Throws when precision >0 and scale == 0 ")]
 		[TestCase(2, 1, TestName = "Throws when precision >0 and scale > 0 and precision > scale")]
-		public void NumberValidatorConstructor_NotThrowArgumentException(int precision, int scale, bool onlyPositive = false)
+		public void Constructor_NotThrowArgumentException(int precision, int scale, bool onlyPositive = false)
 		{
 			Assert.DoesNotThrow(() => new NumberValidator(precision, scale, onlyPositive));
 		}
