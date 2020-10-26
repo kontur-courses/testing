@@ -1,4 +1,5 @@
 ﻿using NUnit.Framework;
+using System;
 
 namespace HomeExercises
 {
@@ -15,9 +16,24 @@ namespace HomeExercises
 			{
 				Assert.DoesNotThrow(() => new NumberValidator(precision, scale));
 			}
+
+			[TestCase(-1, 3)]
+			[TestCase(9, -5)]
+			[TestCase(-2, -1)]
+			public void Test_ScaleAndPrecisionMustBePositive(int precision, int scale)
+            {
+				Assert.Throws<ArgumentException>(() => new NumberValidator(precision, scale));
+            }
+
+			[TestCase(4, 6)]
+			[TestCase(3, 3)]
+			public void Test_ScaleMustBeLessThanPrecision(int precision, int scale)
+            {
+				Assert.Throws<ArgumentException>(() => new NumberValidator(precision, scale));
+            }
 		}
 
-		public class CorrectNumberTest
+		public class CorrectNumberFormTest
 		{
 			private readonly NumberValidator standartValidator = new NumberValidator(10, 9);
 
@@ -28,21 +44,21 @@ namespace HomeExercises
 			[TestCase("a")]
 			[TestCase("a.104")]
 			[TestCase("-2#")]
-			public void Test_StringCanContainsOnlyNumbersSignAndSeparator(string str)
+			public void Test_InputNumberContainsSignAndSeparator_IsValid(string str)
 			{
 				Assert.IsFalse(standartValidator.IsValidNumber(str));
 			}
 
 			[Test]
-			public void Test_NullString_NotValid()
+			public void Test_NullString_IsNotValid()
 			{
 				Assert.IsFalse(standartValidator.IsValidNumber(null));	
 			}
 
 			[Test]
-			public void Test_EmptyString_NotValid()
+			public void Test_EmptyString_IsNotValid()
 			{
-				Assert.IsFalse(standartValidator.IsValidNumber(""));	
+				Assert.IsFalse(standartValidator.IsValidNumber(string.Empty));	
 			}
 		
 			[TestCase("1.0", ExpectedResult = true)]
@@ -51,7 +67,7 @@ namespace HomeExercises
 			[TestCase("-0,15", ExpectedResult = true)]
 			[TestCase("1:0", ExpectedResult = false)]
 			[TestCase("9-3", ExpectedResult = false)]
-			public bool Test_OnlyDotOrCommaMustBeSeparator(string str)
+			public bool Test_DotOrCommaSeparator_IsValid(string str)
 			{
 				return standartValidator.IsValidNumber(str);
 			}
@@ -90,7 +106,7 @@ namespace HomeExercises
 			[TestCase("-,")]
 			[TestCase(".")]
 			[TestCase(",")]
-			public void Test_SeparatorCanBeBetweenNumbers(string str)
+			public void Test_SeparatorBetweenNumbers_IsCorrect(string str)
 			{
 				Assert.IsFalse(standartValidator.IsValidNumber(str));
 			}
@@ -138,7 +154,7 @@ namespace HomeExercises
 
 		}
 
-		public class ValidatorTeste
+		public class ValidatorScaleAndPrecisionTeste
 		{
 			[TestCase(13, 1, "1.0")]
 			[TestCase(1, 0, "7")]
