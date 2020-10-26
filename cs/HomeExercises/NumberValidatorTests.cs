@@ -20,27 +20,21 @@ namespace HomeExercises
 		}
 		
 		[Test]
-		public void TestNotValidWhenNotADigit()
-		{
+		public void Validation_ShouldFalse_WhenNotDigit() =>
 			defaultValidator.IsValidNumber("as.d")
 				.Should().BeFalse();
-		}
 		
 		[Test]
 		[TestCase(null)]
 		[TestCase("")]
-		public void TestNotValidWhenNullOrWhitespace(string number)
-		{
+		public void Validation_ShouldFalse_WhenNullOrEmpty(string number) =>
 			defaultValidator.IsValidNumber(number)
 				.Should().BeFalse();
-		}
 		
 		[Test]
-		public void TestValidDifferentDigits()
-		{
+		public void Validation_ShouldTrue_OnDifferentDigits() =>
 			defaultValidator.IsValidNumber("1234567890")
 				.Should().BeTrue();
-		}
 		
 		[Test]
 		[TestCase("0.000")]
@@ -48,64 +42,50 @@ namespace HomeExercises
 		[TestCase("000.00")]
 		[TestCase("+0000")]
 		[TestCase("+00.00")]
-		public void TestNotValidWhenOutOfBond(string number)
-		{
+		public void Validation_ShouldFalse_WhenOutOfBounce(string number) =>
 			smallPrecValidator.IsValidNumber(number)
 				.Should().BeFalse();
-		}
 
 		[Test]
-		public void TestNotValidWhenNegativeNumberOnlyPosValidator()
-		{
+		public void OnlyPosValidation_ShouldFalse_WhenNegativeNumber() =>
 			onlyPositiveValidator.IsValidNumber("-0.0")
 				.Should().BeFalse();
-		}
 		
 		[Test]
 		[TestCase("0.0")]
 		[TestCase("+0.0")]
-		public void TestValidWhenPosNumberOnlyPosValidator(string number)
-		{
+		public void OnlyPosValidation_ShouldTrue_WhenPositiveNumber(string number) =>
 			onlyPositiveValidator.IsValidNumber(number)
 				.Should().BeTrue();
-		}
 		
 		[Test]
 		[TestCase("0.0")]
 		[TestCase("+0.0")]
 		[TestCase("-0.0")]
-		public void TestValidAnySignWhenNonOnlyPos(string number)
-		{
+		public void NotOnlyPosValidation_ShouldTrue_WhenAnySigns(string number) =>
 			defaultValidator.IsValidNumber(number)
 				.Should().BeTrue();
-		}
 
 		[Test]
 		[TestCase('.')]
 		[TestCase(',')]
-		public void TestAllowedDecimalSeparator(char separator)
-		{
+		public void Validation_ShouldTrue_WhenCorrectDecimalSeparator(char separator) =>
 			defaultValidator.IsValidNumber($"0{separator}0")
 				.Should().BeTrue();
-		}
-		
+
 		[Test]
 		[TestCase('!')]
 		[TestCase(':')]
-		public void TestNotAllowedDecimalSeparator(char separator)
-		{
+		public void Validation_ShouldFalse_WhenIncorrectDecimalSeparator(char separator) =>
 			defaultValidator.IsValidNumber($"0{separator}0")
 				.Should().BeFalse();
-		}
 
 		[Test]
-		[TestCase(-1, 0, 
-			"precision must be a positive number")]
-		[TestCase(10, -1, 
-			"scale must be a non-negative number less or equal than precision")]
-		[TestCase(10, 11,
-			"scale must be a non-negative number less or equal than precision")]
-		public void TestExceptionOnIncorrectCreation(int precision, int scale, string message)
+		[TestCase(-1, 0, "precision must be a positive number")]
+		[TestCase(10, -1, "scale must be a non-negative number less or equal than precision")]
+		[TestCase(10, 11, "scale must be a non-negative number less or equal than precision")]
+		public void ValidatorCreation_ShouldThrowException_WhenIncorrectParameters(int precision,
+			int scale, string message)
 		{
 			Action makeIncorrectValidator = () =>
 				new NumberValidator(precision, scale);
