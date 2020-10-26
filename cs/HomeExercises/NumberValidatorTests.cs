@@ -41,14 +41,14 @@ namespace HomeExercises
 			new NumberValidator(precision, scale, onlyPositive).IsValidNumber(line).Should().BeTrue();
 		}
 
-		[TestCase("00.00", 3, 2, TestName = "False when to long string")]
-		[TestCase("-0.00", 5, 2, true, TestName = "False when negative value when only positive")]
-		[TestCase("+0.00", 3, 2, TestName = "False when length more at plus sign")]
-		[TestCase("0.000", 5, 2, TestName = "False when length more at non significant zeros")]
-		[TestCase("a.sd", 5, 2, TestName = "False when only letters string")]
-		[TestCase("4.44d", 8, 7, TestName = "False when string with letters")]
-		[TestCase(null, 8, 7, TestName = "False when Null")]
-		[TestCase("", 8, 7, TestName = "False when empty string")]
+		[TestCase("00.00", 3, 2, TestName = "Number not valid when to long string")]
+		[TestCase("-0.00", 5, 2, true, TestName = "Number not valid when negative value when only positive")]
+		[TestCase("+0.00", 3, 2, TestName = "Number not valid when length more at plus sign")]
+		[TestCase("0.000", 5, 2, TestName = "Number not valid when length more at non significant zeros")]
+		[TestCase("a.sd", 5, 2, TestName = "Number not valid when only letters string")]
+		[TestCase("4.44d", 8, 7, TestName = "Number not valid when string with letters")]
+		[TestCase(null, 8, 7, TestName = "Number not valid when Null")]
+		[TestCase("", 8, 7, TestName = "Number not valid when empty string")]
 		public void IsValidNumber_NotValid(string line, int precision, int scale, bool onlyPositive = false)
 		{
 			new NumberValidator(precision, scale, onlyPositive).IsValidNumber(line).Should().BeFalse();
