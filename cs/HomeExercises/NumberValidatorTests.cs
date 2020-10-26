@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel;
 using System.Text.RegularExpressions;
 using FluentAssertions;
 using NUnit.Framework;
@@ -16,7 +17,7 @@ namespace HomeExercises
         }
 
         [Test]
-        public void NumberValidator_ThrowsException_IfPrecisionIsZero()
+        public void Constructor_ThrowsArgumentException_IfPrecisionIsZero()
         {
             Action act = () => new NumberValidator(0, 2);
 
@@ -24,7 +25,7 @@ namespace HomeExercises
         }
         
         [Test]
-        public void NumberValidator_ThrowsException_IfPrecisionIsNegative()
+        public void Constructor_ThrowsArgumentException_IfPrecisionIsNegative()
         {
             Action act = () => new NumberValidator(-1, 2);
 
@@ -32,7 +33,7 @@ namespace HomeExercises
         }
 
         [Test]
-        public void NumberValidator_ThrowsException_IfScaleIsNegative()
+        public void Constructor_ThrowsArgumentException_IfScaleIsNegative()
         {
             Action act = () => new NumberValidator(2, -1);
 
@@ -40,7 +41,7 @@ namespace HomeExercises
         }
 
         [Test]
-        public void NumberValidator_ThrowsException_IfScaleEqualsPrecision()
+        public void Constructor_ThrowsArgumentException_IfScaleEqualsPrecision()
         {
             Action act = () => new NumberValidator(3, 3);
 
@@ -48,7 +49,7 @@ namespace HomeExercises
         }
         
         [Test]
-        public void NumberValidator_ThrowsException_IfScaleMoreThanPrecision()
+        public void Constructor_ThrowsArgumentException_IfScaleMoreThanPrecision()
         {
             Action act = () => new NumberValidator(3, 4);
 
@@ -56,7 +57,7 @@ namespace HomeExercises
         }
 
         [Test]
-        public void NumberValidator_NotThrowsException_IfArgumentsIsCorrect()
+        public void Constructor_NotThrowsException_IfArgumentsIsCorrect()
         {
             Action act = () => new NumberValidator(3, 2, true);
 
