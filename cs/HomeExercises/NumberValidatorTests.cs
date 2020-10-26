@@ -26,57 +26,28 @@ namespace HomeExercises
 		}
 
 		[Test]
-		public void NumberValidator_ReturnTrue_OnValidString()
+		public void NumberValidatorConstructor_ThrowArgumentException_WhenScaleEqualsToPrecision()
 		{
-			Assert.IsTrue(new NumberValidator(17, 2, true).IsValidNumber("0.0"));
+			Assert.Throws<ArgumentException>(() => new NumberValidator(1, 1, true));
 		}
 
-		[Test]
-		public void NumberValidator_ReturnFalse_WhenStringToLong()
+		[TestCase("2.4", 17, 2, TestName = "Valid string")]
+		public void IsValidNumber_Valid(string line, int precision, int scale, bool onlyPositive = false)
 		{
-			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("00.00"));
+			new NumberValidator(precision, scale, onlyPositive).IsValidNumber(line).Should().BeTrue();
 		}
 
-		[Test]
-		public void NumberValidator_ReturnFalse_OnNegativeValueWhenOnlyPositive()
+		[TestCase("00.00", 3, 2, TestName = "False when to long string")]
+		[TestCase("-0.00", 5, 2, true, TestName = "False when negative value when only positive")]
+		[TestCase("+0.00", 3, 2, TestName = "False when length more at plus sign")]
+		[TestCase("0.000", 5, 2, TestName = "False when length more at non significant zeros")]
+		[TestCase("a.sd", 5, 2, TestName = "False when only letters string")]
+		[TestCase("4.44d", 8, 7, TestName = "False when string with letters")]
+		[TestCase(null, 8, 7, TestName = "False when Null")]
+		[TestCase("", 8, 7, TestName = "False when empty string")]
+		public void IsValidNumber_NotValid(string line, int precision, int scale, bool onlyPositive = false)
 		{
-			Assert.IsFalse(new NumberValidator(5, 2, true).IsValidNumber("-0.00"));
-		}
-
-		[Test]
-		public void NumberValidator_ReturnFalse_WhenLengthMoreAtPlusSign()
-		{
-			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("+0.00"));
-		}
-
-		[Test]
-		public void NumberValidator_ReturnFalse_WhenLengthMoreAtNonSignificantZeros()
-		{
-			Assert.IsFalse(new NumberValidator(17, 2, true).IsValidNumber("0.000"));
-		}
-
-		[Test]
-		public void NumberValidator_ReturnFalse_OnStringWithOnlyLetters()
-		{
-			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("a.sd"));
-		}
-
-		[Test]
-		public void NumberValidator_ReturnFalse_OnStringWithLetter()
-		{
-			Assert.IsFalse(new NumberValidator(8, 7, true).IsValidNumber("4.44d"));
-		}
-
-		[Test]
-		public void NumberValidator_ReturnFalse_OnNull()
-		{
-			Assert.IsFalse(new NumberValidator(5, 2, true).IsValidNumber(null));
-		}
-
-		[Test]
-		public void NumberValidator_ReturnFalse_OnEmptyString()
-		{
-			Assert.IsFalse(new NumberValidator(5, 2, true).IsValidNumber(""));
+			new NumberValidator(precision, scale, onlyPositive).IsValidNumber(line).Should().BeFalse();
 		}
 	}
 
