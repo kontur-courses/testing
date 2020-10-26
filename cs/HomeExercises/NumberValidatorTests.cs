@@ -42,8 +42,7 @@ namespace HomeExercises
 
             onlyPositiveNumberValidator.IsValidNumber("-0.1").Should().BeFalse();
         }
-
-        [Test]
+        
         [TestCase(".05")]
         [TestCase("-+5")]
         [TestCase("5:2")]
@@ -64,8 +63,7 @@ namespace HomeExercises
         {
             numberValidator.IsValidNumber(number).Should().BeFalse();
         }
-
-        [Test]
+        
         [TestCase("1234567")]
         [TestCase("12345.67")]
         [TestCase("-123456")]
@@ -94,8 +92,7 @@ namespace HomeExercises
 
             onlyPositiveNumberValidator.IsValidNumber("123.5").Should().BeTrue();
         }
-
-        [Test]
+        
         [TestCase("0000")]
         [TestCase("0000.0")]
         [TestCase("+0000")]
@@ -104,8 +101,7 @@ namespace HomeExercises
         {
             numberValidator.IsValidNumber(number).Should().BeTrue();
         }
-
-        [Test]
+        
         [TestCase("123456")]
         [TestCase("12345.6")]
         [TestCase("-12345")]
