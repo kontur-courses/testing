@@ -10,7 +10,7 @@ namespace HomeExercises
     {
         private NumberValidator numberValidator;
 
-        [SetUp]
+        [OneTimeSetUp]
         public void SetUp()
         {
             numberValidator = new NumberValidator(6, 2);
