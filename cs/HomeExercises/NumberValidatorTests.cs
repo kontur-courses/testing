@@ -7,27 +7,76 @@ namespace HomeExercises
 {
 	public class NumberValidatorTests
 	{
-		[Test]
-		public void Test()
-		{
-			Assert.Throws<ArgumentException>(() => new NumberValidator(-1, 2, true));
-			Assert.DoesNotThrow(() => new NumberValidator(1, 0, true));
-			Assert.Throws<ArgumentException>(() => new NumberValidator(-1, 2, false));
-			Assert.DoesNotThrow(() => new NumberValidator(1, 0, true));
 
-			Assert.IsTrue(new NumberValidator(17, 2, true).IsValidNumber("0.0"));
-			Assert.IsTrue(new NumberValidator(17, 2, true).IsValidNumber("0"));
-			Assert.IsTrue(new NumberValidator(17, 2, true).IsValidNumber("0.0"));
-			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("00.00"));
-			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("-0.00"));
-			Assert.IsTrue(new NumberValidator(17, 2, true).IsValidNumber("0.0"));
-			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("+0.00"));
-			Assert.IsTrue(new NumberValidator(4, 2, true).IsValidNumber("+1.23"));
-			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("+1.23"));
-			Assert.IsFalse(new NumberValidator(17, 2, true).IsValidNumber("0.000"));
-			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("-1.23"));
-			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("a.sd"));
+		[Test]
+		public void PrecisionIsNegative_ThrowsArgumentException()
+		{
+			Assert.Throws<ArgumentException>(() => new NumberValidator(-1, -3));
 		}
+
+		[Test]
+		public void PrecisionIsPositive_NotThrowsArgumentException()
+		{
+			Assert.DoesNotThrow(() => new NumberValidator(3, 2));
+		}
+
+		[Test]
+		public void PrecisionLessScale_ThrowsArgumentException()
+		{
+			Assert.Throws<ArgumentException>(() => new NumberValidator(1, 2));
+		}
+
+		[Test]
+		public void PrecisionEqualScale_ThrowsArgumentException()
+		{
+			Assert.Throws<ArgumentException>(() => new NumberValidator(2, 2));
+		}
+
+		[Test]
+		public void EmptyLine_False()
+		{
+			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber(""));
+		}
+
+		[Test]
+		public void NullLine_False()
+		{
+			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber(null));
+		}
+
+		[Test]
+		public void IntPartPlusFracPartMoreThanPrecision_False()
+		{
+			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("+111.00"));
+		}
+
+		[Test]
+		public void IsPositiveButLineWithMinus_False()
+		{
+			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("-111.00"));
+		}
+
+		[Test]
+		public void FracPartMoreThanScale_False()
+		{
+			Assert.IsFalse(new NumberValidator(5, 2, true).IsValidNumber("-11.0"));
+		}
+
+		[TestCase(true, true,"+1", TestName = "RegexLineWithMinus_True")]
+		[TestCase( false, true, "-1", TestName = "RegexLineWithPlus_True")]
+		[TestCase(true,true,"1.0", TestName = "RegexLineWithDot_True")]
+		[TestCase( true, true, "1,0", TestName = "RegexLineWithComma_True")]
+		[TestCase(true, false, "1.,0", TestName = "RegexLineWithCommaAndDot_False")]
+		[TestCase(true, false, "aa1.aa0aa", TestName = "RegexLineWithLetters_False")]
+		public void Regex( bool onlyPositive, bool expectedResult, string value)
+		{
+			var validator = new NumberValidator(17, 2, onlyPositive);
+
+			var actualResult = validator.IsValidNumber(value);
+
+			Assert.AreEqual(expectedResult, actualResult);
+		}
+
 	}
 
 	public class NumberValidator
