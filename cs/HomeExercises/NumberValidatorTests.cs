@@ -16,42 +16,14 @@ namespace HomeExercises
             numberValidator = new NumberValidator(6, 2);
         }
 
-        [Test]
-        public void Constructor_ThrowsArgumentException_IfPrecisionIsZero()
+        [TestCase(0,2, TestName = "precision is zero")]
+        [TestCase(-1,2, TestName = "precision is negative")]
+        [TestCase(2,-1, TestName = "scale is negative")]
+        [TestCase(2,2, TestName = "scale equals precision")]
+        [TestCase(2,3, TestName = "scale is more than precision")]
+        public void Constructor_ThrowsArgumentException(int precision, int scale)
         {
             Action act = () => new NumberValidator(0, 2);
-
-            act.Should().Throw<ArgumentException>();
-        }
-        
-        [Test]
-        public void Constructor_ThrowsArgumentException_IfPrecisionIsNegative()
-        {
-            Action act = () => new NumberValidator(-1, 2);
-
-            act.Should().Throw<ArgumentException>();
-        }
-
-        [Test]
-        public void Constructor_ThrowsArgumentException_IfScaleIsNegative()
-        {
-            Action act = () => new NumberValidator(2, -1);
-
-            act.Should().Throw<ArgumentException>();
-        }
-
-        [Test]
-        public void Constructor_ThrowsArgumentException_IfScaleEqualsPrecision()
-        {
-            Action act = () => new NumberValidator(3, 3);
-
-            act.Should().Throw<ArgumentException>();
-        }
-        
-        [Test]
-        public void Constructor_ThrowsArgumentException_IfScaleMoreThanPrecision()
-        {
-            Action act = () => new NumberValidator(3, 4);
 
             act.Should().Throw<ArgumentException>();
         }
