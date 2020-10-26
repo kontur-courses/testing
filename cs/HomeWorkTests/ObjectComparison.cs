@@ -1,7 +1,8 @@
 ﻿using FluentAssertions;
+using HomeExercises;
 using NUnit.Framework;
 
-namespace HomeExercises.Tests
+namespace HomeWorkTests
 {
 	public class ObjectComparison
 	{
