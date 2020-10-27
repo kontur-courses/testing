@@ -15,18 +15,8 @@ namespace TestsForHomeExercises
 
 			var expectedTsar = new Person("Ivan IV The Terrible", 54, 170, 70,
 				new Person("Vasili III of Russia", 28, 170, 60, null));
-			while (actualTsar != null || expectedTsar != null)
-			{
-				actualTsar.Should().BeEquivalentTo(expectedTsar,
-					option =>
-					{
-						option.Excluding(x => x.Id);
-						option.Excluding(x => x.Parent);
-						return option;
-					});
-				actualTsar = actualTsar.Parent;
-				expectedTsar = expectedTsar.Parent;
-			}
+			actualTsar.Should().BeEquivalentTo(expectedTsar, option
+				=> option.Excluding(memberInfo => memberInfo.SelectedMemberInfo.Name.Equals("Id")));
 		}
 
 		//В решении, представленном в методе  CheckCurrentTsar_WithCustomEquality()
