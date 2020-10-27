@@ -19,8 +19,7 @@ namespace HomeExercises
 				new Person("Vasili III of Russia", 28, 170, 60, null));
 
 			actualTsar.Should().BeEquivalentTo(expectedTsar, opts => 
-					opts.Excluding(x => x.Id)
-						.Excluding(x => x.Parent!.Id) //Исключаем id из проверки из-за особенностей его присвоения
+					opts.Excluding(x => x.SelectedMemberInfo.Name == "Id") //Исключаем id из проверки из-за особенностей его присвоения
 						.AllowingInfiniteRecursion()); //позволяет пройтись проверкой по предкам максимально глубоко (дефолтная глубина = 10)
 		}
 
