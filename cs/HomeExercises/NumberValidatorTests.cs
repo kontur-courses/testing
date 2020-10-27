@@ -7,17 +7,6 @@ namespace HomeExercises
 {
 	public class NumberValidatorTests
 	{
-		private string CreateTestMessage(int precision, int scale = 0,
-			bool onlyPositive = false, string? isValidNumberParameter = null)
-		{
-			var message = $"precision = {precision}\n" +
-			              $"scale = {scale}\n" +
-			              $"onlyPositive = {onlyPositive}\n";
-			if (isValidNumberParameter != null)
-				message += $"IsValidNumber parameter = {isValidNumberParameter}\n";
-			return message;
-		}
-
 		[Test]
 		public void Ctor_WithValidParameters_DoesNotThrowException()
 		{
@@ -56,9 +45,7 @@ namespace HomeExercises
 		[TestCase("", TestName = "GotEmptyString")]
 		public void IsValidNumber_GotNullOrEmpty_ReturnFalse(string isValidNumberParameter)
 		{
-			var validator = new NumberValidator(17);
-
-			Assert.IsFalse(validator.IsValidNumber(isValidNumberParameter));
+			IsValidNumber_Test(17, 0, false, isValidNumberParameter, false);
 		}
 
 		[TestCase("a.bc", TestName = "LettersInsteadNumbers")]
@@ -70,85 +57,83 @@ namespace HomeExercises
 		[TestCase("1;23", TestName = "SeparatorIsNotDotOrComma")]
 		public void IsValidNumber_ParameterHasNotValidForm_ReturnFalse(string isValidNumberParameter)
 		{
-			var validator = new NumberValidator(10, 4);
-
-			Assert.IsFalse(validator.IsValidNumber(isValidNumberParameter),
-				CreateTestMessage(10, 4, isValidNumberParameter: isValidNumberParameter));
+			IsValidNumber_Test(10, 4, false, isValidNumberParameter, false);
 		}
 
 		[Test]
 		public void IsValidNumber_DecimalPartOfParameterGreaterThanScale_ReturnFalse()
 		{
-			var validator = new NumberValidator(10, 1);
-
-			Assert.IsFalse(validator.IsValidNumber("1.23"),
-				CreateTestMessage(10, 1, isValidNumberParameter: "1.23"));
+			IsValidNumber_Test(10, 1, false, "1.23", false);
 		}
 
 		[Test]
 		public void IsValidNumber_SignCountOfParameterGreaterThanPrecision_ReturnFalse()
 		{
-			var validator = new NumberValidator(3, 2);
-
-			Assert.IsFalse(validator.IsValidNumber("12.34"),
-				CreateTestMessage(3, 2, isValidNumberParameter: "12.34"));
+			IsValidNumber_Test(3, 2, false, "12.34", false);
 		}
 
 		[TestCase(".", TestName = "SeparatorIsDot")]
 		[TestCase(",", TestName = "SeparatorIsComma")]
 		public void IsValidNumber_SeparatorIsNotIncludeInPrecision(string separator)
 		{
-			var validator = new NumberValidator(2, 1);
-
-			Assert.IsTrue(validator.IsValidNumber($"0{separator}0"),
-				CreateTestMessage(2, 1, isValidNumberParameter: $"0{separator}0"));
+			var isValidNumberParameter = $"0{separator}0";
+			IsValidNumber_Test(2, 1, false, isValidNumberParameter, true);
 		}
 
 		[TestCase(".", TestName = "SeparatorIsDot")]
 		[TestCase(",", TestName = "SeparatorIsComma")]
 		public void IsValidNumber_SeparatorCanBeDotOrComma(string separator)
 		{
-			var validator = new NumberValidator(5, 2);
-
-			Assert.IsTrue(validator.IsValidNumber($"0{separator}0"),
-				CreateTestMessage(5, 2, isValidNumberParameter: $"0{separator}0"));
+			var isValidNumberParameter = $"0{separator}0";
+			IsValidNumber_Test(5, 2, false, isValidNumberParameter, true);
 		}
 
 		[TestCase("+", TestName = "PlusIsCounted")]
 		[TestCase("-", TestName = "MinusIsCounted")]
 		public void IsValidNumber_SignOfNumberIncludeInPrecision(string sign)
 		{
-			var validator = new NumberValidator(3, 2);
-
-			Assert.IsFalse(validator.IsValidNumber(sign + "1.23"),
-				CreateTestMessage(3, 2, isValidNumberParameter: sign + "1.23"));
+			var isValidNumberParameter = sign + "1.23";
+			IsValidNumber_Test(3, 2, false, isValidNumberParameter, false);
 		}
 
 		[Test]
 		public void IsValidNumber_GotNegativeNumberWhenExpectOnlyPositive_ReturnFalse()
 		{
-			var validator = new NumberValidator(5, onlyPositive: true);
-
-			Assert.IsFalse(validator.IsValidNumber("-12"),
-				CreateTestMessage(5, onlyPositive: true, isValidNumberParameter: "-12"));
+			IsValidNumber_Test(5, 0, true, "-12", false);
 		}
 
 		[Test]
 		public void IsValidNumber_WhenScaleIsNotZero_ParameterCanBeWithoutDecimalPart()
 		{
-			var validator = new NumberValidator(10, 2);
-
-			Assert.IsTrue(validator.IsValidNumber("123"),
-				CreateTestMessage(10, 2, isValidNumberParameter: "123"));
+			IsValidNumber_Test(10, 2, false, "123", true);
 		}
 
 		[Test]
 		public void IsValidNumber_WhenGotValidNumber_ReturnTrue()
 		{
-			var validator = new NumberValidator(17, 2, true);
+			IsValidNumber_Test(17, 2, true, "0.0", true);
+		}
 
-			Assert.IsTrue(validator.IsValidNumber("0.0"),
-				CreateTestMessage(17, 2, true, "0.0"));
+		private static void IsValidNumber_Test(int precision, int scale, bool onlyPositive,
+			string isValidNumberParameter, bool expectedResult)
+		{
+			var validator = new NumberValidator(precision, scale, onlyPositive);
+
+			var actualResult = validator.IsValidNumber(isValidNumberParameter);
+
+			Assert.AreEqual(expectedResult, actualResult,
+				CreateTestMessage(precision, scale, onlyPositive, isValidNumberParameter));
+		}
+
+		private static string CreateTestMessage(int precision, int scale = 0,
+			bool onlyPositive = false, string? isValidNumberParameter = null)
+		{
+			var message = $"precision = {precision}\n" +
+			              $"scale = {scale}\n" +
+			              $"onlyPositive = {onlyPositive}\n";
+			if (isValidNumberParameter != null)
+				message += $"IsValidNumber parameter = {isValidNumberParameter}\n";
+			return message;
 		}
 	}
 
