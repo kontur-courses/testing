@@ -30,12 +30,10 @@ namespace HomeExercises
             sutValidator.IsValidNumber(input).Should().BeFalse();
         }
 
-        [TestCase("0.000000000", TestName = "Zero with many trailing zeros")]
-        [TestCase("213.00000000", TestName = "Positive number with many trailng zeros")]
-        [TestCase("-123.100000", TestName = "Negative number with many trailing zeros")]
-        public void NumberValidator_ShouldValidateNumber_WithTrailingZeroes(string input)
+        [Test]
+        public void NumberValidator_ShouldValidateNumber_WithTrailingZeroes()
         {
-            sutValidator.IsValidNumber(input).Should().BeFalse();
+            sutValidator.IsValidNumber("21.00").Should().BeFalse();
         }
 
         [TestCase("13,3", TestName = "Number with comma as a delimiter")]
