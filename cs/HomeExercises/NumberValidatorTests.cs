@@ -44,13 +44,17 @@ namespace HomeExercises
         }
 
         [TestCase(".05")]
+        [TestCase(",05")]
         [TestCase("-+5")]
         [TestCase("5:2")]
         [TestCase("1.1e1")]
         [TestCase("A,5")]
+        [TestCase("5,A")]
         [TestCase("  ")]
         [TestCase("55.")]
         [TestCase("55,")]
+        [TestCase("5..5")]
+        [TestCase("5,,5")]
         public void IsValidNumber_IsFalse_IfFormatIsIncorrect(string number)
         {
             numberValidator.IsValidNumber(number).Should().BeFalse();
