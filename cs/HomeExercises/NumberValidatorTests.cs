@@ -8,34 +8,39 @@ namespace HomeExercises
 	[TestFixture]
 	public class NumberValidatorTests
 	{
-		[Test]
-		public void Construction_Throws_NegativePrecision()
+		[TestCase(true)]
+		[TestCase(false)]
+		public void Construction_Throws_NegativePrecision(bool onlyPositive)
 		{
-			Assert.Throws<ArgumentException>(() => new NumberValidator(-1, 2, true));
-			Assert.Throws<ArgumentException>(() => new NumberValidator(-1, 2, false));
+			Assert.Throws<ArgumentException>(() => new NumberValidator(-1, 2, onlyPositive));
 		}
 		
-		[Test]
-		public void Construction_Throws_NegativeScale()
+		[TestCase(true)]
+		[TestCase(false)]
+		public void Construction_Throws_NegativeScale(bool onlyPositive)
 		{
-			Assert.Throws<ArgumentException>(() => new NumberValidator(2, -1, true));
-			Assert.Throws<ArgumentException>(() => new NumberValidator(2, -1, false));
+			Assert.Throws<ArgumentException>(() => new NumberValidator(2, -1, onlyPositive));
 		}
 
-		[Test]
-		public void Constructor_Throws_ScaleBiggerThenPrecision()
+		[TestCase(true)]
+		[TestCase(false)]
+		public void Constructor_Throws_ScaleBiggerThanPrecision(bool onlyPositive)
 		{
-			Assert.Throws<ArgumentException>(() => new NumberValidator(2, 4, true));
-			Assert.Throws<ArgumentException>(() => new NumberValidator(2, 4, false));
+			Assert.Throws<ArgumentException>(() => new NumberValidator(2, 4, onlyPositive));
 		}
 		
-		[Test]
+		[TestCase(true)]
+		[TestCase(false)]
+		public void Constructor_Throws_PrecisionIsZero(bool onlyPositive)
+		{
+			Assert.Throws<ArgumentException>(() => new NumberValidator(0, 0, onlyPositive));
+		}
+		
 		public void Construction_DoesntThrows_CorrectInit()
 		{
 			Assert.DoesNotThrow(() => new NumberValidator(1, 0, true));
 		}
 
-		[Test]
 		[TestCase("abc")]
 		[TestCase("-abc")]
 		[TestCase("ab.c")]
@@ -47,36 +52,32 @@ namespace HomeExercises
 			input.Should().Match(input => !validator.IsValidNumber(input));
 		}
 		
-		[Test]
 		[TestCase("0")]
 		[TestCase("0.0")]
 		[TestCase("00.00")]
-		public void IsValidNumber_ReturnsTrue_PrecisionBiggerThenDigitsCount(string input)
+		public void IsValidNumber_ReturnsTrue_PrecisionBiggerThanDigitsCount(string input)
 		{
 			var validator = new NumberValidator(17, 2, true);
 			input.Should().Match(input => validator.IsValidNumber(input));
 		}
 
-		[Test]
 		[TestCase("00.00")]
 		[TestCase("0000")]
 		[TestCase("0.000")]
-		public void IsValidNumber_ReturnsFalse_PrecisionLessThenDigitsCount(string input)
+		public void IsValidNumber_ReturnsFalse_PrecisionLessThanDigitsCount(string input)
 		{
 			var validator = new NumberValidator(3, 2, true);
 			input.Should().Match(input => !validator.IsValidNumber(input));
 		}
 		
-		[Test]
 		[TestCase("-0.00")]
 		[TestCase("+0.00")]
-		public void IsValidNumber_ReturnsFalse_PrecisionLessThenDigitsCountWithSign(string input)
+		public void IsValidNumber_ReturnsFalse_PrecisionLessThanDigitsCountWithSign(string input)
 		{
 			var validator = new NumberValidator(3, 2, true);
 			input.Should().Match(input => !validator.IsValidNumber(input));
 		}
 		
-		[Test]
 		[TestCase("00.00")]
 		[TestCase("0.000")]
 		[TestCase("0000")]
@@ -86,7 +87,6 @@ namespace HomeExercises
 			input.Should().Match(input => validator.IsValidNumber(input));
 		}
 		
-		[Test]
 		[TestCase("-0.00")]
 		[TestCase("+0.00")]
 		[TestCase("+000")]
@@ -97,34 +97,29 @@ namespace HomeExercises
 			input.Should().Match(input => validator.IsValidNumber(input));
 		}
 		
-		[Test]
 		[TestCase("0.000")]
 		[TestCase("000.000")]
-		public void IsValidNumber_ReturnsFalse_ScaleBiggerThenFracPartCount(string input)
+		public void IsValidNumber_ReturnsFalse_ScaleLessThanFracPartCount(string input)
 		{
 			var validator = new NumberValidator(17, 2, true);
 			input.Should().Match(input => !validator.IsValidNumber(input));
 		}
 		
 		[Test]
-		[TestCase("0")]
-		public void IsValidNumber_ReturnsTrue_ScaleIsZero(string input)
+		public void IsValidNumber_ReturnsTrue_ScaleIsZeroInputInteger()
 		{
 			var validator = new NumberValidator(17, 0, true);
-			input.Should().Match(input => validator.IsValidNumber(input));
+			"0".Should().Match(input => validator.IsValidNumber(input));
 		}
 		
-		[Test]
 		[TestCase("0.0")]
-		[TestCase("00.00")]
 		[TestCase("00.")]
-		public void IsValidNumber_ReturnsFalse_ScaleIsZero(string input)
+		public void IsValidNumber_ReturnsFalse_ScaleIsZeroInputNotInteger(string input)
 		{
 			var validator = new NumberValidator(17, 0, true);
 			input.Should().Match(input => !validator.IsValidNumber(input));
 		}
 
-		[Test]
 		[TestCase("")]
 		[TestCase("  ")]
 		[TestCase("   \t")]
@@ -134,7 +129,6 @@ namespace HomeExercises
 			input.Should().Match(input => !validator.IsValidNumber(input));
 		}
 		
-		[Test]
 		[TestCase("-1.1")]
 		[TestCase("-1")]
 		[TestCase("-1.111")]
