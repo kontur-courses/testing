@@ -8,23 +8,249 @@ namespace HomeExercises
 	public class NumberValidatorTests
 	{
 		[Test]
-		public void Test()
+		public void NumberValidator_ThrowsException_OnNegativePrecision_OnOnlyPositive()
 		{
 			Assert.Throws<ArgumentException>(() => new NumberValidator(-1, 2, true));
-			Assert.DoesNotThrow(() => new NumberValidator(1, 0, true));
-			Assert.Throws<ArgumentException>(() => new NumberValidator(-1, 2, false));
+		}
 
+		[Test]
+		public void NumberValidator_ThrowsException_OnNegativePrecision()
+		{
+			Assert.Throws<ArgumentException>(() => new NumberValidator(-1, 2));
+		}
+
+		[Test]
+		public void NumberValidator_ThrowsException_OnNegativeScale_OnOnlyPositive()
+		{
+			Assert.Throws<ArgumentException>(() => new NumberValidator(3, -2, true));
+		}
+
+		[Test]
+		public void NumberValidator_ThrowsException_OnNegativeScale()
+		{
+			Assert.Throws<ArgumentException>(() => new NumberValidator(3, -2, false));
+		}
+
+		[Test]
+		public void NumberValidator_ThrowsException_OnScaleGreaterThanPrecision_OnOnlyPositive()
+		{
+			Assert.Throws<ArgumentException>(() => new NumberValidator(1, 2, true));
+		}
+
+		[Test]
+		public void NumberValidator_ThrowsException_OnScaleGreaterThanPrecision()
+		{
+			Assert.Throws<ArgumentException>(() => new NumberValidator(1, 2, false));
+		}
+
+		[Test]
+		public void NumberValidator_ThrowsException_OnPrecisionEqualsZero_OnOnlyPositive()
+		{
+			Assert.Throws<ArgumentException>(() => new NumberValidator(0, 0, true));
+		}
+
+		[Test]
+		public void NumberValidator_ThrowsException_OnPrecisionEqualsZero()
+		{
+			Assert.Throws<ArgumentException>(() => new NumberValidator(0, 0, false));
+		}
+
+		[Test]
+		public void NumberValidator_DoesNotThrowException_OnScaleEqualsZero_OnOnlyPositive()
+		{
+			Assert.DoesNotThrow(() => new NumberValidator(1, 0, true));
+		}
+
+		[Test]
+		public void NumberValidator_DoesNotThrowException_OnScaleEqualsZero()
+		{
+			Assert.DoesNotThrow(() => new NumberValidator(1, 0, false));
+		}
+
+		[Test]
+		public void NumberValidator_DoesNotThrowException_OnPrecisionGreaterThanScale_OnOnlyPositive()
+		{
+			Assert.DoesNotThrow(() => new NumberValidator(4, 2, true));
+		}
+
+		[Test]
+		public void NumberValidator_DoesNotThrowException_OnPrecisionGreaterThanScale()
+		{
+			Assert.DoesNotThrow(() => new NumberValidator(4, 2, false));
+		}
+
+		[Test]
+		public void IsValidNumber_ReturnsTrue_WhenPrecisionGreaterThanNumberLength()
+		{
 			Assert.IsTrue(new NumberValidator(17, 2, true).IsValidNumber("0.0"));
+		}
+
+		[Test]
+		public void IsValidNumber_ReturnsFalse_OnNegativeNumber_WhenOnlyPositive()
+		{
+			Assert.IsFalse(new NumberValidator(17, 2, true).IsValidNumber("-0.0"));
+		}
+
+		[Test]
+		public void IsValidNumber_ReturnsTrue_OnNegativeNumber_WhenNotOnlyPositive()
+		{
+			Assert.IsTrue(new NumberValidator(17, 2).IsValidNumber("-0.0"));
+		}
+
+		[Test]
+		public void IsValidNumber_ReturnsTrue_OnInteger_WhenScaleEqualsZero()
+		{
+			Assert.IsTrue(new NumberValidator(17, 0, true).IsValidNumber("0"));
+		}
+
+		[Test]
+		public void IsValidNumber_ReturnsTrue_OnInteger_WhenScaleGreaterThanZero()
+		{
 			Assert.IsTrue(new NumberValidator(17, 2, true).IsValidNumber("0"));
-			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("00.00"));
-			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("-0.00"));
+		}
+
+		[Test]
+		public void IsValidNumber_ReturnsFalse_OnNumberEndingWithPoint()
+		{
+			Assert.IsFalse(new NumberValidator(17, 2, true).IsValidNumber("0."));
+		}
+
+		[Test]
+		public void IsValidNumber_ReturnsFalse_OnNumberStartingWithPoint()
+		{
+			Assert.IsFalse(new NumberValidator(17, 2, true).IsValidNumber(".0"));
+		}
+
+		[Test]
+		public void IsValidNumber_ReturnsFalse_OnNumberEndingWithWhiteSpaces()
+		{
+			Assert.IsFalse(new NumberValidator(17, 2, true).IsValidNumber("0   "));
+		}
+
+		[Test]
+		public void IsValidNumber_ReturnsFalse_OnNumberStartingWithWhiteSpaces()
+		{
+			Assert.IsFalse(new NumberValidator(17, 2, true).IsValidNumber("   0"));
+		}
+
+		[Test]
+		public void IsValidNumber_ReturnsFalse_OnNull()
+		{
+			Assert.IsFalse(new NumberValidator(17, 2, true).IsValidNumber(null));
+		}
+
+		[Test]
+		public void IsValidNumber_ReturnsFalse_OnEmptyString()
+		{
+			Assert.IsFalse(new NumberValidator(17, 2, true).IsValidNumber(""));
+		}
+
+		[Test]
+		public void IsValidNumber_ReturnsFalse_StringContainsWhiteSpaces()
+		{
+			Assert.IsFalse(new NumberValidator(17, 2, true).IsValidNumber("  "));
+		}
+
+		[Test]
+		public void IsValidNumber_ReturnsFalse_WhenPrecisionLessThanNumberLength()
+		{
+			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("12.12"));
+		}
+
+		[Test]
+		public void IsValidNumber_ReturnsFalse_WhenPrecisionLessThanNumberLength_IncludingMinus()
+		{
+			Assert.IsFalse(new NumberValidator(3, 2, false).IsValidNumber("-0.00"));
+		}
+
+		[Test]
+		public void IsValidNumber_ReturnsFalse_WhenPrecisionLessThanNumberLength_IncludingPlus()
+		{
 			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("+0.00"));
-			Assert.IsTrue(new NumberValidator(4, 2, true).IsValidNumber("+1.23"));
-			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("+1.23"));
-			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("-1.23"));
+		}
+
+		[Test]
+		public void IsValidNumber_ReturnsTrue_WhenPrecisionEqualsNumberLength_IncludingMinus()
+		{
+			Assert.IsTrue(new NumberValidator(4, 2, false).IsValidNumber("-0.00"));
+		}
+
+		[Test]
+		public void IsValidNumber_ReturnsTrue_WhenPrecisionEqualsNumberLength_IncludingPlus()
+		{
+			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("+0.00"));
+		}
+
+		[Test]
+		public void IsValidNumber_ReturnsFalse_WhenNumberContainsWoreThanOneDifferentSigns()
+		{
+			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("+-0.00"));
+		}
+
+		[Test]
+		public void IsValidNumber_ReturnsFalse_WhenNumberContainsWoreThanOnePlus()
+		{
+			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("++0.00"));
+		}
+
+		[Test]
+		public void IsValidNumber_ReturnsFalse_WhenNumberContainsWoreThanOneMinus()
+		{
+			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("--0.00"));
+		}
+
+		[Test]
+		public void IsValidNumber_ReturnsFalse_WhenNumberContainsWoreThanOnePoint()
+		{
+			Assert.IsFalse(new NumberValidator(10, 5, true).IsValidNumber("0.0.0"));
+		}
+
+		[Test]
+		public void IsValidNumber_ReturnsTrue_WhenNumberContainsCommaInsteadOfPoint()
+		{
+			Assert.IsTrue(new NumberValidator(3, 2, true).IsValidNumber("0,00"));
+		}
+
+		[Test]
+		public void IsValidNumber_ReturnsFalse__WhenPrecisionLessThanNumberLength_IncludingInsignificantZeros()
+		{
+			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("0012"));
+		}
+
+		[Test]
+		public void IsValidNumber_ReturnsFalse_WhenScaleLessThanFracPartLength()
+		{
 			Assert.IsFalse(new NumberValidator(17, 2, true).IsValidNumber("0.000"));
+		}
+
+		[Test]
+		public void IsValidNumber_ReturnsSameResult_OnSecondCall()
+		{
+			var numberValidator = new NumberValidator(17, 2, true);
+			Assert.IsTrue(numberValidator.IsValidNumber("0.00"));
+			Assert.IsTrue(numberValidator.IsValidNumber("0.00"));
+		}
+
+		[Test]
+		public void IsValidNumber_SupportsAllDigits()
+		{
+			var allCasesAreValid = true;
+			var numberValidator = new NumberValidator(17, 5, true);
+			for (var i = 0; i < 10; i++)
+				if (!numberValidator.IsValidNumber($"{i}{i}.{9 - i}{9 - i}"))
+				{
+					allCasesAreValid = false;
+					break;
+				}
+			Assert.IsTrue(allCasesAreValid);
+		}
+
+		[Test]
+		public void IsValidNumber_ReturnsFalse_OnNonNumericInput()
+		{
 			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("a.sd"));
 		}
+
 	}
 
 	public class NumberValidator
