@@ -38,9 +38,8 @@ namespace HomeExercises
             sutValidator.IsValidNumber(input).Should().BeFalse();
         }
 
-        [TestCase("13,3", TestName = "Positive number with comma as a delimiter")]
-        [TestCase("-1,4", TestName = "Negative number with comma as a delimiter")]
-        [TestCase("0,00", TestName = "Zero with comma as a delimiter")]
+        [TestCase("13,3", TestName = "Number with comma as a delimiter")]
+        [TestCase("13.3", TestName = "Number with dot as a delimiter")]
         public void NumberValidator_ShouldValidateNumber_WithDifferentFractionalPartDelimiters(string input)
         {
             sutValidator.IsValidNumber(input).Should().BeTrue();
