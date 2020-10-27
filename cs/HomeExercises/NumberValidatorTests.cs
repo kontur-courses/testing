@@ -7,19 +7,19 @@ namespace HomeExercises
 {
     public class NumberValidatorTests
     {
-        private NumberValidator validator;
+        private NumberValidator sutValidator;
 
         [SetUp]
         public void SetUp()
         {
-            validator = new NumberValidator(3, 2, false);
+            sutValidator = new NumberValidator(3, 2, false);
         }
 
         [TestCase("12", TestName = "Positive number without plus sign")]
         [TestCase("+12", TestName = "Positive number with plus sign")]
         public void NumberValidator_ShouldValidateNumbers_WithCorrectSign(string input)
         {
-            validator.IsValidNumber(input).Should().BeTrue();
+            sutValidator.IsValidNumber(input).Should().BeTrue();
         }
 
         [TestCase("1234", TestName = "Number without fractional part")]
@@ -27,7 +27,7 @@ namespace HomeExercises
         [TestCase("-13.4", TestName = "Negative number")]
         public void NumberValidator_ShouldNotValidateNumber_WhenPrecisionIsNotCorrect(string input)
         {
-            validator.IsValidNumber(input).Should().BeFalse();
+            sutValidator.IsValidNumber(input).Should().BeFalse();
         }
 
         [TestCase("0.000000000", TestName = "Zero with many trailing zeros")]
@@ -35,7 +35,7 @@ namespace HomeExercises
         [TestCase("-123.100000", TestName = "Negative number with many trailing zeros")]
         public void NumberValidator_ShouldValidateNumber_WithTrailingZeroes(string input)
         {
-            validator.IsValidNumber(input);
+            sutValidator.IsValidNumber(input);
         }
 
         [TestCase("13,3", TestName = "Positive number with comma as a delimiter")]
@@ -43,49 +43,50 @@ namespace HomeExercises
         [TestCase("0,00", TestName = "Zero with comma as a delimiter")]
         public void NumberValidator_ShouldValidateNumber_WithDifferentFractionalPartDelimiters(string input)
         {
-            validator.IsValidNumber(input);
+            sutValidator.IsValidNumber(input);
         }
 
         [Test]
         public void NumberValidator_ShouldNotValidateNegativeNumbers_WhenOnlyPositiveFlagIsTrue()
         {
-            validator = new NumberValidator(3, 2, true);
-            validator.IsValidNumber("-12").Should().BeFalse();
+            sutValidator = new NumberValidator(3, 2, true);
+            sutValidator.IsValidNumber("-12").Should().BeFalse();
         }
 
         [TestCase("12.3456", TestName = "Number with correct precision and incorrect scale")]
         public void NumberValidator_ShouldNotValidateNumber_WhenScaleIsNotCorrect(string input)
         {
-            validator = new NumberValidator(10, 3);
-            validator.IsValidNumber(input).Should().BeFalse();
+            sutValidator = new NumberValidator(10, 3);
+            sutValidator.IsValidNumber(input).Should().BeFalse();
         }
 
         [TestCase("", TestName = "Empty string")]
+        [TestCase(null,TestName = "Null")]
         [TestCase("asdfsa", TestName = "String without digits")]
         [TestCase("12das fd", TestName = "String with digits at the start")]
         [TestCase("dsa12", TestName = "String with digits at the end")]
         [TestCase("ads13das", TestName = "String with digits inside letters")]
         public void NumberValidator_ShouldNotValidateNonNumbers(string input)
         {
-            validator.IsValidNumber(input).Should().BeFalse();
+            sutValidator.IsValidNumber(input).Should().BeFalse();
         }
 
         [Test]
         public void NumberValidator_ShouldValidateNegativeZero()
         {
-            validator.IsValidNumber("-0.0").Should().BeTrue();
+            sutValidator.IsValidNumber("-0.0").Should().BeTrue();
         }
 
         [Test]
         public void NumberValidator_ShouldValidateZero()
         {
-            validator.IsValidNumber("0").Should().BeTrue();
+            sutValidator.IsValidNumber("0").Should().BeTrue();
         }
 
         [Test]
         public void NumberValidator_ShouldValidateNumber_WithLeadingZeroes()
         {
-            validator.IsValidNumber("001").Should().BeTrue();
+            sutValidator.IsValidNumber("001").Should().BeTrue();
         }
 
         [TestCase(1, TestName = "Positive precision")]
