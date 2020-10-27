@@ -18,7 +18,8 @@ namespace HomeExercises
             actualTsar.Should().BeEquivalentTo(
                 expectedTsar,
                 options => options.Excluding(
-                    ctx => ctx.SelectedMemberInfo.Name == nameof(Person.Id)
+                    x => x.SelectedMemberInfo.Name == nameof(Person.Id)
+                         && x.SelectedMemberInfo.DeclaringType == typeof(Person)
                 )
             );
         }
