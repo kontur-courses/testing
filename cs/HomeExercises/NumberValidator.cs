@@ -31,7 +31,7 @@ namespace HomeExercises
 			if (string.IsNullOrEmpty(value))
 				return false;
 
-			var match = NumberRegex.Match(value);
+			var match = numberRegex.Match(value);
 			if (!match.Success)
 				return false;
 
