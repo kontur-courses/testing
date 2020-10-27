@@ -76,9 +76,9 @@ namespace HomeExercises
         }
 
         [Test]
-        public void NumberValidator_ShouldValidateNumber_WithLeadingZeroes()
+        public void NumberValidator_ShouldValidateNumber_WithLeadingZeros()
         {
-            sutValidator.IsValidNumber("001").Should().BeTrue();
+            sutValidator.IsValidNumber("0001").Should().BeFalse();
         }
 
         [TestCase(1, TestName = "Positive precision")]
