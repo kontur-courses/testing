@@ -68,13 +68,6 @@ namespace HomeExercises
             sutValidator.IsValidNumber(input).Should().BeFalse();
         }
 
-        [TestCase("0", TestName = "Zero")]
-        [TestCase("-0.0", TestName = "Negative zero")]
-        public void NumberValidator_ShouldValidateZero(string input)
-        {
-            sutValidator.IsValidNumber(input).Should().BeTrue();
-        }
-
         [TestCase(1, TestName = "Positive precision")]
         [TestCase(0, TestName = "Zero precision")]
         public void NumberValidator_ShouldThrowAnException_OnNonPositivePrecision(int precision)
