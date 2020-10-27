@@ -30,12 +30,6 @@ namespace HomeExercises
             sutValidator.IsValidNumber(input).Should().BeFalse();
         }
 
-        [Test]
-        public void NumberValidator_ShouldNotValidateNumber_WithTrailingZeroes()
-        {
-            sutValidator.IsValidNumber("21.00").Should().BeFalse();
-        }
-
         [TestCase("13,3", TestName = "Number with comma as a delimiter")]
         [TestCase("13.3", TestName = "Number with dot as a delimiter")]
         public void NumberValidator_ShouldValidateNumber_WithDifferentFractionalPartDelimiters(string input)
@@ -73,12 +67,6 @@ namespace HomeExercises
         public void NumberValidator_ShouldValidateZero(string input)
         {
             sutValidator.IsValidNumber(input).Should().BeTrue();
-        }
-
-        [Test]
-        public void NumberValidator_ShouldNotValidateNumber_WithLeadingZeros()
-        {
-            sutValidator.IsValidNumber("0001").Should().BeFalse();
         }
 
         [TestCase(1, TestName = "Positive precision")]
