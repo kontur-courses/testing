@@ -30,6 +30,12 @@ namespace HomeExercises
             sutValidator.IsValidNumber(input).Should().BeFalse();
         }
 
+        [Test]
+        public void NumberValidator_ShouldNotValidateNumber_WithoutIntegerPart()
+        {
+            sutValidator.IsValidNumber(".12").Should().BeFalse();
+        }
+
         [TestCase("13,3", TestName = "Number with comma as a delimiter")]
         [TestCase("13.3", TestName = "Number with dot as a delimiter")]
         public void NumberValidator_ShouldValidateNumber_WithDifferentFractionalPartDelimiters(string input)
