@@ -35,33 +35,33 @@ namespace HomeExercises
         [TestCase("-123.100000", TestName = "Negative number with many trailing zeros")]
         public void NumberValidator_ShouldValidateNumber_WithTrailingZeroes(string input)
         {
-            sutValidator.IsValidNumber(input);
+            sutValidator.IsValidNumber(input).Should().BeFalse();
         }
 
         [TestCase("13,3", TestName = "Positive number with comma as a delimiter")]
-        [TestCase("-13,4", TestName = "Negative number with comma as a delimiter")]
+        [TestCase("-1,4", TestName = "Negative number with comma as a delimiter")]
         [TestCase("0,00", TestName = "Zero with comma as a delimiter")]
         public void NumberValidator_ShouldValidateNumber_WithDifferentFractionalPartDelimiters(string input)
         {
-            sutValidator.IsValidNumber(input);
+            sutValidator.IsValidNumber(input).Should().BeTrue();
         }
 
         [Test]
         public void NumberValidator_ShouldNotValidateNegativeNumbers_WhenOnlyPositiveFlagIsTrue()
         {
-            sutValidator = new NumberValidator(3, 2, true);
-            sutValidator.IsValidNumber("-12").Should().BeFalse();
+            var sutOnlyPositiveValidator = new NumberValidator(3, 2, true);
+            sutOnlyPositiveValidator.IsValidNumber("-12").Should().BeFalse();
         }
 
         [TestCase("12.3456", TestName = "Number with correct precision and incorrect scale")]
         public void NumberValidator_ShouldNotValidateNumber_WhenScaleIsNotCorrect(string input)
         {
-            sutValidator = new NumberValidator(10, 3);
-            sutValidator.IsValidNumber(input).Should().BeFalse();
+            var sutBigPrecisionValidator = new NumberValidator(10, 3);
+            sutBigPrecisionValidator.IsValidNumber(input).Should().BeFalse();
         }
 
         [TestCase("", TestName = "Empty string")]
-        [TestCase(null,TestName = "Null")]
+        [TestCase(null, TestName = "Null")]
         [TestCase("asdfsa", TestName = "String without digits")]
         [TestCase("12das fd", TestName = "String with digits at the start")]
         [TestCase("dsa12", TestName = "String with digits at the end")]
