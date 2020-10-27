@@ -5,11 +5,11 @@ using NUnit.Framework;
 
 namespace HomeExercises
 {
-	public class NumberValidatorTests
+	public class NumberValidator_Should
 	{
 		[TestCase(-1)]
 		[TestCase(0)]
-		public void Should_Throw_OnCreation_WhenPrecisionIsNegativeOrZero(int precision)
+		public void Throw_OnCreation_WhenPrecisionIsNegativeOrZero(int precision)
 		{
 			FluentActions.Invoking(() => new NumberValidator(precision))
 				.Should().Throw<ArgumentException>();
@@ -17,14 +17,14 @@ namespace HomeExercises
 
 		[TestCase(3, 5)]
 		[TestCase(3, 3)]
-		public void Should_Throw_OnCreation_WhenScaleGraterOrEqualsPrecision(int precision, int scale)
+		public void Throw_OnCreation_WhenScaleGraterOrEqualsPrecision(int precision, int scale)
 		{
 			FluentActions.Invoking(() => new NumberValidator(precision, scale))
 				.Should().Throw<ArgumentException>();
 		}
 
 		[Test]
-		public void Should_Throw_OnCreation_WhenScaleIsNegative()
+		public void Throw_OnCreation_WhenScaleIsNegative()
 		{
 			FluentActions.Invoking(() => new NumberValidator(1, -2))
 				.Should().Throw<ArgumentException>();
@@ -33,7 +33,7 @@ namespace HomeExercises
 		[TestCase(3, 2)]
 		[TestCase(3, 1)]
 		[TestCase(1, 0)]
-		public void Should_NotThrow_OnCreation_WithCorrectData(int precision, int scale)
+		public void NotThrow_OnCreation_WithCorrectData(int precision, int scale)
 		{
 			FluentActions.Invoking(() => new NumberValidator(precision, scale))
 				.Should().NotThrow<ArgumentException>();
@@ -42,7 +42,7 @@ namespace HomeExercises
 
 		[TestCase("")]
 		[TestCase(null)]
-		public void Should_ReturnFalse_IfNumberIsNullOrEmpty(string number)
+		public void ReturnFalse_IfNumberIsNullOrEmpty(string number)
 		{
 			new NumberValidator(1, 0).IsValidNumber(number).Should()
 				.BeFalse();
@@ -54,7 +54,7 @@ namespace HomeExercises
 		[TestCase("++-")]
 		[TestCase("++1")]
 		[TestCase("0.0.0")]
-		public void Should_ReturnFalse_IfNumberDoesNotMatchFormat(string number)
+		public void ReturnFalse_IfNumberDoesNotMatchFormat(string number)
 		{
 			new NumberValidator(1, 0).IsValidNumber(number).Should()
 				.BeFalse();
@@ -65,7 +65,7 @@ namespace HomeExercises
 		[TestCase(1, 0, "+1")]
 		[TestCase(2, 1, "-0.0")]
 		[TestCase(3, 2, "123.0")]
-		public void Should_ReturnFalse_IfNumberScaleGreaterThanPrecision(int precision, int scale,
+		public void ReturnFalse_IfNumberScaleGreaterThanPrecision(int precision, int scale,
 			string number)
 		{
 			new NumberValidator(precision).IsValidNumber(number).Should()
@@ -75,7 +75,7 @@ namespace HomeExercises
 		[TestCase(3, 1, "0.00")]
 		[TestCase(4, 2, "0.000")]
 		[TestCase(5, 2, "-0.000")]
-		public void Should_ReturnFalse_IfFractionalPartScaleGraterThenScale(int precision, int scale,
+		public void ReturnFalse_IfFractionalPartScaleGraterThenScale(int precision, int scale,
 			string number)
 		{
 			new NumberValidator(precision, scale).IsValidNumber(number).Should()
@@ -86,7 +86,7 @@ namespace HomeExercises
 		[TestCase(3, 1, "-1.5")]
 		[TestCase(4, 2, "-1.55")]
 		[TestCase(5, 2, "-10.55")]
-		public void Should_ReturnFalse_IfOnlyPositive_ButGivenNegativeNumber(int precision, int scale,
+		public void ReturnFalse_IfOnlyPositive_ButGivenNegativeNumber(int precision, int scale,
 			string number)
 		{
 			new NumberValidator(precision, scale, true).IsValidNumber(number).Should()
@@ -95,7 +95,7 @@ namespace HomeExercises
 
 		[TestCase(3, 1, "-12")]
 		[TestCase(3, 1, "-1.2")]
-		public void Should_ReturnTrue_IfDefaultOnlyPositive_AndGivenNegativeNumber(int precision,
+		public void ReturnTrue_IfDefaultOnlyPositive_AndGivenNegativeNumber(int precision,
 			int scale, string number)
 		{
 			new NumberValidator(precision, scale).IsValidNumber(number).Should()
@@ -104,7 +104,7 @@ namespace HomeExercises
 
 		[TestCase(3, 1, "-1.0")]
 		[TestCase(3, 1, "+1,0")]
-		public void Should_SupportCommasAndDotsWithinFormat(int precision, int scale, string number)
+		public void SupportCommasAndDotsWithinFormat(int precision, int scale, string number)
 		{
 			new NumberValidator(precision, scale).IsValidNumber(number).Should()
 				.BeTrue();
@@ -115,7 +115,7 @@ namespace HomeExercises
 		[TestCase(17, 2, true, "+0.00")]
 		[TestCase(17, 2, false, "-0.00")]
 		[TestCase(17, 3, false, "-0.005")]
-		public void Should_ReturnTrue_WithCorrectData(int precision, int scale, bool onlyPositive,
+		public void ReturnTrue_WithCorrectData(int precision, int scale, bool onlyPositive,
 			string number)
 		{
 			new NumberValidator(precision, scale, onlyPositive).IsValidNumber(number).Should()
