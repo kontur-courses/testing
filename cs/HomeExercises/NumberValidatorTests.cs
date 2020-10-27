@@ -1,99 +1,73 @@
 ﻿using System;
-using System.Text.RegularExpressions;
-using FluentAssertions;
+using System.Collections;
+using System.Collections.Generic;
 using NUnit.Framework;
 
 namespace HomeExercises
 {
 	public class NumberValidatorTests
 	{
-		[TestCase(3, 2, true, "a.sd", false)]
-		[TestCase(3, 2, true, "0.", false)]
-		[TestCase(3, 2, true, ".0", false)]
-		[TestCase(1, 0, true, "12", false)]
-		[TestCase(1, 0, true, null, false)]
-		[TestCase(2, 0, false, "-1", true)]
-		[TestCase(3, 1, true, " 3.0", false)]
-		[TestCase(3, 1, true, " ", false)]
-		[TestCase(17, 2, true, "0", true)]
-		[TestCase(17, 2, true, "0.0", true)]
-		[TestCase(3, 2, true, "00.00", false)]
-		[TestCase(3, 2, false, "-0.00", false)]
-		[TestCase(3, 2, false, "+0.00", false)]
-		[TestCase(17, 2, true, "0.000", false)]
-		[TestCase(4, 2, true, "+1.23", true)]
-		[TestCase(4, 2, false, "-1.23", true)]
-		public void IsValidNumber(int precision, int scale, bool onlyPositive, string number, bool valid)
+		[TestCase(3, 2, true, "a.sd", ExpectedResult = false)]
+		[TestCase(3, 2, true, "0.", ExpectedResult = false)]
+		[TestCase(3, 2, true, ".0", ExpectedResult = false)]
+		[TestCase(1, 0, true, "12", ExpectedResult = false)]
+		[TestCase(1, 0, true, null, ExpectedResult = false)]
+		[TestCase(2, 0, false, "-1", ExpectedResult = true)]
+		[TestCase(3, 1, true, " 3.0", ExpectedResult = false)]
+		[TestCase(3, 1, true, " ", ExpectedResult = false)]
+		[TestCase(17, 2, true, "0", ExpectedResult = true)]
+		[TestCase(17, 2, true, "0.0", ExpectedResult = true)]
+		[TestCase(17, 2, true, "0,0", ExpectedResult = true)]
+		[TestCase(3, 2, true, "00.00", ExpectedResult = false)]
+		[TestCase(3, 2, false, "-0.00", ExpectedResult = false)]
+		[TestCase(3, 2, false, "+0.00", ExpectedResult = false)]
+		[TestCase(17, 2, true, "0.000", ExpectedResult = false)]
+		[TestCase(4, 2, true, "+1.23", ExpectedResult = true)]
+		[TestCase(4, 2, false, "-1.23", ExpectedResult = true)]
+		public bool IsValidNumber(int precision, int scale, bool onlyPositive, string number)
 		{
-			new NumberValidator(precision, scale, onlyPositive).IsValidNumber(number).Should().Be(valid);
+			return new NumberValidator(precision, scale, onlyPositive).IsValidNumber(number);
 		}
 
-		[TestCase(-1, -3, true, typeof(ArgumentException))]
-		[TestCase(-1, -3, false, typeof(ArgumentException))]
-		[TestCase(1, 2, true, typeof(ArgumentException))]
-		[TestCase(1, 2, false, typeof(ArgumentException))]
-		[TestCase(0, 0, true, typeof(ArgumentException))]
-		[TestCase(0, 0, false, typeof(ArgumentException))]
-		[TestCase(2, -1, true, typeof(ArgumentException))]
-		[TestCase(2, -1, false, typeof(ArgumentException))]
-		[TestCase(1, 0, true, null)]
-		[TestCase(1, 0, false, null)]
+		[TestCaseSource(typeof(ConstructorTestCases))]
 		public void Constructor(int precision, int scale, bool onlyPositive, Type expectedException)
 		{
 			TestDelegate function = () => new NumberValidator(precision, scale, onlyPositive);
-			// null != null
-			if (expectedException == null)
-				Assert.DoesNotThrow(function);
-			else
-				Assert.Throws(expectedException, function);
+			Assert.Throws(expectedException, function);
 		}
 	}
 
-	public class NumberValidator
+	public class ConstructorTestCases : IEnumerable
 	{
-		private readonly Regex numberRegex;
-		private readonly bool onlyPositive;
-		private readonly int precision;
-		private readonly int scale;
-
-		public NumberValidator(int precision, int scale = 0, bool onlyPositive = false)
+		private List<List<object>> cases = new List<List<object>>
 		{
-			this.precision = precision;
-			this.scale = scale;
-			this.onlyPositive = onlyPositive;
-			if (precision <= 0)
-				throw new ArgumentException("precision must be a positive number");
-			if (scale < 0 || scale >= precision)
-				throw new ArgumentException("scale must be a non-negative number less or equal than precision");
-			numberRegex = new Regex(@"^([+-]?)(\d+)([.,](\d+))?$", RegexOptions.IgnoreCase);
+            new List<object> { -1, -3, true, typeof(ArgumentException) },
+            new List<object> { 1, 2, true, typeof(ArgumentException) },
+            new List<object> { 0, 0, true, typeof(ArgumentException) },
+            new List<object> { 2, -1, true, typeof(ArgumentException) }
+		};
+		private Dictionary<int, string> descriptions = new Dictionary<int, string>()
+		{
+			{ 0, "Precision must be great than scale and scale must be great than or equal 0" }
+		};
+
+		public IEnumerator GetEnumerator()
+		{
+			for (var i = 0; i < cases.Count; i++)
+			{
+				var testCase = cases[i];
+				yield return GetTestCaseData(i, testCase.ToArray());
+				testCase[2] = !(bool)testCase[2];
+				yield return GetTestCaseData(i, testCase.ToArray());
+			}
 		}
 
-		public bool IsValidNumber(string value)
+		public TestCaseData GetTestCaseData(int index, object[] args)
 		{
-			// Проверяем соответствие входного значения формату N(m,k), в соответствии с правилом, 
-			// описанным в Формате описи документов, направляемых в налоговый орган в электронном виде по телекоммуникационным каналам связи:
-			// Формат числового значения указывается в виде N(m.к), где m – максимальное количество знаков в числе, включая знак (для отрицательного числа), 
-			// целую и дробную часть числа без разделяющей десятичной точки, k – максимальное число знаков дробной части числа. 
-			// Если число знаков дробной части числа равно 0 (т.е. число целое), то формат числового значения имеет вид N(m).
-
-			if (string.IsNullOrEmpty(value))
-				return false;
-
-			var match = numberRegex.Match(value);
-			if (!match.Success)
-				return false;
-
-			// Знак и целая часть
-			var intPart = match.Groups[1].Value.Length + match.Groups[2].Value.Length;
-			// Дробная часть
-			var fracPart = match.Groups[4].Value.Length;
-
-			if (intPart + fracPart > precision || fracPart > scale)
-				return false;
-
-			if (onlyPositive && match.Groups[1].Value == "-")
-				return false;
-			return true;
+			var data = new TestCaseData(args);
+            if (descriptions.ContainsKey(index))
+                data.SetDescription(descriptions[index]);
+            return data;
 		}
 	}
 }
