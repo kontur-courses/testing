@@ -1,4 +1,5 @@
 ﻿using FluentAssertions;
+using FluentAssertions.Equivalency;
 using NUnit.Framework;
 
 namespace HomeExercises
@@ -15,12 +16,15 @@ namespace HomeExercises
             var expectedTsar = new Person("Ivan IV The Terrible", 54, 170, 70,
                 new Person("Vasili III of Russia", 28, 170, 60, null));
 
-            actualTsar.Should().BeEquivalentTo(expectedTsar,
-                options => options.Excluding(
-                    person => person.SelectedMemberInfo.Name == nameof(Person.Id)
-                              && person.SelectedMemberInfo.DeclaringType == typeof(Person)
-                )
-            );
+            actualTsar.Should().BeEquivalentTo(expectedTsar, ExcludingPersonId);
+
+            static EquivalencyAssertionOptions<Person> ExcludingPersonId(EquivalencyAssertionOptions<Person> options)
+            {
+                return options.Excluding(
+                    memberInfo => memberInfo.SelectedMemberInfo.Name == nameof(Person.Id)
+                                  && memberInfo.SelectedMemberInfo.DeclaringType == typeof(Person)
+                );
+            }
         }
 
         [Test]

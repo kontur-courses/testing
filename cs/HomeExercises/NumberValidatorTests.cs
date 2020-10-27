@@ -12,10 +12,7 @@ namespace HomeExercises
         [TestCase(1, 2, TestName = "ScaleGreaterPrecision")]
         public void NumberValidatorConstructor_OnIncorrectInputs_ThrowArgumentException(int precision, int scale)
         {
-            Assert.Throws<ArgumentException>(() =>
-            {
-                _ = new NumberValidator(precision, scale);
-            });
+            Assert.Throws<ArgumentException>(() => { _ = new NumberValidator(precision, scale); });
         }
 
         [TestCase(1, 0, TestName = "WhenScaleIsZero")]
@@ -23,10 +20,7 @@ namespace HomeExercises
         [TestCase(1000, 999, TestName = "WhenScalePrecisionBigAndCorrect")]
         public void NumberValidatorConstructor_OnCorrectInputs_DoesNotThrow(int precision, int scale)
         {
-            Assert.DoesNotThrow(() =>
-            {
-                _ = new NumberValidator(precision, scale);
-            });
+            Assert.DoesNotThrow(() => { _ = new NumberValidator(precision, scale); });
         }
 
 
@@ -69,7 +63,7 @@ namespace HomeExercises
         [TestCase("+99", TestName = "MaxPositiveInt")]
         [TestCase("+1.0", TestName = "PositiveDecimal")]
         [TestCase("+9.9", TestName = "MaxPositiveDecimal")]
-        public void IsValidNumber_OnPositiveInputs_WhenOnlyPositiveValidator_ReturnTrue(string value)
+        public void IsValidNumber_OnPositiveInputsWithOnlyPositiveValidator_ReturnTrue(string value)
         {
             Assert.IsTrue(new NumberValidator(3, 2, true).IsValidNumber(value));
         }
@@ -78,7 +72,7 @@ namespace HomeExercises
         [TestCase("-99", TestName = "MaxNegativeInt")]
         [TestCase("-1.0", TestName = "NegativeDecimal")]
         [TestCase("-9.9", TestName = "MaxNegativeDecimal")]
-        public void IsValidNumber_OnNegativeInputs_WhenOnlyPositiveValidator_ReturnFalse(string value)
+        public void IsValidNumber_OnNegativeInputsWithOnlyPositiveValidator_ReturnFalse(string value)
         {
             Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber(value));
         }
