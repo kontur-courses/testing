@@ -17,7 +17,7 @@ namespace HomeExercises
 
         [TestCase("12", TestName = "Positive number without plus sign")]
         [TestCase("+12", TestName = "Positive number with plus sign")]
-        public void NumberValidator_ShouldValidateNumbersWithCorrectSign(string input)
+        public void NumberValidator_ShouldValidateNumbers_WithCorrectSign(string input)
         {
             validator.IsValidNumber(input).Should().BeTrue();
         }
@@ -33,7 +33,7 @@ namespace HomeExercises
         [TestCase("0.000000000", TestName = "Zero with many trailing zeros")]
         [TestCase("213.00000000", TestName = "Positive number with many trailng zeros")]
         [TestCase("-123.100000", TestName = "Negative number with many trailing zeros")]
-        public void NumberValidator_ShouldValidateNumberWithTrailingZeroes(string input)
+        public void NumberValidator_ShouldValidateNumber_WithTrailingZeroes(string input)
         {
             validator.IsValidNumber(input);
         }
@@ -41,7 +41,7 @@ namespace HomeExercises
         [TestCase("13,3", TestName = "Positive number with comma as a delimiter")]
         [TestCase("-13,4", TestName = "Negative number with comma as a delimiter")]
         [TestCase("0,00", TestName = "Zero with comma as a delimiter")]
-        public void NumberValidator_ShouldValidateNumberWithDifferentFractionalPartDelimiters(string input)
+        public void NumberValidator_ShouldValidateNumber_WithDifferentFractionalPartDelimiters(string input)
         {
             validator.IsValidNumber(input);
         }
