@@ -15,11 +15,11 @@ namespace HomeExercises
             numberValidator = new NumberValidator(6, 2);
         }
 
-        [TestCase(0, 2, TestName = "precision is zero")]
-        [TestCase(-1, 2, TestName = "precision is negative")]
-        [TestCase(2, -1, TestName = "scale is negative")]
-        [TestCase(2, 2, TestName = "scale equals precision")]
-        [TestCase(2, 3, TestName = "scale is more than precision")]
+        [TestCase(0, 2, TestName = "when precision is zero")]
+        [TestCase(-1, 2, TestName = "when precision is negative")]
+        [TestCase(2, -1, TestName = "when scale is negative")]
+        [TestCase(2, 2, TestName = "when scale equals precision")]
+        [TestCase(2, 3, TestName = "when scale is more than precision")]
         public void Constructor_ThrowsArgumentException(int precision, int scale)
         {
             Action act = () => new NumberValidator(precision, scale);
@@ -56,9 +56,9 @@ namespace HomeExercises
             numberValidator.IsValidNumber(number).Should().BeFalse();
         }
 
-        [TestCase(null, TestName = "string is null")]
-        [TestCase("", TestName = "string is empty")]
-        [TestCase("13.123", TestName = "fractal part length is more than scale")]
+        [TestCase(null, TestName = "when string is null")]
+        [TestCase("", TestName = "when string is empty")]
+        [TestCase("13.123", TestName = "when fractal part length is more than scale")]
         public void IsValidNumber_IsFalse(string number)
         {
             numberValidator.IsValidNumber(number).Should().BeFalse();
@@ -75,11 +75,11 @@ namespace HomeExercises
             numberValidator.IsValidNumber(number).Should().BeFalse();
         }
 
-        [TestCase("-123.5", TestName = "number is negative when not only-positive")]
-        [TestCase("123.5", TestName = "number is positive when not only-positive")]
-        [TestCase("+123.5", TestName = "number has plus")]
-        [TestCase("123.12", TestName = "fractal part length equals scale")]
-        [TestCase("123", TestName = "fractal part is empty")]
+        [TestCase("-123.5", TestName = "when number is negative when not only-positive")]
+        [TestCase("123.5", TestName = "when number is positive when not only-positive")]
+        [TestCase("+123.5", TestName = "when number has plus")]
+        [TestCase("123.12", TestName = "when fractal part length equals scale")]
+        [TestCase("123", TestName = "when fractal part is empty")]
         public void IsValidNumber_IsTrue(string number)
         {
             numberValidator.IsValidNumber(number).Should().BeTrue();
