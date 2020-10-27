@@ -31,7 +31,7 @@ namespace HomeExercises
         }
 
         [Test]
-        public void NumberValidator_ShouldValidateNumber_WithTrailingZeroes()
+        public void NumberValidator_ShouldNotValidateNumber_WithTrailingZeroes()
         {
             sutValidator.IsValidNumber("21.00").Should().BeFalse();
         }
@@ -76,7 +76,7 @@ namespace HomeExercises
         }
 
         [Test]
-        public void NumberValidator_ShouldValidateNumber_WithLeadingZeros()
+        public void NumberValidator_ShouldNotValidateNumber_WithLeadingZeros()
         {
             sutValidator.IsValidNumber("0001").Should().BeFalse();
         }
