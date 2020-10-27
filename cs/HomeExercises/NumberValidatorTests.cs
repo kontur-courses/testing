@@ -80,9 +80,9 @@ namespace HomeExercises
         }
 
         [TestCase("-123.5", TestName = "when number is negative when not only-positive")]
-        [TestCase("123.5", TestName = "when number is positive when not only-positive")]
+        [TestCase("123,5", TestName = "when number is positive when not only-positive")]
         [TestCase("+123.5", TestName = "when number has plus")]
-        [TestCase("123.12", TestName = "when fractal part length equals scale")]
+        [TestCase("123,12", TestName = "when fractal part length equals scale")]
         [TestCase("123", TestName = "when fractal part is empty")]
         public void IsValidNumber_IsTrue(string number)
         {
@@ -109,9 +109,9 @@ namespace HomeExercises
         [TestCase("123456")]
         [TestCase("12345.6")]
         [TestCase("-12345")]
-        [TestCase("-1234.5")]
+        [TestCase("-1234,5")]
         [TestCase("+12345")]
-        [TestCase("+1234.5")]
+        [TestCase("+1234,5")]
         public void IsValidNumber_IsTrue_IfNumberLengthEqualsPrecision(string number)
         {
             numberValidator.IsValidNumber(number).Should().BeTrue();
