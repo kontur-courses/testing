@@ -71,16 +71,11 @@ namespace HomeExercises
             sutValidator.IsValidNumber(input).Should().BeFalse();
         }
 
-        [Test]
-        public void NumberValidator_ShouldValidateNegativeZero()
+        [TestCase("0", TestName = "Zero")]
+        [TestCase("-0.0", TestName = "Negative zero")]
+        public void NumberValidator_ShouldValidateZero(string input)
         {
-            sutValidator.IsValidNumber("-0.0").Should().BeTrue();
-        }
-
-        [Test]
-        public void NumberValidator_ShouldValidateZero()
-        {
-            sutValidator.IsValidNumber("0").Should().BeTrue();
+            sutValidator.IsValidNumber(input).Should().BeTrue();
         }
 
         [Test]
