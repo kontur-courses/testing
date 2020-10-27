@@ -11,16 +11,15 @@ namespace HomeExercises
 		 3. При ошибке в проверке предка можно сразу узнать глубину, на которой она произошла
 		 4. Тест избегает StackOverflowException при проверке предков*/
 		[Test]
-		[Description("Проверка текущего царя")]
+		[Description("Проверка текущего царя (максимальная проверяемая глубина предков - 10)")]
 		public void CheckCurrentTsar()
 		{
 			var actualTsar = TsarRegistry.GetCurrentTsar();
 			var expectedTsar = new Person("Ivan IV The Terrible", 54, 170, 70,
 				new Person("Vasili III of Russia", 28, 170, 60, null));
 
-			actualTsar.Should().BeEquivalentTo(expectedTsar, opts => 
-					opts.Excluding(x => x.SelectedMemberInfo.Name == "Id") //Исключаем id из проверки из-за особенностей его присвоения
-						.AllowingInfiniteRecursion()); //позволяет пройтись проверкой по предкам максимально глубоко (дефолтная глубина = 10)
+			actualTsar.Should().BeEquivalentTo(expectedTsar, opts =>
+				opts.Excluding(x => x.SelectedMemberInfo.Name == "Id")); //Исключаем id из проверки из-за особенностей его присвоения
 		}
 
 		[Test]
