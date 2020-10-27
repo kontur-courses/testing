@@ -7,48 +7,53 @@ namespace HomeExercises
 {
 	public class NumberValidatorTests
 	{
-		[TestCase(-1, 0, TestName = "Throws when precision < 0 and  scale <precision")]
-		[TestCase(-1, -2, TestName = "Throws when precision < 0 and  scale =0")]
-		[TestCase(1, 2, TestName = "Throws when scale > precision ")]
-		[TestCase(1, -1, TestName = "Throws when scale <0 ")]
-		[TestCase(1, 1, TestName = "Throws when scale == precision ")]
-		[TestCase(0, 0, TestName = "Throws when precision == 0 ")]
-		public void Constructor_ThrowArgumentException(int precision, int scale, bool onlyPositive = false)
+		[TestCase(-1, 0, TestName = "Constructor throws when precision < 0 and  scale == 0")]
+		[TestCase(1, 2, TestName = "Constructor throws when scale > precision ")]
+		[TestCase(1, -1, TestName = "Constructor throws when scale < 0 ")]
+		[TestCase(1, 1, TestName = "Constructor throws when scale == precision ")]
+		[TestCase(0, 0, TestName = "Constructor throws when precision == 0 ")]
+		public void Constructor_ThrowArgumentException(int precision, int scale)
 		{
-			Assert.Throws<ArgumentException>(() => new NumberValidator(precision, scale, onlyPositive));
+			Assert.Throws<ArgumentException>(() => new NumberValidator(precision, scale, false));
 		}
 
-		[TestCase(2, 0, TestName = "Throws when precision >0 and scale == 0 ")]
-		[TestCase(2, 1, TestName = "Throws when precision >0 and scale > 0 and precision > scale")]
+		[TestCase(2, 0, TestName = "Constructor throws when precision > 0 and scale == 0 ")]
+		[TestCase(2, 1, TestName = "Constructor throws when precision > 0 and scale > 0 and precision > scale")]
 		public void Constructor_NotThrowArgumentException(int precision, int scale)
 		{
 			Assert.DoesNotThrow(() => new NumberValidator(precision, scale, false));
 		}
 
-		[TestCase("2.4", TestName = "Valid string")]
-		[TestCase("0.1", TestName = "Valid string less then 0")]
-		[TestCase("2", TestName = "Valid string without dot")]
-		[TestCase("-12.12", TestName = "Valid string with negative number")]
+		[TestCase("2.4", TestName = "Number is valid when string")]
+		[TestCase("2,4", TestName = "Number is valid when separator is ','")]
+		[TestCase("0.1", TestName = "Number is valid when string less then 0")]
+		[TestCase("2", TestName = "Number is valid when string without dot")]
+		[TestCase("-12.12", TestName = "Number is valid when string with negative number")]
+		[TestCase("+2", TestName = "Number is valid when string with '+'")]
+		[TestCase("+12.12", TestName = "Number is valid when string length with '+' = precision")]
+		[TestCase("214,14", TestName = "Number is valid when separator is ',' and length = precision")]
+		[TestCase("00.000", TestName = "Number is valid when 00.000")]
 		public void IsValidNumber_Valid_WhenNotOnlyPositive(string line)
 		{
 			new NumberValidator(5, 3, false).IsValidNumber(line).Should().BeTrue();
 		}
 
-		[TestCase("12.1", TestName = "Valid string with positive number when only positive")]
-		[TestCase("2", TestName = "Valid string without dot when only positive")]
-		[TestCase("0.1", TestName = "Valid string less then 0 when only positive")]
+		[TestCase("12.1", TestName = "Number is valid when string with positive number when only positive")]
+		[TestCase("2", TestName = "Number is valid when string without dot when only positive")]
+		[TestCase("0.1", TestName = "Number is valid when string less then 0 when only positive")]
 		public void IsValidNumber_Valid_WhenOnlyPositive(string line)
 		{
 			new NumberValidator(5, 3, false).IsValidNumber(line).Should().BeTrue();
 		}
 
-		[TestCase("11.1111", TestName = "Number not valid when to long string")]
-		[TestCase("+1111.1", TestName = "Number not valid when length more at plus sign")]
-		[TestCase("1.000000000", TestName = "Number not valid when length more at non significant zeros")]
-		[TestCase("a.sd", TestName = "Number not valid when only letters string")]
-		[TestCase("4.44d", TestName = "Number not valid when string with letters")]
-		[TestCase(null, TestName = "Number not valid when Null")]
-		[TestCase("", TestName = "Number not valid when empty string")]
+		[TestCase("11.1111", TestName = "Number is not valid when to long string")]
+		[TestCase("+1111.1", TestName = "Number is not valid when length more at plus sign")]
+		[TestCase("1.000000000", TestName = "Number is not valid when length more at non significant zeros")]
+		[TestCase("a.sd", TestName = "Number is not valid when only letters string")]
+		[TestCase("4.44d", TestName = "Number is not valid when string with letters")]
+		[TestCase(null, TestName = "Number is not valid when Null")]
+		[TestCase("", TestName = "Number is not valid when empty string")]
+		[TestCase("1 2", TestName = "Number is not valid when string with space ")]
 		public void IsValidNumber_NotValid_WhenNotOnlyPositive(string line)
 		{
 			new NumberValidator(5, 3, false).IsValidNumber(line).Should().BeFalse();
