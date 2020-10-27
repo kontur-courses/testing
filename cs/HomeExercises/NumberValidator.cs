@@ -5,7 +5,7 @@ namespace HomeExercises
 {
 	public class NumberValidator
 	{
-		private static readonly Regex numberRegex = new Regex(@"^([+-]?)(\d+)([.,](\d+))?$", RegexOptions.IgnoreCase & RegexOptions.Compiled);
+		private static readonly Regex numberRegex = new Regex(@"^([+-]?)(\d+)([.,](\d+))?$", RegexOptions.Compiled);
 		private readonly bool onlyPositive;
 		private readonly int precision;
 		private readonly int scale;
