@@ -39,7 +39,7 @@ namespace HomeExercises
 		[TestCase("+-1", TestName = "PlusMinus")]
 		[TestCase("1..5", TestName = "TwoDotsInNumber")]
 		[TestCase("1,,5", TestName = "TwoCommaInNumber")]
-		[TestCase("10000000000000000000000000000000000000000000000000000000000000000000", TestName = "BigInteger")]
+		[TestCase("6,02E23", TestName = "BigInteger")]
 		public void IsValidNumber_ReturnFalseNotOnNumbers(string checkedString)
 		{
 			var numberValidator = new NumberValidator(17, 2, true);

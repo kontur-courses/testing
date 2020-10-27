@@ -14,9 +14,10 @@ namespace HomeExercises
 
 			var expectedTsar = new Person("Ivan IV The Terrible", 54, 170, 70,
 				new Person("Vasili III of Russia", 28, 170, 60, null));
-			
+
 			expectedTsar.Should().BeEquivalentTo(actualTsar, options => options
-				.Excluding(person => person.SelectedMemberPath.EndsWith("Id") ));
+				.Excluding(person => person.SelectedMemberInfo.Name == "Id"
+				                     && person.SelectedMemberInfo.DeclaringType.Name == "Person"));
 		}
 
 		[Test]
