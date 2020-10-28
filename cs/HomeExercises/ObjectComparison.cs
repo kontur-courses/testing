@@ -17,19 +17,6 @@ namespace HomeExercises
 				new Person("Vasili III of Russia", 28, 170, 60, null));
 
 			// Перепишите код на использование Fluent Assertions.
-			/*
-			 * Я очень надеюсь, что есть менее костыльный и более изящный метод,
-			 * который бы позволил исключить поле Id у объекта класса Person,
-			 * включая вложенные объекты (а не только Id и Parent.Id),
-			 * который бы так же не давал ложных срабатываний,
-			 * если поле какого-нибудь другого класса называется "Id" / заканчивается на "Id",
-			 * и который так же бы подхватывался при рефакторинге Rider'а
-			 * (если я, например, захочу переименовать Person в Persona, Id в PersonId)
-			 *
-			 * Я надеялся на что-то вроде .Excluding(o => o.Id).InclidingNestedMembers
-			 * или .ExcludingFromType<Person>(p => p.Id),
-			 * но, увы, я подобных не нашёл...
-			 */
 			expectedTsar.Should().BeEquivalentTo(actualTsar, options => options
 				.Excluding(
 					o => o.SelectedMemberInfo.DeclaringType == typeof(Person)
