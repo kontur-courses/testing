@@ -7,87 +7,51 @@ namespace HomeExercises
 {
 	public class NumberValidatorTests
 	{
-		[Test]
-		public void NumberValidator_ThrowsException_OnNegativePrecision_OnOnlyPositive()
+		[TestCase(true)]
+		[TestCase(false)]
+		public void NumberValidator_ThrowsException_OnNegativePrecision(bool onlyPositive)
 		{
-			Action create = () => new NumberValidator(-1, 2, true);
+			Action create = () => new NumberValidator(-1, 2, onlyPositive);
 			create.Should().Throw<ArgumentException>();
 		}
 
-		[Test]
-		public void NumberValidator_ThrowsException_OnNegativePrecision()
+		[TestCase(true)]
+		[TestCase(false)]
+		public void NumberValidator_ThrowsException_OnNegativeScale(bool onlyPositive)
 		{
-			Action create = () => new NumberValidator(-1, 2);
+			Action create = () => new NumberValidator(3, -2, onlyPositive);
 			create.Should().Throw<ArgumentException>();
 		}
 
-		[Test]
-		public void NumberValidator_ThrowsException_OnNegativeScale_OnOnlyPositive()
+		[TestCase(true)]
+		[TestCase(false)]
+		public void NumberValidator_ThrowsException_OnScaleGreaterThanPrecision(bool onlyPositive)
 		{
-			Action create = () => new NumberValidator(3, -2, true);
+			Action create = () => new NumberValidator(1, 2, onlyPositive);
 			create.Should().Throw<ArgumentException>();
 		}
 
-		[Test]
-		public void NumberValidator_ThrowsException_OnNegativeScale()
+		[TestCase(true)]
+		[TestCase(false)]
+		public void NumberValidator_ThrowsException_OnPrecisionEqualsZero(bool onlyPositive)
 		{
-			Action create = () => new NumberValidator(3, -2, false);
+			Action create = () => new NumberValidator(0, 0, onlyPositive);
 			create.Should().Throw<ArgumentException>();
 		}
 
-		[Test]
-		public void NumberValidator_ThrowsException_OnScaleGreaterThanPrecision_OnOnlyPositive()
+		[TestCase(true)]
+		[TestCase(false)]
+		public void NumberValidator_DoesNotThrowException_OnScaleEqualsZero(bool onlyPositive)
 		{
-			Action create = () => new NumberValidator(1, 2, true);
-			create.Should().Throw<ArgumentException>();
-		}
-
-		[Test]
-		public void NumberValidator_ThrowsException_OnScaleGreaterThanPrecision()
-		{
-			Action create = () => new NumberValidator(1, 2, false);
-			create.Should().Throw<ArgumentException>();
-		}
-
-		[Test]
-		public void NumberValidator_ThrowsException_OnPrecisionEqualsZero_OnOnlyPositive()
-		{
-			Action create = () => new NumberValidator(0, 0, true);
-			create.Should().Throw<ArgumentException>();
-		}
-
-		[Test]
-		public void NumberValidator_ThrowsException_OnPrecisionEqualsZero()
-		{
-			Action create = () => new NumberValidator(0, 0, false);
-			create.Should().Throw<ArgumentException>();
-		}
-
-		[Test]
-		public void NumberValidator_DoesNotThrowException_OnScaleEqualsZero_OnOnlyPositive()
-		{
-			Action create = () => new NumberValidator(1, 0, true);
+			Action create = () => new NumberValidator(1, 0, onlyPositive);
 			create.Should().NotThrow<ArgumentException>();
 		}
 
-		[Test]
-		public void NumberValidator_DoesNotThrowException_OnScaleEqualsZero()
+		[TestCase(true)]
+		[TestCase(false)]
+		public void NumberValidator_DoesNotThrowException_OnPrecisionGreaterThanScale(bool onlyPositive)
 		{
-			Action create = () => new NumberValidator(1, 0, false);
-			create.Should().NotThrow<ArgumentException>();
-		}
-
-		[Test]
-		public void NumberValidator_DoesNotThrowException_OnPrecisionGreaterThanScale_OnOnlyPositive()
-		{
-			Action create = () => new NumberValidator(4, 2, true);
-			create.Should().NotThrow<ArgumentException>();
-		}
-
-		[Test]
-		public void NumberValidator_DoesNotThrowException_OnPrecisionGreaterThanScale()
-		{
-			Action create = () => new NumberValidator(4, 2, false);
+			Action create = () => new NumberValidator(4, 2, onlyPositive);
 			create.Should().NotThrow<ArgumentException>();
 		}
 
@@ -109,16 +73,11 @@ namespace HomeExercises
 			Assert.IsTrue(new NumberValidator(17, 2).IsValidNumber("-0.0"));
 		}
 
-		[Test]
-		public void IsValidNumber_ReturnsTrue_OnInteger_WhenScaleEqualsZero()
+		[TestCase(0)]
+		[TestCase(2)]
+		public void IsValidNumber_ReturnsTrue_OnInteger(int scale)
 		{
-			Assert.IsTrue(new NumberValidator(17, 0, true).IsValidNumber("0"));
-		}
-
-		[Test]
-		public void IsValidNumber_ReturnsTrue_OnInteger_WhenScaleGreaterThanZero()
-		{
-			Assert.IsTrue(new NumberValidator(17, 2, true).IsValidNumber("0"));
+			Assert.IsTrue(new NumberValidator(17, scale, true).IsValidNumber("0"));
 		}
 
 		[Test]
