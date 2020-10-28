@@ -48,7 +48,10 @@ namespace HomeExercises
 		};
 		private Dictionary<int, string> descriptions = new Dictionary<int, string>()
 		{
-			{ 0, "Constructor_IsEmpty_PrecisionMustBeGreatThanScaleAndScaleMustBeGreatThanOrEqualZero" }
+			{ 0, "Constructor_IsEmpty_PrecisionMustBeGreatThanScaleAndScaleMustBeGreatThanOrEqualZero" },
+			{ 1, "Constructor_IsEmpty_PrecisionMustBeGreatThanScale" },
+			{ 2, "Constructor_IsEmpty_PrecisionMustBeGreatThanZero" },
+			{ 3, "Constructor_IsEmpty_ScaleMustNotBeLessZero" }
 		};
 
 		public IEnumerator GetEnumerator()
