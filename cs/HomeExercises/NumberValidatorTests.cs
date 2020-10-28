@@ -10,73 +10,85 @@ namespace HomeExercises
 		[Test]
 		public void NumberValidator_ThrowsException_OnNegativePrecision_OnOnlyPositive()
 		{
-			Assert.Throws<ArgumentException>(() => new NumberValidator(-1, 2, true));
+			Action create = () => new NumberValidator(-1, 2, true);
+			create.Should().Throw<ArgumentException>();
 		}
 
 		[Test]
 		public void NumberValidator_ThrowsException_OnNegativePrecision()
 		{
-			Assert.Throws<ArgumentException>(() => new NumberValidator(-1, 2));
+			Action create = () => new NumberValidator(-1, 2);
+			create.Should().Throw<ArgumentException>();
 		}
 
 		[Test]
 		public void NumberValidator_ThrowsException_OnNegativeScale_OnOnlyPositive()
 		{
-			Assert.Throws<ArgumentException>(() => new NumberValidator(3, -2, true));
+			Action create = () => new NumberValidator(3, -2, true);
+			create.Should().Throw<ArgumentException>();
 		}
 
 		[Test]
 		public void NumberValidator_ThrowsException_OnNegativeScale()
 		{
-			Assert.Throws<ArgumentException>(() => new NumberValidator(3, -2, false));
+			Action create = () => new NumberValidator(3, -2, false);
+			create.Should().Throw<ArgumentException>();
 		}
 
 		[Test]
 		public void NumberValidator_ThrowsException_OnScaleGreaterThanPrecision_OnOnlyPositive()
 		{
-			Assert.Throws<ArgumentException>(() => new NumberValidator(1, 2, true));
+			Action create = () => new NumberValidator(1, 2, true);
+			create.Should().Throw<ArgumentException>();
 		}
 
 		[Test]
 		public void NumberValidator_ThrowsException_OnScaleGreaterThanPrecision()
 		{
-			Assert.Throws<ArgumentException>(() => new NumberValidator(1, 2, false));
+			Action create = () => new NumberValidator(1, 2, false);
+			create.Should().Throw<ArgumentException>();
 		}
 
 		[Test]
 		public void NumberValidator_ThrowsException_OnPrecisionEqualsZero_OnOnlyPositive()
 		{
-			Assert.Throws<ArgumentException>(() => new NumberValidator(0, 0, true));
+			Action create = () => new NumberValidator(0, 0, true);
+			create.Should().Throw<ArgumentException>();
 		}
 
 		[Test]
 		public void NumberValidator_ThrowsException_OnPrecisionEqualsZero()
 		{
-			Assert.Throws<ArgumentException>(() => new NumberValidator(0, 0, false));
+			Action create = () => new NumberValidator(0, 0, false);
+			create.Should().Throw<ArgumentException>();
 		}
 
 		[Test]
 		public void NumberValidator_DoesNotThrowException_OnScaleEqualsZero_OnOnlyPositive()
 		{
-			Assert.DoesNotThrow(() => new NumberValidator(1, 0, true));
+			Action create = () => new NumberValidator(1, 0, true);
+			create.Should().NotThrow<ArgumentException>();
 		}
 
 		[Test]
 		public void NumberValidator_DoesNotThrowException_OnScaleEqualsZero()
 		{
-			Assert.DoesNotThrow(() => new NumberValidator(1, 0, false));
+			Action create = () => new NumberValidator(1, 0, false);
+			create.Should().NotThrow<ArgumentException>();
 		}
 
 		[Test]
 		public void NumberValidator_DoesNotThrowException_OnPrecisionGreaterThanScale_OnOnlyPositive()
 		{
-			Assert.DoesNotThrow(() => new NumberValidator(4, 2, true));
+			Action create = () => new NumberValidator(4, 2, true);
+			create.Should().NotThrow<ArgumentException>();
 		}
 
 		[Test]
 		public void NumberValidator_DoesNotThrowException_OnPrecisionGreaterThanScale()
 		{
-			Assert.DoesNotThrow(() => new NumberValidator(4, 2, false));
+			Action create = () => new NumberValidator(4, 2, false);
+			create.Should().NotThrow<ArgumentException>();
 		}
 
 		[Test]
