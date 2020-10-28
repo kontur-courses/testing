@@ -34,7 +34,6 @@ namespace HomeExercises
 				.Excluding(
 					o => o.SelectedMemberInfo.DeclaringType == typeof(Person)
 					     && o.SelectedMemberInfo.Name == nameof(Person.Id)));
-			Console.WriteLine(nameof(Person.Id));
 		}
 
 		[Test]
