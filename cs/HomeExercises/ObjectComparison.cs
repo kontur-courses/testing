@@ -18,7 +18,8 @@ namespace HomeExercises
 			// которые публичные и которых нет в исключениях.
 			// Также при возникновении ошибки будет видно почему тест упал
 			actualTsar.Should().BeEquivalentTo(expectedTsar,
-				options => options.ExcludingByName(typeof(Person), nameof(Person.Id))); ;
+				options => options.Excluding(info => info.SelectedMemberInfo.DeclaringType == typeof(Person)
+				                                     && info.SelectedMemberInfo.Name == nameof(Person.Id)));
 		}
 
 		[Test]

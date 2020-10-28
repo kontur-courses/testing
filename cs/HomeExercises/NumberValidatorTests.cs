@@ -48,7 +48,7 @@ namespace HomeExercises
 		};
 		private Dictionary<int, string> descriptions = new Dictionary<int, string>()
 		{
-			{ 0, "Precision must be great than scale and scale must be great than or equal 0" }
+			{ 0, "Constructor_IsEmpty_PrecisionMustBeGreatThanScaleAndScaleMustBeGreatThanOrEqualZero" }
 		};
 
 		public IEnumerator GetEnumerator()
@@ -66,7 +66,7 @@ namespace HomeExercises
 		{
 			var data = new TestCaseData(args);
             if (descriptions.ContainsKey(index))
-                data.SetDescription(descriptions[index]);
+                data.SetName(descriptions[index]);
             return data;
 		}
 	}
