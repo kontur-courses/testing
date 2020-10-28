@@ -1,4 +1,6 @@
-﻿using FluentAssertions;
+﻿using System;
+using System.Linq.Expressions;
+using FluentAssertions;
 using NUnit.Framework;
 
 namespace HomeExercises
@@ -19,7 +21,7 @@ namespace HomeExercises
 				new Person("Vasili III of Russia", 28, 170, 60, null));
 
 			actualTsar.Should().BeEquivalentTo(expectedTsar, opts =>
-				opts.Excluding(x => x.SelectedMemberInfo.Name == "Id")); //Исключаем id из проверки из-за особенностей его присвоения
+				opts.Excluding(x => x.SelectedMemberInfo.Name == nameof(actualTsar.Id))); //Исключаем id из проверки из-за особенностей его присвоения
 		}
 
 		[Test]
