@@ -1,10 +1,18 @@
-﻿using FluentAssertions;
+﻿using System;
+using FluentAssertions;
+using FluentAssertions.Equivalency;
 using NUnit.Framework;
 
 namespace HomeExercises
 {
 	public class ObjectComparison
 	{
+		private bool ExcludeField(IMemberInfo memberInfo, Type typeToExclude, string propertyName)
+		{
+			return memberInfo.SelectedMemberInfo.DeclaringType == typeToExclude && 
+				memberInfo.SelectedMemberInfo.Name == propertyName;
+		}
+		
 		[Test]
 		[Description("Проверка текущего царя")]
 		[Category("ToRefactor")]
@@ -16,22 +24,8 @@ namespace HomeExercises
 				new Person("Vasili III of Russia", 28, 170, 60, null));
 			
 			actualTsar.Should().BeEquivalentTo(expectedTsar, options =>
-				options.Excluding(o =>
-					o.SelectedMemberInfo.DeclaringType == typeof(Person) &&
-					o.SelectedMemberInfo.Name == "Id"));
-
-			// Перепишите код на использование Fluent Assertions.
-			/*
-			Assert.AreEqual(actualTsar.Name, expectedTsar.Name);
-			Assert.AreEqual(actualTsar.Age, expectedTsar.Age);
-			Assert.AreEqual(actualTsar.Height, expectedTsar.Height);
-			Assert.AreEqual(actualTsar.Weight, expectedTsar.Weight);
-
-			Assert.AreEqual(expectedTsar.Parent.Name, actualTsar.Parent.Name);
-			Assert.AreEqual(expectedTsar.Parent.Age, actualTsar.Parent.Age);
-			Assert.AreEqual(expectedTsar.Parent.Height, actualTsar.Parent.Height);
-			Assert.AreEqual(expectedTsar.Parent.Parent, actualTsar.Parent.Parent);
-			*/
+				options.Excluding(o 
+					=> ExcludeField(o, typeof(Person), "Id")));
 		}
 
 		[Test]
