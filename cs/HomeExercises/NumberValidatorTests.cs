@@ -13,7 +13,7 @@ namespace HomeExercises
 		[TestCase(2, -1, TestName = "Constructor_OnNegativeScale_ShouldThrow")]
 		[TestCase(2, 3, TestName = "Constructor_OnPrecisionLessThanScale_ShouldThrow")]
 		[TestCase(2, 2, TestName = "Constructor_OnPrecisionEqualsScale_ShouldThrow")]
-		public void Constructor_ShouldThrow(int precision, int scale = 0, bool onlyPositive = false)
+		public void Constructor_ShouldThrow(int precision, int scale, bool onlyPositive = false)
 		{
 			((Action) (() => new NumberValidator(precision, scale, onlyPositive))).Should().Throw<ArgumentException>();
 		}
@@ -23,7 +23,7 @@ namespace HomeExercises
 		[TestCase(2, 1, false, TestName = "Constructor_OnFalseOnlyPositive_ShouldNotThrow")]
 		[TestCase(5, 3, false, TestName = "Constructor_OnFalseOnlyPositive_ShouldNotThrow")]
 		[TestCase(7, 2, true, TestName = "Constructor_OnPrecisionMuchMoreThanScale_ShouldNotThrow")]
-		public void Constructor_ShouldNotThrow(int precision, int scale = 0, bool onlyPositive = false)
+		public void Constructor_ShouldNotThrow(int precision, int scale, bool onlyPositive)
 		{
 			((Action) (() => new NumberValidator(precision, scale, onlyPositive))).Should()
 				.NotThrow<ArgumentException>();
