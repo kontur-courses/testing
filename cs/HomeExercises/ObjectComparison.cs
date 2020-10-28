@@ -1,6 +1,4 @@
-﻿using System;
-using System.Linq.Expressions;
-using FluentAssertions;
+﻿using FluentAssertions;
 using NUnit.Framework;
 
 namespace HomeExercises
