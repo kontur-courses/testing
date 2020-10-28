@@ -21,10 +21,9 @@ namespace HomeExercises
 			actualTsar.Height.Should().Be(expectedTsar.Height);
 			actualTsar.Weight.Should().Be(expectedTsar.Weight);
 
-			actualTsar.Parent!.Name.Should().Be(expectedTsar.Name);
-			actualTsar.Age.Should().Be(expectedTsar.Age);
-			actualTsar.Height.Should().Be(expectedTsar.Height);
-			actualTsar.Weight.Should().Be(expectedTsar.Weight);
+			actualTsar.Should().BeEquivalentTo(expectedTsar, compare =>
+				compare.Excluding(person => person.Id)
+					.Excluding(person => person.Parent!.Id));
 		}
 
 		[Test]
@@ -37,8 +36,10 @@ namespace HomeExercises
 
 			// Какие недостатки у такого подхода? 
 
-			/* Если тест не пройдет, то он просто выведет, что ожидал true, а получил false.
-			 Рекурсия конкретно в этом случае бесполезна (он один раз зайдёт и выйдет)*/
+			/* Не понятно какая часть возвращённого объекта неверна
+			 * По сути если тест упадёт, то придётся пробегать по нему либо дебаггером, либо глазами, чтобы понять что не так
+			 * Может произойти бесконечная рекурсия
+			*/
 			Assert.True(AreEqual(actualTsar, expectedTsar));
 		}
 
