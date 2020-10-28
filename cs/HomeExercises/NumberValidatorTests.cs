@@ -7,23 +7,23 @@ namespace HomeExercises
 {
 	public class NumberValidatorTests
 	{
-		[TestCase(-1, 2, TestName = "Ctor_OnNegativePrecision_Throws")]
-		[TestCase(0, 2, TestName = "Ctor_OnZeroPrecision_Throws")]
-		[TestCase(1, -1, TestName = "Ctor_OnNegativePrecision_Throws")]
-		[TestCase(2, -1, TestName = "Ctor_OnNegativeScale_Throws")]
-		[TestCase(2, 3, TestName = "Ctor_OnPrecisionLessThanScale_Throws")]
-		[TestCase(2, 2, TestName = "Ctor_OnPrecisionEqualsScale_Throws")]
-		public void Ctor_Throws(int precision, int scale = 0, bool onlyPositive = false)
+		[TestCase(-1, 2, TestName = "Constructor_OnNegativePrecision_ShouldThrow")]
+		[TestCase(0, 2, TestName = "Constructor_OnZeroPrecision_ShouldThrow")]
+		[TestCase(1, -1, TestName = "Constructor_OnNegativePrecision_ShouldThrow")]
+		[TestCase(2, -1, TestName = "Constructor_OnNegativeScale_ShouldThrow")]
+		[TestCase(2, 3, TestName = "Constructor_OnPrecisionLessThanScale_ShouldThrow")]
+		[TestCase(2, 2, TestName = "Constructor_OnPrecisionEqualsScale_ShouldThrow")]
+		public void Constructor_ShouldThrow(int precision, int scale = 0, bool onlyPositive = false)
 		{
 			((Action) (() => new NumberValidator(precision, scale, onlyPositive))).Should().Throw<ArgumentException>();
 		}
 
-		[TestCase(1, 0, true, TestName = "Ctor_OnZeroScale_NotThrows")]
-		[TestCase(2, 1, false)]
-		[TestCase(3, 2, true)]
-		[TestCase(5, 3, false)]
-		[TestCase(7, 2, true)]
-		public void Ctor_OnGoodParameters_NotThrows(int precision, int scale = 0, bool onlyPositive = false)
+		[TestCase(1, 0, true, TestName = "Constructor_OnZeroScale_ShouldNotThrow")]
+		[TestCase(2, 1, true, TestName = "Constructor_OnPrecisionMoreThanScale_ShouldNotThrow")]
+		[TestCase(2, 1, false, TestName = "Constructor_OnFalseOnlyPositive_ShouldNotThrow")]
+		[TestCase(5, 3, false, TestName = "Constructor_OnFalseOnlyPositive_ShouldNotThrow")]
+		[TestCase(7, 2, true, TestName = "Constructor_OnPrecisionMuchMoreThanScale_ShouldNotThrow")]
+		public void Constructor_ShouldNotThrow(int precision, int scale = 0, bool onlyPositive = false)
 		{
 			((Action) (() => new NumberValidator(precision, scale, onlyPositive))).Should()
 				.NotThrow<ArgumentException>();
@@ -70,7 +70,7 @@ namespace HomeExercises
 		}
 
 		[Test]
-		public void IsValidNumber_OnGoodNegativeIntegers_ShouldBeTrue()
+		public void IsValidNumber_OnNegativeIntegers_ShouldBeTrue()
 		{
 			var validator = new NumberValidator(7, 5, false);
 			validator.IsValidNumber("-1").Should().BeTrue();
@@ -102,7 +102,7 @@ namespace HomeExercises
 		}
 
 		[Test]
-		public void IsValidNumber_OnGoodNotNegativeFloats_ShouldBeTrue()
+		public void IsValidNumber_OnNotNegativeFloats_ShouldBeTrue()
 		{
 			var validator = new NumberValidator(7, 5, true);
 			validator.IsValidNumber("0.0").Should().BeTrue();
@@ -120,7 +120,7 @@ namespace HomeExercises
 		}
 
 		[Test]
-		public void IsValidNumber_OnGoodNotNegativeFloatsWithSign_ShouldBeTrue()
+		public void IsValidNumber_OnNotNegativeFloatsWithSign_ShouldBeTrue()
 		{
 			var validator = new NumberValidator(7, 5, true);
 			validator.IsValidNumber("+0.0").Should().BeTrue();
