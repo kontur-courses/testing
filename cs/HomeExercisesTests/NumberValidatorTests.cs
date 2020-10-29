@@ -68,11 +68,11 @@ namespace HomeExercisesTests
 		private static readonly NumberValidator ValidatorLittleFraction
 			= new NumberValidator(17, 2, true);
 		
-		private static NumberValidator ValidatorPositiveOnly
-			=> new NumberValidator(4, 2, true);
+		private static readonly NumberValidator ValidatorPositiveOnly
+			= new NumberValidator(4, 2, true);
 		
-		private static NumberValidator ValidatorAllSigns
-			=> new NumberValidator(4, 2);
+		private static readonly NumberValidator ValidatorAllSigns
+			= new NumberValidator(4, 2);
 
 
 		[TestCaseSource(nameof(PrepareTestCases))]
