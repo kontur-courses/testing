@@ -39,8 +39,8 @@ namespace HomeExercises
 		}
 		
 		[TestCase("-2147483648.9", 21, 20, false, TestName = "When value more than Integer with negative sign")]
-		[TestCase("-7834397428335434343434303839.35354395084358", 51, 50, true, TestName = "When value much more than Integer with negative sign")]
-		[TestCase("+2147483648.9", 21, 20, false, TestName = "When value more than Integer with positive sign")]
+		[TestCase("-783439742833543434339.35354395084358", 51, 50, false, TestName = "When value much more than Integer with negative sign")]
+		[TestCase("+2147483648.9", 21, 20, true, TestName = "When value more than Integer with positive sign")]
 		[TestCase("+7777777777777777777777777.6666666666", 51, 50, true, TestName = "When value much more than Integer with positive sign")]
 		[TestCase("2147483648.9", 21, 20, true, TestName = "When value more than Integer")]
 		[TestCase("9999999999999999999999999999.9", 51, 50, true, TestName = "When value much more than Integer")]
