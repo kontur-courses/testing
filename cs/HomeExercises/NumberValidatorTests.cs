@@ -11,38 +11,36 @@ namespace HomeExercises
             TestName = "Precision more than scale and they doesn't equal zero, onlyPositive equal true")]
         [TestCase(1, 0, true,
             TestName = "Precision more than scale and scale equal zero, onlyPositive equal true")]
-        [TestCase(2, 1, false,
+        [TestCase(2, 1,
             TestName = "Precision more than scale and they doesn't equal zero, onlyPositive equal false")]
         public void CreateNumberValidator_DoesNotThrow(int precision, int scale = 0, bool onlyPositive = false)
         {
-            Action act = () => new NumberValidator(precision, scale, onlyPositive);
-            act.Should().NotThrow(GetErrorString("", precision, scale, onlyPositive, "constructor arguments must be correct"));
+            Assert.DoesNotThrow(() => new NumberValidator(precision, scale, onlyPositive), 
+	            GetErrorString("", precision, scale, onlyPositive, "constructor arguments must be correct"));
         }
 
 
-        [TestCase(0, 2, TestName = "Precision equal zero")]
-        [TestCase(-1, 2, TestName = "Precision is negative ")]
+        [TestCase(0, TestName = "Precision equal zero")]
+        [TestCase(-1, TestName = "Precision is negative ")]
         [TestCase(2, 4, TestName = "Scale more than precision")]
         [TestCase(2, 2, TestName = "Scale equal precision")]
         [TestCase(2, -1, TestName = "Scale is negative")]
-        [TestCase(-2, -4, TestName = "Negative scale and negative precision")]
-        public void CreateNumberValidator_ThrowException(int precision, int scale = 0, bool onlyPositive = false)
+        public void CreateNumberValidator_ThrowException(int precision, int scale = 2, bool onlyPositive = false)
         {
-            Action act = () => new NumberValidator(precision, scale, onlyPositive);
-            act.Should().Throw<ArgumentException>(
-                GetErrorString("", precision, scale, onlyPositive, "constructor arguments must be incorrect"));
+	        Assert.Throws<ArgumentException>(() => new NumberValidator(precision, scale, onlyPositive),
+		        GetErrorString("", precision, scale, onlyPositive, "constructor arguments must be incorrect"));
         }
 
 
         [TestCase(null, TestName = "Value is null")]
         [TestCase("", TestName = "Value is empty")]
         [TestCase(" ", TestName = "Value is whitespace")]
-        [TestCase("aaa", TestName = "Value consist letter only")]
-        [TestCase("12.3a", TestName = "Value contain letter")]
-        [TestCase("\n\t\r", TestName = "Value consist special symbols only")]
-        [TestCase("--123", TestName = "Value contain too many signs")]
-        [TestCase("1..23", TestName = "Value contain too many dots")]
-        [TestCase("1,,23", TestName = "Value contain too many comma")]
+        [TestCase("aaa", TestName = "Value consists letter only")]
+        [TestCase("12.3a", TestName = "Value contains letter")]
+        [TestCase("\n\t\r", TestName = "Value consists special symbols only")]
+        [TestCase("--123", TestName = "Value contains too many signs")]
+        [TestCase("1..23", TestName = "Value contains too many dots")]
+        [TestCase("1,,23", TestName = "Value contains too many comma")]
         [TestCase("1,", TestName = "No any symbols after comma")]
         [TestCase(".1", TestName = "No any symbols before dot")]
         public void IsValidNumber_ReturnFalse_IncorrectValueFormat(string value, int precision = 17, int scale = 2, bool onlyPositive = true)
@@ -72,9 +70,9 @@ namespace HomeExercises
                 GetErrorString(value, precision, scale, onlyPositive, "value must be invalid"));
         }
 
-
+        
         [Test]
-        public void IsValidNumber_ReturnTrue_WhenOnlyPositiveFlagDisabled()
+        public void IsValidNumber_ReturnTrue_WhenOneNumberValidatorAndOnlyPositiveFlagDisabled()
         {
             var numberValidator = new NumberValidator(4, 2, false);
             var positiveNumber = 1.23;
