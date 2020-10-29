@@ -7,12 +7,6 @@ namespace HomeExercises
 {
 	public class ObjectComparison
 	{
-		private bool ExcludeField(IMemberInfo memberInfo, Type typeToExclude, string propertyName)
-		{
-			return memberInfo.SelectedMemberInfo.DeclaringType == typeToExclude && 
-				memberInfo.SelectedMemberInfo.Name == propertyName;
-		}
-		
 		[Test]
 		[Description("Проверка текущего царя")]
 		[Category("ToRefactor")]
@@ -24,8 +18,7 @@ namespace HomeExercises
 				new Person("Vasili III of Russia", 28, 170, 60, null));
 			
 			actualTsar.Should().BeEquivalentTo(expectedTsar, options =>
-				options.Excluding(o 
-					=> ExcludeField(o, typeof(Person), "Id")));
+				options.Excluding(o => ExcludeField(o, typeof(Person), "Id")));
 		}
 
 		[Test]
@@ -63,6 +56,12 @@ namespace HomeExercises
 				&& actual.Height == expected.Height
 				&& actual.Weight == expected.Weight
 				&& AreEqual(actual.Parent, expected.Parent);
+		}
+		
+		private bool ExcludeField(IMemberInfo memberInfo, Type typeToExclude, string propertyName)
+		{
+			return memberInfo.SelectedMemberInfo.DeclaringType == typeToExclude && 
+			       memberInfo.SelectedMemberInfo.Name == propertyName;
 		}
 	}
 
