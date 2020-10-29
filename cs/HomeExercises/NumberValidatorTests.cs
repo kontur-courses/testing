@@ -88,7 +88,7 @@ namespace HomeExercises
 		[TestCase("\r\n", 5, 4, true, TestName = "When value is new line character")]
 		[TestCase(" ", 3, 2, true, TestName = "When value is space character")]
 		[TestCase(null, 6, 5, true, TestName = "When value is null")]
-		[TestCase("-1,2", 4, 3, true, TestName = "When OnlyPositive true and negative sign")]
+		[TestCase("-1,2", 4, 3, false, TestName = "When OnlyPositive true and negative sign")]
 		[TestCase("", 3, 2, true, TestName = "When empty value")]
 		[TestCase("0000", 3, 2, true, TestName = "When Int length more than precision")]
 		[TestCase("12.34", 3, 2, true, TestName = "When Int and fraction lengths more than precision")]
