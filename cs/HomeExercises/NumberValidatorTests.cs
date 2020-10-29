@@ -38,9 +38,9 @@ namespace HomeExercises
 			numberValidator.IsValidNumber(number).Should().BeTrue();
 		}
 		
-		[TestCase("-2147483648.9", 21, 20, true, TestName = "When value more than Integer with negative sign")]
+		[TestCase("-2147483648.9", 21, 20, false, TestName = "When value more than Integer with negative sign")]
 		[TestCase("-7834397428335434343434303839.35354395084358", 51, 50, true, TestName = "When value much more than Integer with negative sign")]
-		[TestCase("+2147483648.9", 21, 20, true, TestName = "When value more than Integer with positive sign")]
+		[TestCase("+2147483648.9", 21, 20, false, TestName = "When value more than Integer with positive sign")]
 		[TestCase("+7777777777777777777777777.6666666666", 51, 50, true, TestName = "When value much more than Integer with positive sign")]
 		[TestCase("2147483648.9", 21, 20, true, TestName = "When value more than Integer")]
 		[TestCase("9999999999999999999999999999.9", 51, 50, true, TestName = "When value much more than Integer")]
@@ -88,7 +88,7 @@ namespace HomeExercises
 		[TestCase("\r\n", 5, 4, true, TestName = "When value is new line character")]
 		[TestCase(" ", 3, 2, true, TestName = "When value is space character")]
 		[TestCase(null, 6, 5, true, TestName = "When value is null")]
-		[TestCase("-1,2", 4, 3, false, TestName = "When OnlyPositive true and negative sign")]
+		[TestCase("-1,2", 4, 3, true, TestName = "When OnlyPositive true and negative sign")]
 		[TestCase("", 3, 2, true, TestName = "When empty value")]
 		[TestCase("0000", 3, 2, true, TestName = "When Int length more than precision")]
 		[TestCase("12.34", 3, 2, true, TestName = "When Int and fraction lengths more than precision")]
