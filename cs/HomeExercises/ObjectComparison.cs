@@ -16,11 +16,6 @@ namespace HomeExercises
 			var expectedTsar = new Person("Ivan IV The Terrible", 54, 170, 70,
 				new Person("Vasili III of Russia", 28, 170, 60, null));
 
-			actualTsar.Name.Should().Be(expectedTsar.Name);
-			actualTsar.Age.Should().Be(expectedTsar.Age);
-			actualTsar.Height.Should().Be(expectedTsar.Height);
-			actualTsar.Weight.Should().Be(expectedTsar.Weight);
-
 			actualTsar.Should().BeEquivalentTo(expectedTsar, compare =>
 				compare.Excluding(person => person.Id)
 					.Excluding(person => person.Parent!.Id));
