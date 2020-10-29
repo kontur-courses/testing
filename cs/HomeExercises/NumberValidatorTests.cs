@@ -26,29 +26,19 @@ namespace HomeExercises
 				.NotThrow<ArgumentException>();
 		}
 
-		[Test]
-		public void IsValidNumber_OnNotNegativeIntegers_ShouldBeTrue()
+		[TestCase(true), TestCase(false)]
+		public void IsValidNumber_OnNotNegativeIntegers_ShouldBeTrue(bool onlyPositive)
 		{
-			var validator = new NumberValidator(7, 5, true);
-			validator.IsValidNumber("0").Should().BeTrue();
-			validator.IsValidNumber("000").Should().BeTrue();
-			validator.IsValidNumber("1234567").Should().BeTrue();
-
-			validator = new NumberValidator(7, 5, false);
+			var validator = new NumberValidator(7, 5, onlyPositive);
 			validator.IsValidNumber("0").Should().BeTrue();
 			validator.IsValidNumber("000").Should().BeTrue();
 			validator.IsValidNumber("1234567").Should().BeTrue();
 		}
 
-		[Test]
-		public void IsValidNumber_OnNotNegativeIntegersWithSign_ShouldBeTrue()
+		[TestCase(true), TestCase(false)]
+		public void IsValidNumber_OnNotNegativeIntegersWithSign_ShouldBeTrue(bool onlyPositive)
 		{
-			var validator = new NumberValidator(7, 5, true);
-			validator.IsValidNumber("+0").Should().BeTrue();
-			validator.IsValidNumber("+000").Should().BeTrue();
-			validator.IsValidNumber("+123456").Should().BeTrue();
-
-			validator = new NumberValidator(7, 5, false);
+			var validator = new NumberValidator(7, 5, onlyPositive);
 			validator.IsValidNumber("+0").Should().BeTrue();
 			validator.IsValidNumber("+000").Should().BeTrue();
 			validator.IsValidNumber("+123456").Should().BeTrue();
@@ -80,29 +70,19 @@ namespace HomeExercises
 			validator.IsValidNumber("-1234567").Should().BeFalse();
 		}
 
-		[Test]
-		public void IsValidNumber_OnNotNegativeFloats_ShouldBeTrue()
+		[TestCase(true), TestCase(false)]
+		public void IsValidNumber_OnNotNegativeFloats_ShouldBeTrue(bool onlyPositive)
 		{
-			var validator = new NumberValidator(7, 5, true);
-			validator.IsValidNumber("0.0").Should().BeTrue();
-			validator.IsValidNumber("00.000").Should().BeTrue();
-			validator.IsValidNumber("023.0567").Should().BeTrue();
-
-			validator = new NumberValidator(7, 5, false);
+			var validator = new NumberValidator(7, 5, onlyPositive);
 			validator.IsValidNumber("0.0").Should().BeTrue();
 			validator.IsValidNumber("00.000").Should().BeTrue();
 			validator.IsValidNumber("023.0567").Should().BeTrue();
 		}
 
-		[Test]
-		public void IsValidNumber_OnNotNegativeFloatsWithSign_ShouldBeTrue()
+		[TestCase(true), TestCase(false)]
+		public void IsValidNumber_OnNotNegativeFloatsWithSign_ShouldBeTrue(bool onlyPositive)
 		{
-			var validator = new NumberValidator(7, 5, true);
-			validator.IsValidNumber("+0.0").Should().BeTrue();
-			validator.IsValidNumber("+00.000").Should().BeTrue();
-			validator.IsValidNumber("+023.056").Should().BeTrue();
-
-			validator = new NumberValidator(7, 5, false);
+			var validator = new NumberValidator(7, 5, onlyPositive);
 			validator.IsValidNumber("+0.0").Should().BeTrue();
 			validator.IsValidNumber("+00.000").Should().BeTrue();
 			validator.IsValidNumber("+023.056").Should().BeTrue();
