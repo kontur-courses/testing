@@ -76,11 +76,11 @@ namespace HomeExercisesTests
 
 
 		[TestCaseSource(nameof(PrepareTestCases))]
-		public void TestNumberValidation(NumberValidator validator, string input, bool isValidNumber)
+		public void TestNumberValidation(NumberValidator validator, string input, bool expected)
 		{
 			var actual = validator.IsValidNumber(input);
 
-			Assert.That(actual, Is.EqualTo(isValidNumber), $"Validation of '{input}' was not correct");
+			Assert.That(actual, Is.EqualTo(expected), $"Validation of '{input}' was not correct");
 		}
 	}
 }
