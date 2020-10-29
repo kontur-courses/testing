@@ -1,10 +1,13 @@
-﻿using FluentAssertions;
+﻿using System.Collections.Generic;
+using FluentAssertions;
 using NUnit.Framework;
 
 namespace HomeExercises
 {
 	public class ObjectComparison
 	{
+		private readonly HashSet<string> excludingFieldNames = new HashSet<string> {nameof(Person.Id)};
+
 		[Test]
 		[Description("Проверка текущего царя")]
 		[Category("ToRefactor")]
@@ -12,12 +15,12 @@ namespace HomeExercises
 		{
 			var actualTsar = TsarRegistry.GetCurrentTsar();
 			
-			var expectedTsar = new Person("Ivan IV The Terrible", 54, 170, 70, 
+			var expectedTsar = new Person("Ivan IV The Terrible", 54, 170, 70,
 				new Person("Vasili III of Russia", 28, 170, 60, null));
 
 			actualTsar.Should().BeEquivalentTo(expectedTsar, option => option
-				.Excluding(person => person.Id)
-				.Excluding(person => person.Parent!.Id));
+				.AllowingInfiniteRecursion()
+				.Excluding(person => excludingFieldNames.Contains(person.SelectedMemberInfo.Name)));
 		}
 
 		[Test]
