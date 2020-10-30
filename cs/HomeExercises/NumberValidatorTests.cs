@@ -37,9 +37,9 @@ namespace HomeExercises
 		[TestCase(17, 2, true, "0")]
 		[TestCase(4, 2, false, "-0.00")]
 		[TestCase(3, 2, true, "0,00")]
-		public void IsValidNumber_ReturnsTrue(int precision, int scale, bool onlyPositive, string number)
+		public void IsValidNumber_ReturnsTrue_OnValidInput(int precision, int scale, bool onlyPositive, string number)
 		{
-			Assert.IsTrue(new NumberValidator(precision, scale, onlyPositive).IsValidNumber(number));
+			new NumberValidator(precision, scale, onlyPositive).IsValidNumber(number).Should().BeTrue();
 		}
 
 		[TestCase(17, 2, true, "0.")]
@@ -60,9 +60,9 @@ namespace HomeExercises
 		[TestCase(17, 2, true, "0.000")]
 		[TestCase(3, 2, true, "a.sd")]
 
-		public void IsValidNumber_ReturnsFalse(int precision, int scale, bool onlyPositive, string number)
+		public void IsValidNumber_ReturnsFalse_OnValidInput(int precision, int scale, bool onlyPositive, string number)
 		{
-			Assert.IsFalse(new NumberValidator(precision, scale, onlyPositive).IsValidNumber(number));
+			new NumberValidator(precision, scale, onlyPositive).IsValidNumber(number).Should().BeFalse();
 		}
 
 		[TestCase("0.00")]
@@ -86,7 +86,8 @@ namespace HomeExercises
 					allCasesAreValid = false;
 					break;
 				}
-			Assert.IsTrue(allCasesAreValid);
+
+			allCasesAreValid.Should().BeTrue();
 		}
 	}
 
