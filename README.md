@@ -25,7 +25,7 @@
 2. Изучи возможности синтаксиса NUnit по этому [примеру](https://github.com/nunit/nunit-csharp-samples/blob/master/syntax/AssertSyntaxTests.cs) или по [документации](https://github.com/nunit/docs/wiki/NUnit-Documentation)
 3. Научись запускать тесты из Visual Studio с помощью Resharper по [инструкции](https://www.jetbrains.com/resharper/features/unit_testing.html)
 4. Изучи возможности синтаксиса [FluentAssertions](https://fluentassertions.com/introduction)
-5. Установить .NET Framework 4.8.
+5. Установи .NET Framework 4.8.
 
 ### JS
 1. Познакомься с Mocha, если ещё не знаком, научись подключать его через npm (yarn) 
