@@ -7,7 +7,7 @@ namespace HomeExercises
 {
 	public class NumberValidator
 	{
-		private readonly Regex numberRegex;
+		private static readonly Regex NumberRegex = new Regex(@"^([+-]?)(\d+)([.,](\d+))?$", RegexOptions.IgnoreCase);
 		private readonly bool onlyPositive;
 		private readonly int precision;
 		private readonly int scale;
@@ -21,7 +21,6 @@ namespace HomeExercises
 				throw new ArgumentException("precision must be a positive number");
 			if (scale < 0 || scale >= precision)
 				throw new ArgumentException("precision must be a non-negative number less or equal than precision");
-			numberRegex = new Regex(@"^([+-]?)(\d+)([.,](\d+))?$", RegexOptions.IgnoreCase);
 		}
 
 		public bool IsValidNumber(string value)
@@ -35,7 +34,7 @@ namespace HomeExercises
 			if (string.IsNullOrEmpty(value))
 				return false;
 
-			var match = numberRegex.Match(value);
+			var match = NumberRegex.Match(value);
 			if (!match.Success)
 				return false;
 
