@@ -12,7 +12,7 @@ namespace HomeExercises
         {
             Person? actualTsar = TsarRegistry.GetCurrentTsar();
 
-            Person? expectedTsar = new Person("Ivan IV The Terrible", 54, 170, 70,
+            var expectedTsar = new Person("Ivan IV The Terrible", 54, 170, 70,
                 new Person("Vasili III of Russia", 28, 170, 60, null));
 
             // Перепишите код на использование Fluent Assertions.
@@ -32,7 +32,7 @@ namespace HomeExercises
         public void CheckCurrentTsar_WithCustomEquality()
         {
             Person? actualTsar = TsarRegistry.GetCurrentTsar();
-            Person? expectedTsar = new Person("Ivan IV The Terrible", 54, 170, 70,
+            var expectedTsar = new Person("Ivan IV The Terrible", 54, 170, 70,
                 new Person("Vasili III of Russia", 28, 170, 60, null));
 
             // Какие недостатки у такого подхода? 
@@ -47,7 +47,7 @@ namespace HomeExercises
         public void CheckCurrentTsar_WithFluentAssertions()
         {
             Person? actualTsar = TsarRegistry.GetCurrentTsar();
-            Person? expectedTsar = new Person("Ivan IV The Terrible", 54, 170, 70,
+            var expectedTsar = new Person("Ivan IV The Terrible", 54, 170, 70,
                 new Person("Vasili III of Russia", 28, 170, 60, null));
 
             actualTsar.Should()
