@@ -15,20 +15,20 @@ namespace HomeExercises
 			var expectedTsar = new Person("Ivan IV The Terrible", 54, 170, 70,
 				new Person("Vasili III of Russia", 28, 170, 60, null));
 
-			// Перепишите код на использование Fluent Assertions.
-			Assert.AreEqual(actualTsar.Name, expectedTsar.Name);
-			Assert.AreEqual(actualTsar.Age, expectedTsar.Age);
-			Assert.AreEqual(actualTsar.Height, expectedTsar.Height);
-			Assert.AreEqual(actualTsar.Weight, expectedTsar.Weight);
-
-			Assert.AreEqual(expectedTsar.Parent!.Name, actualTsar.Parent!.Name);
-			Assert.AreEqual(expectedTsar.Parent.Age, actualTsar.Parent.Age);
-			Assert.AreEqual(expectedTsar.Parent.Height, actualTsar.Parent.Height);
-			Assert.AreEqual(expectedTsar.Parent.Parent, actualTsar.Parent.Parent);
+			actualTsar.Should().BeEquivalentTo(expectedTsar, options => options
+				.Excluding(x => x.Id)
+				.Excluding(x => x.Parent!.Id));
 		}
 
 		[Test]
 		[Description("Альтернативное решение. Какие у него недостатки?")]
+		/*
+		 * В решении ниже используется дополнительный метод AreEqual, в котром явно указаны поля для сравнения.
+		 * Если в класс Person будет добавлено новое поле, то придется дописывать новые поля в метод AreEqual.
+		 * В это же время тест CheckCurrentTsar() не потребует изменений, чтобы при сравнении учитывались новые поля.
+		 * Так же тест CheckCurrentTsar_WithCustomEquality() при падении не указывает, какие поля отличались от ожидаемых.
+		 * Указывается лишь то, что ожидалось от AreEqual True, но вернулось False.
+		 */
 		public void CheckCurrentTsar_WithCustomEquality()
 		{
 			var actualTsar = TsarRegistry.GetCurrentTsar();
@@ -49,35 +49,6 @@ namespace HomeExercises
 				&& actual.Height == expected.Height
 				&& actual.Weight == expected.Weight
 				&& AreEqual(actual.Parent, expected.Parent);
-		}
-	}
-
-	public class TsarRegistry
-	{
-		public static Person GetCurrentTsar()
-		{
-			return new Person(
-				"Ivan IV The Terrible", 54, 170, 70,
-				new Person("Vasili III of Russia", 28, 170, 60, null));
-		}
-	}
-
-	public class Person
-	{
-		public static int IdCounter = 0;
-		public int Age, Height, Weight;
-		public string Name;
-		public Person? Parent;
-		public int Id;
-
-		public Person(string name, int age, int height, int weight, Person? parent)
-		{
-			Id = IdCounter++;
-			Name = name;
-			Age = age;
-			Height = height;
-			Weight = weight;
-			Parent = parent;
 		}
 	}
 }
