@@ -3,7 +3,8 @@ using NUnit.Framework;
 
 namespace HomeExercises
 {
-	public class ObjectComparison
+	[TestFixture]
+	public class PersonComparison
 	{
 		[Test]
 		[Description("Проверка текущего царя")]
@@ -19,7 +20,7 @@ namespace HomeExercises
         }
 
 		[Test]
-		[Description("Проверка текущего царя / Не забудь внести изменения в метод AreEqual!")]
+		[Description("Проверка текущего царя / Нужно внести изменения в метод AreEqual!")]
 		public void CheckCurrentTsar_WithCustomEquality()
 		{
 			var actualTsar = TsarRegistry.GetCurrentTsar();
