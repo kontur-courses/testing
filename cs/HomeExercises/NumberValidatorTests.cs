@@ -7,7 +7,7 @@ namespace HomeExercises
 {
 	public class NumberValidatorTests
 	{
-		[Test]
+		[Test, Explicit]
 		public void Test()
 		{
 			Assert.Throws<ArgumentException>(() => new NumberValidator(-1, 2, true));
@@ -27,6 +27,49 @@ namespace HomeExercises
 			Assert.IsFalse(new NumberValidator(17, 2, true).IsValidNumber("0.000"));
 			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("-1.23"));
 			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("a.sd"));
+		}
+
+		[TestCase(-1, TestName = "precision is negative")]
+		[TestCase(1, -1, TestName = "scale is negative")]
+		[TestCase(2, 2, TestName = "scale >= precision")]
+		public void Constructor_ThrowException_When(int precision, int scale = 0)
+		{
+			Action act = () => new NumberValidator(precision, scale);
+			act.Should().Throw<ArgumentException>();
+		}
+
+		[TestCase("")]
+		[TestCase(null)]
+		[TestCase("a")]
+		[TestCase("1.1.1")]
+		[TestCase(" 1 ")]
+		[TestCase("1.")]
+		[TestCase(".1")]
+		[TestCase("+")]
+		[TestCase("-")]
+		[TestCase("12", 1,TestName = "precision less than value length")]
+		[TestCase("1.2", 2, 0, TestName = "scale less than fraction length")]
+		[TestCase("1.2", 1, 0,TestName = "precision less than fraction+int")]
+		[TestCase("-1.2", 2, 1,TestName = "precision consider signs")]
+		[TestCase("-1", 1, 0, true)]
+		public void IsValidNumber_False_With(string value, int precision = 1, int scale = 0, bool onlyPositive = false)
+		{
+			var validator = new NumberValidator(precision, scale, onlyPositive);
+			validator.IsValidNumber(value).Should().BeFalse();
+		}
+
+		[TestCase("1")]
+		[TestCase("1.1", 2, 1)]
+		[TestCase("1,1", 2, 1)]
+		[TestCase("-1,1", 3, 1)]
+		[TestCase("+1,1", 3, 1)]
+		[TestCase("-1", 2)]
+		[TestCase("+1", 2)]
+		[TestCase("+1", 2, 0, true)]
+		public void IsValidNumber_True_With(string value, int precision = 1, int scale = 0, bool onlyPositive = false)
+		{
+			var validator = new NumberValidator(precision, scale, onlyPositive);
+			validator.IsValidNumber(value).Should().BeTrue();
 		}
 	}
 
@@ -72,9 +115,7 @@ namespace HomeExercises
 			if (intPart + fracPart > precision || fracPart > scale)
 				return false;
 
-			if (onlyPositive && match.Groups[1].Value == "-")
-				return false;
-			return true;
+			return !onlyPositive || match.Groups[1].Value != "-";
 		}
 	}
 }
