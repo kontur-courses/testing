@@ -19,8 +19,8 @@ namespace HomeExercises
 			this.onlyPositive = onlyPositive;
 			if (precision <= 0)
 				throw new ArgumentException("precision must be a positive number");
-			if (scale < 0 || scale >= precision)
-				throw new ArgumentException("precision must be a non-negative number less or equal than precision");
+			if (scale < 0 || scale > precision)
+				throw new ArgumentException("scale must be a non-negative number less or equal than precision");
 		}
 
 		public bool IsValidNumber(string value)
