@@ -10,7 +10,7 @@ namespace HomeExercises
 		[Category("ToRefactor")]
 		public void CheckCurrentTsar()
 		{
-			var actualTsar = TsarRegistry.GetCurrentTsar();
+			Person actualTsar = TsarRegistry.GetCurrentTsar();
 
 			var expectedTsar = new Person("Ivan IV The Terrible", 54, 170, 70,
 				new Person("Vasili III of Russia", 28, 170, 60, null));
@@ -30,6 +30,13 @@ namespace HomeExercises
 				new Person("Vasili III of Russia", 28, 170, 60, null));
 
 			// Какие недостатки у такого подхода? 
+			// Недостатки:
+			//		1) При добавлении новых свойств (ну или полей) придется править тест
+			//		2) Сам метод сравнения трудно читаем и непонятен с первого взгляда
+			//		3) При возникновении ошибки метод просто вернет false => дебажить будет трудно
+			// Достоинства:
+			//		1) Время работы (по сравнению с FluentAssertions, наверняка, под капотом там рефлексия)
+			//			и следовательно при большом количестве таких тестов может увеличиться время их прогона тестов
 			Assert.True(AreEqual(actualTsar, expectedTsar));
 		}
 
@@ -55,7 +62,7 @@ namespace HomeExercises
 				new Person("Vasili III of Russia", 28, 170, 60, null));
 		}
 	}
-
+	
 	public class Person
 	{
 		public static int IdCounter = 0;
