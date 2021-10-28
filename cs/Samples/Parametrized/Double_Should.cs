@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Globalization;
+using Microsoft.VisualStudio.TestPlatform.ObjectModel;
 using NUnit.Framework;
 
 namespace Samples.Parametrized
@@ -22,7 +23,7 @@ namespace Samples.Parametrized
 				yield return new TestCaseData(12.0, 4.0).Returns(3);
 			}
 		}
-
+		
 		[TestCase("123", ExpectedResult = 123, TestName = "integer")]
 		[TestCase("1.1", ExpectedResult = 1.1, TestName = "fraction")]
 		[TestCase("1.1e1", ExpectedResult = 1.1e1, TestName = "scientific with positive exp")]

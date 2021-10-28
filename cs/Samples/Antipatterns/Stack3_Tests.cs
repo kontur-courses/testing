@@ -12,17 +12,21 @@ namespace Samples.Antipatterns
 		{
 			var stack = new Stack<int>();
 			Assert.IsFalse(stack.Any());
+			
 			stack.Push(1);
 			stack.Pop();
 			Assert.IsFalse(stack.Any());
+			
 			stack.Push(1);
 			stack.Push(2);
 			stack.Push(3);
 			Assert.AreEqual(3, stack.Count);
+			
 			stack.Pop();
 			stack.Pop();
 			stack.Pop();
 			Assert.IsFalse(stack.Any());
+			
 			for (var i = 0; i < 1000; i++)
 				stack.Push(i);
 			for (var i = 1000; i > 0; i--)

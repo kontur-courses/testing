@@ -23,8 +23,7 @@ namespace Challenge
 			if (string.IsNullOrWhiteSpace(word)) return;
 			if (word.Length > 10)
 				word = word.Substring(0, 10);
-			int count;
-			statistics[word.ToLower()] = 1 + (statistics.TryGetValue(word.ToLower(), out count) ? count : 0);
+			statistics[word.ToLower()] = 1 + (statistics.TryGetValue(word.ToLower(), out var count) ? count : 0);
 		}
 
 		public virtual IEnumerable<WordCount> GetStatistics()
