@@ -16,15 +16,8 @@ namespace HomeExercises
 				new Person("Vasili III of Russia", 28, 170, 60, null));
 
 			// Перепишите код на использование Fluent Assertions.
-			Assert.AreEqual(actualTsar.Name, expectedTsar.Name);
-			Assert.AreEqual(actualTsar.Age, expectedTsar.Age);
-			Assert.AreEqual(actualTsar.Height, expectedTsar.Height);
-			Assert.AreEqual(actualTsar.Weight, expectedTsar.Weight);
-
-			Assert.AreEqual(expectedTsar.Parent!.Name, actualTsar.Parent!.Name);
-			Assert.AreEqual(expectedTsar.Parent.Age, actualTsar.Parent.Age);
-			Assert.AreEqual(expectedTsar.Parent.Height, actualTsar.Parent.Height);
-			Assert.AreEqual(expectedTsar.Parent.Parent, actualTsar.Parent.Parent);
+			actualTsar.Should().BeEquivalentTo(expectedTsar, 
+				options => options.Excluding(o => o.SelectedMemberInfo.Name == "Id"));
 		}
 
 		[Test]
@@ -33,9 +26,16 @@ namespace HomeExercises
 		{
 			var actualTsar = TsarRegistry.GetCurrentTsar();
 			var expectedTsar = new Person("Ivan IV The Terrible", 54, 170, 70,
-				new Person("Vasili III of Russia", 28, 170, 60, null));
+				new Person("Vasili III of Russia", 28, 171, 60, null));
 
 			// Какие недостатки у такого подхода? 
+			/* 
+				При увеличении количества полей, нам придётся каждый раз переписывать этот метод,
+				чтобы учесть все новые параметры.
+				Так же скрывается то по каким параметрам мы будем проводить сравнение,
+				вдруг окажется что для равенства достаточно совпадения имени.
+				
+			*/
 			Assert.True(AreEqual(actualTsar, expectedTsar));
 		}
 
