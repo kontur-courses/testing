@@ -10,7 +10,7 @@ namespace HomeExercises
         [Category("ToRefactor")]
         public void CheckCurrentTsar()
         {
-            Person? actualTsar = TsarRegistry.GetCurrentTsar();
+            var actualTsar = TsarRegistry.GetCurrentTsar();
 
             var expectedTsar = new Person("Ivan IV The Terrible", 54, 170, 70,
                 new Person("Vasili III of Russia", 28, 170, 60, null));
@@ -31,7 +31,7 @@ namespace HomeExercises
         [Description("Альтернативное решение. Какие у него недостатки?")]
         public void CheckCurrentTsar_WithCustomEquality()
         {
-            Person? actualTsar = TsarRegistry.GetCurrentTsar();
+            var actualTsar = TsarRegistry.GetCurrentTsar();
             var expectedTsar = new Person("Ivan IV The Terrible", 54, 170, 70,
                 new Person("Vasili III of Russia", 28, 170, 60, null));
 
@@ -46,32 +46,28 @@ namespace HomeExercises
         [Test]
         public void CheckCurrentTsar_WithFluentAssertions()
         {
-            Person? actualTsar = TsarRegistry.GetCurrentTsar();
+            var actualTsar = TsarRegistry.GetCurrentTsar();
             var expectedTsar = new Person("Ivan IV The Terrible", 54, 170, 70,
                 new Person("Vasili III of Russia", 28, 170, 60, null));
 
             actualTsar.Should()
-                .BeEquivalentTo(expectedTsar, config => config
-                    .Excluding(tsar => tsar.Id)
-                    .Excluding(tsar => tsar.Parent!.Id));
+                      .BeEquivalentTo(expectedTsar, config => config
+                            .Excluding(tsar => tsar.SelectedMemberPath.EndsWith(nameof(Person.Id))));
             //Особенности:
             //BeEquivalentTo сравнивает объекты структурно, в нашем случае это значит что при изменении Person изменений в тесте почти не потребуется
             //(кроме полей и свойств не участвующих в сравнении). В данном случае исключены поля Id и Parent.Id
             //Работает сильно медленнее чем предыдущий вариант, но выигрывает в удобстве пользования (расширении, анализе результатов)
             //Так же этот вариант гораздо более компактный и читаемый нежели 1 вариант
+            //Исправление: теперь исключение полей работает рекурсивно (для всех родителей), путём исключения всех полей Id из проверки
         }
 
         private bool AreEqual(Person? actual, Person? expected)
         {
             if (actual == expected)
-            {
                 return true;
-            }
 
             if (actual == null || expected == null)
-            {
                 return false;
-            }
 
             return
                 actual.Name == expected.Name
