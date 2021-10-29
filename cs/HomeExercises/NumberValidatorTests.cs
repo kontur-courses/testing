@@ -7,62 +7,53 @@ namespace HomeExercises
 {
 	public class NumberValidatorTests
 	{
-		[Test]
-		public void Test()
-		{
-			Assert.Throws<ArgumentException>(() => new NumberValidator(-1, 2, true)); //валидатор должен выкидывать исключение
-			Assert.DoesNotThrow(() => new NumberValidator(1, 0, true));//валидатор не должен выкидывать исключение
-			Assert.Throws<ArgumentException>(() => new NumberValidator(-1, 2, false)); 
-			Assert.DoesNotThrow(() => new NumberValidator(1, 0, true)); // два одинаковых зачем то
 
-			Assert.IsTrue(new NumberValidator(17, 2, true).IsValidNumber("0.0")); // просто проверка номера
-			Assert.IsTrue(new NumberValidator(17, 2, true).IsValidNumber("0"));
-			Assert.IsTrue(new NumberValidator(17, 2, true).IsValidNumber("0.0"));
-			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("00.00"));
-			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("-0.00"));
-			Assert.IsTrue(new NumberValidator(17, 2, true).IsValidNumber("0.0"));
-			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("+0.00"));
-			Assert.IsTrue(new NumberValidator(4, 2, true).IsValidNumber("+1.23"));
-			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("+1.23"));
-			Assert.IsFalse(new NumberValidator(17, 2, true).IsValidNumber("0.000"));
-			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("-1.23"));
-			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("a.sd"));
-		}
-
-		[Test]
+		[Test(Description = "Presision is negative")]
 		public void NumberValidator_WrongPrecision_ThrowsArgumentException()
         {
-			Action action = () => new NumberValidator(-1, 2, true);
+			Action action = () => new NumberValidator(-1, 2);
 			action.Should().Throw<ArgumentException>();
         }
 
 		[Test]
 		public void NumberValidator_RightParameters_DoesNotThrows()
         {
-			Action action = () => new NumberValidator(1, 0, true);
+			Action action = () => new NumberValidator(1);
 			action.Should().NotThrow();
         }
 
+		[TestCase(-1, TestName = "Scale is negative")]
+		[TestCase(2, TestName ="Scale is more then precision")]
+		public void NumberValidator_WrongScale_ThrowsArgumentException(int scale)
+        {
+			Action action = () => new NumberValidator(1, scale);
+			action.Should().Throw<ArgumentException>();
+		}
+
 		[TestCase(17, 2, "0.0")]
-		[TestCase(17, 2, "0")]
-		[TestCase(4, 2, "+1.23")]
+		[TestCase(4, 2, "+1.23", TestName = "With plus in begining")]
+		[TestCase(17, 2, "0", TestName = "Without fraction part")]
+		[TestCase(9, 2, "1,23", TestName = "With comma")]
+		[TestCase(5, 2, "-1.23", TestName = "With minus")]
 		public void NumberValidator_Validate_True(int precision, int scale, string number)
         {
-			var validator = new NumberValidator(precision, scale, true);
-			validator.IsValidNumber(number).Should().BeTrue();
+			var validator = new NumberValidator(precision, scale);
+			validator.IsValidNumber(number).Should().BeTrue(number);
         }
 
-		[TestCase(3, 2, "00.00")]
-		[TestCase(3, 2, "-0.00")]
-		[TestCase(3, 2, "+0.00")]
-		[TestCase(3, 2, "+1.23")]
-		[TestCase(17, 2, "0.000")]
-		[TestCase(3, 2, "-1.23")]
-		[TestCase(3, 2, "a.sd")]
-		public void NumberValidator_Validate_False(int precision, int scale, string number)
+		[TestCase(1, 0, false, "", TestName = "Empty word")]
+		[TestCase(3, 0, false, "   ", TestName = "Just spaces")]
+		[TestCase(3, 2, false, "00.00", TestName = "Length more then precision")]
+		[TestCase(3, 2, false, "-0.00", TestName = "Full length more then precision")]
+		[TestCase(17, 2, false, "0.000", TestName = "Fraction part more then scale")]
+		[TestCase(3, 2, false, "a.sd", TestName = "Not a number")]
+		[TestCase(4, 2, true, "-123", TestName = "Only positive numbers")]
+		[TestCase(5, 2, false, ".12", TestName = "Without int part")]
+		public void NumberValidator_Validate_False(int precision, int scale, bool onlyPositive,
+			string number)
         {
-			var validator = new NumberValidator(precision, scale, true);
-			validator.IsValidNumber(number).Should().BeFalse();
+			var validator = new NumberValidator(precision, scale, onlyPositive);
+			validator.IsValidNumber(number).Should().BeFalse(number);
 		}
 	}
 
@@ -93,11 +84,11 @@ namespace HomeExercises
 			// целую и дробную часть числа без разделяющей десятичной точки, k – максимальное число знаков дробной части числа. 
 			// Если число знаков дробной части числа равно 0 (т.е. число целое), то формат числового значения имеет вид N(m).
 
-			if (string.IsNullOrEmpty(value))
+			if (string.IsNullOrEmpty(value)) 
 				return false;
 
 			var match = numberRegex.Match(value);
-			if (!match.Success)
+			if (!match.Success) 
 				return false;
 
 			// Знак и целая часть
@@ -105,7 +96,7 @@ namespace HomeExercises
 			// Дробная часть
 			var fracPart = match.Groups[4].Value.Length;
 
-			if (intPart + fracPart > precision || fracPart > scale)
+			if (intPart + fracPart > precision || fracPart > scale) 
 				return false;
 
 			if (onlyPositive && match.Groups[1].Value == "-")
