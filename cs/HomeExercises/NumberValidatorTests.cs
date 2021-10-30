@@ -31,7 +31,7 @@ namespace HomeExercises
             //не хватает тестов на некорректный формат, на scale, на пустую (или null) строку
         }
 
-        [TestCase(-1, 0, "negative precision (\"{0}\") was provided")]
+        [TestCase(-1, 0, "non-positive precision (\"{0}\") was provided")]
         [TestCase(3, -1, "negative scale (\"{1}\") was provided")]
         [TestCase(1, 2, "scale (\"{1}\") was bigger than precision (\"{0}\")")]
         public void Throw_WhenConstructorArgsAreIncorrect(int precision, int scale, string because)
