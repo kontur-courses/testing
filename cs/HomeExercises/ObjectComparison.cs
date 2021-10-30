@@ -10,7 +10,7 @@ namespace HomeExercises
     {
         private static readonly Regex ParentRecursiveIdMatch = new Regex(@"^(Parent\.)*Id");
 
-        [Test]
+        [Test, Timeout(100)]
         [Description("Проверка текущего царя")]
         [Category("ToRefactor")]
         public void CheckCurrentTsar()
