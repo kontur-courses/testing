@@ -10,15 +10,16 @@ namespace HomeExercises
 		[Category("ToRefactor")]
 		public void CheckCurrentTsar()
 		{
-			Person actualTsar = TsarRegistry.GetCurrentTsar();
+			var actualTsar = TsarRegistry.GetCurrentTsar();
 
 			var expectedTsar = new Person("Ivan IV The Terrible", 54, 170, 70,
 				new Person("Vasili III of Russia", 28, 170, 60, null));
-			
-			actualTsar.Should().BeEquivalentTo(expectedTsar, 
-					options => options
-								.AllowingInfiniteRecursion()
-								.Excluding(member => member.SelectedMemberInfo.Name == "Id"));
+
+			actualTsar.Should().BeEquivalentTo(expectedTsar,
+				options => options
+					.AllowingInfiniteRecursion()
+					.Excluding(member => member.SelectedMemberInfo.Name == nameof(Person.Id)
+					                     && member.SelectedMemberInfo.DeclaringType == typeof(Person)));
 		}
 
 		[Test]
@@ -26,6 +27,7 @@ namespace HomeExercises
 		public void CheckCurrentTsar_WithCustomEquality()
 		{
 			var actualTsar = TsarRegistry.GetCurrentTsar();
+
 			var expectedTsar = new Person("Ivan IV The Terrible", 54, 170, 70,
 				new Person("Vasili III of Russia", 28, 170, 60, null));
 
@@ -36,7 +38,7 @@ namespace HomeExercises
 			//		3) При возникновении ошибки метод просто вернет false => дебажить будет трудно
 			// Достоинства:
 			//		1) Время работы (по сравнению с FluentAssertions, наверняка, под капотом там рефлексия)
-			//			и следовательно при большом количестве таких тестов может увеличиться время их прогона тестов
+			//			и следовательно при большом количестве таких тестов может увеличиться время их прогона
 			Assert.True(AreEqual(actualTsar, expectedTsar));
 		}
 
@@ -62,14 +64,14 @@ namespace HomeExercises
 				new Person("Vasili III of Russia", 28, 170, 60, null));
 		}
 	}
-	
+
 	public class Person
 	{
 		public static int IdCounter;
 		public int Age, Height, Weight;
+		public int Id;
 		public string Name;
 		public Person? Parent;
-		public int Id;
 
 		public Person(string name, int age, int height, int weight, Person? parent)
 		{
