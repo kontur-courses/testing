@@ -1,5 +1,5 @@
 ﻿using System;
-using System.Collections;
+using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using FluentAssertions;
 using NUnit.Framework;
@@ -8,28 +8,6 @@ namespace HomeExercises
 {
 	public class NumberValidatorTests
 	{
-		[Test, Explicit]
-		public void Test()
-		{
-			Assert.Throws<ArgumentException>(() => new NumberValidator(-1, 2, true));
-			Assert.DoesNotThrow(() => new NumberValidator(1, 0, true));
-			Assert.Throws<ArgumentException>(() => new NumberValidator(-1, 2, false));
-			Assert.DoesNotThrow(() => new NumberValidator(1, 0, true));
-
-			Assert.IsTrue(new NumberValidator(17, 2, true).IsValidNumber("0.0"));
-			Assert.IsTrue(new NumberValidator(17, 2, true).IsValidNumber("0"));
-			Assert.IsTrue(new NumberValidator(17, 2, true).IsValidNumber("0.0"));
-			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("00.00"));
-			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("-0.00"));
-			Assert.IsTrue(new NumberValidator(17, 2, true).IsValidNumber("0.0"));
-			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("+0.00"));
-			Assert.IsTrue(new NumberValidator(4, 2, true).IsValidNumber("+1.23"));
-			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("+1.23"));
-			Assert.IsFalse(new NumberValidator(17, 2, true).IsValidNumber("0.000"));
-			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("-1.23"));
-			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("a.sd"));
-		}
-
 		[TestCase(-1, TestName = "precision is negative")]
 		[TestCase(1, -1, TestName = "scale is negative")]
 		[TestCase(2, 2, TestName = "scale >= precision")]
@@ -50,7 +28,9 @@ namespace HomeExercises
 		[TestCase("-")]
 		public void IsValidNumber_False_WithIncorrectValue(string value)
 		{
-			new NumberValidator(int.MaxValue, int.MaxValue - 1).IsValidNumber(value).Should().BeFalse();
+			var validator = new NumberValidator(int.MaxValue, int.MaxValue - 1);
+			var actual = validator.IsValidNumber(value);
+			actual.Should().BeFalse();
 		}
 
 		[TestCase("12", 1, TestName = "precision less than value length")]
@@ -64,7 +44,8 @@ namespace HomeExercises
 		public void IsValidNumber_False_With(string value, int precision = 1, int scale = 0, bool onlyPositive = false)
 		{
 			var validator = new NumberValidator(precision, scale, onlyPositive);
-			validator.IsValidNumber(value).Should().BeFalse();
+			var actual = validator.IsValidNumber(value);
+			actual.Should().BeFalse();
 		}
 
 		[TestCase("1.1", 2)]
@@ -75,7 +56,8 @@ namespace HomeExercises
 		public void IsValidNumber_True_WithFraction(string value, int precision = 1, int scale = 1)
 		{
 			var validator = new NumberValidator(precision, scale);
-			validator.IsValidNumber(value).Should().BeTrue();
+			var actual = validator.IsValidNumber(value);
+			actual.Should().BeTrue();
 		}
 
 		[TestCase("1")]
@@ -85,24 +67,23 @@ namespace HomeExercises
 		public void IsValidNumber_True_WithInteger(string value, int precision = 1, bool onlyPositive = false)
 		{
 			var validator = new NumberValidator(precision, 0, onlyPositive);
-			validator.IsValidNumber(value).Should().BeTrue();
-		}
-
-		private static IEnumerable IsValidNumberTrueWithBigNumberCases
-		{
-			get
-			{
-				yield return new TestCaseData(new string('1', 1000)) {TestName = "Integer"};
-				yield return new TestCaseData(
-					$"{new string('1', 1000)}.{new string('2', 1000)}") {TestName = "Float"};
-			}
+			var actual = validator.IsValidNumber(value);
+			actual.Should().BeTrue();
 		}
 
 		[TestCaseSource(nameof(IsValidNumberTrueWithBigNumberCases))]
 		public void IsValidNumber_True_WithBigNumber(string value)
 		{
 			var validator = new NumberValidator(int.MaxValue, int.MaxValue - 1);
-			validator.IsValidNumber(value).Should().BeTrue();
+			var actual = validator.IsValidNumber(value);
+			actual.Should().BeTrue();
+		}
+		
+		private static IEnumerable<TestCaseData> IsValidNumberTrueWithBigNumberCases()
+		{
+			yield return new TestCaseData(new string('1', 1000)) {TestName = "Integer"};
+			yield return new TestCaseData(
+				$"{new string('1', 1000)}.{new string('2', 1000)}") {TestName = "Float"};
 		}
 	}
 
@@ -120,8 +101,10 @@ namespace HomeExercises
 			this.onlyPositive = onlyPositive;
 			if (precision <= 0)
 				throw new ArgumentException("precision must be a positive number");
+
 			if (scale < 0 || scale >= precision)
 				throw new ArgumentException("precision must be a non-negative number less or equal than precision");
+
 			numberRegex = new Regex(@"^([+-]?)(\d+)([.,](\d+))?$", RegexOptions.IgnoreCase);
 		}
 

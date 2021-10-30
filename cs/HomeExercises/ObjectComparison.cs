@@ -29,10 +29,7 @@ namespace HomeExercises
 			// 2. Когда тест падает не понятно чем различаются объекты.
 
 			var actualTsar = TsarRegistry.GetCurrentTsar();
-			var expectedTsar = new Person("Ivan IV The Terrible",
-				54,
-				170,
-				70,
+			var expectedTsar = new Person("Ivan IV The Terrible", 54, 170, 70,
 				new Person("Vasili III of Russia", 28, 170, 60, null));
 
 			Assert.True(AreEqual(actualTsar, expectedTsar));
@@ -56,10 +53,7 @@ namespace HomeExercises
 		public static Person GetCurrentTsar()
 		{
 			return new Person(
-				"Ivan IV The Terrible",
-				54,
-				170,
-				70,
+				"Ivan IV The Terrible", 54, 170, 70,
 				new Person("Vasili III of Russia", 28, 170, 60, null));
 		}
 	}
