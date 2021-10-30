@@ -7,26 +7,37 @@ namespace HomeExercises
 {
 	public class NumberValidatorTests
 	{
-		[Test]
-		public void Test()
+		[TestCase(17, 2, true, "0.0", ExpectedResult = true, TestName = "Precision: 17; Scale: 2; Positive: true; value: 0.0")]
+		[TestCase(17, 2, true, "0", ExpectedResult = true, TestName = "Precision: 17; Scale: 2; Positive: true; value: 0")]
+		[TestCase(3, 2, true, "00.00", ExpectedResult = false, TestName = "Precision: 3; Scale: 2; Positive: true; value: 00.00")]
+		[TestCase(3, 2, true, "-0.00", ExpectedResult = false, TestName = "Precision: 3; Scale: 2; Positive: true; value: -0.00")]
+		[TestCase(3, 2, true, "+0.00", ExpectedResult = false, TestName = "Precision: 3; Scale: 2; Positive: true; value: +0.00")]
+		[TestCase(4, 2, true, "+1.23", ExpectedResult = true, TestName = "Precision: 4; Scale: 2; Positive: true; value: +1.23")]
+		[TestCase(3, 2, true, "+1.23", ExpectedResult = false, TestName = "Precision: 3; Scale: 2; Positive: true; value: +1.23")]
+		[TestCase(17, 2, true, "0.000", ExpectedResult = false, TestName = "Precision: 17; Scale: 2; Positive: true; value: 0.000")]
+		[TestCase(3, 2, true, "-1.23", ExpectedResult = false, TestName = "Precision: 3; Scale: 2; Positive: true; value: -1.23")]
+		[TestCase(3, 2, true, "a.sd", ExpectedResult = false, TestName = "Precision: 3; Scale: 2; Positive: true; value: a.sd")]
+		[TestCase(4, 2, false, "-1.23", ExpectedResult = true, TestName = "Precision: 4; Scale: 2; Positive: false; value: -1.23")]
+		[TestCase(4, 0, false, "-1.23", ExpectedResult = false, TestName = "Precision: 4; Scale: 0; Positive: false; value: -1.23")]
+		[TestCase(4, 0, false, "1.23", ExpectedResult = false, TestName = "Precision: 4; Scale: 0; Positive: false; value: 1.23")]
+		[TestCase(4, 1, false, "1.", ExpectedResult = false, TestName = "Precision: 4; Scale: 1; Positive: false; value: 1.")]
+		public bool NumberValidation(int precision, int scale, bool onlyPositive, string value)
 		{
-			Assert.Throws<ArgumentException>(() => new NumberValidator(-1, 2, true));
-			Assert.DoesNotThrow(() => new NumberValidator(1, 0, true));
-			Assert.Throws<ArgumentException>(() => new NumberValidator(-1, 2, false));
-			Assert.DoesNotThrow(() => new NumberValidator(1, 0, true));
+			var validator = new NumberValidator(precision, scale, onlyPositive);
+			return validator.IsValidNumber(value);
+		}
+		
+		[Test]
+		public void ConstructorShouldThrowExceptionWhenPrecisionNonPositive()
+		{
+			Assert.Throws<ArgumentException>(() => new NumberValidator(-1));
+			Assert.Throws<ArgumentException>(() => new NumberValidator(0));
+		}
 
-			Assert.IsTrue(new NumberValidator(17, 2, true).IsValidNumber("0.0"));
-			Assert.IsTrue(new NumberValidator(17, 2, true).IsValidNumber("0"));
-			Assert.IsTrue(new NumberValidator(17, 2, true).IsValidNumber("0.0"));
-			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("00.00"));
-			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("-0.00"));
-			Assert.IsTrue(new NumberValidator(17, 2, true).IsValidNumber("0.0"));
-			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("+0.00"));
-			Assert.IsTrue(new NumberValidator(4, 2, true).IsValidNumber("+1.23"));
-			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("+1.23"));
-			Assert.IsFalse(new NumberValidator(17, 2, true).IsValidNumber("0.000"));
-			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("-1.23"));
-			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("a.sd"));
+		[Test]
+		public void ConstructorShouldThrowExceptionWhenPrecisionPositive()
+		{
+			Assert.DoesNotThrow(() => new NumberValidator(1));
 		}
 	}
 

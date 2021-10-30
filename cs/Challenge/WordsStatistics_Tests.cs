@@ -1,4 +1,5 @@
-﻿using FluentAssertions;
+﻿using System.Linq;
+using FluentAssertions;
 using NUnit.Framework;
 
 namespace Challenge
@@ -42,6 +43,27 @@ namespace Challenge
 		}
 
 
-		// Документация по FluentAssertions с примерами : https://github.com/fluentassertions/fluentassertions/wiki
+		[Test]
+		public void GG()
+		{
+			wordsStatistics.AddWord("aaa");
+			wordsStatistics.AddWord("aaaa");
+			wordsStatistics.GetStatistics().First().Word.Should().Be("aaaa");
+		}
+
+		[Test]
+		public void YY()
+		{
+			wordsStatistics.AddWord("aaa");
+			wordsStatistics.AddWord("bbb");
+			wordsStatistics.GetStatistics().First().Word.Should().Be("aaa");
+		}
+		
+		[Test]
+		public void EE()
+		{
+			wordsStatistics.GetStatistics().Should().HaveCount(0);
+
+		}
 	}
 }

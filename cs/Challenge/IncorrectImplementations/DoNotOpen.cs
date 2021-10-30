@@ -365,7 +365,13 @@ namespace Challenge.IncorrectImplementations
 
         public override IEnumerable<WordCount> GetStatistics()
         {
-            return result ?? (result = base.GetStatistics().ToList());
+            var list = result;
+            if (list != null)
+            {
+                return list;
+            }
+
+            return (result = base.GetStatistics().ToList());
         }
     }
 

@@ -1,4 +1,9 @@
-﻿using FluentAssertions;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Reflection;
+using System.Reflection.Emit;
+using FluentAssertions;
 using NUnit.Framework;
 
 namespace HomeExercises
@@ -16,15 +21,44 @@ namespace HomeExercises
 				new Person("Vasili III of Russia", 28, 170, 60, null));
 
 			// Перепишите код на использование Fluent Assertions.
-			Assert.AreEqual(actualTsar.Name, expectedTsar.Name);
-			Assert.AreEqual(actualTsar.Age, expectedTsar.Age);
-			Assert.AreEqual(actualTsar.Height, expectedTsar.Height);
-			Assert.AreEqual(actualTsar.Weight, expectedTsar.Weight);
+			Assert.True(TsarEquals(typeof(Person), actualTsar, expectedTsar));
+		}
+		
+		private static bool TsarEquals(IReflect type, Person? actual, Person? expected)
+		{
+			if (actual == expected)
+				return true;
+			
+			var propertiesDontCompare = new HashSet<string>
+			{
+				"IdCounter", "Id"
+			};
 
-			Assert.AreEqual(expectedTsar.Parent!.Name, actualTsar.Parent!.Name);
-			Assert.AreEqual(expectedTsar.Parent.Age, actualTsar.Parent.Age);
-			Assert.AreEqual(expectedTsar.Parent.Height, actualTsar.Parent.Height);
-			Assert.AreEqual(expectedTsar.Parent.Parent, actualTsar.Parent.Parent);
+			var properties = type.GetFields(BindingFlags.Instance | BindingFlags.Public);
+			
+			foreach (var propertyInfo in properties)
+			{
+				if (propertiesDontCompare.Contains(propertyInfo.Name))
+					continue;
+				
+				var actualPropertyValue = propertyInfo.GetValue(actual);
+				var expectedPropertyValue = propertyInfo.GetValue(expected);
+				
+				if (actualPropertyValue == null && expectedPropertyValue == null)
+					continue;
+				if (actualPropertyValue is null || expectedPropertyValue is null)
+					return false;
+
+				if (propertyInfo.FieldType == typeof(Person))
+				{
+					if (!TsarEquals(typeof(Person), actualPropertyValue as Person, expectedPropertyValue as Person))
+						return false;
+				}
+				else if (!actualPropertyValue.Equals(expectedPropertyValue)) 
+					return false;
+			}
+
+			return true;
 		}
 
 		[Test]
@@ -36,6 +70,9 @@ namespace HomeExercises
 				new Person("Vasili III of Russia", 28, 170, 60, null));
 
 			// Какие недостатки у такого подхода? 
+			// Если убрать поле у класса Person, то этот тест будет вылетать с ошибкой при попытке доступа к несуществующему полю
+			// Если добавить новые поля, то придётся дописывать их в тесте
+			// Если не дописать, то разные значения новых полей будут проходить тест, чего быть не должно
 			Assert.True(AreEqual(actualTsar, expectedTsar));
 		}
 
