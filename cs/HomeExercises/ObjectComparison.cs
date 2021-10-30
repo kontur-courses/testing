@@ -1,7 +1,5 @@
 ﻿using FluentAssertions;
-
 using NUnit.Framework;
-
 using System.Text.RegularExpressions;
 
 namespace HomeExercises

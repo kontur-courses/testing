@@ -1,9 +1,7 @@
-﻿using System;
-using System.Text.RegularExpressions;
-
-using FluentAssertions;
-
+﻿using FluentAssertions;
 using NUnit.Framework;
+using System;
+using System.Text.RegularExpressions;
 
 namespace HomeExercises
 {
