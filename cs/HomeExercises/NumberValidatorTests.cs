@@ -7,26 +7,95 @@ namespace HomeExercises
 {
 	public class NumberValidatorTests
 	{
-		[Test]
-		public void Test()
+		[TestCase("00.0")]
+		[TestCase("01")]
+		public void ShouldBeFalse_WhenTooManyZero_InHighestDigitOfIntegerPart(string value)
 		{
-			Assert.Throws<ArgumentException>(() => new NumberValidator(-1, 2, true));
-			Assert.DoesNotThrow(() => new NumberValidator(1, 0, true));
-			Assert.Throws<ArgumentException>(() => new NumberValidator(-1, 2, false));
-			Assert.DoesNotThrow(() => new NumberValidator(1, 0, true));
+			var validator = new NumberValidator(4, 2, true);
+			validator.IsValidNumber(value).Should().BeFalse(
+				"Because integer part can start with zero only if it is zero number");
+		}
 
-			Assert.IsTrue(new NumberValidator(17, 2, true).IsValidNumber("0.0"));
-			Assert.IsTrue(new NumberValidator(17, 2, true).IsValidNumber("0"));
-			Assert.IsTrue(new NumberValidator(17, 2, true).IsValidNumber("0.0"));
-			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("00.00"));
-			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("-0.00"));
-			Assert.IsTrue(new NumberValidator(17, 2, true).IsValidNumber("0.0"));
-			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("+0.00"));
-			Assert.IsTrue(new NumberValidator(4, 2, true).IsValidNumber("+1.23"));
-			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("+1.23"));
-			Assert.IsFalse(new NumberValidator(17, 2, true).IsValidNumber("0.000"));
-			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("-1.23"));
-			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("a.sd"));
+		[Test]
+		public void Precision_ShouldConsiderMinusSign()
+		{
+			var validator = new NumberValidator(4, 0, true);
+			var value = "-1024";
+			validator.IsValidNumber(value).Should().BeFalse("Because minus sign is consider");
+		}
+
+		[Test]
+		public void Precision_ShouldIgnorePlusSign()
+		{
+			var validator = new NumberValidator(4, 0, true);
+			var value = "+1024";
+			validator.IsValidNumber(value).Should().BeTrue("Because plus sign is ignored");
+		}
+
+		[Test]
+		public void ShouldBeFalse_WhenMoreThenOneDelimiter()
+		{
+			var validator = new NumberValidator(5, 0, true);
+			var value = "1.25.0";
+			validator.IsValidNumber(value).Should().BeFalse("Because {0} is not a number", value);
+		}
+
+		[Test]
+		public void ShouldBeFalse_OnNonNumberValue()
+		{
+			var validator = new NumberValidator(5, 0, true);
+			var value = "1abc";
+
+			validator.IsValidNumber(value).Should().BeFalse("Because {0} is not a number", value);
+		}
+
+		[Test]
+		public void ShouldBeFalse_OnNegativeValue_WhenOnlyPositiveEnable()
+		{
+			var validator = new NumberValidator(2, 0, true);
+			var value = "-5";
+
+			validator.IsValidNumber(value).Should().BeFalse("Because {0} is not positive", value);
+		}
+
+
+		[Category("Validate Fractals Delimiter")]
+		[TestCase("1.5")]
+		[TestCase("1,5")]
+		public void ShouldBeTrue_WhenDelimiterIsDotOrComma(string value)
+		{
+			var validator = new NumberValidator(2, 1, true);
+			validator.IsValidNumber(value).Should().BeTrue("Because dot and comma are both correct");
+		}
+
+		[Category("Plus-minus zero")]
+		[TestCase("-0")]
+		[TestCase("-0.0")]
+		[TestCase("+0")]
+		[TestCase("+0.0")]
+		public void ShouldBeFalse_WhenPlusOrMinusZero(string value)
+		{
+			var validator = new NumberValidator(2);
+			validator.IsValidNumber(value).Should().BeFalse("Because zero with sign isn't correct");
+		}
+
+		[Category("Constructor")]
+		[TestCase(1, 1)]
+		[TestCase(4, 5)]
+		[TestCase(2, -1)]
+		public void ShouldThrow_WhenScaleIsNotCorrect(int precision, int scale)
+		{
+			Action action = () => new NumberValidator(precision, scale);
+			action.Should().Throw<ArgumentException>();
+		}
+
+		[Category("Constructor")]
+		[TestCase(0)]
+		[TestCase(-1)]
+		public void ShouldThrow_WhenPrecisionIsNotCorrect(int precision)
+		{
+			Action action = () => new NumberValidator(precision);
+			action.Should().Throw<ArgumentException>();
 		}
 	}
 
@@ -60,13 +129,17 @@ namespace HomeExercises
 			if (string.IsNullOrEmpty(value))
 				return false;
 
+			if (IsValuePlusOrMinusZero(value))
+				return false;
+
+			if (HasValueTooManyZeroAtHighestDigit(value))
+				return false;
+
 			var match = numberRegex.Match(value);
 			if (!match.Success)
 				return false;
 
-			// Знак и целая часть
-			var intPart = match.Groups[1].Value.Length + match.Groups[2].Value.Length;
-			// Дробная часть
+			var intPart = GetIntPartLength(match);
 			var fracPart = match.Groups[4].Value.Length;
 
 			if (intPart + fracPart > precision || fracPart > scale)
@@ -75,6 +148,26 @@ namespace HomeExercises
 			if (onlyPositive && match.Groups[1].Value == "-")
 				return false;
 			return true;
+		}
+
+		private int GetIntPartLength(Match match)
+		{
+			var intPart = match.Groups[1].Value.Length + match.Groups[2].Value.Length;
+			intPart = match.Groups[1].Value.CompareTo("+") == 0 ? intPart - 1 : intPart;
+
+			return intPart;
+		}
+
+		private bool IsValuePlusOrMinusZero(string value)
+		{
+			var regex = new Regex(@"^([+-])?(0{1})([.,])?");
+			return regex.IsMatch(value);
+		}
+
+		private bool HasValueTooManyZeroAtHighestDigit(string value)
+		{
+			var regex = new Regex(@"^([+-])?(0+\d)");
+			return regex.IsMatch(value);
 		}
 	}
 }

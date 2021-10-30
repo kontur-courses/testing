@@ -1,5 +1,5 @@
-﻿using FluentAssertions;
-using NUnit.Framework;
+﻿using NUnit.Framework;
+using FluentAssertions;
 
 namespace HomeExercises
 {
@@ -15,16 +15,12 @@ namespace HomeExercises
 			var expectedTsar = new Person("Ivan IV The Terrible", 54, 170, 70,
 				new Person("Vasili III of Russia", 28, 170, 60, null));
 
-			// Перепишите код на использование Fluent Assertions.
-			Assert.AreEqual(actualTsar.Name, expectedTsar.Name);
-			Assert.AreEqual(actualTsar.Age, expectedTsar.Age);
-			Assert.AreEqual(actualTsar.Height, expectedTsar.Height);
-			Assert.AreEqual(actualTsar.Weight, expectedTsar.Weight);
-
-			Assert.AreEqual(expectedTsar.Parent!.Name, actualTsar.Parent!.Name);
-			Assert.AreEqual(expectedTsar.Parent.Age, actualTsar.Parent.Age);
-			Assert.AreEqual(expectedTsar.Parent.Height, actualTsar.Parent.Height);
-			Assert.AreEqual(expectedTsar.Parent.Parent, actualTsar.Parent.Parent);
+			actualTsar.Should().BeEquivalentTo(expectedTsar, config =>
+				config
+					.Excluding(info => 
+						info.SelectedMemberPath.EndsWith(nameof(actualTsar.Id))
+					)
+				);
 		}
 
 		[Test]
@@ -35,7 +31,33 @@ namespace HomeExercises
 			var expectedTsar = new Person("Ivan IV The Terrible", 54, 170, 70,
 				new Person("Vasili III of Russia", 28, 170, 60, null));
 
-			// Какие недостатки у такого подхода? 
+			/* ----|Про данный тест|----
+             * Этот подход плох тем, что он плохо масштабируем. Если в классе Person добавится или
+             * удалится какое то поле (или свойство), то в данном тесте их также вручную придется
+             * добавлять и удалять.
+             *
+             * Данный подход плох еще и тем, что при передаче в него аргументов <actual> и <expected>
+             * можно перепутать порядок. И пусть в данном случае этот факт не влияет на корректность
+             * работы теста, но по прежнему остается возможность для разночтения. Если писать новые тесты
+             * по аналогии с этим, то вполне реальна ситуация, когда в одном аргументы передаются
+             * в порядке (<actual>, <expected>), а в другом (<expected>, <actual>)
+             *
+			 *
+             * ----|Сравнение с моим решением|----
+             * 1) В моем решении присутствует возможность изменения порядка <actual> и <expected>,
+             *		но в меньшей степени за счет меньшего количества обращений к сравниваемым объектам
+             *		из написанного кода.
+             *
+             * 2) Тест CheckCurrentTsar_WithCustomEquality создает впечатление множества проверок
+			 *		из-за многострочного логического выражения. Другими словами, если в коде теста
+			 *		CheckCurrentTsar_WithCustomEquality разработчиком выражается мысль "Какие поля
+			 *		мы сравниваем", то в моем решении выражается мысль "какие поля мы НЕ сравниваем".
+			 *		В данном контексте я считаю, что гораздо лаконичнее будет сказать о том, что не
+			 *		должно сравниваться.
+             *
+			 * 3) Мое решение более читаемо за счет именований из библиотеки FluentAssertions и за
+			 *		счет пункта 2) данного комментария.
+             */
 			Assert.True(AreEqual(actualTsar, expectedTsar));
 		}
 
