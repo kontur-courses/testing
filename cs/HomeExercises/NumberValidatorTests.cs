@@ -16,6 +16,28 @@ namespace HomeExercises
 			act.Should().Throw<ArgumentException>();
 		}
 
+		[Test]
+		public void NumberValidator_PrecisionAndScale_NotStatic()
+		{
+			var initialValidator = new NumberValidator(4, 1);
+
+			new NumberValidator(1, 0);
+
+			var actual = initialValidator.IsValidNumber("123.1");
+			actual.Should().BeTrue();
+		}
+
+		[Test]
+		public void NumberValidator_OnlyPositive_NotStatic()
+		{
+			var initialValidator = new NumberValidator(2, onlyPositive: true);
+
+			new NumberValidator(2, onlyPositive: false);
+
+			var actual = initialValidator.IsValidNumber("-1");
+			actual.Should().BeFalse();
+		}
+
 		[TestCase("")]
 		[TestCase("    ")]
 		[TestCase(null)]
