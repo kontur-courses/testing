@@ -91,6 +91,7 @@ namespace HomeExercises
         [TestCase("+-0.0", "a number with several signs (\"{0}\") was provided")]
         [TestCase("+0.0.0", "a number with several dots (\"{0}\") was provided")]
         [TestCase("0+0.0", "a number with sing inside (\"{0}\") was provided")]
+        [TestCase("0 0.0", "a number with space inside (\"{0}\") was provided")]
         [TestCase(".0", "a number without starting digit (\"{0}\") was provided")]
         [TestCase("0.", "a number without end digit (\"{0}\") was provided")]
         [TestCase(".", "a number without digits (\"{0}\") was provided")]
