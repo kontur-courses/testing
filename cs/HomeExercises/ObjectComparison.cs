@@ -1,5 +1,7 @@
 ﻿using FluentAssertions;
 using NUnit.Framework;
+using System.Reflection;
+using System.Linq;
 
 namespace HomeExercises
 {
@@ -15,20 +17,41 @@ namespace HomeExercises
 			var expectedTsar = new Person("Ivan IV The Terrible", 54, 170, 70,
 				new Person("Vasili III of Russia", 28, 170, 60, null));
 
-			// Перепишите код на использование Fluent Assertions.
-			Assert.AreEqual(actualTsar.Name, expectedTsar.Name);
-			Assert.AreEqual(actualTsar.Age, expectedTsar.Age);
-			Assert.AreEqual(actualTsar.Height, expectedTsar.Height);
-			Assert.AreEqual(actualTsar.Weight, expectedTsar.Weight);
+			CheckPerson(actualTsar, expectedTsar);
+		}
 
-			Assert.AreEqual(expectedTsar.Parent!.Name, actualTsar.Parent!.Name);
-			Assert.AreEqual(expectedTsar.Parent.Age, actualTsar.Parent.Age);
-			Assert.AreEqual(expectedTsar.Parent.Height, actualTsar.Parent.Height);
-			Assert.AreEqual(expectedTsar.Parent.Parent, actualTsar.Parent.Parent);
+		private void CheckPerson(Person? actual, Person? expected)
+        {
+			if (actual == expected)
+				return;
+			actual.Should().NotBeNull();
+			expected.Should().NotBeNull();
+
+			var ignoredFields = new string[] { "Id", "IdCounter" };
+			typeof(Person).GetFields()
+				.Where(f => !ignoredFields.Contains(f.Name))
+				.ToList()
+				.ForEach(f => CompareValues(f, actual, expected));
+        }
+
+		private void CompareValues(FieldInfo field, Person actual, Person expected)
+        {
+			var expectedValue = typeof(Person).GetField(field.Name)
+				.GetValue(expected);
+			var actualValue = field.GetValue(actual);
+			if (field.Name == "Parent") 
+				CheckPerson((Person?)actualValue, (Person?)expectedValue);
+			else
+				actualValue.Should().Be(expectedValue);
 		}
 
 		[Test]
-		[Description("Альтернативное решение. Какие у него недостатки?")]
+		[Description("Альтернативное решение. Какие у него недостатки?" +
+			"Недостаток по сравнению с моим тестом - его сложнее поддерживать" +
+			"При изменениях в классе Person он будет ломаться" +
+			"либо становиться не полным." +
+			"Уверен у этого подхода есть еще подводные камни" +
+			"но я их не увидел.")]
 		public void CheckCurrentTsar_WithCustomEquality()
 		{
 			var actualTsar = TsarRegistry.GetCurrentTsar();
@@ -38,7 +61,6 @@ namespace HomeExercises
 			// Какие недостатки у такого подхода? 
 			Assert.True(AreEqual(actualTsar, expectedTsar));
 		}
-
 		private bool AreEqual(Person? actual, Person? expected)
 		{
 			if (actual == expected) return true;

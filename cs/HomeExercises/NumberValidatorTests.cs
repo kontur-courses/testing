@@ -7,26 +7,98 @@ namespace HomeExercises
 {
 	public class NumberValidatorTests
 	{
-		[Test]
-		public void Test()
-		{
-			Assert.Throws<ArgumentException>(() => new NumberValidator(-1, 2, true));
-			Assert.DoesNotThrow(() => new NumberValidator(1, 0, true));
-			Assert.Throws<ArgumentException>(() => new NumberValidator(-1, 2, false));
-			Assert.DoesNotThrow(() => new NumberValidator(1, 0, true));
+		[TestCase("12+4")]
+		[TestCase("O")]
+		[TestCase("10X2")]
+		[TestCase(".2")]
+		[TestCase("a.sd")]
+		[TestCase("")]
+		[TestCase("  ")]
+		[TestCase(null)]
+		public void NotNumber_ShouldBeNotValid(string number)
+        {
+			new NumberValidator(6, 2, true)
+				.IsValidNumber(number)
+				.Should()
+				.BeFalse();
+        }
 
-			Assert.IsTrue(new NumberValidator(17, 2, true).IsValidNumber("0.0"));
-			Assert.IsTrue(new NumberValidator(17, 2, true).IsValidNumber("0"));
-			Assert.IsTrue(new NumberValidator(17, 2, true).IsValidNumber("0.0"));
-			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("00.00"));
-			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("-0.00"));
-			Assert.IsTrue(new NumberValidator(17, 2, true).IsValidNumber("0.0"));
-			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("+0.00"));
-			Assert.IsTrue(new NumberValidator(4, 2, true).IsValidNumber("+1.23"));
-			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("+1.23"));
-			Assert.IsFalse(new NumberValidator(17, 2, true).IsValidNumber("0.000"));
-			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("-1.23"));
-			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("a.sd"));
+		[TestCase(0)]
+		[TestCase(-5)]
+		public void Precision_ShouldBePositive(int precision)
+        {
+			FluentActions.Invoking(() => 
+			NumberValidator.Create(precision))
+				.Should().Throw<ArgumentException>();
+		}
+
+		[TestCase(-1)]
+		[TestCase(6)]
+		public void Precision_ShouldBeNotNegative_AndLessThanPrecision(int scale)
+		{
+			FluentActions.Invoking(() =>
+			NumberValidator.Create(6, scale))
+				.Should().Throw<ArgumentException>();
+		}
+		
+		[TestCase("-0.12")]
+		[TestCase("+0.12")]
+		[TestCase("+0.12")]
+		[TestCase("12.12")]
+		[TestCase("1234")]
+		[TestCase("+123")]
+		public void SymbolsCount_ShouldBeLessThanPrecision(string number)
+		{
+			new NumberValidator(3, 2, false)
+				.IsValidNumber(number)
+				.Should()
+				.BeFalse();
+		}
+
+		[TestCase("1.123")]
+		[TestCase("-1.123")]
+		public void FractSymbolsCount_ShouldBeLessThanScale(string number)
+		{
+			new NumberValidator(5, 2, false)
+				.IsValidNumber(number)
+				.Should()
+				.BeFalse();
+		}
+
+		[Test]
+		public void OnlyPositiveValidator_SholdNotValidateNegative()
+		{
+			new NumberValidator(6, 4, true)
+				.IsValidNumber("-4")
+				.Should()
+				.BeFalse();
+		}
+
+		[TestCase("+1.1234")]
+		[TestCase("12.1234")]
+		[TestCase("123456")]
+		[TestCase("0.000")]
+		[TestCase("000.0")]
+		public void OnlyPositiveValidator_SholdValidatePositive(string number)
+		{
+			new NumberValidator(6, 4, true)
+				.IsValidNumber(number)
+				.Should()
+				.BeTrue();
+		}
+
+		[TestCase("+1.1234")]
+		[TestCase("12.1234")]
+		[TestCase("-1.1234")]
+		[TestCase("-12345")]
+		[TestCase("-0.000")]
+		[TestCase("-000.0")]
+		public void NotOnlyPositiveValidator_SholdValidatePosAndNeg(string number)
+		{
+			new NumberValidator(6, 4, false)
+				.IsValidNumber(number)
+				.Should()
+				.BeTrue();
 		}
 	}
 
@@ -49,13 +121,22 @@ namespace HomeExercises
 			numberRegex = new Regex(@"^([+-]?)(\d+)([.,](\d+))?$", RegexOptions.IgnoreCase);
 		}
 
+		public static NumberValidator Create(int precision, int scale = 0, bool onlyPositive = false)
+        {
+			return new NumberValidator(precision, scale, onlyPositive);
+        }
+
 		public bool IsValidNumber(string value)
 		{
 			// Проверяем соответствие входного значения формату N(m,k), в соответствии с правилом, 
-			// описанным в Формате описи документов, направляемых в налоговый орган в электронном виде по телекоммуникационным каналам связи:
-			// Формат числового значения указывается в виде N(m.к), где m – максимальное количество знаков в числе, включая знак (для отрицательного числа), 
-			// целую и дробную часть числа без разделяющей десятичной точки, k – максимальное число знаков дробной части числа. 
-			// Если число знаков дробной части числа равно 0 (т.е. число целое), то формат числового значения имеет вид N(m).
+			// описанным в Формате описи документов, направляемых в налоговый орган
+			// в электронном виде по телекоммуникационным каналам связи:
+			// Формат числового значения указывается в виде N(m.к),
+			// где m – максимальное количество знаков в числе, включая знак (для отрицательного числа), 
+			// целую и дробную часть числа без разделяющей десятичной точки,
+			// k – максимальное число знаков дробной части числа. 
+			// Если число знаков дробной части числа равно 0 (т.е. число целое),
+			// то формат числового значения имеет вид N(m).
 
 			if (string.IsNullOrEmpty(value))
 				return false;
