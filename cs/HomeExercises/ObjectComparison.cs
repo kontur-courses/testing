@@ -21,18 +21,13 @@ namespace HomeExercises
 				new Person("Vasili III of Russia", 28, 170, 60, null));
 
 			// Перепишите код на использование Fluent Assertions.
-			Assert.True(TsarEquals(typeof(Person), actualTsar, expectedTsar));
+			Assert.True(TsarEquals(typeof(Person), actualTsar, expectedTsar, new HashSet<string> {"IdCounter", "Id"}));
 		}
 		
-		private static bool TsarEquals(IReflect type, Person? actual, Person? expected)
+		private static bool TsarEquals(IReflect type, Person? actual, Person? expected, ICollection<string> propertiesDontCompare)
 		{
 			if (actual == expected)
 				return true;
-			
-			var propertiesDontCompare = new HashSet<string>
-			{
-				"IdCounter", "Id"
-			};
 
 			var properties = type.GetFields(BindingFlags.Instance | BindingFlags.Public);
 			
@@ -51,7 +46,7 @@ namespace HomeExercises
 
 				if (propertyInfo.FieldType == typeof(Person))
 				{
-					if (!TsarEquals(typeof(Person), actualPropertyValue as Person, expectedPropertyValue as Person))
+					if (!TsarEquals(typeof(Person), actualPropertyValue as Person, expectedPropertyValue as Person, propertiesDontCompare))
 						return false;
 				}
 				else if (!actualPropertyValue.Equals(expectedPropertyValue)) 
