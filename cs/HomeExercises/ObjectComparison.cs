@@ -5,7 +5,7 @@ namespace HomeExercises
 {
 	public class ObjectComparison
 	{
-		[Test]
+		[Test,Timeout(1500)]
 		[Description("Проверка текущего царя")]
 		[Category("ToRefactor")]
 		public void CheckCurrentTsar()
@@ -15,17 +15,14 @@ namespace HomeExercises
 			var expectedTsar = new Person("Ivan IV The Terrible", 54, 170, 70,
 				new Person("Vasili III of Russia", 28, 170, 60, null));
 
-			// Перепишите код на использование Fluent Assertions.
-			Assert.AreEqual(actualTsar.Name, expectedTsar.Name);
-			Assert.AreEqual(actualTsar.Age, expectedTsar.Age);
-			Assert.AreEqual(actualTsar.Height, expectedTsar.Height);
-			Assert.AreEqual(actualTsar.Weight, expectedTsar.Weight);
+			actualTsar.Should().BeEquivalentTo(expectedTsar, options => options.AllowingInfiniteRecursion()
+				.Excluding(member => member.SelectedMemberInfo.Name == "Id"));
 
-			Assert.AreEqual(expectedTsar.Parent!.Name, actualTsar.Parent!.Name);
-			Assert.AreEqual(expectedTsar.Parent.Age, actualTsar.Parent.Age);
-			Assert.AreEqual(expectedTsar.Parent.Height, actualTsar.Parent.Height);
-			Assert.AreEqual(expectedTsar.Parent.Parent, actualTsar.Parent.Parent);
 		}
+		// 1.При добавление нового свойства придётся дорабатывать метод AreEqual()
+		// 2.В CheckCurrentTsar_WithCustomEquality() при сравнении нельзя исключить свойства объекта
+		// 3.В CheckCurrentTsar() повышена читаемость кода и понятный вывод падание теста
+
 
 		[Test]
 		[Description("Альтернативное решение. Какие у него недостатки?")]
