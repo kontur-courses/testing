@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using FluentAssertions;
+using FluentAssertions.Extensions;
 using NUnit.Framework;
 
 namespace HomeExercises
@@ -36,6 +37,22 @@ namespace HomeExercises
 
 			var actual = initialValidator.IsValidNumber("-1");
 			actual.Should().BeFalse();
+		}
+
+		[Test]
+		public void IsValidNumber_ShouldBeFastEnough()
+		{
+			var validator = new NumberValidator(int.MaxValue);
+			var valueToValidate = $"-{new string('1', 1000)}.{new string('2', 1000)}";
+			
+			Action manyValidations = () =>
+			{
+				for (var i = 0; i < 20_000; i++)
+					validator.IsValidNumber(valueToValidate);
+			};
+			GC.Collect();
+			
+			manyValidations.ExecutionTime().Should().BeLessThan(3.Seconds());
 		}
 
 		[TestCase("")]
