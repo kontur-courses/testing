@@ -18,7 +18,7 @@ namespace HomeExercisesTests
 
 			actualTsar.Should().BeEquivalentTo(expectedTsar,
 				options => options.Excluding(x =>
-					x.SelectedMemberInfo.DeclaringType == typeof(Person)&& x.SelectedMemberInfo.Name.Equals("Id")));
+					x.SelectedMemberInfo.DeclaringType == typeof(Person) && x.SelectedMemberInfo.Name.Equals("Id")));
 		}
 
 		[Test]
@@ -29,6 +29,8 @@ namespace HomeExercisesTests
 		 * В это же время тест CheckCurrentTsar() не потребует изменений, чтобы при сравнении учитывались новые поля.
 		 * Так же тест CheckCurrentTsar_WithCustomEquality() при падении не указывает, какие поля отличались от ожидаемых.
 		 * Указывается лишь то, что ожидалось от AreEqual True, но вернулось False.
+		 * Так же в коде ниже присутствует рекурсивный вывод метода AreEqual, что может привести к бесконечной рекурсии и переполнению стека.
+		 * Например, если создать двух царей, которые будут предками друг друга, то это гарантированно приведет к StackOverflowException.
 		 */
 		public void CheckCurrentTsar_WithCustomEquality()
 		{
