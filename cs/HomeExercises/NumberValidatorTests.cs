@@ -12,61 +12,179 @@ namespace HomeExercises
 		[TestCase(2, 2, TestName = "scale >= precision")]
 		public void Constructor_ThrowException_When(int precision, int scale = 0)
 		{
-			// ReSharper disable once ObjectCreationAsStatement
 			Action act = () => new NumberValidator(precision, scale);
 			act.Should().Throw<ArgumentException>();
 		}
 
 		[TestCase("")]
+		[TestCase("    ")]
 		[TestCase(null)]
-		[TestCase("a")]
-		[TestCase("1.1.1")]
-		[TestCase(" 1 ")]
-		[TestCase("1.")]
-		[TestCase(".1")]
 		[TestCase("+")]
 		[TestCase("-")]
-		public void IsValidNumber_False_WithIncorrectValue(string value)
+		public void IsValidNumber_False_WithNotNumber(string value)
+		{
+			var validator = new NumberValidator(int.MaxValue);
+			var actual = validator.IsValidNumber(value);
+			actual.Should().BeFalse();
+		}
+
+		[TestCase(" 1 ")]
+		[TestCase("+ 1")]
+		[TestCase("- 1")]
+		[TestCase("1.222.333")]
+		[TestCase("1,222,333")]
+		[TestCase("a")]
+		[TestCase("+a")]
+		[TestCase("-a")]
+		public void IsValidNumber_False_WithIncorrectInteger(string value)
+		{
+			var validator = new NumberValidator(int.MaxValue);
+			var actual = validator.IsValidNumber(value);
+			actual.Should().BeFalse();
+		}
+
+		[TestCase("1.")]
+		[TestCase("1,")]
+		[TestCase(".1")]
+		[TestCase(",1")]
+		[TestCase("-.1")]
+		[TestCase("-,1")]
+		[TestCase("+.1")]
+		[TestCase("+,1")]
+		[TestCase("1,222.333")]
+		[TestCase("1.222,333")]
+		[TestCase("a.1")]
+		[TestCase("a,1")]
+		[TestCase("1.a")]
+		[TestCase("1,a")]
+		[TestCase("a.a")]
+		[TestCase("a,a")]
+		public void IsValidNumber_False_WithIncorrectFraction(string value)
 		{
 			var validator = new NumberValidator(int.MaxValue, int.MaxValue - 1);
 			var actual = validator.IsValidNumber(value);
 			actual.Should().BeFalse();
 		}
 
-		[TestCase("12", 1, TestName = "precision less than value length")]
-		[TestCase("1.2", 2, 0, TestName = "scale less than fraction length")]
-		[TestCase("1.2", 1, 0, TestName = "precision less than fraction+int")]
-		[TestCase("-1.2", 2, 1, TestName = "precision consider signs")]
-		[TestCase("-1", 2, 0, true, TestName = "onlyPositive and negative int")]
-		[TestCase("-1.2", 3, 1, true, TestName = "onlyPositive and negative float")]
-		[TestCase("00001", 1, TestName = "unaccounted leading zeros in precision")]
-		[TestCase("1.100", 2, 1, TestName = "unaccounted following zeros")]
-		public void IsValidNumber_False_With(string value, int precision = 1, int scale = 0, bool onlyPositive = false)
+		[TestCase("12")]
+		[TestCase("00001")]
+		[TestCase("1.2")]
+		[TestCase("1,2")]
+		[TestCase("+1")]
+		[TestCase("-1")]
+		public void IsValidNumber_False_WithPrecisionEqualsOneAndValue(string value)
 		{
-			var validator = new NumberValidator(precision, scale, onlyPositive);
+			var validator = new NumberValidator(1);
 			var actual = validator.IsValidNumber(value);
 			actual.Should().BeFalse();
 		}
 
-		[TestCase("1.1", 2)]
-		[TestCase("1,1", 2)]
-		[TestCase("-1,1", 3)]
-		[TestCase("+1,1", 3)]
-		[TestCase("1.12345", 6, 5)]
-		public void IsValidNumber_True_WithFraction(string value, int precision = 1, int scale = 1)
+		[Test]
+		public void IsValidNumber_False_WithScaleLessThanFractionLength()
 		{
-			var validator = new NumberValidator(precision, scale);
+			var validator = new NumberValidator(2, 1);
+			var actual = validator.IsValidNumber("1.22");
+			actual.Should().BeFalse();
+		}
+
+		[Test]
+		public void IsValidNumber_False_WithUnaccountedFollowingZerosInPrecision()
+		{
+			var validator = new NumberValidator(2, 1);
+			var actual = validator.IsValidNumber("1.000");
+			actual.Should().BeFalse();
+		}
+
+		[TestCase("-1.2", 3, 1)]
+		[TestCase("-1", 2, 0)]
+		[TestCase("-0")]
+		public void IsValidNumber_False_WithOnlyPositiveAndValue(string value, int precision = 1, int scale = 0)
+		{
+			var validator = new NumberValidator(precision, scale, true);
 			var actual = validator.IsValidNumber(value);
-			actual.Should().BeTrue();
+			actual.Should().BeFalse();
 		}
 
 		[TestCase("1")]
 		[TestCase("-1", 2)]
 		[TestCase("+1", 2)]
-		[TestCase("+1", 2, true)]
-		public void IsValidNumber_True_WithInteger(string value, int precision = 1, bool onlyPositive = false)
+		[TestCase("1", 10)]
+		public void IsValidNumber_True_WithInteger(string value, int precision = 1)
 		{
-			var validator = new NumberValidator(precision, 0, onlyPositive);
+			var validator = new NumberValidator(precision);
+			var actual = validator.IsValidNumber(value);
+			actual.Should().BeTrue();
+		}
+
+		[TestCase("1.1")]
+		[TestCase("1,1")]
+		public void IsValidNumber_True_WithFraction(string value)
+		{
+			var validator = new NumberValidator(2, 1);
+			var actual = validator.IsValidNumber(value);
+			actual.Should().BeTrue();
+		}
+
+		[TestCase("-1.1")]
+		[TestCase("+1.1")]
+		[TestCase("-1,1")]
+		[TestCase("+1,1")]
+		public void IsValidNumber_True_WithSignedFraction(string value)
+		{
+			var validator = new NumberValidator(3, 1);
+			var actual = validator.IsValidNumber(value);
+			actual.Should().BeTrue();
+		}
+
+		[TestCase("123.12345")]
+		[TestCase("123,12345")]
+		public void IsValidNumber_True_WithLongFraction(string value)
+		{
+			var validator = new NumberValidator(9, 5);
+			var actual = validator.IsValidNumber(value);
+			actual.Should().BeTrue();
+		}
+
+		[TestCase("-123.12345")]
+		[TestCase("+123.12345")]
+		[TestCase("-123,12345")]
+		[TestCase("+123,12345")]
+		public void IsValidNumber_True_WithLongSignedFraction(string value)
+		{
+			var validator = new NumberValidator(9, 5);
+			var actual = validator.IsValidNumber(value);
+			actual.Should().BeTrue();
+		}
+
+		[TestCase("1.1")]
+		[TestCase("1,1")]
+		[TestCase("-1.1")]
+		[TestCase("+1.1")]
+		[TestCase("-1,1")]
+		[TestCase("+1,1")]
+		public void IsValidNumber_True_WithPrecisionAndScaleGreaterThanFraction(string value)
+		{
+			var validator = new NumberValidator(int.MaxValue, int.MaxValue - 1);
+			var actual = validator.IsValidNumber(value);
+			actual.Should().BeTrue();
+		}
+
+		[TestCase("1.2")]
+		[TestCase("+1.2")]
+		[TestCase("0.0")]
+		public void IsValidNumber_True_WithOnlyPositiveFraction(string value)
+		{
+			var validator = new NumberValidator(int.MaxValue, int.MaxValue - 1);
+			var actual = validator.IsValidNumber(value);
+			actual.Should().BeTrue();
+		}
+
+		[TestCase("1")]
+		[TestCase("+1")]
+		[TestCase("0")]
+		public void IsValidNumber_True_WithOnlyPositiveInteger(string value)
+		{
+			var validator = new NumberValidator(int.MaxValue);
 			var actual = validator.IsValidNumber(value);
 			actual.Should().BeTrue();
 		}
@@ -78,12 +196,12 @@ namespace HomeExercises
 			var actual = validator.IsValidNumber(value);
 			actual.Should().BeTrue();
 		}
-		
+
 		private static IEnumerable<TestCaseData> IsValidNumberTrueWithBigNumberCases()
 		{
 			yield return new TestCaseData(new string('1', 1000)) {TestName = "Integer"};
 			yield return new TestCaseData(
-				$"{new string('1', 1000)}.{new string('2', 1000)}") {TestName = "Float"};
+				$"{new string('1', 1000)}.{new string('2', 1000)}") {TestName = "Fraction"};
 		}
 	}
 }
