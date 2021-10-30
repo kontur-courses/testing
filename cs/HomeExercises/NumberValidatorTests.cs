@@ -38,20 +38,26 @@ namespace HomeExercises
 		[TestCase(3, 2, "-.22", false, TestName = "Sign instead of intPart")]
 		[TestCase(17, 3, "-0.0", true, TestName = "Minus sign")]
 		[TestCase(2, 1, "-0.0", false, TestName = "Minus sign with wrong precision")]
-		public void IsValidNumber_Should_WorkCorrectly_When(int precision, int scale, string expressionToParse, bool expectedResult)
+		public void IsValidNumber_Should_WorkCorrectly_When(int precision, int scale, string expression, bool expectedResult)
 		{
-			new NumberValidator(precision, scale)
-				.IsValidNumber(expressionToParse).Should().Be(expectedResult);
+			var validator = new NumberValidator(precision, scale);
+
+			var validationResult = validator.IsValidNumber(expression);
+
+			validationResult.Should().Be(expectedResult);
 		}
 		
 		[TestCase(4, 1, "1.2", true, TestName = "Without sign")]
 		[TestCase(4, 1, "+01.2", true, TestName = "Plus sign with right precision")]
 		[TestCase(3, 1, "+01.2", false, TestName = "Plus sign with wrong precision")]
 		[TestCase(4, 1, "-01.2", false, TestName = "Minus sign")]
-		public void IsValidNumber_Should_WorkCorrectly_WithOnlyPositiveNumbers(int precision, int scale, string expressionToParse, bool expectedResult)
+		public void IsValidNumber_Should_WorkCorrectly_WithOnlyPositiveNumbers(int precision, int scale, string expression, bool expectedResult)
 		{
-			new NumberValidator(precision, scale, true)
-				.IsValidNumber(expressionToParse).Should().Be(expectedResult);
+			var validator = new NumberValidator(precision, scale, true);
+
+			var validationResult = validator.IsValidNumber(expression);
+
+			validationResult.Should().Be(expectedResult);
 		}
 	}
 
