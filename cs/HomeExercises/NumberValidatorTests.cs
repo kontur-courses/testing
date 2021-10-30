@@ -23,35 +23,45 @@ namespace HomeExercises
 		{
 			Assert.Throws<ArgumentException>(() => new NumberValidator(precision, scale));
 		}
-		
-		[TestCase(10, 2, "", false, TestName = "Empty string")]
-		[TestCase(10, 2, "       ", false, TestName = "Whitespace string")]
-		[TestCase(10, 2, "-", false, TestName = "Only sign")]
-		[TestCase(10, 2, null, false, TestName = "Null")]
-		[TestCase(10, 2, "abc", false, TestName = "Not a number")]
-		[TestCase(10, 2, "a.bc", false, TestName = "Not a number with point")]
-		[TestCase(17, 2, "0.0", true, TestName = "Standard")]
-		[TestCase(17, 2, "0.000", false, TestName = "FracPart greater than scale")]
-		[TestCase(2, 1, "120.0", false, TestName = "IntPart greater than precision")]
-		[TestCase(3, 1, "120", true, TestName = "No fracPart")]
-		[TestCase(3, 1, "01.2", true, TestName = "Leading zero")]
-		[TestCase(3, 2, "-.22", false, TestName = "Sign instead of intPart")]
-		[TestCase(17, 3, "-0.0", true, TestName = "Minus sign")]
-		[TestCase(2, 1, "-0.0", false, TestName = "Minus sign with wrong precision")]
-		public void IsValidNumber_Should_WorkCorrectly_When(int precision, int scale, string expression, bool expectedResult)
+
+		[TestCase(10, 2, "", TestName = "Empty string")]
+		[TestCase(10, 2, "       ", TestName = "Whitespace string")]
+		[TestCase(10, 2, "-", TestName = "Only sign")]
+		[TestCase(10, 2, null, TestName = "Null")]
+		[TestCase(10, 2, "abc", TestName = "Not a number")]
+		[TestCase(10, 2, "a.bc", TestName = "Not a number with dot")]
+		[TestCase(17, 2, "0.000", TestName = "FracPart greater than scale")]
+		[TestCase(2, 1, "120.0", TestName = "IntPart greater than precision")]
+		[TestCase(3, 2, "-.22", TestName = "Sign instead of intPart")]
+		[TestCase(2, 1, "-0.0", TestName = "Minus sign with wrong precision")]
+		public void IsValidNumber_Should_ReturnFalse_When(int precision, int scale, string expression)
 		{
 			var validator = new NumberValidator(precision, scale);
 
 			var validationResult = validator.IsValidNumber(expression);
 
-			validationResult.Should().Be(expectedResult);
+			validationResult.Should().BeFalse();
 		}
-		
+
+		[TestCase(17, 2, "0.0", TestName = "Standard")]
+		[TestCase(3, 1, "120", TestName = "No fracPart")]
+		[TestCase(3, 1, "01.2", TestName = "Leading zero")]
+		[TestCase(17, 3, "-0.0", TestName = "Minus sign")]
+		public void IsValidNumber_Should_ReturnTrue_When(int precision, int scale, string expression)
+		{
+			var validator = new NumberValidator(precision, scale);
+
+			var validationResult = validator.IsValidNumber(expression);
+
+			validationResult.Should().BeTrue();
+		}
+
 		[TestCase(4, 1, "1.2", true, TestName = "Without sign")]
 		[TestCase(4, 1, "+01.2", true, TestName = "Plus sign with right precision")]
 		[TestCase(3, 1, "+01.2", false, TestName = "Plus sign with wrong precision")]
 		[TestCase(4, 1, "-01.2", false, TestName = "Minus sign")]
-		public void IsValidNumber_Should_WorkCorrectly_WithOnlyPositiveNumbers(int precision, int scale, string expression, bool expectedResult)
+		public void IsValidNumber_Should_WorkCorrectly_WithOnlyPositiveNumbers(int precision, int scale,
+			string expression, bool expectedResult)
 		{
 			var validator = new NumberValidator(precision, scale, true);
 
