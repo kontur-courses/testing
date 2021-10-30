@@ -5,8 +5,83 @@ using NUnit.Framework;
 
 namespace HomeExercises
 {
+	public class PlugException : Exception{}
+	
 	public class NumberValidatorTests
 	{
+		// 1
+		[TestCase(null, false)]
+		[TestCase("", false)]
+		// [TestCase(" ", false)]
+		
+		// 2
+		// [TestCase("a.sd", false)]
+		[TestCase("1.1d", false)]
+		[TestCase("d.1", false)]
+		[TestCase("d1", false)]
+		
+		[TestCase("1.1.1", false)]
+		[TestCase(".1", false)]
+		[TestCase("1.", false)]
+		
+		[TestCase("--1.0", false, 17, 2, false)]
+		[TestCase("+-1.0", false, 17, 2, false)]
+		[TestCase("1+1.0", false, 17, 2, false)]
+		[TestCase("1.0+", false)]
+		
+		// 3 // Добавить сюда пограничные случаи
+		[TestCase("00.00", false, 3, 2, false)]
+		[TestCase("+1.23", false, 3, 2, false)]
+		[TestCase("-1.23", false, 3, 2, false)]
+		
+		[TestCase("2.111", false)]
+		[TestCase("-3234.9", false, 5)]
+		
+		// 4
+		[TestCase("-2.1", false, 10, 5, true)]
+		[TestCase("+2.1", true, 10, 5, true)]
+		[TestCase("-2.1", true, 10, 5, false)]
+		[TestCase("+2.1", true, 10, 5, false)]
+		
+		
+		
+		[TestCase("0.0", true)]
+		[TestCase("0", true)]
+		[TestCase("+1.23", true, 4)]
+		// [TestCase("+0.00", true, 3)]// падает специально
+		public void TestTest(
+			string numberForCheck,
+			bool expected, 
+			int precision = 17, 
+			// T throwException = default(PlugException),
+			int scale = 2, 
+			bool onlyPositive = true)// where T : Exception
+		{
+			// if (throwException is null)
+			// {
+			// 	Assert.DoesNotThrow(() => new NumberValidator(precision, scale, onlyPositive));
+			// }
+			// else
+			// {
+			// 	Assert.Throws<T>(() => new NumberValidator(precision, scale, onlyPositive));
+			// }
+
+			var validatorResult = new NumberValidator(precision, scale, onlyPositive).IsValidNumber(numberForCheck);
+			var message = $"Number {numberForCheck} with parameters: " +
+			              $"\n\tprecision = {precision}, " +
+			              $"\n\tscale = {scale}, " +
+			              $"\n\tonlyPositive = {onlyPositive}" +
+			              $"\n\n  IsValidNumber result";
+			if (expected)
+			{
+				Assert.That(validatorResult, Is.True, message);
+			}
+			else
+			{
+				Assert.That(validatorResult, Is.False, message);
+			}
+		}
+		
 		[Test]
 		public void Test()
 		{
@@ -14,15 +89,17 @@ namespace HomeExercises
 			Assert.DoesNotThrow(() => new NumberValidator(1, 0, true));
 			Assert.Throws<ArgumentException>(() => new NumberValidator(-1, 2, false));
 			Assert.DoesNotThrow(() => new NumberValidator(1, 0, true));
-
+			
 			Assert.IsTrue(new NumberValidator(17, 2, true).IsValidNumber("0.0"));
 			Assert.IsTrue(new NumberValidator(17, 2, true).IsValidNumber("0"));
 			Assert.IsTrue(new NumberValidator(17, 2, true).IsValidNumber("0.0"));
+			Assert.IsTrue(new NumberValidator(17, 2, true).IsValidNumber("0.0"));
+			Assert.IsTrue(new NumberValidator(4, 2, true).IsValidNumber("+1.23"));
+			// Assert.IsTrue(new NumberValidator(3, 2, true).IsValidNumber("+0.00"));//
+			
 			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("00.00"));
 			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("-0.00"));
-			Assert.IsTrue(new NumberValidator(17, 2, true).IsValidNumber("0.0"));
-			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("+0.00"));
-			Assert.IsTrue(new NumberValidator(4, 2, true).IsValidNumber("+1.23"));
+			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("+0.00"));//
 			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("+1.23"));
 			Assert.IsFalse(new NumberValidator(17, 2, true).IsValidNumber("0.000"));
 			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("-1.23"));
