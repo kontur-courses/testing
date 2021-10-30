@@ -1,8 +1,9 @@
 ﻿using System;
 using FluentAssertions;
+using HomeExercises;
 using NUnit.Framework;
 
-namespace HomeExercises
+namespace HomeExercisesTests
 {
 	[TestFixture]
 	public class NumberValidatorTests

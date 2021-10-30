@@ -1,7 +1,8 @@
 ﻿using FluentAssertions;
+using HomeExercises;
 using NUnit.Framework;
 
-namespace HomeExercises
+namespace HomeExercisesTests
 {
 	public class ObjectComparison
 	{
@@ -16,7 +17,8 @@ namespace HomeExercises
 				new Person("Vasili III of Russia", 28, 170, 60, null));
 
 			actualTsar.Should().BeEquivalentTo(expectedTsar,
-				options => options.Excluding(x => x.SelectedMemberPath.EndsWith("Id")));
+				options => options.Excluding(x =>
+					x.SelectedMemberInfo.DeclaringType == typeof(Person)&& x.SelectedMemberInfo.Name.Equals("Id")));
 		}
 
 		[Test]
