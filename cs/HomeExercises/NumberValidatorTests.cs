@@ -9,32 +9,32 @@ namespace HomeExercises
 {
     public class NumberValidatorTests
     {
-        [TestCase(-1, 0, Description = "Precision is negative")]
-        [TestCase(0, 0, Description = "Precision is equal to zero")]
-        [TestCase(1, -1, Description = "Scale is negative")]
-        [TestCase(1, 1, Description = "Scale is equal to precision")]
-        [TestCase(1, 2, Description = "Scale is greater than precision")]
+        [TestCase(-1, 0, TestName = "Precision is negative")]
+        [TestCase(0, 0, TestName = "Precision is equal to zero")]
+        [TestCase(1, -1, TestName = "Scale is negative")]
+        [TestCase(1, 1, TestName = "Scale is equal to precision")]
+        [TestCase(1, 2, TestName = "Scale is greater than precision")]
         public void Constructor_Should_ThrowException(int precision, int scale)
         {
             Assert.Throws<ArgumentException>(() => new NumberValidator(precision, scale));
         }
 
-        [TestCase(1, 0, Description = "Scale is zero")]
-        [TestCase(17, 3, Description = "Scale is greater than zero less than precision")]
+        [TestCase(1, 0, TestName = "Scale is zero")]
+        [TestCase(17, 3, TestName = "Scale is greater than zero less than precision")]
         public void Constructor_Should_CreateValidator(int precision, int scale)
         {
             Assert.DoesNotThrow(() => new NumberValidator(precision, scale));
         }
 
-        [TestCase(2, 1, true, "0.0", Description = "Unsigned Fractional number with dot")]
-        [TestCase(2, 1, true, "0,0", Description = "Unsigned Fractional number with comma")]
-        [TestCase(1, 0, true, "0", Description = "Unsigned integer number")]
-        [TestCase(2, 0, true, "+0", Description = "Signed integer number (+)")]
-        [TestCase(3, 1, true, "+0.0", Description = "Signed fractional number with dot (+)")]
-        [TestCase(3, 1, true, "+0,0", Description = "Signed fractional number with comma (+)")]
-        [TestCase(2, 0, false, "-0", Description = "Signed number (-) negative allowed")]
-        [TestCase(3, 1, false, "-0.0", Description = "Signed fractional number with dot (-) negative allowed")]
-        [TestCase(3, 1, false, "-0,0", Description = "Signed fractional number with comma (-) negative allowed")]
+        [TestCase(2, 1, true, "0.0", TestName = "Unsigned Fractional number with dot")]
+        [TestCase(2, 1, true, "0,0", TestName = "Unsigned Fractional number with comma")]
+        [TestCase(1, 0, true, "0", TestName = "Unsigned integer number")]
+        [TestCase(2, 0, true, "+0", TestName = "Signed integer number (+)")]
+        [TestCase(3, 1, true, "+0.0", TestName = "Signed fractional number with dot (+)")]
+        [TestCase(3, 1, true, "+0,0", TestName = "Signed fractional number with comma (+)")]
+        [TestCase(2, 0, false, "-0", TestName = "Signed number (-) negative allowed")]
+        [TestCase(3, 1, false, "-0.0", TestName = "Signed fractional number with dot (-) negative allowed")]
+        [TestCase(3, 1, false, "-0,0", TestName = "Signed fractional number with comma (-) negative allowed")]
         public void IsValidNumber_Should_BeTrue(int precision, int scale, bool onlyPositive, string expression)
         {
             var validator = new NumberValidator(precision, scale, onlyPositive);
@@ -44,22 +44,22 @@ namespace HomeExercises
             actual.Should().BeTrue();
         }
 
-        [TestCase(3, 2, false, "00.00", Description = "Precision is too small")]
-        [TestCase(17, 2, false, "0 0", Description = "White space between digits")]
-        [TestCase(17, 10, false, "0.0 0", Description = "White space between fraction part digits")]
-        [TestCase(3, 0, false, "0.0", Description = "Expected integer, but got fractional number")]
-        [TestCase(3, 2, false, "-0.00", Description = "Precision is too small, sign counts (-)")]
-        [TestCase(3, 2, false, "+0.00", Description = "Precision is too small, sign counts (+)")]
-        [TestCase(17, 2, false, "0.000", Description = "Scale is too small")]
-        [TestCase(17, 2, true, "-0.0", Description = "Only positive but got negative number")]
-        [TestCase(3, 2, false, "a.sd", Description = "Not a number with dot")]
-        [TestCase(3, 2, false, "asd", Description = "Not a integer number")]
-        [TestCase(3, 2, false, null, Description = "Get null")]
-        [TestCase(3, 2, false, "", Description = "Get empty string")]
-        [TestCase(3, 2, false, " ", Description = "Get white space")]
-        [TestCase(3, 2, false, ".", Description = "Get only dot")]
-        [TestCase(3, 2, false, ".0", Description = "Empty integer part")]
-        [TestCase(3, 2, false, "0.", Description = "Empty fractional part, but with dot")]
+        [TestCase(3, 2, false, "00.00", TestName = "Precision is too small")]
+        [TestCase(17, 2, false, "0 0", TestName = "White space between digits")]
+        [TestCase(17, 10, false, "0.0 0", TestName = "White space between fraction part digits")]
+        [TestCase(3, 0, false, "0.0", TestName = "Expected integer, but got fractional number")]
+        [TestCase(3, 2, false, "-0.00", TestName = "Precision is too small, sign counts (-)")]
+        [TestCase(3, 2, false, "+0.00", TestName = "Precision is too small, sign counts (+)")]
+        [TestCase(17, 2, false, "0.000", TestName = "Scale is too small")]
+        [TestCase(17, 2, true, "-0.0", TestName = "Only positive but got negative number")]
+        [TestCase(3, 2, false, "a.sd", TestName = "Not a number with dot")]
+        [TestCase(3, 2, false, "asd", TestName = "Not a integer number")]
+        [TestCase(3, 2, false, null, TestName = "Get null")]
+        [TestCase(3, 2, false, "", TestName = "Get empty string")]
+        [TestCase(3, 2, false, " ", TestName = "Get white space")]
+        [TestCase(3, 2, false, ".", TestName = "Get only dot")]
+        [TestCase(3, 2, false, ".0", TestName = "Empty integer part")]
+        [TestCase(3, 2, false, "0.", TestName = "Empty fractional part, but with dot")]
         public void IsValidNumber_Should_BeFalse(int precision, int scale, bool onlyPositive, string expression)
         {
             var validator = new NumberValidator(precision, scale, onlyPositive);
