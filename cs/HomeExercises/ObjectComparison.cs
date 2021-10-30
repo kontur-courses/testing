@@ -15,16 +15,8 @@ namespace HomeExercises
 			var expectedTsar = new Person("Ivan IV The Terrible", 54, 170, 70,
 				new Person("Vasili III of Russia", 28, 170, 60, null));
 
-			// Перепишите код на использование Fluent Assertions.
-			Assert.AreEqual(actualTsar.Name, expectedTsar.Name);
-			Assert.AreEqual(actualTsar.Age, expectedTsar.Age);
-			Assert.AreEqual(actualTsar.Height, expectedTsar.Height);
-			Assert.AreEqual(actualTsar.Weight, expectedTsar.Weight);
-
-			Assert.AreEqual(expectedTsar.Parent!.Name, actualTsar.Parent!.Name);
-			Assert.AreEqual(expectedTsar.Parent.Age, actualTsar.Parent.Age);
-			Assert.AreEqual(expectedTsar.Parent.Height, actualTsar.Parent.Height);
-			Assert.AreEqual(expectedTsar.Parent.Parent, actualTsar.Parent.Parent);
+			actualTsar.Should().BeEquivalentTo(expectedTsar, options =>
+				options.Excluding(info => info.SelectedMemberInfo.Name == "Id"));
 		}
 
 		[Test]
@@ -36,6 +28,10 @@ namespace HomeExercises
 				new Person("Vasili III of Russia", 28, 170, 60, null));
 
 			// Какие недостатки у такого подхода? 
+			// 1) Данный подход менее расширяем, т.к. при добавлении новых полей/свойств придётся их вручную добавлять и
+			// в метод AreEqual
+			// 2) Если тест не будет проходить, то он выведет неинформативное сообщение об ошибке (просто false, а не 
+			// имя поля/свойства, на котором произошла ошибка)
 			Assert.True(AreEqual(actualTsar, expectedTsar));
 		}
 
