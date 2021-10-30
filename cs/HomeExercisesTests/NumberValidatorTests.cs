@@ -2,6 +2,7 @@
 using FluentAssertions;
 using HomeExercises;
 using NUnit.Framework;
+using static HomeExercisesTests.NumberValidatorTestData;
 
 namespace HomeExercisesTests
 {
@@ -19,8 +20,7 @@ namespace HomeExercisesTests
 				.WithMessage(expectedMessage);
 		}
 
-		[TestCase(1, 0, false, TestName = "ArgumentsCorrectAndOnlyPositiveFalse")]
-		[TestCase(1, 0, true, TestName = "ArgumentsCorrectAndOnlyPositiveTrue")]
+		[TestCase(1, 0, false, TestName = "ArgumentsCorrect")]
 		public void Create_NotThrow_When(int precision, int scale, bool onlyPositive)
 		{
 			Action action = () => NumberValidator.Create(precision, scale, onlyPositive);
@@ -28,43 +28,14 @@ namespace HomeExercisesTests
 			action.Should().NotThrow();
 		}
 
-		[TestCase("0", TestName = "PositiveInt")]
-		[TestCase("0.0", TestName = "PositiveFloatWithDot")]
-		[TestCase("0,0", TestName = "PositiveFloatWithComma")]
-		[TestCase("+0", TestName = "PositiveIntWithPlus")]
-		[TestCase("+0.0", TestName = "PositiveFloatWithDotWithPlus")]
-		[TestCase("+0,0", TestName = "PositiveFloatWithCommaWithPlus")]
-		[TestCase("-1", TestName = "NegativeInt")]
-		[TestCase("-1.2", TestName = "NegativeFloatWithDot")]
-		[TestCase("-1,2", TestName = "NegativeFloatWithComma")]
-		public void IsValidNumber_True_When(string value)
+		[TestCaseSource(typeof(NumberValidatorTestData), nameof(CorrectInputCases))]
+		[TestCaseSource(typeof(NumberValidatorTestData), nameof(InvalidInputCases))]
+		[TestCaseSource(typeof(NumberValidatorTestData), nameof(NumberNotMeetValidatorRestrictionsCases))]
+		public void IsValidNumber(string value, int precision, int scale, bool onlyPositive, bool expected)
 		{
-			var sut = NumberValidator.Create(17, 2);
+			var validator = NumberValidator.Create(precision, scale, onlyPositive);
 
-			sut.IsValidNumber(value).Should().BeTrue();
-		}
-
-		[TestCase(null, TestName = "Null")]
-		[TestCase("", TestName = "StringIsEmpty")]
-		[TestCase(" ", TestName = "StringOfSpace")]
-		[TestCase("abcde", TestName = "StringOfLetters")]
-		[TestCase("a.b", TestName = "FloatOfLetters")]
-		[TestCase("1a", TestName = "LettersInInt")]
-		[TestCase("1.1a", TestName = "LettersInFloat")]
-		[TestCase(".1", TestName = "FloatMissingIntPart")]
-		[TestCase("1.", TestName = "FloatMissingFracPart")]
-		[TestCase("1,0,0", TestName = "FloatWithMultipleSeparators")]
-		[TestCase("1,234", 17, 2, TestName = "FracPartLongerThanScale")]
-		[TestCase("12", 1, 1, TestName = "IntPartWithoutSignLongerThanPrecision")]
-		[TestCase("+1", 1, 1, TestName = "IntPartWithSignLongerThanPrecision")]
-		[TestCase("0,0", 1, 1, TestName = "FloatWithFracPartLongerThanPrecision")]
-		[TestCase("-0", 17, 2, true, TestName = "NegativeIntWhenOnlyPositive")]
-		[TestCase("-0.0", 17, 2, true, TestName = "NegativeFloatWhenOnlyPositive")]
-		public void IsValidNumber_False_When(string value, int precision = 17, int scale = 2, bool onlyPositive = false)
-		{
-			var sut = NumberValidator.Create(precision, scale, onlyPositive);
-
-			sut.IsValidNumber(value).Should().BeFalse();
+			validator.IsValidNumber(value).Should().Be(expected);
 		}
 	}
 }
