@@ -10,15 +10,21 @@ namespace HomeExercises
 		private readonly int precision;
 		private readonly int scale;
 
-		public NumberValidator(int precision, int scale = 0, bool onlyPositive = false)
+		private NumberValidator(int precision, int scale, bool onlyPositive)
 		{
 			this.precision = precision;
 			this.scale = scale;
 			this.onlyPositive = onlyPositive;
+		}
+
+		public static NumberValidator Create(int precision, int scale = 0, bool onlyPositive = false)
+		{
 			if (precision <= 0)
 				throw new ArgumentException("precision must be a positive number");
 			if (scale < 0 || scale > precision)
 				throw new ArgumentException("scale must be a non-negative number less or equal than precision");
+
+			return new NumberValidator(precision, scale, onlyPositive);
 		}
 
 		public bool IsValidNumber(string value)
