@@ -14,17 +14,17 @@ namespace HomeExercises
 
 			var expectedTsar = new Person("Ivan IV The Terrible", 54, 170, 70,
 				new Person("Vasili III of Russia", 28, 170, 60, null));
-
-			// Перепишите код на использование Fluent Assertions.
-			Assert.AreEqual(actualTsar.Name, expectedTsar.Name);
-			Assert.AreEqual(actualTsar.Age, expectedTsar.Age);
-			Assert.AreEqual(actualTsar.Height, expectedTsar.Height);
-			Assert.AreEqual(actualTsar.Weight, expectedTsar.Weight);
-
-			Assert.AreEqual(expectedTsar.Parent!.Name, actualTsar.Parent!.Name);
-			Assert.AreEqual(expectedTsar.Parent.Age, actualTsar.Parent.Age);
-			Assert.AreEqual(expectedTsar.Parent.Height, actualTsar.Parent.Height);
-			Assert.AreEqual(expectedTsar.Parent.Parent, actualTsar.Parent.Parent);
+			
+			/*
+			 * Такой подход гораздо лучше, чем AreEqual, так как при добавлении новый полей такое
+			 * выражение сразу сравнит новые поля на эквивалентность. А AreEqual требует
+			 * добавления новых полей в сам метод, что можно забыть, так как класс и метод находятся
+			 * в разных местах.
+			 * Единственное, что нужно сюда добавлять, дак это то, что не надо сравнивать. Но если забыть это сделать,
+			 * то тест не пройдёт.
+			 */
+			expectedTsar.Should().BeEquivalentTo(actualTsar, opts =>
+				opts.Excluding(tsar => tsar.Id).Excluding(tsar => tsar.Parent!.Id));
 		}
 
 		[Test]
@@ -35,7 +35,12 @@ namespace HomeExercises
 			var expectedTsar = new Person("Ivan IV The Terrible", 54, 170, 70,
 				new Person("Vasili III of Russia", 28, 170, 60, null));
 
-			// Какие недостатки у такого подхода? 
+			// Какие недостатки у такого подхода?
+			/*
+			 * AreEqual плохо расширяемый, потому что для каждого нового поля
+			 * нужно добавлять сравнение, а это можно легко забыть, приэтом тест будет
+			 * проходить всё равно. Это может создать проблемы в будущем.
+			 */
 			Assert.True(AreEqual(actualTsar, expectedTsar));
 		}
 
