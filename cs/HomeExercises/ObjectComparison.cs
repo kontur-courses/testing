@@ -24,7 +24,7 @@ namespace HomeExercises
 			actualTsar.Should().BeEquivalentTo(expectedTsar,
 				config => config.AllowingInfiniteRecursion()
 					.Excluding(p => 
-						p.SelectedMemberInfo.Name == "Id" && p.SelectedMemberInfo.MemberType == typeof(int)));
+						p.SelectedMemberInfo.Name == nameof(expectedTsar.Id) && p.SelectedMemberInfo.MemberType == typeof(int)));
 		}
 
 		[Test]
