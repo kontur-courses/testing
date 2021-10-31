@@ -6,20 +6,26 @@ namespace HomeExercises.NumberValidatorTask
 	public class NumberValidator
 	{
 		private readonly Regex numberRegex;
+		private readonly Regex zeroAtHighestDigitRegex;
+		private readonly Regex plusMinusZeroRegex;
 		private readonly bool onlyPositive;
 		private readonly int precision;
 		private readonly int scale;
 
 		public NumberValidator(int precision, int scale = 0, bool onlyPositive = false)
 		{
-			this.precision = precision;
-			this.scale = scale;
-			this.onlyPositive = onlyPositive;
 			if (precision <= 0)
 				throw new ArgumentException("precision must be a positive number");
 			if (scale < 0 || scale >= precision)
 				throw new ArgumentException("precision must be a non-negative number less or equal than precision");
+
+			this.precision = precision;
+			this.scale = scale;
+			this.onlyPositive = onlyPositive;
+
 			numberRegex = new Regex(@"^([+-]?)(\d+)([.,](\d+))?$", RegexOptions.IgnoreCase);
+			zeroAtHighestDigitRegex = new Regex(@"^([+-])?(0+\d)");
+			plusMinusZeroRegex = new Regex(@"^([+-]{1})(0{1})(([.,]{1})(0*)$|$)");
 		}
 
 		public bool IsValidNumber(string value)
@@ -35,10 +41,10 @@ namespace HomeExercises.NumberValidatorTask
 
 			value = value.Trim();
 
-			if (IsValuePlusOrMinusZero(value))
+			if (plusMinusZeroRegex.IsMatch(value))
 				return false;
 
-			if (HasValueTooManyZeroAtHighestDigit(value))
+			if (zeroAtHighestDigitRegex.IsMatch(value))
 				return false;
 
 			var match = numberRegex.Match(value);
@@ -63,18 +69,6 @@ namespace HomeExercises.NumberValidatorTask
 			intPart = match.Groups[1].Value == plusSign ? intPart - 1 : intPart;
 
 			return intPart;
-		}
-
-		private bool IsValuePlusOrMinusZero(string value)
-		{
-			var regex = new Regex(@"^([+-]{1})(0{1})(([.,]{1})(0*)$|$)");
-			return regex.IsMatch(value);
-		}
-
-		private bool HasValueTooManyZeroAtHighestDigit(string value)
-		{
-			var regex = new Regex(@"^([+-])?(0+\d)");
-			return regex.IsMatch(value);
 		}
 	}
 }
