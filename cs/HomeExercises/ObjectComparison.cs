@@ -16,14 +16,7 @@ namespace HomeExercises
 				new Person("Vasili III of Russia", 28, 170, 60, null));
 
 			// Перепишите код на использование Fluent Assertions.
-			actualTsar.Name.Should().Be(expectedTsar.Name);
-			actualTsar.Age.Should().Be(expectedTsar.Age);
-			actualTsar.Height.Should().Be(expectedTsar.Height);
-			actualTsar.Weight.Should().Be(expectedTsar.Weight);
-			actualTsar.Parent!.Name.Should().Be(expectedTsar.Parent!.Name);
-			actualTsar.Parent.Age.Should().Be(expectedTsar.Parent.Age);
-			actualTsar.Parent.Height.Should().Be(expectedTsar.Parent.Height);
-			actualTsar.Parent.Parent.Should().Be(expectedTsar.Parent.Parent);
+			actualTsar.Should().BeEquivalentTo(expectedTsar, options => options.Excluding(tsar => tsar.Id).Excluding(tsar => tsar.Parent.Id));
 		}
 
 		[Test]
@@ -35,6 +28,13 @@ namespace HomeExercises
 				new Person("Vasili III of Russia", 28, 170, 60, null));
 
 			// Какие недостатки у такого подхода? 
+			/*
+			 *Этот подход дает менее читаемый код, нам будет сложнее понять в каком месте произошла ошибка,
+			 *мы просто получим false вместо ожидаемого true в ответе, но не полное описание
+			 *Также при добавлении поля, нам придется обновлять и метод AreEqual
+			 *
+			 *
+			*/
 			Assert.True(AreEqual(actualTsar, expectedTsar));
 		}
 
