@@ -1,4 +1,5 @@
-﻿using FluentAssertions;
+﻿using System;
+using FluentAssertions;
 using NUnit.Framework;
 
 namespace HomeExercises
@@ -14,17 +15,16 @@ namespace HomeExercises
 
 			var expectedTsar = new Person("Ivan IV The Terrible", 54, 170, 70,
 				new Person("Vasili III of Russia", 28, 170, 60, null));
-
+			
 			// Перепишите код на использование Fluent Assertions.
-			Assert.AreEqual(actualTsar.Name, expectedTsar.Name);
-			Assert.AreEqual(actualTsar.Age, expectedTsar.Age);
-			Assert.AreEqual(actualTsar.Height, expectedTsar.Height);
-			Assert.AreEqual(actualTsar.Weight, expectedTsar.Weight);
-
-			Assert.AreEqual(expectedTsar.Parent!.Name, actualTsar.Parent!.Name);
-			Assert.AreEqual(expectedTsar.Parent.Age, actualTsar.Parent.Age);
-			Assert.AreEqual(expectedTsar.Parent.Height, actualTsar.Parent.Height);
-			Assert.AreEqual(expectedTsar.Parent.Parent, actualTsar.Parent.Parent);
+			
+			// Пояснение: Можно было бы обойтись и ctx.SelectedMemberPath.EndsWith("Id")
+			// 			  Но при добавлении в класс Person свойств или полей заканчивающихся на "Id" (MemberId ...),
+			//			  тест будет их игнорировать - нежелательное поведение
+			expectedTsar.Should().BeEquivalentTo(actualTsar, 
+				options => options.Excluding(person => person.Id)
+										 .Excluding(ctx => ctx.SelectedMemberPath.EndsWith("Parent.Id")));
+			
 		}
 
 		[Test]
@@ -36,6 +36,14 @@ namespace HomeExercises
 				new Person("Vasili III of Russia", 28, 170, 60, null));
 
 			// Какие недостатки у такого подхода? 
+			
+			// 1. Сложно расширяемое и контролируемое решение:
+			// 		Добавление/удаление свойств и полей в классе Person либо приведет к ошибке компиляции,
+			// 		либо приведет к логической ошибке.
+			// 2. Циклические ссылки:
+			//		В случае возникновения циклической ссылки типа actualTsar.Parent = actualTsar,
+			//		тест уйдет в бесконечный цикл.
+			
 			Assert.True(AreEqual(actualTsar, expectedTsar));
 		}
 
