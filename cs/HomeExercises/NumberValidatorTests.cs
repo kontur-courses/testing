@@ -28,7 +28,7 @@ namespace HomeExercises
 		public void Precision_ShouldBePositive(int precision)
         {
 			FluentActions.Invoking(() => 
-			NumberValidator.Create(precision))
+			new NumberValidator(precision))
 				.Should().Throw<ArgumentException>();
 		}
 
@@ -37,7 +37,7 @@ namespace HomeExercises
 		public void Precision_ShouldBeNotNegative_AndLessThanPrecision(int scale)
 		{
 			FluentActions.Invoking(() =>
-			NumberValidator.Create(6, scale))
+			new NumberValidator(6, scale))
 				.Should().Throw<ArgumentException>();
 		}
 		
@@ -120,11 +120,6 @@ namespace HomeExercises
 				throw new ArgumentException("precision must be a non-negative number less or equal than precision");
 			numberRegex = new Regex(@"^([+-]?)(\d+)([.,](\d+))?$", RegexOptions.IgnoreCase);
 		}
-
-		public static NumberValidator Create(int precision, int scale = 0, bool onlyPositive = false)
-        {
-			return new NumberValidator(precision, scale, onlyPositive);
-        }
 
 		public bool IsValidNumber(string value)
 		{
