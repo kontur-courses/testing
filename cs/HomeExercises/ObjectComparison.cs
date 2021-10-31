@@ -17,9 +17,8 @@ namespace HomeExercises
 
 			actualTsar.Should().BeEquivalentTo(expectedTsar, config =>
 				config
-					.Excluding(info => 
-						info.SelectedMemberPath.EndsWith(nameof(actualTsar.Id))
-					)
+					.Excluding(info => info.SelectedMemberPath.EndsWith(nameof(actualTsar.Id)))
+					.AllowingInfiniteRecursion()
 				);
 		}
 
@@ -42,6 +41,11 @@ namespace HomeExercises
              * по аналогии с этим, то вполне реальна ситуация, когда в одном аргументы передаются
              * в порядке (<actual>, <expected>), а в другом (<expected>, <actual>)
              *
+			 * Еще одна вещь, которая делает этот тест хуже - это отсутствие информации, если тест провалится.
+			 * Если объекты не будут равны, то в отчете получим что-то вроде
+			 * Expected: True
+			 * But was: False
+			 * И никаких деталей о том, где конкретно было несоответствие мы не получим.
 			 *
              * ----|Сравнение с моим решением|----
              * 1) В моем решении присутствует возможность изменения порядка <actual> и <expected>,
@@ -73,17 +77,6 @@ namespace HomeExercises
 				&& AreEqual(actual.Parent, expected.Parent);
 		}
 	}
-
-	public class TsarRegistry
-	{
-		public static Person GetCurrentTsar()
-		{
-			return new Person(
-				"Ivan IV The Terrible", 54, 170, 70,
-				new Person("Vasili III of Russia", 28, 170, 60, null));
-		}
-	}
-
 	public class Person
 	{
 		public static int IdCounter = 0;
@@ -100,6 +93,16 @@ namespace HomeExercises
 			Height = height;
 			Weight = weight;
 			Parent = parent;
+		}
+	}
+
+	public class TsarRegistry
+	{
+		public static Person GetCurrentTsar()
+		{
+			return new Person(
+				"Ivan IV The Terrible", 54, 170, 70,
+				new Person("Vasili III of Russia", 28, 170, 60, null));
 		}
 	}
 }
