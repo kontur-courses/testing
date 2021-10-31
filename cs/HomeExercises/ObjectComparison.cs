@@ -1,4 +1,7 @@
-﻿using FluentAssertions;
+﻿using System;
+using System.Linq;
+using FluentAssertions;
+using FluentAssertions.Equivalency;
 using NUnit.Framework;
 
 namespace HomeExercises
@@ -16,12 +19,14 @@ namespace HomeExercises
 			var actualTsar = TsarRegistry.GetCurrentTsar();
 
 			actualTsar.Should().BeEquivalentTo(expectedTsar, options =>
-				options.Excluding(tsar => tsar.SelectedMemberPath.EndsWith("Id")));
-			// Плюсы такого подхода:
-			// 1) можно добавлять поля c минимальными изменениями в методе BeEquivalentTo()
-			// 2) уменьшается количество строк кода и, соответственно, увеличивается читаемость
-			// 3) методы FluenAssertion делают код намного гибче - здесь, например,
-			// мы рекурсивно исключили поле Id из сравнения.
+            options.Excluding(tsar => tsar.SelectedMemberInfo.DeclaringType == typeof(Person)
+            && tsar.SelectedMemberInfo.Name == nameof(Person.Id)));
+
+            // Плюсы такого подхода:
+            // 1) можно добавлять поля c минимальными изменениями в методе BeEquivalentTo()
+            // 2) уменьшается количество строк кода и, соответственно, увеличивается читаемость
+            // 3) методы FluenAssertion делают код намного гибче - здесь, например,
+            // мы рекурсивно исключили поле Id из сравнения.
 		}
 
 		[Test]
@@ -34,7 +39,7 @@ namespace HomeExercises
 
             // Какие недостатки у такого подхода?
 
-            // Можно сделать, например, так:
+            // 1) Можно сделать, например, так:
 			// actualTsar.Parent.Parent = actualTsar;
 			// expectedTsar.Parent.Parent = expectedTsar;
 			// и тест уходит в бесконечную рекурсию.
@@ -53,8 +58,8 @@ namespace HomeExercises
 				&& actual.Height == expected.Height
 				&& actual.Weight == expected.Weight
 				&& AreEqual(actual.Parent, expected.Parent);
-		}
-	}
+        }
+    }
 
 	public class TsarRegistry
 	{
