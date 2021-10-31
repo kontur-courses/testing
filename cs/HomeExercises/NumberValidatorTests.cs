@@ -8,25 +8,128 @@ namespace HomeExercises
 	public class NumberValidatorTests
 	{
 		[Test]
-		public void Test()
+		public void NumberValidator_Throws_WhenPrecisionIsNotPositive()
 		{
-			Assert.Throws<ArgumentException>(() => new NumberValidator(-1, 2, true));
-			Assert.DoesNotThrow(() => new NumberValidator(1, 0, true));
-			Assert.Throws<ArgumentException>(() => new NumberValidator(-1, 2, false));
-			Assert.DoesNotThrow(() => new NumberValidator(1, 0, true));
+			Action act = () => new NumberValidator(-1, 2, true);
 
-			Assert.IsTrue(new NumberValidator(17, 2, true).IsValidNumber("0.0"));
-			Assert.IsTrue(new NumberValidator(17, 2, true).IsValidNumber("0"));
-			Assert.IsTrue(new NumberValidator(17, 2, true).IsValidNumber("0.0"));
-			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("00.00"));
-			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("-0.00"));
-			Assert.IsTrue(new NumberValidator(17, 2, true).IsValidNumber("0.0"));
-			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("+0.00"));
-			Assert.IsTrue(new NumberValidator(4, 2, true).IsValidNumber("+1.23"));
-			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("+1.23"));
-			Assert.IsFalse(new NumberValidator(17, 2, true).IsValidNumber("0.000"));
-			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("-1.23"));
-			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("a.sd"));
+			act.Should().Throw<ArgumentException>();
+		}
+		
+		[Test]
+		public void NumberValidator_DoesntThrow_WhenPrecisionIsPositive()
+		{
+			Action act = () => new NumberValidator(1, 0, true);
+			
+			act.Should().NotThrow<ArgumentException>();
+		}
+		
+		[Test]
+		public void NumberValidator_Throws_WhenScaleIsMoreThanPrecision()
+		{
+			Action act = () => new NumberValidator(-1, 2);
+			
+			act.Should().Throw<ArgumentException>();
+		}
+		
+		[Test]
+		public void NumberValidator_DoesntThrow_WhenScaleIsLessThanPrecision()
+		{
+			Action act = () => new NumberValidator(1, 0, true);
+			
+			act.Should().NotThrow<ArgumentException>();
+		}
+		
+		[Test]
+		public void IsValidNumber_ReturnsFalse_WhenStringIsNull()
+		{
+			var validator = new NumberValidator(17, 2, true);
+			
+			TestIsValidNumber(validator, null!, false);
+		}
+		
+		[Test]
+		public void IsValidNumber_ReturnsFalse_WhenStringIsEmty()
+		{
+			var validator = new NumberValidator(17, 2, true);
+			
+			TestIsValidNumber(validator, "", false);
+		}
+		
+		[Test]
+		public void IsValidNumber_ReturnsFalse_WhenStringIsInvalid()
+		{
+			var validator = new NumberValidator(17, 2, true);
+			
+			TestIsValidNumber(validator, "a.sd", false);
+		}
+		
+		[Test]
+		public void IsValidNumber_ReturnsFalse_WhenNumberIsLongerThanPrecision()
+		{
+			var validator = new NumberValidator(3, 2, true);
+			
+			TestIsValidNumber(validator, "000.000", false);
+		}
+		
+		[Test]
+		public void IsValidNumber_ReturnsFalse_WhenFractionalPartIsLongerThanScale()
+		{
+			var validator = new NumberValidator(17, 2, true);
+			
+			TestIsValidNumber(validator, "000.000", false);
+		}
+		
+		[Test]
+		public void IsValidNumber_ReturnsFalse_WhenNumberHasMinusAndValidatorIsOnlyPositive()
+		{
+			var validator = new NumberValidator(17, 2, true);
+			
+			TestIsValidNumber(validator, "-1.0", false);
+		}
+		
+		[Test]
+		public void IsValidNumber_ReturnsTrue_WhenStringIsCorrectNumberWithDot()
+		{
+			var validator = new NumberValidator(17, 2, true);
+			
+			TestIsValidNumber(validator, "1.0", true);
+		}
+		
+		[Test]
+		public void IsValidNumber_ReturnsTrue_WhenStringIsCorrectNumberWithoutFractionalPart()
+		{
+			var validator = new NumberValidator(17, 2, true);
+			
+			TestIsValidNumber(validator, "1", true);
+		}
+		
+		[Test]
+		public void IsValidNumber_ReturnsTrue_WhenStringIsCorrectNumberWithComma()
+		{
+			var validator = new NumberValidator(17, 2, true);
+			
+			TestIsValidNumber(validator, "1,0", true);
+		}
+		
+		[Test]
+		public void IsValidNumber_ReturnsTrue_WhenPositiveNumberHasPlusInTheBeginning()
+		{
+			var validator = new NumberValidator(17, 2, true);
+			
+			TestIsValidNumber(validator, "+1,0", true);
+		}
+		
+		[Test]
+		public void IsValidNumber_ReturnsTrue_WhenNegativeNumberHasMinusInTheBeginning()
+		{
+			var validator = new NumberValidator(17, 2);
+			
+			TestIsValidNumber(validator, "-1,0", true);
+		}
+
+		private static void TestIsValidNumber(NumberValidator validator, string numberToCheck, bool expectedResult)
+		{
+			validator.IsValidNumber(numberToCheck).Should().Be(expectedResult);
 		}
 	}
 
