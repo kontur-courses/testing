@@ -25,7 +25,8 @@ namespace HomeExercisesTests
 
         [TestCase(10)]
         [TestCase(20)]
-        public void Should_Throw_When_InstantiatedWithAnExceedingScale(int scale)
+        public void Should_Throw_When_InstantiatedWithScaleThatIsNotLessThanPrecision(
+            int scale)
         {
             FluentActions.Invoking(() => new NumberValidator(10, scale))
                 .Should().Throw<ArgumentException>();
