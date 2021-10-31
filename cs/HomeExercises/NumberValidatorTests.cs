@@ -1,107 +1,132 @@
 ﻿using System;
-using System.Text.RegularExpressions;
 using FluentAssertions;
 using NUnit.Framework;
+using NUnit.Framework.Internal;
 
 namespace HomeExercises
 {
-	public class NumberValidatorTests
+    public class NumberValidatorTests
 	{
 
-		[Test(Description = "Presision is negative")]
-		public void NumberValidator_WrongPrecision_ThrowsArgumentException()
+		[TestCase(0)]
+		[TestCase(-1)]
+		public void NonPositivePrecision_ThrowsArgumentException(int precision)
         {
-			Action action = () => new NumberValidator(-1, 2);
+			Action action = () => new NumberValidator(precision);
 			action.Should().Throw<ArgumentException>();
         }
 
 		[Test]
-		public void NumberValidator_RightParameters_DoesNotThrows()
+		public void RightParameters_DoesNotThrows()
         {
 			Action action = () => new NumberValidator(1);
 			action.Should().NotThrow();
         }
 
-		[TestCase(-1, TestName = "Scale is negative")]
-		[TestCase(2, TestName ="Scale is more then precision")]
-		public void NumberValidator_WrongScale_ThrowsArgumentException(int scale)
+		[TestCase(-1, TestName = "ScaleNegative")]
+		[TestCase(2, TestName ="ScaleMoreThenPrecision")]
+		public void WrongScale_ThrowsArgumentException(int scale)
         {
 			Action action = () => new NumberValidator(1, scale);
 			action.Should().Throw<ArgumentException>();
 		}
 
-		[TestCase(17, 2, "0.0")]
-		[TestCase(4, 2, "+1.23", TestName = "With plus in begining")]
-		[TestCase(17, 2, "0", TestName = "Without fraction part")]
-		[TestCase(9, 2, "1,23", TestName = "With comma")]
-		[TestCase(5, 2, "-1.23", TestName = "With minus")]
-		public void NumberValidator_Validate_True(int precision, int scale, string number)
-        {
-			var validator = new NumberValidator(precision, scale);
-			validator.IsValidNumber(number).Should().BeTrue(number);
-        }
-
-		[TestCase(1, 0, false, "", TestName = "Empty word")]
-		[TestCase(3, 0, false, "   ", TestName = "Just spaces")]
-		[TestCase(3, 2, false, "00.00", TestName = "Length more then precision")]
-		[TestCase(3, 2, false, "-0.00", TestName = "Full length more then precision")]
-		[TestCase(17, 2, false, "0.000", TestName = "Fraction part more then scale")]
-		[TestCase(3, 2, false, "a.sd", TestName = "Not a number")]
-		[TestCase(4, 2, true, "-123", TestName = "Only positive numbers")]
-		[TestCase(5, 2, false, ".12", TestName = "Without int part")]
-		public void NumberValidator_Validate_False(int precision, int scale, bool onlyPositive,
-			string number)
-        {
-			var validator = new NumberValidator(precision, scale, onlyPositive);
-			validator.IsValidNumber(number).Should().BeFalse(number);
-		}
-	}
-
-	public class NumberValidator
-	{
-		private readonly Regex numberRegex;
-		private readonly bool onlyPositive;
-		private readonly int precision;
-		private readonly int scale;
-
-		public NumberValidator(int precision, int scale = 0, bool onlyPositive = false)
+		[TestCase("1234567890")]
+		[TestCase("6018954273")]
+		[TestCase("2347601958")]
+		[TestCase("9403875261")]
+		[TestCase("4891536702")]
+		public void IsValid_WithAllDigits_True(string number)
 		{
-			this.precision = precision;
-			this.scale = scale;
-			this.onlyPositive = onlyPositive;
-			if (precision <= 0)
-				throw new ArgumentException("precision must be a positive number");
-			if (scale < 0 || scale >= precision)
-				throw new ArgumentException("precision must be a non-negative number less or equal than precision");
-			numberRegex = new Regex(@"^([+-]?)(\d+)([.,](\d+))?$", RegexOptions.IgnoreCase);
+			var validator = new NumberValidator(10);
+			validator.IsValidNumber(number).Should().BeTrue();
 		}
 
-		public bool IsValidNumber(string value)
+		[TestCase("0.0", TestName = "WithDot")]
+		[TestCase("0,0", TestName = "WithComma")]
+		public void IsValid_WithDifferentSeparators_True(string number)
 		{
-			// Проверяем соответствие входного значения формату N(m,k), в соответствии с правилом, 
-			// описанным в Формате описи документов, направляемых в налоговый орган в электронном виде по телекоммуникационным каналам связи:
-			// Формат числового значения указывается в виде N(m.к), где m – максимальное количество знаков в числе, включая знак (для отрицательного числа), 
-			// целую и дробную часть числа без разделяющей десятичной точки, k – максимальное число знаков дробной части числа. 
-			// Если число знаков дробной части числа равно 0 (т.е. число целое), то формат числового значения имеет вид N(m).
+			var validator = new NumberValidator(2, 1);
+			validator.IsValidNumber(number).Should().BeTrue();
+		}
 
-			if (string.IsNullOrEmpty(value)) 
-				return false;
+		[TestCase("--1")]
+		[TestCase("+++1")]
+		public void IsValid_WithManySigns_False(string number)
+		{
+			var validator = new NumberValidator(4);
+			validator.IsValidNumber(number).Should().BeFalse();
+		}
 
-			var match = numberRegex.Match(value);
-			if (!match.Success) 
-				return false;
+		[TestCase("asd.fgh")]
+		[TestCase("14,1.2")]
+		[TestCase(" ")]
+		[TestCase("+5f.a2")]
+		[TestCase("+")]
+		[TestCase(",")]
+		[TestCase("1234,")]
+		[TestCase(".1234")]
+		[TestCase("1234,")]
+		public void IsValid_WithNotNumbers_False(string number)
+		{
+			var validator = new NumberValidator(6, 3);
+			validator.IsValidNumber(number).Should().BeFalse();
+		}
 
-			// Знак и целая часть
-			var intPart = match.Groups[1].Value.Length + match.Groups[2].Value.Length;
-			// Дробная часть
-			var fracPart = match.Groups[4].Value.Length;
+		[TestCase("")]
+		[TestCase(null)]
+		public void IsValid_WithEmptyWord_False(string number)
+		{
+			var validator = new NumberValidator(4);
+			validator.IsValidNumber(number).Should().BeFalse();
+		}
+		
+		[Test]
+		public void IsValid_NumberLengthLessThenPrecision()
+		{
+			var validator = new NumberValidator(4, 2);
+			var number = "1423";
+			validator.IsValidNumber(number).Should().BeTrue();
+		}
 
-			if (intPart + fracPart > precision || fracPart > scale) 
-				return false;
+		[Test]
+		public void IsValid_NumberLengthMoreThenPrecision()
+		{
+			var validator = new NumberValidator(4, 2);
+			var number = "14235";
+			validator.IsValidNumber(number).Should().BeFalse();
+		}
+		
+		[TestCase("+1423")]
+		[TestCase("-1423")]
+		public void IsValid_PrecisionShouldConsiderSign(string number)
+		{
+			var validator = new NumberValidator(4, 2);
+			validator.IsValidNumber(number).Should().BeFalse();
+		}
 
-			if (onlyPositive && match.Groups[1].Value == "-")
-				return false;
-			return true;
+		[TestCase("14.23", ExpectedResult = true, TestName = "LessThenScale")]
+		[TestCase("1.235", ExpectedResult = false, TestName = "MoreThenScale")]
+		public bool IsValid_Fraction(string number)
+		{
+			var validator = new NumberValidator(4, 2);
+			return validator.IsValidNumber(number);
+		}
+
+		[Test]
+		public void IsValid_IntegerAndFractionLengthMoreThenPrecision_False()
+		{
+			var validator = new NumberValidator(4, 2);
+			var number = "12.345";
+			validator.IsValidNumber(number).Should().BeFalse();
+		}
+
+		[Test]
+		public void IsValid_OnlyPositiveWithNegativeNumber_False()
+		{
+			var validator = new NumberValidator(4, 2, true);
+			var number = "-12.3";
+			validator.IsValidNumber(number).Should().BeFalse();
 		}
 	}
 }
