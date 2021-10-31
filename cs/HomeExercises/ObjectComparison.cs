@@ -27,6 +27,13 @@ namespace HomeExercises
 			actualTsar.Parent.Parent.Should().Be(expectedTsar.Parent.Parent);
 			//Данный код лучше альтернативного решения тем, что нам:
 			//1. Не нужно каждый раз переписывать метод AreEqual при изменении Person
+			//2. Если альтернативный тест не пройдёт, мы не узнаем, какое именно поле Person это вызвало,
+			//т.е. не узнаем, почему этот тест не проходит. Всё, что мы получим:
+			//Expected: True
+			//But was:  False
+			//Что не даёт практически никакой информации.
+			//Такой же вариант достаточно легко читается, мы сразу понимаем, что не так, если что-то не так
+			//и имеем возможность простого и быстрого расширения.
 		}
 
 		[Test]
@@ -34,7 +41,7 @@ namespace HomeExercises
 		public void CheckCurrentTsar_WithCustomEquality()
 		{
 			var actualTsar = TsarRegistry.GetCurrentTsar();
-			var expectedTsar = new Person("Ivan IV The Terrible", 53, 170, 70,
+			var expectedTsar = new Person("Ivan IV The Terrible", 54, 170, 70,
 				new Person("Vasili III of Russia", 28, 170, 60, null));
 
 			// Какие недостатки у такого подхода? 
