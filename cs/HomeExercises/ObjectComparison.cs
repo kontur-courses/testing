@@ -9,7 +9,6 @@ namespace HomeExercises
 	{
 		[Test]
 		[Description("Проверка текущего царя")]
-		[Category("ToRefactor")]
 		public void CheckCurrentTsar()
 		{
 			var actualTsar = TsarRegistry.GetCurrentTsar();
@@ -17,32 +16,10 @@ namespace HomeExercises
 			var expectedTsar = new Person("Ivan IV The Terrible", 54, 170, 70,
 				new Person("Vasili III of Russia", 28, 170, 60, null));
 
-			CheckPerson(actualTsar, expectedTsar);
-		}
-
-		private void CheckPerson(Person? actual, Person? expected)
-        {
-			if (actual == expected)
-				return;
-			actual.Should().NotBeNull();
-			expected.Should().NotBeNull();
-
 			var ignoredFields = new string[] { "Id", "IdCounter" };
-			typeof(Person).GetFields()
-				.Where(f => !ignoredFields.Contains(f.Name))
-				.ToList()
-				.ForEach(f => CompareValues(f, actual, expected));
-        }
-
-		private void CompareValues(FieldInfo field, Person actual, Person expected)
-        {
-			var expectedValue = typeof(Person).GetField(field.Name)
-				.GetValue(expected);
-			var actualValue = field.GetValue(actual);
-			if (field.Name == "Parent") 
-				CheckPerson((Person?)actualValue, (Person?)expectedValue);
-			else
-				actualValue.Should().Be(expectedValue);
+			actualTsar.Should().BeEquivalentTo(expectedTsar, options =>
+				 options.Excluding((person) =>
+				 ignoredFields.Contains(person.SelectedMemberInfo.Name)));
 		}
 
 		[Test]
