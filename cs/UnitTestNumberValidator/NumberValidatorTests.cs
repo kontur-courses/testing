@@ -35,6 +35,7 @@ namespace UnitTestNumberValidator
 		[TestCase(17, 2, true, "0", ExpectedResult = true, TestName = "Input integer. Be True")]
 		[TestCase(4, 2, true, "+1.23", ExpectedResult = true, TestName = "Input plus sign. Be True")]
 		[TestCase(4, 2, false, "-1.23", ExpectedResult = true, TestName = "Input Minus sign. Be True")]
+		[TestCase(3, 2, true, "+0,0", ExpectedResult = true, TestName = "Input number with comma. Be True")]
 		[TestCase(3, 2, true, "0.00", ExpectedResult = true, TestName = "IntPart equals precision. Be True")]
 		[TestCase(3, 2, true, "+0.0", ExpectedResult = true,TestName = "IntPart with sign equals precision. Be True")]
 		[TestCase(3, 2, true, "00.00", ExpectedResult = false, TestName = "IntPart more precision. Be False")]
