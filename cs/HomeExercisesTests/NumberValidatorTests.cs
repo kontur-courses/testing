@@ -7,11 +7,11 @@ namespace HomeExercisesTests
 {
     public class NumberValidatorTests
     {
-        [TestCase(1)]
+        [TestCase(1, 0, false)]
         [TestCase(1, 0, true)]
         [TestCase(1, 0, false)]
         public void Should_NotThrow_When_InstancedWithCorrectParameters(int precision,
-            int scale = 0, bool onlyPositive = false)
+            int scale, bool onlyPositive)
         {
             FluentActions.Invoking(() => new NumberValidator(precision, scale, onlyPositive))
                 .Should().NotThrow();
@@ -48,7 +48,7 @@ namespace HomeExercisesTests
             new object[] { 10, 5, true, "1,001" },
             new object[] { 10, 5, false, "-1.001" },
             new object[] { 10, 5, false, "+1.001" },
-            new object[] { 10, 5, false, "-0.0"},
+            new object[] { 10, 5, false, "-0.0"}
         };
 
         [TestCaseSource(nameof(IntegerCases))]
@@ -101,7 +101,7 @@ namespace HomeExercisesTests
         [TestCase(null)]
         public void Should_Fail_When_NumberIsEmpty(string inputNumber)
         {
-            new NumberValidator(10, 5, false)
+            new NumberValidator(10, 5)
                 .IsValidNumber(inputNumber)
                 .Should().BeFalse();
         }
