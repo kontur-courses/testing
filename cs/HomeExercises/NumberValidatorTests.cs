@@ -31,14 +31,14 @@ namespace HomeExercises
             //не хватает тестов на некорректный формат, на scale, на пустую (или null) строку
         }
 
-        [TestCase(-1, 0, "non-positive precision (\"{0}\") was provided")]
-        [TestCase(3, -1, "negative scale (\"{1}\") was provided")]
-        [TestCase(1, 2, "scale (\"{1}\") was bigger than precision (\"{0}\")")]
-        public void Throw_WhenConstructorArgsAreIncorrect(int precision, int scale, string because)
+        [TestCase(-1, 0, TestName = "Throw then precision was non-positive")]
+        [TestCase(3, -1, TestName = "Throw then scale was negative")]
+        [TestCase(1, 2, TestName = "Throw then scale was non-negative")]
+        public void Throw_WhenConstructorArgsAreIncorrect(int precision, int scale)
         {
             Action action = () => new NumberValidator(precision, scale);
 
-            action.Should().Throw<ArgumentException>(because, precision, scale);
+            action.Should().Throw<ArgumentException>();
         }
 
         [TestCase(2)]
@@ -51,27 +51,24 @@ namespace HomeExercises
             action.Should().NotThrow();
         }
 
-        [TestCase("-1.23", true, "a negative number (\"{0}\") was provided when onlyPositive was (\"{3}\")")]
-        [TestCase("1.2300", false, "a number with big frac part (\"{0}\") was provided when scale was ({2})")]
-        [TestCase("+1222.45", false, "a number with big total length (\"{0}\") was provided when scale was ({2}) and precision was ({1})")]
-        public void ReturnFalse_WhenValueIsInvalidNumber(string value, bool onlyPositive, string because)
+        [TestCase("-1.23", true, TestName = "Return false then value is negative number whereas onlyPositive was 'true'")]
+        [TestCase("1.2300", false, TestName = "Return false then value has fractional part bigger than validator's scale")]
+        [TestCase("+1222.45", false, TestName = "Return false then value has length bigger than validator's precision")]
+        public void ReturnFalse_WhenValueIsInvalidNumber(string value, bool onlyPositive)
         {
-            var precision = 5;
-            var scale = 2;
-            var validator = new NumberValidator(precision, scale, onlyPositive);
+            var validator = new NumberValidator(5, 2, onlyPositive);
 
             var result = validator.IsValidNumber(value);
 
-            result.Should().BeFalse(because, value, precision, scale, onlyPositive);
+            result.Should().BeFalse();
         }
 
         [Test]
         public void ReturnFalse_WhenValueIsNull()
         {
-            string? value = null;
             var validator = new NumberValidator(1);
 
-            var result = validator.IsValidNumber(value!);
+            var result = validator.IsValidNumber(null!);
 
             result.Should().BeFalse("null was provided");
         }
@@ -79,30 +76,29 @@ namespace HomeExercises
         [Test]
         public void ReturnFalse_WhenValueIsEmpty()
         {
-            var arg = "";
             var validator = new NumberValidator(1);
 
-            var result = validator.IsValidNumber(arg);
+            var result = validator.IsValidNumber(string.Empty);
 
-            result.Should().BeFalse("an empty number (\"{0}\") was provided", arg);
+            result.Should().BeFalse();
         }
 
-        [TestCase("a.bc", "a non-number (\"{0}\") was provided")]
-        [TestCase("+-0.0", "a number with several signs (\"{0}\") was provided")]
-        [TestCase("+0.0.0", "a number with several dots (\"{0}\") was provided")]
-        [TestCase("0+0.0", "a number with sing inside (\"{0}\") was provided")]
-        [TestCase("0 0.0", "a number with space inside (\"{0}\") was provided")]
-        [TestCase(".0", "a number without starting digit (\"{0}\") was provided")]
-        [TestCase("0.", "a number without end digit (\"{0}\") was provided")]
-        [TestCase(".", "a number without digits (\"{0}\") was provided")]
-        [TestCase(" ", "a number with only white spaces (\"{0}\") was provided")]
-        public void ReturnFalse_WhenValueIsInWrongFormat(string value, string because)
+        [TestCase("a.bc", TestName = "Return false then a non-number was provided")]
+        [TestCase("+-0.0", TestName = "Return false then number with several signs was provided")]
+        [TestCase("+0.0.0", TestName = "Return false then number with several dots was provided")]
+        [TestCase("0+0.0", TestName = "Return false then number with a sing inside was provided")]
+        [TestCase("0 0.0", TestName = "Return false then number with space inside was provided")]
+        [TestCase(".0", TestName = "Return false then number without starting digit was provided")]
+        [TestCase("0.", TestName = "Return false then number without end digit was provided")]
+        [TestCase(".", TestName = "Return false then number without digits was provided")]
+        [TestCase(" ", TestName = "Return false then number with only white spaces was provided")]
+        public void ReturnFalse_WhenValueIsInWrongFormat(string value)
         {
             var validator = new NumberValidator(10, 5);
 
             var result = validator.IsValidNumber(value);
 
-            result.Should().BeFalse(because, value);
+            result.Should().BeFalse();
         }
 
         [TestCase("0", 1, 0, true)]
