@@ -1,13 +1,13 @@
-﻿using FluentAssertions;
+﻿using System;
+using System.Text.RegularExpressions;
+using FluentAssertions;
 using NUnit.Framework;
-
 namespace HomeExercises
 {
 	public class ObjectComparison
 	{
-		[Test,Timeout(1500)]
+		[Test]
 		[Description("Проверка текущего царя")]
-		[Category("ToRefactor")]
 		public void CheckCurrentTsar()
 		{
 			var actualTsar = TsarRegistry.GetCurrentTsar();
@@ -15,7 +15,7 @@ namespace HomeExercises
 			var expectedTsar = new Person("Ivan IV The Terrible", 54, 170, 70,
 				new Person("Vasili III of Russia", 28, 170, 60, null));
 
-			actualTsar.Should().BeEquivalentTo(expectedTsar, options => options.AllowingInfiniteRecursion()
+			actualTsar.Should().BeEquivalentTo(expectedTsar, options => options
 				.Excluding(member => member.SelectedMemberInfo.Name == "Id"));
 
 		}
