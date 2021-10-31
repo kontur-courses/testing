@@ -1,7 +1,7 @@
-﻿using NUnit.Framework;
-using FluentAssertions;
+﻿using FluentAssertions;
+using NUnit.Framework;
 
-namespace HomeExercises
+namespace HomeExercises.ObjectComparisonTask
 {
 	public class ObjectComparison
 	{
@@ -19,7 +19,7 @@ namespace HomeExercises
 				config
 					.Excluding(info => info.SelectedMemberPath.EndsWith(nameof(actualTsar.Id)))
 					.AllowingInfiniteRecursion()
-				);
+			);
 		}
 
 		[Test]
@@ -75,34 +75,6 @@ namespace HomeExercises
 				&& actual.Height == expected.Height
 				&& actual.Weight == expected.Weight
 				&& AreEqual(actual.Parent, expected.Parent);
-		}
-	}
-	public class Person
-	{
-		public static int IdCounter = 0;
-		public int Age, Height, Weight;
-		public string Name;
-		public Person? Parent;
-		public int Id;
-
-		public Person(string name, int age, int height, int weight, Person? parent)
-		{
-			Id = IdCounter++;
-			Name = name;
-			Age = age;
-			Height = height;
-			Weight = weight;
-			Parent = parent;
-		}
-	}
-
-	public class TsarRegistry
-	{
-		public static Person GetCurrentTsar()
-		{
-			return new Person(
-				"Ivan IV The Terrible", 54, 170, 70,
-				new Person("Vasili III of Russia", 28, 170, 60, null));
 		}
 	}
 }
