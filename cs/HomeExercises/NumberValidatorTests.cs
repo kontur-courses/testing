@@ -16,12 +16,12 @@ namespace HomeExercises
 		[TestCase("  ")]
 		[TestCase(null)]
 		public void NotNumber_ShouldBeNotValid(string number)
-        {
+		{
 			new NumberValidator(6, 2, true)
 				.IsValidNumber(number)
 				.Should()
 				.BeFalse();
-        }
+		}
 
 		[TestCase(0)]
 		[TestCase(-5)]
@@ -32,7 +32,7 @@ namespace HomeExercises
 		[TestCase(6)]
 		public void Precision_ShouldBeNotNegative_AndLessThanPrecision(int scale)
 			=> Assert.Throws<ArgumentException>(() => new NumberValidator(6, scale));
-		
+
 		[TestCase("-0.12")]
 		[TestCase("+0.12")]
 		[TestCase("+0.12")]
@@ -58,7 +58,7 @@ namespace HomeExercises
 		}
 
 		[Test]
-		public void OnlyPositiveValidator_SholdNotValidateNegative()
+		public void OnlyPositiveValidator_ShouldNotValidateNegative()
 		{
 			new NumberValidator(6, 4, true)
 				.IsValidNumber("-4")
@@ -71,7 +71,7 @@ namespace HomeExercises
 		[TestCase("123456")]
 		[TestCase("0.000")]
 		[TestCase("000.0")]
-		public void OnlyPositiveValidator_SholdValidatePositive(string number)
+		public void OnlyPositiveValidator_ShouldValidatePositive(string number)
 		{
 			new NumberValidator(6, 4, true)
 				.IsValidNumber(number)
@@ -85,7 +85,7 @@ namespace HomeExercises
 		[TestCase("-12345")]
 		[TestCase("-0.000")]
 		[TestCase("-000.0")]
-		public void NotOnlyPositiveValidator_SholdValidatePosAndNeg(string number)
+		public void NotOnlyPositiveValidator_ShouldValidatePosAndNeg(string number)
 		{
 			new NumberValidator(6, 4, false)
 				.IsValidNumber(number)
