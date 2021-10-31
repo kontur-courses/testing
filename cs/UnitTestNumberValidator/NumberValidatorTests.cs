@@ -47,6 +47,7 @@ namespace UnitTestNumberValidator
 		[TestCase(3, 2, true, null, ExpectedResult = false, TestName = "Input Null. Be False")]
 		[TestCase(5, 2, true, "-2", ExpectedResult = false, TestName = "Input NegativeNumber. Be False")]
 		[TestCase(10, 2, true, "++1.23", ExpectedResult = false, TestName = "Input double plus sign. Be False")]
+		[TestCase(10, 2, true, "+1..23", ExpectedResult = false, TestName = "Input double dot. Be False")]
 		public bool IsValidNumber_Test(int precision, int scale, bool onlyPositive, string value)
 		{
 			return  new NumberValidator(precision, scale, onlyPositive).IsValidNumber(value);
