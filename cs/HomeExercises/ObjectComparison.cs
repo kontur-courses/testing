@@ -22,6 +22,8 @@ namespace HomeExercises
 
 			// Перепишите код на использование Fluent Assertions.
 			Assert.True(TsarEquals(typeof(Person), actualTsar, expectedTsar, new HashSet<string> {"IdCounter", "Id"}));
+			// Не работает(((
+			//actualTsar.Should().BeEquivalentTo(expectedTsar, config => config.Excluding(p => p.Id));
 		}
 		
 		private static bool TsarEquals(IReflect type, Person? actual, Person? expected, ICollection<string> propertiesDontCompare)

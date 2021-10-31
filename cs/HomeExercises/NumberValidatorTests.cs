@@ -7,7 +7,8 @@ namespace HomeExercises
 {
 	public class NumberValidatorTests
 	{
-		[TestCase(17, 2, true, "0.0", ExpectedResult = true, TestName = "Precision: 17; Scale: 2; Positive: true; value: 0.0")]
+		//Не знаю, как будет лучше: первый тест или остальные. Конечно, выглядят  они некрасиво, зато информативнее некуда
+		[TestCase(17, 2, true, "0.0", ExpectedResult = true, TestName = "Should be true when correct input")]
 		[TestCase(17, 2, true, "0", ExpectedResult = true, TestName = "Precision: 17; Scale: 2; Positive: true; value: 0")]
 		[TestCase(3, 2, true, "00.00", ExpectedResult = false, TestName = "Precision: 3; Scale: 2; Positive: true; value: 00.00")]
 		[TestCase(3, 2, true, "-0.00", ExpectedResult = false, TestName = "Precision: 3; Scale: 2; Positive: true; value: -0.00")]
