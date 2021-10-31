@@ -1,4 +1,4 @@
-using FluentAssertions;
+п»їusing FluentAssertions;
 using HomeExercises;
 using NUnit.Framework;
 
@@ -7,7 +7,7 @@ namespace HomeExercisesTests
     public class ObjectComparison
     {
         [Test]
-        [Description("Проверка текущего царя")]
+        [Description("РџСЂРѕРІРµСЂРєР° С‚РµРєСѓС‰РµРіРѕ С†Р°СЂСЏ")]
         [Category("ToRefactor")]
         public void CheckCurrentTsar()
         {
@@ -16,25 +16,25 @@ namespace HomeExercisesTests
             var expectedTsar = new Person("Ivan IV The Terrible", 54, 170, 70,
                 new Person("Vasili III of Russia", 28, 170, 60, null));
 
-            // Перепишите код на использование Fluent Assertions.
+            // РџРµСЂРµРїРёС€РёС‚Рµ РєРѕРґ РЅР° РёСЃРїРѕР»СЊР·РѕРІР°РЅРёРµ Fluent Assertions.
             actualTsar.Should().BeEquivalentTo(expectedTsar, config
                 => config.Excluding(member
                 => member.SelectedMemberInfo.Name == nameof(expectedTsar.Id)));
         }
 
         [Test]
-        [Description("Альтернативное решение. Какие у него недостатки?")]
+        [Description("РђР»СЊС‚РµСЂРЅР°С‚РёРІРЅРѕРµ СЂРµС€РµРЅРёРµ. РљР°РєРёРµ Сѓ РЅРµРіРѕ РЅРµРґРѕСЃС‚Р°С‚РєРё?")]
         public void CheckCurrentTsar_WithCustomEquality()
         {
             var actualTsar = TsarRegistry.GetCurrentTsar();
             var expectedTsar = new Person("Ivan IV The Terrible", 54, 170, 70,
                 new Person("Vasili III of Russia", 28, 170, 60, null));
 
-            // Какие недостатки у такого подхода? 
-            //Сравнения полей захардкожены, при изменении Person метод придется переписывать
-            //Возможная рекурсия при сравнении потомков
-            //Тяжело дебажить, непонятно, где будет падать тест
-            //Ну и метод AreEqual, работающий с Person, выглядит странно в классе с тестами
+            // РљР°РєРёРµ РЅРµРґРѕСЃС‚Р°С‚РєРё Сѓ С‚Р°РєРѕРіРѕ РїРѕРґС…РѕРґР°? 
+            //РЎСЂР°РІРЅРµРЅРёСЏ РїРѕР»РµР№ Р·Р°С…Р°СЂРґРєРѕР¶РµРЅС‹, РїСЂРё РёР·РјРµРЅРµРЅРёРё Person РјРµС‚РѕРґ РїСЂРёРґРµС‚СЃСЏ РїРµСЂРµРїРёСЃС‹РІР°С‚СЊ
+            //Р’РѕР·РјРѕР¶РЅР°СЏ СЂРµРєСѓСЂСЃРёСЏ РїСЂРё СЃСЂР°РІРЅРµРЅРёРё РїРѕС‚РѕРјРєРѕРІ
+            //РўСЏР¶РµР»Рѕ РґРµР±Р°Р¶РёС‚СЊ, РЅРµРїРѕРЅСЏС‚РЅРѕ, РіРґРµ Р±СѓРґРµС‚ РїР°РґР°С‚СЊ С‚РµСЃС‚
+            //РќСѓ Рё РјРµС‚РѕРґ AreEqual, СЂР°Р±РѕС‚Р°СЋС‰РёР№ СЃ Person, РІС‹РіР»СЏРґРёС‚ СЃС‚СЂР°РЅРЅРѕ РІ РєР»Р°СЃСЃРµ СЃ С‚РµСЃС‚Р°РјРё
             Assert.True(AreEqual(actualTsar, expectedTsar));
         }
 
