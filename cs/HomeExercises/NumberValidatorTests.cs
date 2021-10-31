@@ -21,22 +21,19 @@ namespace HomeExercises
 
 		[TestCase(5, 4, true, "a.sd", TestName = "value contains letters")]
 		[TestCase(5, 4, true, "1$.0d", TestName = "value contains random symbols")]
-		[TestCase(5, 4, true, ".00", TestName = "integer is missed but separator is not")]
-		[TestCase(5, 4, true, "1.", TestName = "fraction is missed but separator is not")]
 		[TestCase(5, 4, true, "", TestName = "value is empty")]
 		[TestCase(5, 4, true, null, TestName = "value is null")]
+		public void FailWhenValueIsNonDigital(int precision, int scale, bool onlyPositive, string value)
+			=> CheckValidationInFailCases(precision, scale, onlyPositive, value);
+
+		[TestCase(5, 4, true, ".00", TestName = "integer is missed but separator is not")]
+		[TestCase(5, 4, true, "1.", TestName = "fraction is missed but separator is not")]
 		[TestCase(5, 4, true, "11111.0000", TestName = "value length is bigger than precision")]
 		[TestCase(5, 2, true, "1.0000", TestName = "fraction length is bigger than scale")]
 		[TestCase(5, 4, true, "-1.00", TestName = "value should be positive as onlyPositive parameter is true")]
 		[TestCase(5, 0, true, "1.00", TestName = "fraction length should be equal zero")]
-		public void FailWhen(int precision, int scale, bool onlyPositive, string value)
-		{
-			var numberValidator = new NumberValidator(precision, scale, true);
-
-			var validationResult = numberValidator.IsValidNumber(value);
-
-			validationResult.Should().BeFalse();
-		}
+		public void FailWhenValueDoesntMatchTheFormat(int precision, int scale, bool onlyPositive, string value)
+			=> CheckValidationInFailCases(precision, scale, onlyPositive, value);
 
 		[TestCase(3, 2, true, "1.0", TestName = "value length equals precision")]
 		[TestCase(3, 2, true, "1.00", TestName = "fractional part of value equal scale")]
@@ -52,6 +49,15 @@ namespace HomeExercises
 			var validationResult = numberValidator.IsValidNumber(value);
 
 			validationResult.Should().BeTrue();
+		}
+
+		public void CheckValidationInFailCases(int precision, int scale, bool onlyPositive, string value)
+		{
+			var numberValidator = new NumberValidator(precision, scale, true);
+
+			var validationResult = numberValidator.IsValidNumber(value);
+
+			validationResult.Should().BeFalse();
 		}
 	}
 
