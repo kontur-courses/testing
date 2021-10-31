@@ -50,6 +50,7 @@ namespace HomeExercises
 				for (var i = 0; i < 20_000; i++)
 					validator.IsValidNumber(valueToValidate);
 			};
+
 			GC.Collect();
 
 			manyValidations.ExecutionTime().Should().BeLessThan(3.Seconds());
@@ -193,7 +194,7 @@ namespace HomeExercises
 			var actual = validator.IsValidNumber(value);
 			actual.Should().BeTrue();
 		}
-		
+
 		[Test]
 		public void IsValidNumber_True_WithPrecisionGreaterThanIntegerLength()
 		{
@@ -221,26 +222,6 @@ namespace HomeExercises
 			var actual = validator.IsValidNumber(value);
 			actual.Should().BeTrue();
 		}
-		
-		[TestCase("123.12345")]
-		[TestCase("123,12345")]
-		public void IsValidNumber_True_WithLongFraction(string value)
-		{
-			var validator = new NumberValidator(9, 5);
-			var actual = validator.IsValidNumber(value);
-			actual.Should().BeTrue();
-		}
-
-		[TestCase("-123.12345")]
-		[TestCase("+123.12345")]
-		[TestCase("-123,12345")]
-		[TestCase("+123,12345")]
-		public void IsValidNumber_True_WithLongSignedFraction(string value)
-		{
-			var validator = new NumberValidator(9, 5);
-			var actual = validator.IsValidNumber(value);
-			actual.Should().BeTrue();
-		}
 
 		[TestCase("1.1")]
 		[TestCase("1,1")]
@@ -254,7 +235,7 @@ namespace HomeExercises
 			var actual = validator.IsValidNumber(value);
 			actual.Should().BeTrue();
 		}
-		
+
 		[TestCase("1")]
 		[TestCase("+1")]
 		[TestCase("0")]
@@ -286,8 +267,25 @@ namespace HomeExercises
 		private static IEnumerable<TestCaseData> IsValidNumberTrueWithBigNumberCases()
 		{
 			yield return new TestCaseData(new string('1', 1000)) {TestName = "Integer"};
+			yield return new TestCaseData($"+{new string('1', 1000)}") {TestName = "+Integer"};
+			yield return new TestCaseData($"-{new string('1', 1000)}") {TestName = "-Integer"};
 			yield return new TestCaseData(
-				$"{new string('1', 1000)}.{new string('2', 1000)}") {TestName = "Fraction"};
+				$"{new string('1', 1000)}.{new string('2', 1000)}") {TestName = "Fraction with dot"};
+
+			yield return new TestCaseData(
+				$"{new string('1', 1000)},{new string('2', 1000)}") {TestName = "Fraction with comma"};
+
+			yield return new TestCaseData(
+				$"{new string('1', 1000)}.{new string('2', 1000)}") {TestName = "+Fraction with dot"};
+
+			yield return new TestCaseData(
+				$"{new string('1', 1000)}.{new string('2', 1000)}") {TestName = "-Fraction with dot"};
+
+			yield return new TestCaseData(
+				$"{new string('1', 1000)},{new string('2', 1000)}") {TestName = "+Fraction with comma"};
+
+			yield return new TestCaseData(
+				$"{new string('1', 1000)},{new string('2', 1000)}") {TestName = "-Fraction with comma"};
 		}
 	}
 }
