@@ -46,6 +46,8 @@ namespace HomeExercises
 		[TestCase("+2.1", true, 10, 5, true, TestName = "sign validation test")]
 		[TestCase("-2.1", true, 10, 5, false, TestName = "sign validation test")]
 		[TestCase("+2.1", true, 10, 5, false, TestName = "sign validation test")]
+		
+		[TestCase("2,1", true, TestName = "comma validation test")]
 		public void Test_IsValidNumber(
 			string numberForCheck,
 			bool expected, 
