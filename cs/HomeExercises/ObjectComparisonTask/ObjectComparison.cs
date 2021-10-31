@@ -18,8 +18,8 @@ namespace HomeExercises.ObjectComparisonTask
 			actualTsar.Should().BeEquivalentTo(expectedTsar, config =>
 				config
 					.Excluding(info =>
-						info.SelectedMemberPath == nameof(actualTsar.Id)
-						|| info.SelectedMemberPath.EndsWith("." + nameof(actualTsar.Id)))
+						info.SelectedMemberInfo.DeclaringType.Name == nameof(Person)
+						&& info.SelectedMemberInfo.Name == nameof(actualTsar.Id))
 					.AllowingInfiniteRecursion()
 			);
 		}

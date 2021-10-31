@@ -5,12 +5,18 @@ namespace HomeExercises.NumberValidatorTask
 {
 	public class NumberValidator
 	{
-		private readonly Regex numberRegex;
+		private static readonly Regex NumberRegex =
+			new Regex(@"^([+-]?)(\d+)([.,](\d+))?$", RegexOptions.Compiled);
+
+		private static readonly Regex PlusMinusZeroRegex =
+			new Regex(@"^([+-])?(0+\d)", RegexOptions.Compiled);
+
+		private static readonly Regex ZeroAtHighestDigitRegex =
+			new Regex(@"^([+-]{1})(0{1})(([.,]{1})(0*)$|$)", RegexOptions.Compiled);
+
 		private readonly bool onlyPositive;
-		private readonly Regex plusMinusZeroRegex;
 		private readonly int precision;
 		private readonly int scale;
-		private readonly Regex zeroAtHighestDigitRegex;
 
 		public NumberValidator(int precision, int scale = 0, bool onlyPositive = false)
 		{
@@ -22,10 +28,6 @@ namespace HomeExercises.NumberValidatorTask
 			this.precision = precision;
 			this.scale = scale;
 			this.onlyPositive = onlyPositive;
-
-			numberRegex = new Regex(@"^([+-]?)(\d+)([.,](\d+))?$", RegexOptions.Compiled);
-			zeroAtHighestDigitRegex = new Regex(@"^([+-])?(0+\d)", RegexOptions.Compiled);
-			plusMinusZeroRegex = new Regex(@"^([+-]{1})(0{1})(([.,]{1})(0*)$|$)", RegexOptions.Compiled);
 		}
 
 		public bool IsValidNumber(string value)
@@ -41,13 +43,13 @@ namespace HomeExercises.NumberValidatorTask
 
 			value = value.Trim();
 
-			if (plusMinusZeroRegex.IsMatch(value))
+			if (PlusMinusZeroRegex.IsMatch(value))
 				return false;
 
-			if (zeroAtHighestDigitRegex.IsMatch(value))
+			if (ZeroAtHighestDigitRegex.IsMatch(value))
 				return false;
 
-			var match = numberRegex.Match(value);
+			var match = NumberRegex.Match(value);
 			if (!match.Success)
 				return false;
 
@@ -64,9 +66,8 @@ namespace HomeExercises.NumberValidatorTask
 
 		private int GetIntPartLength(Match match)
 		{
-			var plusSign = "+";
 			var intPart = match.Groups[1].Value.Length + match.Groups[2].Value.Length;
-			intPart = match.Groups[1].Value == plusSign ? intPart - 1 : intPart;
+			intPart = match.Groups[1].Value == "+" ? intPart - 1 : intPart;
 
 			return intPart;
 		}

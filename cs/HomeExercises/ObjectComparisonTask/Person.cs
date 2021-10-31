@@ -1,16 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace HomeExercises.ObjectComparisonTask
+﻿namespace HomeExercises.ObjectComparisonTask
 {
 	public class Person
 	{
-		public static int IdCounter = 0;
+		public static int IdCounter;
 		public int Age, Height, Weight;
+		public int Id;
 		public string Name;
 		public Person? Parent;
-		public int Id;
 
 		public Person(string name, int age, int height, int weight, Person? parent)
 		{
