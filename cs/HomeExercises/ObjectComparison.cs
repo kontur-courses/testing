@@ -16,14 +16,12 @@ namespace HomeExercises
 				new Person("Vasili III of Russia", 28, 170, 60, null));
 
 			actualTsar.Should().BeEquivalentTo(expectedTsar, options => options
-				.Excluding(member => member.SelectedMemberInfo.Name == "Id"));
-
+				.Excluding(member => member.SelectedMemberInfo.Name == "Id" && 
+				                     member.SelectedMemberInfo.DeclaringType.Name =="Person"));
 		}
 		// 1.При добавление нового свойства придётся дорабатывать метод AreEqual()
 		// 2.В CheckCurrentTsar_WithCustomEquality() при сравнении нельзя исключить свойства объекта
 		// 3.В CheckCurrentTsar() повышена читаемость кода и понятный вывод падание теста
-
-
 		[Test]
 		[Description("Альтернативное решение. Какие у него недостатки?")]
 		public void CheckCurrentTsar_WithCustomEquality()
