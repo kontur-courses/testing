@@ -6,11 +6,11 @@ namespace HomeExercises.NumberValidatorTask
 	public class NumberValidator
 	{
 		private readonly Regex numberRegex;
-		private readonly Regex zeroAtHighestDigitRegex;
-		private readonly Regex plusMinusZeroRegex;
 		private readonly bool onlyPositive;
+		private readonly Regex plusMinusZeroRegex;
 		private readonly int precision;
 		private readonly int scale;
+		private readonly Regex zeroAtHighestDigitRegex;
 
 		public NumberValidator(int precision, int scale = 0, bool onlyPositive = false)
 		{
