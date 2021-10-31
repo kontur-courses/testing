@@ -9,79 +9,82 @@ namespace HomeExercisesTests
     {
         [TestCase(1, 0, false)]
         [TestCase(1, 0, true)]
-        [TestCase(1, 0, false)]
-        public void Should_NotThrow_When_InstancedWithCorrectParameters(int precision,
+        public void Should_NotThrow_When_InstantiatedWithCorrectParameters(int precision,
             int scale, bool onlyPositive)
         {
-            FluentActions.Invoking(() => new NumberValidator(precision, scale, onlyPositive))
-                .Should().NotThrow();
+            Assert.DoesNotThrow(() => new NumberValidator(precision, scale, onlyPositive));
         }
 
         [TestCase(0)]
         [TestCase(-1)]
-        public void Should_Throw_When_InstancedWithIncorrectPrecision(int precision)
+        public void Should_Throw_When_InstantiatedWithIncorrectPrecision(int precision)
         {
             FluentActions.Invoking(() => new NumberValidator(precision))
                 .Should().Throw<ArgumentException>();
         }
 
-        [TestCase(1, 1)]
-        [TestCase(1, -1)]
-        public void Should_Throw_When_InstancedWithIncorrectScale(int precision, int scale)
+        [TestCase(10)]
+        [TestCase(20)]
+        public void Should_Throw_When_InstantiatedWithAnExceedingScale(int scale)
         {
-            FluentActions.Invoking(() => new NumberValidator(precision, scale))
+            FluentActions.Invoking(() => new NumberValidator(10, scale))
+                .Should().Throw<ArgumentException>();
+        }
+
+        [TestCase(-1)]
+        public void Should_Throw_When_InstantiatedWithNegativeScale(int scale)
+        {
+            FluentActions.Invoking(() => new NumberValidator(10, scale))
                 .Should().Throw<ArgumentException>();
         }
 
         static object[] IntegerCases =
-            {
-            new object[] { 10, 0, true, "1" },
-            new object[] { 10, 0, false, "+1" },
-            new object[] { 10, 0, false, "1" },
-            new object[] { 10, 0, false, "-1" },
-            new object[] { 10, 0, false, "-0" }
+        {
+            new object[] { true, "1" },
+            new object[] { false, "+1" },
+            new object[] { false, "1" },
+            new object[] { false, "-1" },
+            new object[] { false, "-0" }
         };
 
         static object[] DoubleCases =
-            {
-            new object[] { 10, 5, true, "1.001" },
-            new object[] { 10, 5, true, "1,001" },
-            new object[] { 10, 5, false, "-1.001" },
-            new object[] { 10, 5, false, "+1.001" },
-            new object[] { 10, 5, false, "-0.0"}
+        {
+            new object[] { true, "1.001" },
+            new object[] { true, "1,001" },
+            new object[] { false, "-1.001" },
+            new object[] { false, "+1.001" },
+            new object[] { false, "-0.0" }
         };
 
         [TestCaseSource(nameof(IntegerCases))]
         [TestCaseSource(nameof(DoubleCases))]
-        public void Should_Pass_When_CorrectNumber(int precision,
-            int scale, bool onlyPositive, string inputNumber)
+        public void Should_Pass_When_CorrectNumber(bool onlyPositive, string inputNumber)
         {
-            new NumberValidator(precision, scale, onlyPositive)
+            new NumberValidator(10, 5, onlyPositive)
                 .IsValidNumber(inputNumber)
                 .Should().BeTrue();
         }
 
-        [TestCase(2, 0, "123")]
-        [TestCase(2, 1, "12.1")]
-        [TestCase(2, 0, "-12")]
-        [TestCase(2, 1, "-1.2")]
-        [TestCase(2, 0, "+12")]
+        [TestCase(2, "123")]
+        [TestCase(2, "12.1")]
+        [TestCase(2, "-12")]
+        [TestCase(2, "-1.2")]
+        [TestCase(2, "+12")]
         public void Should_Fail_When_NumberExceedPrecision(int precision,
-            int scale, string inputNumber)
+            string inputNumber)
         {
-            new NumberValidator(precision, scale)
+            new NumberValidator(precision, 1)
                 .IsValidNumber(inputNumber)
                 .Should().BeFalse();
         }
 
-        [TestCase(10, 0, "123.1")]
-        [TestCase(10, 0, "123.0")]
-        [TestCase(10, 1, "123.01")]
-        [TestCase(10, 1, "123.00")]
-        public void Should_Fail_When_NumberExceedScale(int precision,
-            int scale, string inputNumber)
+        [TestCase(0, "123.1")]
+        [TestCase(0, "123.0")]
+        [TestCase(1, "123.01")]
+        [TestCase(1, "123.00")]
+        public void Should_Fail_When_NumberExceedScale(int scale, string inputNumber)
         {
-            new NumberValidator(precision, scale)
+            new NumberValidator(10, scale)
                 .IsValidNumber(inputNumber)
                 .Should().BeFalse();
         }

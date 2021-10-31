@@ -19,7 +19,7 @@ namespace HomeExercisesTests
             // Перепишите код на использование Fluent Assertions.
             actualTsar.Should().BeEquivalentTo(expectedTsar, config
                 => config.Excluding(member
-                => member.SelectedMemberInfo.Name == nameof(expectedTsar.Id)));
+                => member.SelectedMemberInfo.Name == nameof(Person.Id)));
         }
 
         [Test]
