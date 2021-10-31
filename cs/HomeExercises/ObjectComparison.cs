@@ -1,5 +1,8 @@
-﻿using System.Text.RegularExpressions;
+﻿using System.Reflection;
+using System.Reflection.Emit;
+using System.Text.RegularExpressions;
 using FluentAssertions;
+using FluentAssertions.Equivalency;
 using NUnit.Framework;
 
 namespace HomeExercises
@@ -19,7 +22,9 @@ namespace HomeExercises
 			// Перепишите код на использование Fluent Assertions.
 			// Работает)))
 			actualTsar.Should().BeEquivalentTo(expectedTsar,
-				config => config.Excluding(p => Regex.IsMatch(p.SelectedMemberPath, @"^(Parent\.)*Id$")));
+				config => config.AllowingInfiniteRecursion()
+					.Excluding(p => 
+						p.SelectedMemberInfo.Name == "Id" && p.SelectedMemberInfo.MemberType == typeof(int)));
 		}
 
 		[Test]
@@ -37,7 +42,7 @@ namespace HomeExercises
 			// И да, если тест не выполняется, то мы видим 
 			//		Excpected: True
 			//		But was: False
-			// Тут сложно понятно, какое поле положило тест, да и поле ли это было
+			// Тут сложно понять, какое поле положило тест, да и поле ли это было
 			Assert.True(AreEqual(actualTsar, expectedTsar));
 		}
 
