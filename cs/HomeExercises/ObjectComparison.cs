@@ -16,15 +16,23 @@ namespace HomeExercises
 				new Person("Vasili III of Russia", 28, 170, 60, null));
 
 			// Перепишите код на использование Fluent Assertions.
-			Assert.AreEqual(actualTsar.Name, expectedTsar.Name);
-			Assert.AreEqual(actualTsar.Age, expectedTsar.Age);
-			Assert.AreEqual(actualTsar.Height, expectedTsar.Height);
-			Assert.AreEqual(actualTsar.Weight, expectedTsar.Weight);
-
-			Assert.AreEqual(expectedTsar.Parent!.Name, actualTsar.Parent!.Name);
-			Assert.AreEqual(expectedTsar.Parent.Age, actualTsar.Parent.Age);
-			Assert.AreEqual(expectedTsar.Parent.Height, actualTsar.Parent.Height);
-			Assert.AreEqual(expectedTsar.Parent.Parent, actualTsar.Parent.Parent);
+			//actualTsar.Should().BeEquivalentTo(expectedTsar);
+			actualTsar.Should().BeEquivalentTo(
+				expectedTsar, 
+				options => options
+					.Including(t => t.Name)
+					.Including(t => t.Age)
+					.Including(t => t.Height)
+					.Including(t => t.Weight)
+				);
+			actualTsar.Parent.Should().BeEquivalentTo(
+				expectedTsar.Parent,
+				options => options
+					.Including(p => p!.Name)
+					.Including(p => p.Age)
+					.Including(p => p.Height)
+					.Including(p => p.Parent)
+				);
 		}
 
 		[Test]
@@ -37,6 +45,17 @@ namespace HomeExercises
 
 			// Какие недостатки у такого подхода? 
 			Assert.True(AreEqual(actualTsar, expectedTsar));
+			/*
+			 В данном решении присутствует дополнительная проверка на то,
+			 что actual.Parent.Weight == expected.Parent.Weight, это в принципе делает проверки не эквивалетными,
+			 несмотря на совпадение результатов проверки: если expectedTsar.Parent.Weight = 61, то первый тест зайдёт, а 
+			 этот нет.
+			 В данном решении нет возможности поменять условия для детей и родителей индивидуально, то есть
+			 условия в строчках 60,61,63-67 должны выполняться как для child, так и для parent, в моём же решении 
+			 условия для детей и родителей не совпадают. (+Гибкость)
+			 Также моё решение лучше читается, в этом же подходе не очень очевидно, как работает сравнение царей.
+			 (+Читаемость)
+			 */
 		}
 
 		private bool AreEqual(Person? actual, Person? expected)
