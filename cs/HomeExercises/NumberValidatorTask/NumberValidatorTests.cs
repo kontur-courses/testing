@@ -37,9 +37,9 @@ namespace HomeExercises.NumberValidatorTask
 		public void ShouldBeFalse_WhenIncorrectValue(string value, string whyNumberIsIncorrectMsg)
 		{
 			var validator = new NumberValidator(10, 5, true);
-			validator.IsValidNumber(value).Should().BeFalse(
-				"Because {0} {1}", value, whyNumberIsIncorrectMsg);
-        }
+			validator.IsValidNumber(value).Should()
+				.BeFalse("Because {0} {1}", value, whyNumberIsIncorrectMsg);
+		}
 
         [Category("Validate Fractals Delimiter")]
         [TestCase("1.5")]

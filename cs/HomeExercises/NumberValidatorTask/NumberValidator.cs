@@ -23,9 +23,9 @@ namespace HomeExercises.NumberValidatorTask
 			this.scale = scale;
 			this.onlyPositive = onlyPositive;
 
-			numberRegex = new Regex(@"^([+-]?)(\d+)([.,](\d+))?$", RegexOptions.IgnoreCase);
-			zeroAtHighestDigitRegex = new Regex(@"^([+-])?(0+\d)");
-			plusMinusZeroRegex = new Regex(@"^([+-]{1})(0{1})(([.,]{1})(0*)$|$)");
+			numberRegex = new Regex(@"^([+-]?)(\d+)([.,](\d+))?$", RegexOptions.Compiled);
+			zeroAtHighestDigitRegex = new Regex(@"^([+-])?(0+\d)", RegexOptions.Compiled);
+			plusMinusZeroRegex = new Regex(@"^([+-]{1})(0{1})(([.,]{1})(0*)$|$)", RegexOptions.Compiled);
 		}
 
 		public bool IsValidNumber(string value)
