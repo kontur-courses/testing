@@ -11,45 +11,41 @@ namespace HomeExercises
 	public class NumberValidatorTests
 	{
 		// 1 - пустая строка или null
-		[TestCase(null, false)]
-		[TestCase("", false)]
+		[TestCase(null, false, TestName = "validation test with null")]
+		[TestCase("", false, TestName = "validation test with empty string")]
 		// [TestCase(" ", false)]
 		
 		// 2 - проверка на регур
 		// [TestCase("a.sd", false)]
-		[TestCase("1.1d", false)]
-		[TestCase("d.1", false)]
-		[TestCase("d1", false)]
+		[TestCase("1.1d", false, TestName = "validation test with non-number in fractional part")]
+		[TestCase("d.1", false, TestName = "validation test with non-number in precision")]
+		[TestCase("d1", false, TestName = "validation test with non-number")]
 		
-		[TestCase("1.1.1", false)]
-		[TestCase(".1", false)]
-		[TestCase("1.", false)]
-		[TestCase(".", false)]
+		[TestCase("1.1.1", false, TestName = "validation test with three dots")]
+		[TestCase(".1", false, TestName = "validation test with dot but without precision")]
+		[TestCase("1.", false, TestName = "validation test with dot but without fractional part")]
+		[TestCase(".", false, TestName = "validation test with dot only")]
 		
-		[TestCase("--1.0", false, 17, 2, false)]
-		[TestCase("+-1.0", false, 17, 2, false)]
-		[TestCase("1+1.0", false, 17, 2, false)]
-		[TestCase("1.0+", false)]
+		[TestCase("--1.0", false, 17, 2, false, TestName = "validation test double sign")]
+		[TestCase("1+1.0", false, 17, 2, false, TestName = "validation test with digit before sign")]
+		[TestCase("1.0+", false, TestName = "validation test with sign in the end of number")]
 		
-		// 3 // Добавить сюда пограничные случаи
+		// 3 
 		// проварка на общую длину
-		[TestCase("-12.23", true, 5, 2, false)] 
-		[TestCase("-321.23", false, 5, 2, false)] 
-		[TestCase("21.23", true, 5, 2, false)] 
+		[TestCase("-12.23", true, 5, 2, false, TestName = "number lenght validation test")] 
+		[TestCase("-321.23", false, 5, 2, false, TestName = "number lenght validation test")] 
+		[TestCase("21.23", true, 5, 2, false, TestName = "number lenght validation test")] 
 		
 		// проверка на длину дробной части
-		[TestCase("+1.234", false, 55, 2, false)]
-		[TestCase("+1.234", true, 55, 3, false)]
-		[TestCase("+1.23", true, 55, 2, false)]
+		[TestCase("+1.234", false, 55, 2, false, TestName = "fractional part lenght validation test")]
+		[TestCase("+1.234", true, 55, 3, false, TestName = "fractional part lenght validation test")]
+		[TestCase("+1.23", true, 55, 2, false, TestName = "fractional part lenght validation test")]
 		
 		// 4 - проверка на знак
-		[TestCase("-2.1", false, 10, 5, true)]
-		[TestCase("+2.1", true, 10, 5, true)]
-		[TestCase("-2.1", true, 10, 5, false)]
-		[TestCase("+2.1", true, 10, 5, false)]
-		
-		
-		// [TestCase("+0.00", true, 3)]// падает специально
+		[TestCase("-2.1", false, 10, 5, true, TestName = "sign validation test")]
+		[TestCase("+2.1", true, 10, 5, true, TestName = "sign validation test")]
+		[TestCase("-2.1", true, 10, 5, false, TestName = "sign validation test")]
+		[TestCase("+2.1", true, 10, 5, false, TestName = "sign validation test")]
 		public void Test_IsValidNumber(
 			string numberForCheck,
 			bool expected, 
@@ -57,121 +53,158 @@ namespace HomeExercises
 			int scale = 2, 
 			bool onlyPositive = true)
 		{
-			// if (throwException is null)
-			// {
-			// 	Assert.DoesNotThrow(() => new NumberValidator(precision, scale, onlyPositive));
-			// }
-			// else
-			// {
-			// 	Assert.Throws<T>(() => new NumberValidator(precision, scale, onlyPositive));
-			// }
-
-			var validatorResult = new NumberValidator(precision, scale, onlyPositive).IsValidNumber(numberForCheck);
 			var message = $"Number {numberForCheck} with parameters: " +
 			              $"\n\tprecision = {precision}, " +
 			              $"\n\tscale = {scale}, " +
 			              $"\n\tonlyPositive = {onlyPositive}" +
 			              $"\n\n  IsValidNumber result";
+
+			var builder = TestNumberValidatorBuilder.AValidator()
+				.WithPrecision(precision)
+				.WithScale(scale)
+				.WithSignMode(onlyPositive);
+			var validator = builder.Build();
+			
+			var firstCallActual = validator.IsValidNumber(numberForCheck);
+			var secondCallActual = validator.IsValidNumber(numberForCheck);
+			var secondConstructorCallActual = builder.Build().IsValidNumber(numberForCheck);
+			
 			if (expected)
 			{
-				Assert.That(validatorResult, Is.True, message);
-				Assert.That(validatorResult, Is.True, $"Exception on double call\n{message}");
-				
-				validatorResult = new NumberValidator(precision, scale, onlyPositive).IsValidNumber(numberForCheck);
-				Assert.That(validatorResult, Is.True, $"Exception on double NumberValidator constructor call\n{message}");
+				Assert.That(firstCallActual, Is.True, message);
+				Assert.That(secondCallActual, Is.True, $"Exception on double call\n{message}");
+				Assert.That(secondConstructorCallActual, Is.True, $"Exception on double NumberValidator constructor call\n{message}");
 			}
 			else
 			{
-				Assert.That(validatorResult, Is.False, message);
-				Assert.That(validatorResult, Is.False, $"Exception on double call\n{message}");
-				
-				validatorResult = new NumberValidator(precision, scale, onlyPositive).IsValidNumber(numberForCheck);
-				Assert.That(validatorResult, Is.False, $"Exception on double NumberValidator constructor call\n{message}");
+				Assert.That(firstCallActual, Is.False, message);
+				Assert.That(secondCallActual, Is.False, $"Exception on double call\n{message}");
+				Assert.That(secondConstructorCallActual, Is.False, $"Exception on double NumberValidator constructor call\n{message}");
 			}
 		}
 
-		[TestCase(-1, 2)]
-		[TestCase(0, 2)]
-		[TestCase(2, -1)]
-		[TestCase(2, 2)]
-		[TestCase(2, 3)]
-		public void NumberValidatorConstructor_ThrowArgumentException_IncorrectPrecisionOrScale(int precision, int scale)
+		[TestCase(-1, 0, 
+			"*precision must be a positive*", 
+			TestName = "NumberValidator constructor test with precision = -1 and scale = 0")]
+		[TestCase(0, 0,
+			"*precision must be a positive*", 
+			TestName = "NumberValidator constructor test with precision = 0 and scale = 0")]
+		[TestCase(2, -1, 
+			"*precision must be a non-negative number less or equal than precision*", 
+			TestName = "NumberValidator constructor test with precision = 2 and scale = -1")]
+		[TestCase(2, 2, 
+			"*precision must be a non-negative number less or equal than precision*", 
+			TestName = "NumberValidator constructor test with precision = 2 and scale = 2")]
+		[TestCase(2, 3, 
+			"*precision must be a non-negative number less or equal than precision*", 
+			TestName = "NumberValidator constructor test with precision = 2 and scale = 3")]
+		public void NumberValidatorConstructor_ThrowArgumentException_IncorrectPrecisionOrScale(
+			int precision, 
+			int scale, 
+			string requiredMessage)
 		{
-			var message = $"NumberValidator constructor with parameters: " +
-			              $"\n\tprecision = {precision}, " +
-			              $"\n\tscale = {scale}, ";
+			var builder1 = TestNumberValidatorBuilder
+				.AValidator()
+				.WithPrecision(precision)
+				.WithScale(scale)
+				.WithSignMode(false);
+			var builder2 = builder1
+				.But()
+				.WithSignMode(true);
+			
+			Action action1 = () => builder1.Build();
+			Action action2 = () => builder2.Build();
 
 			using (new AssertionScope())
 			{
-				Action action1 = () => new NumberValidator(precision, scale);
-				Assert.Throws<ArgumentException>(() => action1(), message + $"\n\tonlyPositive = {false}");
-				
-				Action action2 = () => new NumberValidator(precision, scale, true);
-				Assert.Throws<ArgumentException>(() => action2(), message + $"\n\tonlyPositive = {true}");
+				action1.Should().ThrowExactly<ArgumentException>().WithMessage(requiredMessage);
+				action1.Should().ThrowExactly<ArgumentException>().WithMessage(requiredMessage);
+				action2.Should().ThrowExactly<ArgumentException>().WithMessage(requiredMessage);
+				action2.Should().ThrowExactly<ArgumentException>().WithMessage(requiredMessage);
 			}
 		}
 		
-		[TestCase(1, 0)]
-		[TestCase(2, 0)]
-		[TestCase(2, 1)]
+		[TestCase(1, 0, TestName = "NumberValidator constructor test with precision = 1 and scale = 0")]
+		[TestCase(2, 0, TestName = "NumberValidator constructor test with precision = 2 and scale = 0")]
+		[TestCase(2, 1, TestName = "NumberValidator constructor test with precision = 2 and scale = 1")]
 		public void NumberValidatorConstructor_DoesNotThrow_CorrectPrecisionAndScale(int precision, int scale)
 		{
-			Action action1 = () => new NumberValidator(precision, scale);
-			action1.Should().NotThrow();
-			action1.Should().NotThrow();
+			var builder1 = TestNumberValidatorBuilder
+				.AValidator()
+				.WithPrecision(precision)
+				.WithScale(scale)
+				.WithSignMode(false);
+			var builder2 = builder1
+				.But()
+				.WithSignMode(true);
 			
-			Action action2 = () => new NumberValidator(precision, scale, true);
+			Action action1 = () => builder1.Build();
+			Action action2 = () => builder2.Build();
+			
+			action1.Should().NotThrow();
+			action1.Should().NotThrow();
 			action2.Should().NotThrow();
 			action2.Should().NotThrow();
 		}
+	}
+
+	public class TestNumberValidatorBuilder
+	{
+		private int precision = 1;
+		private int scale = 0;
+		private bool onlyPositive;
 		
-		// [Test]
-		// public void Test_NumberValidatorConstructor()
-		// {
-		// 	Assert.Throws<ArgumentException>(() => new NumberValidator(-1, 2, true));
-		// 	Assert.DoesNotThrow(() => new NumberValidator(1, 0, true));
-		// 	Assert.Throws<ArgumentException>(() => new NumberValidator(-1, 2, false));
-		// 	Assert.DoesNotThrow(() => new NumberValidator(1, 0, true));
-		//
-		// 	var p = -1;
-		// 	var s = 2;
-		// 	var op = true;
-		// 	Action action = () => new NumberValidator(p, s, op);
-		// 	action.Should().Throw<ArgumentException>();
-		// 	
-		// 	p = 1;
-		// 	s = 0;
-		// 	op = true;
-		// 	action.Should().NotThrow();
-		// 	
-		// 	p = -1;
-		// 	s = 2;
-		// 	op = false;
-		// 	action.Should().Throw<ArgumentException>();
-		// 	
-		// 	p = 1;
-		// 	s = 0;
-		// 	op = false;
-		// 	action.Should().NotThrow();
-		// }
+		public static TestNumberValidatorBuilder AValidator()
+		{
+			return new TestNumberValidatorBuilder();
+		}
+
+		public TestNumberValidatorBuilder WithPrecision(int precision)
+		{
+			this.precision = precision;
+			return this;
+		}
+		
+		public TestNumberValidatorBuilder WithScale(int scale)
+		{
+			this.scale = scale;
+			return this;
+		}
+		
+		public TestNumberValidatorBuilder WithSignMode(bool onlyPositive)
+		{
+			this.onlyPositive = onlyPositive;
+			return this;
+		}
+
+		public TestNumberValidatorBuilder But() => 
+			AValidator()
+				.WithSignMode(onlyPositive)
+				.WithScale(scale)
+				.WithPrecision(precision);
+		
+		public NumberValidator Build()
+		{
+			return new NumberValidator(precision, scale, onlyPositive);
+		}
 	}
 
 	public class NumberValidator
 	{
-		private readonly Regex numberRegex;
-		private readonly bool onlyPositive;
-		private readonly int precision;
-		private readonly int scale;
+		private  Regex numberRegex;
+		private  bool onlyPositive;
+		private  int precision;
+		private  int scale;
 
 		public NumberValidator(int precision, int scale = 0, bool onlyPositive = false)
 		{
 			this.precision = precision;
 			this.scale = scale;
 			this.onlyPositive = onlyPositive;
-			if (precision <= 0)
+			if (precision <=  0)
 				throw new ArgumentException("precision must be a positive number");
 			if (scale < 0 || scale >= precision)
-				throw new ArgumentException("precision must be a non-negative number less or equal than precision"); //!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+				throw new ArgumentException("precision must be a non-negative number less or equal than precision");
 			numberRegex = new Regex(@"^([+-]?)(\d+)([.,](\d+))?$", RegexOptions.IgnoreCase);
 		}
 

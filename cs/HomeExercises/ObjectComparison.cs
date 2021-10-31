@@ -1,12 +1,5 @@
 ﻿using FluentAssertions;
-using FluentAssertions.Equivalency;
-// using FluentAssertions.Equivalency;
 using NUnit.Framework;
-using NUnit.Framework.Internal;
-using System;
-using System.Reflection;
-using FluentAssertions;
-using FluentAssertions.Equivalency;
 
 namespace HomeExercises
 {
