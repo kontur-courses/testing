@@ -7,6 +7,7 @@ namespace HomeExercises
 {
 	public class NumberValidatorTests
 	{
+
 		readonly string valid = " is valid number for NumberValidator";
 		readonly string notValid = " is not valid number for NumberValidator";
 
@@ -15,75 +16,59 @@ namespace HomeExercises
 		{
 			Action act1 = () => new NumberValidator(-1, 2, true);
 			Action act2 = () => new NumberValidator(1, 0, true);
-			Action act5 = () => new NumberValidator(0, -1, true);
-			Action act6 = () => new NumberValidator(1, 2, true);
-			Action act7 = () => new NumberValidator(1, 1, false);
+			Action act3 = () => new NumberValidator(0, -1, true);
+			Action act4 = () => new NumberValidator(1, 2, true);
+			Action act5 = () => new NumberValidator(1, 1, false);
 
 			act1.Should().ThrowExactly<ArgumentException>().WithMessage("precision must be a positive number");
 			act2.Should().NotThrow();
-			act5.Should().ThrowExactly<ArgumentException>().WithMessage("precision must be a positive number");
-			act6.Should().ThrowExactly<ArgumentException>().WithMessage("precision must be a non-negative number less or equal than precision");
-			act7.Should().ThrowExactly<ArgumentException>().WithMessage("precision must be a non-negative number less or equal than precision");
+			act3.Should().ThrowExactly<ArgumentException>().WithMessage("precision must be a positive number");
+			act4.Should().ThrowExactly<ArgumentException>().WithMessage("precision must be a non-negative number less or equal than precision");
+			act5.Should().ThrowExactly<ArgumentException>().WithMessage("precision must be a non-negative number less or equal than precision");
 		}
 
-		[Test]
-		public void IsValidForPrecision()
+		// IsValidForPrecision
+		[TestCase("1.23", 4, 2, true, true)]
+		[TestCase("+1.23", 4, 2, true, true)]
+		[TestCase("-1.23", 4, 2, false, true)]
+		[TestCase("1.00", 3, 2, true, true)]
+		[TestCase("+1.23", 3, 2, true, false)]
+		[TestCase("-1.23", 3, 2, false, false)]
+		[TestCase("00.00", 3, 2, true, false)]
+		// IsValidNullOrEmpty
+		[TestCase("", 17, 4, true, false)]
+		[TestCase(null, 17, 4, true, false)]
+		// IsValidForScale
+		[TestCase("0.000", 17, 2, true, false)]
+		[TestCase("+1.23", 17, 2, true, true)]
+		[TestCase("0.1", 17, 2, true, true)]
+		// IsValidWithMinus
+		[TestCase("-1.23", 17, 2, true, false)]
+		[TestCase("-1.23", 17, 2, false, true)]
+		// IsValidForFormat
+		[TestCase("+", 17, 4, true, false)]
+		[TestCase("-0.", 17, 4, false, false)]
+		[TestCase("+0.", 17, 4, true, false)]
+		[TestCase(".1", 17, 4, true, false)]
+		[TestCase("-.0", 17, 4, true, false)]
+		[TestCase("+1;7", 17, 4, true, false)]
+		[TestCase("a.sd", 6, 4, true, false)]
+		[TestCase("+1,7", 17, 4, true, true)]
+		// IsValidForAdditionalTests
+		// начальные тесты, не попавшие в другие подборки
+		[TestCase("+0.00", 3, 2, true, false)]
+		[TestCase("-0.00", 3, 2, true, false)]
+		[TestCase("0.0", 17, 2, true, true)]
+		[TestCase("0", 17, 2, true, true)]
+		public void IsValidFor(string strNum, int precision, int scale, bool onlyPositive, bool trueOrFalse)
 		{
-			new NumberValidator(4, 2, true).IsValidNumber("1.23").Should().BeTrue($"1.23{valid}(4, 2, true)");
-			new NumberValidator(4, 2, true).IsValidNumber("+1.23").Should().BeTrue($"+1.23{valid}(4, 2, true)");
-			new NumberValidator(4, 2, false).IsValidNumber("-1.23").Should().BeTrue($"-1.23{valid}(4, 2, false)");
-			new NumberValidator(3, 2, true).IsValidNumber("1.00").Should().BeTrue($"1.00{valid}(3, 2, true)");
-			new NumberValidator(3, 2, true).IsValidNumber("+1.23").Should().BeFalse($"+1.23{notValid}(3, 2, true)");
-			new NumberValidator(3, 2, false).IsValidNumber("-1.23").Should().BeFalse($"-1.23{notValid}(3, 2, false)");
-			new NumberValidator(3, 2, true).IsValidNumber("00.00").Should().BeFalse($"00.00{notValid}(3, 2, true)");
-		}
-
-		[Test]
-		public void IsValidNullOrEmpty()
-		{
-			new NumberValidator(17, 4, true).IsValidNumber("").Should().BeFalse($"String.Empty{notValid}(17, 4, true)");
-			new NumberValidator(17, 4, true).IsValidNumber(null).Should().BeFalse($"null{notValid}(17, 4, true)");
-		}
-
-		[Test]
-		public void IsValidForScale()
-		{
-			new NumberValidator(17, 2, true).IsValidNumber("0.000").Should().BeFalse($"0.000{notValid}(17, 2, true)");
-			new NumberValidator(17, 2, true).IsValidNumber("+1.23").Should().BeTrue($"+1.23{valid}(17, 2, true)");
-			new NumberValidator(17, 2, true).IsValidNumber("0.1").Should().BeTrue($"0.1{valid}(17, 2, true)");
-		}
-
-		[Test]
-		public void IsValidWithMinus()
-		{
-			new NumberValidator(17, 2, true).IsValidNumber("-1.23").Should().BeFalse($"-1.23{notValid}(17, 2, true)");
-			new NumberValidator(17, 2, false).IsValidNumber("-1.23").Should().BeTrue($"-1.23{valid}(17, 2, false)");
-		}
-
-		[Test]
-		public void IsValidForFormat()
-		{
-			new NumberValidator(17, 4, true).IsValidNumber("+").Should().BeFalse($"+{notValid}(17, 4, true)");
-			new NumberValidator(17, 4, false).IsValidNumber("-0.").Should().BeFalse($"{notValid}(17, 4, false)");
-			new NumberValidator(17, 4, true).IsValidNumber("+0.").Should().BeFalse($"+0.{notValid}(17, 4, true)");
-			new NumberValidator(17, 4, true).IsValidNumber(".1").Should().BeFalse($".1{notValid}(17, 4, true)");
-			new NumberValidator(17, 4, true).IsValidNumber("-.0").Should().BeFalse($"-.0{notValid}(17, 4, true)");
-			new NumberValidator(17, 4, true).IsValidNumber("+1;7").Should().BeFalse($"+1;7{notValid}(17, 4, true)");
-			new NumberValidator(6, 4, true).IsValidNumber("a.sd").Should().BeFalse($"a.sd{notValid}(6, 4, true)");
-			new NumberValidator(17, 4, true).IsValidNumber("+1,7").Should().BeTrue($"+1,7{valid}(17, 4, true)");
-		}
-
-		[Test]
-		public void IsValidForAdditionalTests1() //начальные тесты, не попавшие в другие подборки
-		{
-			new NumberValidator(3, 2, true).IsValidNumber("+0.00").Should().BeFalse($"+0.00{notValid}(3, 2, true)");
-			new NumberValidator(3, 2, true).IsValidNumber("-0.00").Should().BeFalse($"-0.00{notValid}(3, 2, true)");
-			new NumberValidator(17, 2, true).IsValidNumber("0.0").Should().BeTrue($"0.0{valid}(17, 2, true)");
-			new NumberValidator(17, 2, true).IsValidNumber("0").Should().BeTrue($"0{valid}(17, 2, true)");
-
+			var isValidNumber = new NumberValidator(precision, scale, onlyPositive).IsValidNumber(strNum);
+			if (trueOrFalse == true)
+				isValidNumber.Should().BeTrue($"{strNum}{valid}({precision}, {scale}, {onlyPositive})");
+			else
+				isValidNumber.Should().BeFalse($"{strNum}{notValid}({precision}, {scale}, {onlyPositive})");
 		}
 	}
-
 	public class NumberValidator
 	{
 		private readonly Regex numberRegex;
