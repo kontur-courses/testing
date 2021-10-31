@@ -1,13 +1,10 @@
 ﻿using FluentAssertions;
 using NUnit.Framework;
-using System.Text.RegularExpressions;
 
 namespace HomeExercises
 {
     public class ObjectComparison
     {
-        private static readonly Regex ParentRecursiveIdMatch = new Regex(@"^(Parent\.)*Id");
-
         [Test, Timeout(100)]
         [Description("Проверка текущего царя")]
         [Category("ToRefactor")]
@@ -18,11 +15,11 @@ namespace HomeExercises
             var parent = new Person("Vasili III of Russia", 28, 170, 60, null);
             var expectedTsar = new Person("Ivan IV The Terrible", 54, 170, 70, parent);
 
-
             actualTsar.Should().BeEquivalentTo(expectedTsar,
                 opt => opt
                 .AllowingInfiniteRecursion()
-                .Excluding(x => ParentRecursiveIdMatch.IsMatch(x.SelectedMemberPath)));
+                .Excluding(member => member.SelectedMemberInfo.Name == nameof(Person.Id) 
+                                  && member.SelectedMemberInfo.DeclaringType == typeof(Person)));
         }
 
         [Test]
