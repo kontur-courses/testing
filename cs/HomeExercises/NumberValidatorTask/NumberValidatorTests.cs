@@ -1,7 +1,6 @@
-﻿using FluentAssertions;
+﻿using System;
+using FluentAssertions;
 using NUnit.Framework;
-using System;
-
 
 namespace HomeExercises.NumberValidatorTask
 {
@@ -37,39 +36,43 @@ namespace HomeExercises.NumberValidatorTask
 		public void ShouldBeFalse_WhenIncorrectValue(string value, string whyNumberIsIncorrectMsg)
 		{
 			var validator = new NumberValidator(10, 5, true);
-			validator.IsValidNumber(value).Should()
+			validator
+				.IsValidNumber(value)
+				.Should()
 				.BeFalse("Because {0} {1}", value, whyNumberIsIncorrectMsg);
 		}
 
-        [Category("Validate Fractals Delimiter")]
-        [TestCase("1.5")]
-        [TestCase("1,5")]
-        public void ShouldBeTrue_WhenDelimiterIsDotOrComma(string value)
-        {
-            var validator = new NumberValidator(5, 1, true);
-            validator.IsValidNumber(value).Should().BeTrue("Because the dot and comma are correct");
-        }
-
-        [Category("Ignore leading and trailing whitespaces")]
-        [TestCase("    123")]
-        [TestCase("\t123")]
-        [TestCase("\n123")]
-		[TestCase("\t123\t")]
-        public void ShouldTrim_WhenLeadingOrTrailingWhitespaces(string value)
-        {
-	        var validator = new NumberValidator(10, 1);
-	        validator.IsValidNumber(value).Should().BeTrue(
-		        "Because the leading and trailing whitespaces were cut off");
+		[Category("Validate Fractals Delimiter")]
+		[TestCase("1.5")]
+		[TestCase("1,5")]
+		public void ShouldBeTrue_WhenDelimiterIsDotOrComma(string value)
+		{
+			var validator = new NumberValidator(5, 1, true);
+			validator.IsValidNumber(value).Should().BeTrue("Because the dot and comma are correct");
 		}
 
-        [Category("Plus-minus zero")]
+		[Category("Ignore leading and trailing whitespaces")]
+		[TestCase("    123")]
+		[TestCase("\t123")]
+		[TestCase("\n123")]
+		[TestCase("\t123\t")]
+		public void ShouldTrim_WhenLeadingOrTrailingWhitespaces(string value)
+		{
+			var validator = new NumberValidator(10, 1);
+			validator
+				.IsValidNumber(value)
+				.Should()
+				.BeTrue("Because the leading and trailing whitespaces were cut off");
+		}
+
+		[Category("Plus-minus zero")]
 		[TestCase("-0")]
 		[TestCase("-0.0")]
 		[TestCase("+0")]
 		[TestCase("+0.0")]
 		public void ShouldBeFalse_WhenPlusOrMinusZero(string value)
 		{
-			var validator = new NumberValidator(3,1);
+			var validator = new NumberValidator(3, 1);
 			validator.IsValidNumber(value).Should().BeFalse("Because a zero with a sign is incorrect.");
 		}
 
@@ -101,6 +104,4 @@ namespace HomeExercises.NumberValidatorTask
 			action.Should().Throw<ArgumentException>("Because precision = {0} is incorrect", precision);
 		}
 	}
-
-	
 }

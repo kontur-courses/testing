@@ -23,7 +23,7 @@ namespace HomeExercises.NumberValidatorTask
 			if (precision <= 0)
 				throw new ArgumentException("precision must be a positive number");
 			if (scale < 0 || scale >= precision)
-				throw new ArgumentException("precision must be a non-negative number less or equal than precision");
+				throw new ArgumentException("Scale must be a non-negative number less or equal than precision");
 
 			this.precision = precision;
 			this.scale = scale;
