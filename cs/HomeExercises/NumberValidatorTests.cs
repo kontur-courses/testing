@@ -26,20 +26,12 @@ namespace HomeExercises
 		[TestCase(0)]
 		[TestCase(-5)]
 		public void Precision_ShouldBePositive(int precision)
-        {
-			FluentActions.Invoking(() => 
-			new NumberValidator(precision))
-				.Should().Throw<ArgumentException>();
-		}
+			=> Assert.Throws<ArgumentException>(() => new NumberValidator(precision));
 
 		[TestCase(-1)]
 		[TestCase(6)]
 		public void Precision_ShouldBeNotNegative_AndLessThanPrecision(int scale)
-		{
-			FluentActions.Invoking(() =>
-			new NumberValidator(6, scale))
-				.Should().Throw<ArgumentException>();
-		}
+			=> Assert.Throws<ArgumentException>(() => new NumberValidator(6, scale));
 		
 		[TestCase("-0.12")]
 		[TestCase("+0.12")]
