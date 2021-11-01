@@ -1,4 +1,5 @@
-﻿using FluentAssertions;
+﻿using System.Text.RegularExpressions;
+using FluentAssertions;
 using NUnit.Framework;
 
 namespace HomeExercises
@@ -12,7 +13,10 @@ namespace HomeExercises
 		{
 			var actualTsar = TsarRegistry.GetCurrentTsar();
 
-			var expectedTsar = new Person("Ivan IV The Terrible", 54, 170, 70,
+			var expectedTsar = new Person("Ivan IV The Terrible",
+				54,
+				170,
+				70,
 				new Person("Vasili III of Russia", 28, 170, 60, null));
 
 			// Перепишите код на использование Fluent Assertions.
@@ -25,6 +29,8 @@ namespace HomeExercises
 			Assert.AreEqual(expectedTsar.Parent.Age, actualTsar.Parent.Age);
 			Assert.AreEqual(expectedTsar.Parent.Height, actualTsar.Parent.Height);
 			Assert.AreEqual(expectedTsar.Parent.Parent, actualTsar.Parent.Parent);
+
+			//Переписал в RefactoredCheckCurrentTsar()
 		}
 
 		[Test]
@@ -32,10 +38,20 @@ namespace HomeExercises
 		public void CheckCurrentTsar_WithCustomEquality()
 		{
 			var actualTsar = TsarRegistry.GetCurrentTsar();
-			var expectedTsar = new Person("Ivan IV The Terrible", 54, 170, 70,
+			var expectedTsar = new Person("Ivan IV The Terrible",
+				54,
+				170,
+				70,
 				new Person("Vasili III of Russia", 28, 170, 60, null));
 
 			// Какие недостатки у такого подхода? 
+			
+			/* Недостатки
+			 * 1. Изменение класса Person влечет за собой изменение метода AreEqual
+			 * 2. Не очень читаемый код в AreEqual (я не сразу заметил, что там Id не сравниваются)
+			 *
+			 */
+			
 			Assert.True(AreEqual(actualTsar, expectedTsar));
 		}
 
@@ -44,11 +60,31 @@ namespace HomeExercises
 			if (actual == expected) return true;
 			if (actual == null || expected == null) return false;
 			return
-				actual.Name == expected.Name
-				&& actual.Age == expected.Age
-				&& actual.Height == expected.Height
-				&& actual.Weight == expected.Weight
-				&& AreEqual(actual.Parent, expected.Parent);
+				actual.Name == expected.Name &&
+				actual.Age == expected.Age &&
+				actual.Height == expected.Height &&
+				actual.Weight == expected.Weight &&
+				AreEqual(actual.Parent, expected.Parent);
+		}
+
+		[Test]
+		[Category("Refactored")]
+		public void RefactoredCheckCurrentTsar()
+		{
+			var actualTsar = TsarRegistry.GetCurrentTsar();
+			var expectedTsar = new Person("Ivan IV The Terrible",
+				54,
+				170,
+				70,
+				new Person("Vasili III of Russia", 28, 170, 60, null));
+			//Регулярка находит строки формата "Id", "Parent.Id", "Parent.Parent.Id" и тд
+			var idFieldRegex = new Regex("^((Parent\\.)*Id)$");
+
+			actualTsar
+				.Should()
+				.BeEquivalentTo(
+					expectedTsar,
+					config => config.Excluding(ctx => idFieldRegex.IsMatch(ctx.SelectedMemberPath)));
 		}
 	}
 
@@ -57,7 +93,10 @@ namespace HomeExercises
 		public static Person GetCurrentTsar()
 		{
 			return new Person(
-				"Ivan IV The Terrible", 54, 170, 70,
+				"Ivan IV The Terrible",
+				54,
+				170,
+				70,
 				new Person("Vasili III of Russia", 28, 170, 60, null));
 		}
 	}
