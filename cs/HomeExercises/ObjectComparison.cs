@@ -1,5 +1,5 @@
-﻿using FluentAssertions;
-using NUnit.Framework;
+﻿using NUnit.Framework;
+using FluentAssertions;
 
 namespace HomeExercises
 {
@@ -10,21 +10,17 @@ namespace HomeExercises
 		[Category("ToRefactor")]
 		public void CheckCurrentTsar()
 		{
-			var actualTsar = TsarRegistry.GetCurrentTsar();
-
 			var expectedTsar = new Person("Ivan IV The Terrible", 54, 170, 70,
 				new Person("Vasili III of Russia", 28, 170, 60, null));
 
-			// Перепишите код на использование Fluent Assertions.
-			Assert.AreEqual(actualTsar.Name, expectedTsar.Name);
-			Assert.AreEqual(actualTsar.Age, expectedTsar.Age);
-			Assert.AreEqual(actualTsar.Height, expectedTsar.Height);
-			Assert.AreEqual(actualTsar.Weight, expectedTsar.Weight);
+			var actualTsar = TsarRegistry.GetCurrentTsar();
 
-			Assert.AreEqual(expectedTsar.Parent!.Name, actualTsar.Parent!.Name);
-			Assert.AreEqual(expectedTsar.Parent.Age, actualTsar.Parent.Age);
-			Assert.AreEqual(expectedTsar.Parent.Height, actualTsar.Parent.Height);
-			Assert.AreEqual(expectedTsar.Parent.Parent, actualTsar.Parent.Parent);
+			actualTsar.Should().BeEquivalentTo(expectedTsar, options => options
+				.AllowingInfiniteRecursion() // По умолчанию глубина рекурсии - 10, вдруг у нас большая вложенность
+				.IgnoringCyclicReferences() // На случай циклических ссылок
+				.Excluding(member => 
+					member.SelectedMemberInfo.DeclaringType == typeof(Person) &&
+					member.SelectedMemberInfo.Name == "Id"));
 		}
 
 		[Test]
@@ -35,12 +31,17 @@ namespace HomeExercises
 			var expectedTsar = new Person("Ivan IV The Terrible", 54, 170, 70,
 				new Person("Vasili III of Russia", 28, 170, 60, null));
 
-			// Какие недостатки у такого подхода? 
+			// Какие недостатки у такого подхода?
+			/*
+				Если захотим добавить новое поле, то придется лезть в AreEqual,
+				при чем, если новое поле будет ссылочного типа, то возможно придется писать еще один метод,
+				либо создавать аналогичное BeEquivalentTo решение
+			*/
 			Assert.True(AreEqual(actualTsar, expectedTsar));
 		}
 
 		private bool AreEqual(Person? actual, Person? expected)
-		{
+		{		
 			if (actual == expected) return true;
 			if (actual == null || expected == null) return false;
 			return
@@ -64,7 +65,7 @@ namespace HomeExercises
 
 	public class Person
 	{
-		public static int IdCounter = 0;
+		public static int IdCounter;
 		public int Age, Height, Weight;
 		public string Name;
 		public Person? Parent;

@@ -10,23 +10,46 @@ namespace HomeExercises
 		[Test]
 		public void Test()
 		{
-			Assert.Throws<ArgumentException>(() => new NumberValidator(-1, 2, true));
-			Assert.DoesNotThrow(() => new NumberValidator(1, 0, true));
-			Assert.Throws<ArgumentException>(() => new NumberValidator(-1, 2, false));
-			Assert.DoesNotThrow(() => new NumberValidator(1, 0, true));
-
-			Assert.IsTrue(new NumberValidator(17, 2, true).IsValidNumber("0.0"));
 			Assert.IsTrue(new NumberValidator(17, 2, true).IsValidNumber("0"));
 			Assert.IsTrue(new NumberValidator(17, 2, true).IsValidNumber("0.0"));
 			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("00.00"));
 			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("-0.00"));
-			Assert.IsTrue(new NumberValidator(17, 2, true).IsValidNumber("0.0"));
 			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("+0.00"));
 			Assert.IsTrue(new NumberValidator(4, 2, true).IsValidNumber("+1.23"));
 			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("+1.23"));
 			Assert.IsFalse(new NumberValidator(17, 2, true).IsValidNumber("0.000"));
 			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("-1.23"));
 			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("a.sd"));
+		}
+
+		[Test]
+		[TestCase(-1, 1, TestName = "With negative precision")]
+		[TestCase(1, -1, TestName = "With negative scale")]
+		[TestCase(0, 1, TestName = "With zero precision")]
+		[TestCase(1, 2, TestName = "With scale greater than precision")]
+        [TestCase(1, 1, TestName = "With scale equals precision")]
+		public void NumberValidator_ConstructorThrows(int precision, int scale)
+		{
+			Action act = () => new NumberValidator(precision, scale);
+
+			act.Should().Throw<ArgumentException>();
+		}
+
+		[Test]
+		[TestCase(2, 1, true, TestName = "With positive precision")]
+		[TestCase(1, 0, false, TestName = "With default values")]
+		[TestCase(1, 0, true, TestName = "When only positive is true and default values")]
+		public void NumberValidator_ConstructorDoesNotThrows(int precision, int scale, bool onlyPositive)
+		{
+			Action act = () => new NumberValidator(precision, scale, onlyPositive);
+
+			act.Should().NotThrow<ArgumentException>();
+		}
+
+		[Test]
+		public void NumberValidator_IsValidNumber_CustomParams(int precision, int scale, bool onlyPositive, string num)
+		{
+
 		}
 	}
 
