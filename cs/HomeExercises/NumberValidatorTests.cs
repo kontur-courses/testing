@@ -13,7 +13,7 @@ namespace HomeExercises
 			Assert.Throws<ArgumentException>(() => new NumberValidator(-1, 2, true));
 			Assert.DoesNotThrow(() => new NumberValidator(1, 0, true));
 			Assert.Throws<ArgumentException>(() => new NumberValidator(-1, 2, false));
-			Assert.DoesNotThrow(() => new NumberValidator(1, 0, true));
+			//Assert.DoesNotThrow(() => new NumberValidator(1, 0, true)); - repeats 13 line
 
 			Assert.IsTrue(new NumberValidator(17, 2, true).IsValidNumber("0.0"));
 			Assert.IsTrue(new NumberValidator(17, 2, true).IsValidNumber("0"));
@@ -27,6 +27,14 @@ namespace HomeExercises
 			Assert.IsFalse(new NumberValidator(17, 2, true).IsValidNumber("0.000"));
 			//Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("-1.23")); -almost repeats 25 line
 			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("a.sd"));
+
+			/*
+			 *Отсутствует тест конструктора, проверяющий поведение при отрицательном scale,
+			 *Скудность проверки выражений, отличающихся от заданного формата,
+			 *отсутствие проверки на null и пустую строку
+			 *Слишком мало тестовых примеров, возникает ситуация, что часто один случай проверяет сразу несколько важных особеннностей,
+			 *может быть непонятно, на какой именнно мы допустили ошибку.
+			*/
 
 
 		}
