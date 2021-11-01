@@ -14,7 +14,11 @@ namespace HomeExercises
 
 			var expectedTsar = new Person("Ivan IV The Terrible", 54, 170, 70,
 				new Person("Vasili III of Russia", 28, 170, 60, null));
-
+			
+			// Чем решение лучше?
+			
+			// 1. Более читаемое тк написанно при помощи Fluent и в нём меньше кода
+			// 2. Не нужно будет добавлять лишние проверки при добавлении полей/свойств в класс Person
 			actualTsar.Should().BeEquivalentTo(expectedTsar, option => 
 				option
 					.AllowingInfiniteRecursion()
@@ -30,6 +34,11 @@ namespace HomeExercises
 				new Person("Vasili III of Russia", 28, 170, 60, null));
 
 			// Какие недостатки у такого подхода? 
+			
+			// 1. Один большой Equals. При ошибке он выдаст "Expected: True, But was: False".
+			//    Из-за этого невозможно понять в чем именно была ошибка.
+			// 2. Добавление новых полей/свойств в класс Person неизбежно влечет необходимость переписывать тест
+			// 3. Трудно читаем в сравнении с вариантом написанным при помощи FluentAssertions
 			Assert.True(AreEqual(actualTsar, expectedTsar));
 		}
 
