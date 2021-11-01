@@ -16,11 +16,11 @@ namespace HomeExercises
 				new Person("Vasili III of Russia", 28, 170, 60, null));
 
 			// Перепишите код на использование Fluent Assertions.
-
+			System.Console.WriteLine();
 			actualTsar.Should().BeEquivalentTo(expectedTsar, 
 				options => options.Excluding(
 					o => o.SelectedMemberInfo.Name == nameof(actualTsar.Id) 
-					&& o.SelectedMemberInfo.DeclaringType.Name == nameof(Person)));
+					&& o.SelectedMemberInfo.DeclaringType == typeof(Person)));
 		}
 
         [Test]
