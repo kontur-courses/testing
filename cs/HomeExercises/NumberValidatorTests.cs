@@ -8,6 +8,16 @@ namespace HomeExercises
 {
 	public class NumberValidatorTests
 	{
+		private NumberValidator defaultIntegerValidator;
+		private NumberValidator defaultFractionValidator;
+
+		[SetUp]
+		public void SetUp()
+		{
+			defaultIntegerValidator = new NumberValidator(int.MaxValue);
+			defaultFractionValidator = new NumberValidator(int.MaxValue, int.MaxValue - 1);
+		}
+
 		[TestCase(-1, TestName = "precision is negative")]
 		[TestCase(1, -1, TestName = "scale is negative")]
 		[TestCase(2, 2, TestName = "scale >= precision")]
@@ -42,13 +52,12 @@ namespace HomeExercises
 		[Test]
 		public void IsValidNumber_ShouldBeFastEnough()
 		{
-			var validator = new NumberValidator(int.MaxValue);
 			var valueToValidate = $"-{new string('1', 1000)}.{new string('2', 1000)}";
 
 			Action manyValidations = () =>
 			{
 				for (var i = 0; i < 20_000; i++)
-					validator.IsValidNumber(valueToValidate);
+					defaultIntegerValidator.IsValidNumber(valueToValidate);
 			};
 
 			GC.Collect();
@@ -72,8 +81,7 @@ namespace HomeExercises
 		[TestCase("a,a")]
 		public void IsValidNumber_False_WithNotNumber(string value)
 		{
-			var validator = new NumberValidator(int.MaxValue, int.MaxValue - 1);
-			var actual = validator.IsValidNumber(value);
+			var actual = defaultFractionValidator.IsValidNumber(value);
 			actual.Should().BeFalse();
 		}
 
@@ -84,8 +92,7 @@ namespace HomeExercises
 		[TestCase("1,222,333")]
 		public void IsValidNumber_False_WithIncorrectInteger(string value)
 		{
-			var validator = new NumberValidator(int.MaxValue);
-			var actual = validator.IsValidNumber(value);
+			var actual = defaultIntegerValidator.IsValidNumber(value);
 			actual.Should().BeFalse();
 		}
 
@@ -101,8 +108,7 @@ namespace HomeExercises
 		[TestCase("1.222,333")]
 		public void IsValidNumber_False_WithIncorrectFraction(string value)
 		{
-			var validator = new NumberValidator(int.MaxValue, int.MaxValue - 1);
-			var actual = validator.IsValidNumber(value);
+			var actual = defaultFractionValidator.IsValidNumber(value);
 			actual.Should().BeFalse();
 		}
 
@@ -231,8 +237,7 @@ namespace HomeExercises
 		[TestCase("+1,1")]
 		public void IsValidNumber_True_WithPrecisionAndScaleGreaterThanFraction(string value)
 		{
-			var validator = new NumberValidator(int.MaxValue, int.MaxValue - 1);
-			var actual = validator.IsValidNumber(value);
+			var actual = defaultFractionValidator.IsValidNumber(value);
 			actual.Should().BeTrue();
 		}
 
@@ -241,8 +246,7 @@ namespace HomeExercises
 		[TestCase("0")]
 		public void IsValidNumber_True_WithOnlyPositiveInteger(string value)
 		{
-			var validator = new NumberValidator(int.MaxValue);
-			var actual = validator.IsValidNumber(value);
+			var actual = defaultIntegerValidator.IsValidNumber(value);
 			actual.Should().BeTrue();
 		}
 
@@ -251,16 +255,14 @@ namespace HomeExercises
 		[TestCase("0.0")]
 		public void IsValidNumber_True_WithOnlyPositiveFraction(string value)
 		{
-			var validator = new NumberValidator(int.MaxValue, int.MaxValue - 1);
-			var actual = validator.IsValidNumber(value);
+			var actual = defaultFractionValidator.IsValidNumber(value);
 			actual.Should().BeTrue();
 		}
 
 		[TestCaseSource(nameof(IsValidNumberTrueWithBigNumberCases))]
 		public void IsValidNumber_True_WithBigNumber(string value)
 		{
-			var validator = new NumberValidator(int.MaxValue, int.MaxValue - 1);
-			var actual = validator.IsValidNumber(value);
+			var actual = defaultFractionValidator.IsValidNumber(value);
 			actual.Should().BeTrue();
 		}
 
