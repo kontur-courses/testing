@@ -266,26 +266,19 @@ namespace HomeExercises
 
 		private static IEnumerable<TestCaseData> IsValidNumberTrueWithBigNumberCases()
 		{
-			yield return new TestCaseData(new string('1', 1000)) {TestName = "Integer"};
-			yield return new TestCaseData($"+{new string('1', 1000)}") {TestName = "+Integer"};
-			yield return new TestCaseData($"-{new string('1', 1000)}") {TestName = "-Integer"};
-			yield return new TestCaseData(
-				$"{new string('1', 1000)}.{new string('2', 1000)}") {TestName = "Fraction with dot"};
+			var longNumberString = new string('1', 1000);
+			yield return new TestCaseData(longNumberString) {TestName = "Integer"};
+			yield return new TestCaseData($"+{longNumberString}") {TestName = "+Integer"};
+			yield return new TestCaseData($"-{longNumberString}") {TestName = "-Integer"};
+			yield return new TestCaseData($"{longNumberString}.{longNumberString}") {TestName = "Fraction with dot"};
+			yield return new TestCaseData($"{longNumberString},{longNumberString}") {TestName = "Fraction with comma"};
+			yield return new TestCaseData($"+{longNumberString}.{longNumberString}") {TestName = "+Fraction with dot"};
+			yield return new TestCaseData($"-{longNumberString}.{longNumberString}") {TestName = "-Fraction with dot"};
+			yield return new TestCaseData($"+{longNumberString},{longNumberString}")
+				{TestName = "+Fraction with comma"};
 
-			yield return new TestCaseData(
-				$"{new string('1', 1000)},{new string('2', 1000)}") {TestName = "Fraction with comma"};
-
-			yield return new TestCaseData(
-				$"{new string('1', 1000)}.{new string('2', 1000)}") {TestName = "+Fraction with dot"};
-
-			yield return new TestCaseData(
-				$"{new string('1', 1000)}.{new string('2', 1000)}") {TestName = "-Fraction with dot"};
-
-			yield return new TestCaseData(
-				$"{new string('1', 1000)},{new string('2', 1000)}") {TestName = "+Fraction with comma"};
-
-			yield return new TestCaseData(
-				$"{new string('1', 1000)},{new string('2', 1000)}") {TestName = "-Fraction with comma"};
+			yield return new TestCaseData($"-{longNumberString},{longNumberString}")
+				{TestName = "-Fraction with comma"};
 		}
 	}
 }
