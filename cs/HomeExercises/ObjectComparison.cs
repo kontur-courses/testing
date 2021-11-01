@@ -12,22 +12,31 @@ namespace HomeExercises
 		{
 			var actualTsar = TsarRegistry.GetCurrentTsar();
 
-			var expectedTsar = new Person("Ivan IV The Terrible", 54, 170, 70,
+			Person expectedTsar = new Person("Ivan IV The Terrible", 54, 170, 70,
 				new Person("Vasili III of Russia", 28, 170, 60, null));
 
-			// Перепишите код на использование Fluent Assertions.
-			Assert.AreEqual(actualTsar.Name, expectedTsar.Name);
-			Assert.AreEqual(actualTsar.Age, expectedTsar.Age);
-			Assert.AreEqual(actualTsar.Height, expectedTsar.Height);
-			Assert.AreEqual(actualTsar.Weight, expectedTsar.Weight);
+			while (actualTsar != null | expectedTsar != null)
+			{
+				actualTsar.Should().BeEquivalentTo(expectedTsar, o => o.Excluding(d => d!.Id).Excluding(d => d!.Parent));
+				actualTsar = actualTsar!.Parent;
+				expectedTsar = expectedTsar!.Parent;
+			}
 
-			Assert.AreEqual(expectedTsar.Parent!.Name, actualTsar.Parent!.Name);
-			Assert.AreEqual(expectedTsar.Parent.Age, actualTsar.Parent.Age);
-			Assert.AreEqual(expectedTsar.Parent.Height, actualTsar.Parent.Height);
-			Assert.AreEqual(expectedTsar.Parent.Parent, actualTsar.Parent.Parent);
-		}
+            // Перепишите код на использование Fluent Assertions.
 
-		[Test]
+            //Assert.AreEqual(actualTsar.Name, expectedTsar.Name);
+            //Assert.AreEqual(actualTsar.Age, expectedTsar.Age);
+            //Assert.AreEqual(actualTsar.Height, expectedTsar.Height);
+            //Assert.AreEqual(actualTsar.Weight, expectedTsar.Weight);
+
+            //Assert.AreEqual(expectedTsar.Parent!.Name, actualTsar.Parent!.Name);
+            //Assert.AreEqual(expectedTsar.Parent.Age, actualTsar.Parent.Age);
+            //Assert.AreEqual(expectedTsar.Parent.Height, actualTsar.Parent.Height);
+            //Assert.AreEqual(expectedTsar.Parent.Parent, actualTsar.Parent.Parent);
+
+        }
+
+        [Test]
 		[Description("Альтернативное решение. Какие у него недостатки?")]
 		public void CheckCurrentTsar_WithCustomEquality()
 		{
@@ -38,6 +47,8 @@ namespace HomeExercises
 			// Какие недостатки у такого подхода? 
 			Assert.True(AreEqual(actualTsar, expectedTsar));
 		}
+		//При добавлении новых свойств нужно будет дописывать условия сравнения, что можно забыть сделать
+		//При непрохождении теста нет никакой информации о том какие из свойств не равны
 
 		private bool AreEqual(Person? actual, Person? expected)
 		{
