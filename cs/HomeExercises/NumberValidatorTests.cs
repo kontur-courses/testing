@@ -42,7 +42,6 @@ namespace HomeExercises
 		}
 
 
-		// IsValidForPrecision
 		[TestCase("1.23", 4, 2, true, true)]
 		[TestCase("+1.23", 4, 2, true, true)]
 		[TestCase("-1.23", 4, 2, false, true)]
@@ -50,17 +49,33 @@ namespace HomeExercises
 		[TestCase("+1.23", 3, 2, true, false)]
 		[TestCase("-1.23", 3, 2, false, false)]
 		[TestCase("00.00", 3, 2, true, false)]
-		// IsValidNullOrEmpty
+		public void IsValidForPrecision
+			(string valueForCheck, int precision, int scale, bool onlyPositive, bool resultOfChecking)
+			=> IsValidFor(valueForCheck, precision, scale, onlyPositive, resultOfChecking);
+
+
 		[TestCase("", 17, 4, true, false)]
 		[TestCase(null, 17, 4, true, false)]
-		// IsValidForScale
+		public void IsValidNullOrEmpty
+			(string valueForCheck, int precision, int scale, bool onlyPositive, bool resultOfChecking)
+			=> IsValidFor(valueForCheck, precision, scale, onlyPositive, resultOfChecking);
+
+
 		[TestCase("0.000", 17, 2, true, false)]
 		[TestCase("+1.23", 17, 2, true, true)]
 		[TestCase("0.1", 17, 2, true, true)]
-		// IsValidWithMinus
+		public void IsValidForScale
+			(string valueForCheck, int precision, int scale, bool onlyPositive, bool resultOfChecking)
+			=> IsValidFor(valueForCheck, precision, scale, onlyPositive, resultOfChecking);
+
+
 		[TestCase("-1.23", 17, 2, true, false)]
 		[TestCase("-1.23", 17, 2, false, true)]
-		// IsValidForFormat
+		public void IsValidWithMinus
+			(string valueForCheck, int precision, int scale, bool onlyPositive, bool resultOfChecking)
+			=> IsValidFor(valueForCheck, precision, scale, onlyPositive, resultOfChecking);
+
+
 		[TestCase("+", 17, 4, true, false)]
 		[TestCase("-0.", 17, 4, false, false)]
 		[TestCase("+0.", 17, 4, true, false)]
@@ -69,12 +84,20 @@ namespace HomeExercises
 		[TestCase("+1;7", 17, 4, true, false)]
 		[TestCase("a.sd", 6, 4, true, false)]
 		[TestCase("+1,7", 17, 4, true, true)]
-		// IsValidForAdditionalTests
-		// начальные тесты, не попавшие в другие подборки
+		public void IsValidForFormat
+			(string valueForCheck, int precision, int scale, bool onlyPositive, bool resultOfChecking)
+			=> IsValidFor(valueForCheck, precision, scale, onlyPositive, resultOfChecking);
+
+
 		[TestCase("+0.00", 3, 2, true, false)]
 		[TestCase("-0.00", 3, 2, true, false)]
 		[TestCase("0.0", 17, 2, true, true)]
 		[TestCase("0", 17, 2, true, true)]
+		public void IsValidForAdditionalTests
+			(string valueForCheck, int precision, int scale, bool onlyPositive, bool resultOfChecking)
+			=> IsValidFor(valueForCheck, precision, scale, onlyPositive, resultOfChecking);
+
+
 		public void IsValidFor(string valueForCheck, int precision, int scale, bool onlyPositive, bool resultOfChecking)
 		{
 			var valid = " is valid number for NumberValidator";
