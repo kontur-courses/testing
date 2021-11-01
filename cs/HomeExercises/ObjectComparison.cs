@@ -7,7 +7,6 @@ namespace HomeExercises
 	{
 		[Test]
 		[Description("Проверка текущего царя")]
-		[Category("ToRefactor")]
 		public void CheckCurrentTsar()
 		{
 			var actualTsar = TsarRegistry.GetCurrentTsar();
@@ -16,7 +15,8 @@ namespace HomeExercises
 				new Person("Vasili III of Russia", 28, 170, 60, null));
 
 			actualTsar.Should().BeEquivalentTo(expectedTsar, options =>
-				options.Excluding(info => info.SelectedMemberInfo.Name == "Id"));
+				options.Excluding(info =>
+					info.SelectedMemberInfo.Name == "Id" && info.SelectedMemberInfo.DeclaringType == typeof(Person)));
 		}
 
 		[Test]
@@ -60,7 +60,8 @@ namespace HomeExercises
 
 	public class Person
 	{
-		public static int IdCounter = 0;
+		private static int IdCounter = 0;
+
 		public int Age, Height, Weight;
 		public string Name;
 		public Person? Parent;
