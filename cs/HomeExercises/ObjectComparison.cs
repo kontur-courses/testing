@@ -1,7 +1,5 @@
 ﻿using FluentAssertions;
-using FluentAssertions.Equivalency;
 using NUnit.Framework;
-using System;
 
 namespace HomeExercises
 {
@@ -21,8 +19,8 @@ namespace HomeExercises
 
 			actualTsar.Should().BeEquivalentTo(expectedTsar, 
 				options => options.Excluding(
-					o => o.SelectedMemberInfo.Name == "Id" 
-					&& o.SelectedMemberInfo.DeclaringType.Name == "Person"));
+					o => o.SelectedMemberInfo.Name == nameof(actualTsar.Id) 
+					&& o.SelectedMemberInfo.DeclaringType.Name == nameof(Person)));
 		}
 
         [Test]
