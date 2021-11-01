@@ -36,16 +36,22 @@ namespace HomeExercises
 			 *может быть непонятно, на какой именнно мы допустили ошибку.
 			*/
 
-
 		}
-		[Test]
-		public void ShouldThrowExceptionWhenPrecisionIsNotPositive()
-		{
-			Action act1 = () => new NumberValidator(-1, 2, false);
-			Action act2 = () => new NumberValidator(0, -1, true);
 
-			act1.Should().ThrowExactly<ArgumentException>().WithMessage("precision must be a positive number");
-			act2.Should().ThrowExactly<ArgumentException>().WithMessage("precision must be a positive number");
+
+		[Test]
+		public void ShouldThrowExceptionWhenPrecisionIsNotPositive1()
+		{
+			Action act = () => new NumberValidator(-1, 2, false);
+			act.Should().ThrowExactly<ArgumentException>().WithMessage("precision must be a positive number");
+		}
+
+
+		[Test]
+		public void ShouldThrowExceptionWhenPrecisionIsNotPositive2()
+		{
+			Action act = () => new NumberValidator(0, -1, true);
+			act.Should().ThrowExactly<ArgumentException>().WithMessage("precision must be a positive number");
 		}
 
 
@@ -66,12 +72,18 @@ namespace HomeExercises
 
 
 		[Test]
-		public void ShouldNotThrowExceptionForValidArgs()
+		public void ShouldNotThrowExceptionForValidArgs1()
 		{
-			Action act1 = () => new NumberValidator(1, 0, true);
-			Action act2 = () => new NumberValidator(2, 1, true);
-			act1.Should().NotThrow();
-			act2.Should().NotThrow();
+			Action act = () => new NumberValidator(1, 0, true);
+			act.Should().NotThrow();
+		}
+
+
+		[Test]
+		public void ShouldNotThrowExceptionForValidArgs2()
+		{
+			Action act = () => new NumberValidator(2, 1, true);
+			act.Should().NotThrow();
 		}
 
 
