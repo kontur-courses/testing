@@ -1,132 +1,66 @@
 ﻿using System;
 using FluentAssertions;
 using NUnit.Framework;
-using NUnit.Framework.Internal;
 
 namespace HomeExercises
 {
     public class NumberValidatorTests
 	{
 
-		[TestCase(0)]
-		[TestCase(-1)]
-		public void NonPositivePrecision_ThrowsArgumentException(int precision)
-        {
-			Action action = () => new NumberValidator(precision);
-			action.Should().Throw<ArgumentException>();
-        }
-
-		[Test]
-		public void RightParameters_DoesNotThrows()
-        {
-			Action action = () => new NumberValidator(1);
-			action.Should().NotThrow();
-        }
-
-		[TestCase(-1, TestName = "ScaleNegative")]
-		[TestCase(2, TestName ="ScaleMoreThenPrecision")]
-		public void WrongScale_ThrowsArgumentException(int scale)
-        {
-			Action action = () => new NumberValidator(1, scale);
+		[TestCase(0, 0, TestName = "WhenPrecisionZero")]
+		[TestCase(-1, 0, TestName = "WhenPrecisionNegative")]
+		[TestCase(1, -1, TestName = "WhenScaleNegative")]
+		[TestCase(1, 2, TestName = "WhenScaleMoreThenPrecision")]
+		public void CtorShould_ThrowArgumentException(int precision, int scale)
+		{
+			Action action = () => new NumberValidator(precision, scale);
 			action.Should().Throw<ArgumentException>();
 		}
 
-		[TestCase("1234567890")]
-		[TestCase("6018954273")]
-		[TestCase("2347601958")]
-		[TestCase("9403875261")]
-		[TestCase("4891536702")]
-		public void IsValid_WithAllDigits_True(string number)
+		[TestCase("1234567890", 10, 0,
+			ExpectedResult = true, TestName = "ShouldBeTrue_WhenAllDigitsUsed")]
+		[TestCase("1,0", ExpectedResult = true,
+			TestName = "ShouldBeTrue_WhenSeparatorIsComma")]
+		[TestCase("1.0", ExpectedResult = true,
+			TestName = "ShouldBeTrue_WhenSeparatorIsDot")]
+		[TestCase("asd.f", ExpectedResult = false,
+			TestName = "ShouldBeFalse_WhenNotNumber")]
+		[TestCase("1.2.3", ExpectedResult = false,
+			TestName = "ShouldBeFalse_WithManyDots")]
+		[TestCase("asd.f", ExpectedResult = false,
+			TestName = "ShouldBeFalse_WhenNotNumber")]
+		[TestCase("", ExpectedResult = false,
+			TestName = "ShouldBeFalse_WhenEmptyWord")]
+		[TestCase(null, ExpectedResult = false,
+			TestName = "ShouldBeFalse_WhenNull")]
+		[TestCase("123.", ExpectedResult = false,
+			TestName = "ShouldBeFalse_WhenEndsWithSeparator")]
+		[TestCase(".123", ExpectedResult = false,
+			TestName = "ShouldBeFalse_WhenBeginsWithSeparator")]
+		[TestCase("123", ExpectedResult = true,
+			TestName = "ShouldBeTrue_WhenNumberLengthLessThenPrecision")]
+		[TestCase("1234", ExpectedResult = true,
+			TestName = "ShouldBeTrue_WhenNumberLengthEqualsPrecision")]
+		[TestCase("12345", ExpectedResult = false,
+			TestName = "ShouldBeFalse_WhenNumberLengthMoreThenPrecision")]
+		[TestCase("123.4", ExpectedResult = true,
+			TestName = "ShouldBeTrue_WhenFractionLengthLessThenScale")]
+		[TestCase("12.34", ExpectedResult = true,
+			TestName = "ShouldBeTrue_WhenFractionLengthEqualsScale")]
+		[TestCase("1.234", ExpectedResult = false,
+			TestName = "ShouldBeFalse_WhenFractionLengthMoreThenScale")]
+		[TestCase("-1234", ExpectedResult = false,
+			TestName = "PrecisionShouldConsiderMinus")]
+		[TestCase("+1234", ExpectedResult = false,
+			TestName = "PrecisionShouldConsiderPlus")]
+		[TestCase("-1", 2, 0, true,
+			ExpectedResult = false,
+			TestName = "ShouldBeFalse_WhenOnlyPositiveTrueAndNumberNegative")]
+		public bool IsValidNumber(string number, int precision = 4,
+			int scale = 2, bool onlyPositive = false)
 		{
-			var validator = new NumberValidator(10);
-			validator.IsValidNumber(number).Should().BeTrue();
-		}
-
-		[TestCase("0.0", TestName = "WithDot")]
-		[TestCase("0,0", TestName = "WithComma")]
-		public void IsValid_WithDifferentSeparators_True(string number)
-		{
-			var validator = new NumberValidator(2, 1);
-			validator.IsValidNumber(number).Should().BeTrue();
-		}
-
-		[TestCase("--1")]
-		[TestCase("+++1")]
-		public void IsValid_WithManySigns_False(string number)
-		{
-			var validator = new NumberValidator(4);
-			validator.IsValidNumber(number).Should().BeFalse();
-		}
-
-		[TestCase("asd.fgh")]
-		[TestCase("14,1.2")]
-		[TestCase(" ")]
-		[TestCase("+5f.a2")]
-		[TestCase("+")]
-		[TestCase(",")]
-		[TestCase("1234,")]
-		[TestCase(".1234")]
-		[TestCase("1234,")]
-		public void IsValid_WithNotNumbers_False(string number)
-		{
-			var validator = new NumberValidator(6, 3);
-			validator.IsValidNumber(number).Should().BeFalse();
-		}
-
-		[TestCase("")]
-		[TestCase(null)]
-		public void IsValid_WithEmptyWord_False(string number)
-		{
-			var validator = new NumberValidator(4);
-			validator.IsValidNumber(number).Should().BeFalse();
-		}
-		
-		[Test]
-		public void IsValid_NumberLengthLessThenPrecision()
-		{
-			var validator = new NumberValidator(4, 2);
-			var number = "1423";
-			validator.IsValidNumber(number).Should().BeTrue();
-		}
-
-		[Test]
-		public void IsValid_NumberLengthMoreThenPrecision()
-		{
-			var validator = new NumberValidator(4, 2);
-			var number = "14235";
-			validator.IsValidNumber(number).Should().BeFalse();
-		}
-		
-		[TestCase("+1423")]
-		[TestCase("-1423")]
-		public void IsValid_PrecisionShouldConsiderSign(string number)
-		{
-			var validator = new NumberValidator(4, 2);
-			validator.IsValidNumber(number).Should().BeFalse();
-		}
-
-		[TestCase("14.23", ExpectedResult = true, TestName = "LessThenScale")]
-		[TestCase("1.235", ExpectedResult = false, TestName = "MoreThenScale")]
-		public bool IsValid_Fraction(string number)
-		{
-			var validator = new NumberValidator(4, 2);
+			var validator = new NumberValidator(precision, scale, onlyPositive);
 			return validator.IsValidNumber(number);
-		}
-
-		[Test]
-		public void IsValid_IntegerAndFractionLengthMoreThenPrecision_False()
-		{
-			var validator = new NumberValidator(4, 2);
-			var number = "12.345";
-			validator.IsValidNumber(number).Should().BeFalse();
-		}
-
-		[Test]
-		public void IsValid_OnlyPositiveWithNegativeNumber_False()
-		{
-			var validator = new NumberValidator(4, 2, true);
-			var number = "-12.3";
-			validator.IsValidNumber(number).Should().BeFalse();
 		}
 	}
 }
