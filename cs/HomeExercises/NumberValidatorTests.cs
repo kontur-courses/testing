@@ -8,21 +8,6 @@ namespace HomeExercises
 	public class NumberValidatorTests
 	{
 		[Test]
-		public void Test()
-		{
-			Assert.IsTrue(new NumberValidator(17, 2, true).IsValidNumber("0"));
-			Assert.IsTrue(new NumberValidator(17, 2, true).IsValidNumber("0.0"));
-			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("00.00"));
-			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("-0.00"));
-			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("+0.00"));
-			Assert.IsTrue(new NumberValidator(4, 2, true).IsValidNumber("+1.23"));
-			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("+1.23"));
-			Assert.IsFalse(new NumberValidator(17, 2, true).IsValidNumber("0.000"));
-			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("-1.23"));
-			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("a.sd"));
-		}
-
-		[Test]
 		[TestCase(-1, 1, TestName = "With negative precision")]
 		[TestCase(1, -1, TestName = "With negative scale")]
 		[TestCase(0, 1, TestName = "With zero precision")]
@@ -47,9 +32,21 @@ namespace HomeExercises
 		}
 
 		[Test]
-		public void NumberValidator_IsValidNumber_CustomParams(int precision, int scale, bool onlyPositive, string num)
+		[TestCase(10, 0, true, "0", ExpectedResult = true, TestName = "With integer")]
+		[TestCase(10, 1, true, "0.0", ExpectedResult = true, TestName = "With real")]
+		[TestCase(10, 1, true, "+0.0", ExpectedResult = true, TestName = "With plus at the beginnig")]
+		[TestCase(10, 5, false, "+0.0", ExpectedResult = true, TestName = "With positive when not onlyPositive")]
+		[TestCase(10, 5, true, null, ExpectedResult = false, TestName = "With null")]
+		[TestCase(10, 5, true, "", ExpectedResult = false, TestName = "With empty string")]
+		[TestCase(10, 5, true, "+a.b", ExpectedResult = false, TestName = "With not a num")]
+		[TestCase(10, 1, true, "0.00", ExpectedResult = false, TestName = "With frac part more than scale")]
+		[TestCase(3, 2, true, "00.00", ExpectedResult = false, TestName = "With int and frac parts more than precision")]
+		[TestCase(10, 5, true, "-1.23", ExpectedResult = false, TestName = "With minus when onlyPositive")]
+		public bool NumberValidator_IsValidNumber_CustomParams(int precision, int scale, bool onlyPositive, string num)
 		{
+			var validator = new NumberValidator(precision, scale, onlyPositive);
 
+			return validator.IsValidNumber(num);
 		}
 	}
 
