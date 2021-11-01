@@ -92,6 +92,19 @@ namespace HomeExercises
 				.Should()
 				.BeTrue();
 		}
+
+		[TestCase("+1,1234")]
+		[TestCase("12,1234")]
+		[TestCase("-1,1234")]
+		[TestCase("-0,000")]
+		[TestCase("-000,0")]
+		public void Validator_ShouldValidateDecimal_WithCommaSeparator(string number)
+        {
+			new NumberValidator(6, 4, false)
+				.IsValidNumber(number)
+				.Should()
+				.BeTrue();
+		}
 	}
 
 	public class NumberValidator
