@@ -7,26 +7,55 @@ namespace HomeExercises
 {
 	public class NumberValidatorTests
 	{
-		[Test]
-		public void Test()
-		{
-			Assert.Throws<ArgumentException>(() => new NumberValidator(-1, 2, true));
-			Assert.DoesNotThrow(() => new NumberValidator(1, 0, true));
-			Assert.Throws<ArgumentException>(() => new NumberValidator(-1, 2, false));
-			Assert.DoesNotThrow(() => new NumberValidator(1, 0, true));
+		private NumberValidator validator;
 
-			Assert.IsTrue(new NumberValidator(17, 2, true).IsValidNumber("0.0"));
-			Assert.IsTrue(new NumberValidator(17, 2, true).IsValidNumber("0"));
-			Assert.IsTrue(new NumberValidator(17, 2, true).IsValidNumber("0.0"));
-			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("00.00"));
-			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("-0.00"));
-			Assert.IsTrue(new NumberValidator(17, 2, true).IsValidNumber("0.0"));
-			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("+0.00"));
-			Assert.IsTrue(new NumberValidator(4, 2, true).IsValidNumber("+1.23"));
-			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("+1.23"));
-			Assert.IsFalse(new NumberValidator(17, 2, true).IsValidNumber("0.000"));
-			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("-1.23"));
-			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("a.sd"));
+		[OneTimeSetUp]
+		public void Initialization()
+		{
+			validator = new NumberValidator(5, 2, true);
+		}
+		
+		[TestCase(2, 1, true, TestName = "Scale less than precision")]
+		[TestCase(1, 0, true, TestName = "Scale is zero")]
+		public void Constructor_ShouldCreateNumberValidator(int precision, int scale, bool onlyPositive)
+		{
+			FluentActions.Invoking(
+					() => new NumberValidator(precision, scale, onlyPositive))
+				.Should().NotThrow();
+		}
+
+		[TestCase(-1, 2, true, TestName = "Negative precision")]
+		[TestCase(1, -1, true, TestName = "Negative scale")]
+		[TestCase(1, 2, true, TestName = "Scale greater than precision")]
+		[TestCase(0, 1, true, TestName = "Precision is zero")]
+		public void Constructor_ShouldThrowArgumentException(int precision, int scale, bool onlyPositive)
+		{
+			FluentActions.Invoking(
+					() => new NumberValidator(precision, scale, onlyPositive))
+				.Should().Throw<ArgumentException>();;
+		}
+
+		[TestCase("", TestName = "Value is empty string")]
+		[TestCase(" ", TestName = "Value is white space")]
+		[TestCase(null, TestName = "Value is null")]
+		[TestCase("a.sd", TestName = "Value is not a number")]
+		[TestCase("", TestName = "Value is not a number")]
+		[TestCase("-0.0", TestName = "NumberValidator is onlyPositive but value is negative")]
+		[TestCase("0.000", TestName = "Fractional part grater then scale")]
+		[TestCase(".0", TestName = "Value without int part")]
+		[TestCase("0.", TestName = "Value without fractional part but with separator")]
+		[TestCase("+000.00", TestName = "Int part plus fractional part greater than precision")]
+		public void IsValid_ShouldBeFalse(string value)
+		{
+			validator.IsValidNumber(value).Should().BeFalse();
+		}
+
+		[TestCase(true, "0,0", TestName = "Separator is comma")]
+		[TestCase(true,"+0.0", TestName = "Value is positive")]
+		[TestCase(false, "-0.0", TestName = "Value is negative")]
+		public void IsValid_ShouldBeTrue(bool onlyPositive, string value)
+		{
+			new NumberValidator(3,2, onlyPositive).IsValidNumber(value).Should().BeTrue();
 		}
 	}
 
