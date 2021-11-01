@@ -1,10 +1,11 @@
 ﻿using System;
+using System.Collections;
 using FluentAssertions;
 using NUnit.Framework;
 
 namespace HomeExercises
 {
-    public class NumberValidatorTests
+	public class NumberValidatorTests
 	{
 
 		[TestCase(0, 0, TestName = "WhenPrecisionZero")]
@@ -17,50 +18,90 @@ namespace HomeExercises
 			action.Should().Throw<ArgumentException>();
 		}
 
-		[TestCase("1234567890", 10, 0,
-			ExpectedResult = true, TestName = "ShouldBeTrue_WhenAllDigitsUsed")]
-		[TestCase("1,0", ExpectedResult = true,
-			TestName = "ShouldBeTrue_WhenSeparatorIsComma")]
-		[TestCase("1.0", ExpectedResult = true,
-			TestName = "ShouldBeTrue_WhenSeparatorIsDot")]
-		[TestCase("asd.f", ExpectedResult = false,
-			TestName = "ShouldBeFalse_WhenNotNumber")]
-		[TestCase("1.2.3", ExpectedResult = false,
-			TestName = "ShouldBeFalse_WithManyDots")]
-		[TestCase("asd.f", ExpectedResult = false,
-			TestName = "ShouldBeFalse_WhenNotNumber")]
-		[TestCase("", ExpectedResult = false,
-			TestName = "ShouldBeFalse_WhenEmptyWord")]
-		[TestCase(null, ExpectedResult = false,
-			TestName = "ShouldBeFalse_WhenNull")]
-		[TestCase("123.", ExpectedResult = false,
-			TestName = "ShouldBeFalse_WhenEndsWithSeparator")]
-		[TestCase(".123", ExpectedResult = false,
-			TestName = "ShouldBeFalse_WhenBeginsWithSeparator")]
-		[TestCase("123", ExpectedResult = true,
-			TestName = "ShouldBeTrue_WhenNumberLengthLessThenPrecision")]
-		[TestCase("1234", ExpectedResult = true,
-			TestName = "ShouldBeTrue_WhenNumberLengthEqualsPrecision")]
-		[TestCase("12345", ExpectedResult = false,
-			TestName = "ShouldBeFalse_WhenNumberLengthMoreThenPrecision")]
-		[TestCase("123.4", ExpectedResult = true,
-			TestName = "ShouldBeTrue_WhenFractionLengthLessThenScale")]
-		[TestCase("12.34", ExpectedResult = true,
-			TestName = "ShouldBeTrue_WhenFractionLengthEqualsScale")]
-		[TestCase("1.234", ExpectedResult = false,
-			TestName = "ShouldBeFalse_WhenFractionLengthMoreThenScale")]
-		[TestCase("-1234", ExpectedResult = false,
-			TestName = "PrecisionShouldConsiderMinus")]
-		[TestCase("+1234", ExpectedResult = false,
-			TestName = "PrecisionShouldConsiderPlus")]
+		[Test, TestCaseSource(nameof(casesForRegex))]
+		[TestCaseSource(nameof(casesForEmptyAndNull))]
+		[TestCaseSource(nameof(casesForPrecision))]
+		[TestCaseSource(nameof(casesForScale))]
+		[TestCaseSource(nameof(casesForSign))]
 		[TestCase("-1", 2, 0, true,
 			ExpectedResult = false,
 			TestName = "ShouldBeFalse_WhenOnlyPositiveTrueAndNumberNegative")]
-		public bool IsValidNumber(string number, int precision = 4,
-			int scale = 2, bool onlyPositive = false)
+		public bool IsValidNumber(string number, int precision,
+			int scale, bool onlyPositive)
 		{
 			var validator = new NumberValidator(precision, scale, onlyPositive);
 			return validator.IsValidNumber(number);
 		}
+
+		private static TestCaseData[] casesForRegex =
+		{
+			new TestCaseData("1234567890", 10, 0, false)
+				.SetName("ShouldBeTrue_WhenAllDigitsUsed")
+				.Returns(true),
+			new TestCaseData("1,0", 4, 2, false)
+				.SetName("ShouldBeTrue_WhenAllDigitsUsed")
+				.Returns(true),
+			new TestCaseData("1.0", 4, 2, false)
+				.SetName("ShouldBeTrue_WhenSeparatorIsDot")
+				.Returns(true),
+			new TestCaseData("asd.f", 4, 2, false)
+				.SetName("ShouldBeFalse_WhenNotNumber")
+				.Returns(false),
+			new TestCaseData("1.2.3", 4, 2, false)
+				.SetName("ShouldBeFalse_WithManyDots")
+				.Returns(false),
+			new TestCaseData("123.", 4, 2, false)
+				.SetName("ShouldBeFalse_WhenEndsWithSeparator")
+				.Returns(false),
+			new TestCaseData(".123", 4, 2, false)
+				.SetName("ShouldBeFalse_WhenBeginsWithSeparator")
+				.Returns(false)
+		};
+
+        private static TestCaseData[] casesForEmptyAndNull =
+		{
+			new TestCaseData("", 4, 2, false)
+				.SetName("ShouldBeFalse_WhenEmptyWord")
+				.Returns(false),
+			new TestCaseData(null, 4, 2, false)
+				.SetName("ShouldBeFalse_WhenNull")
+				.Returns(false)
+		};
+
+		private static TestCaseData[] casesForPrecision =
+		{
+			new TestCaseData("123", 4, 2, false)
+				.SetName("ShouldBeTrue_WhenNumberLengthLessThenPrecision")
+				.Returns(true),
+			new TestCaseData("1234", 4, 2, false)
+				.SetName("ShouldBeTrue_WhenNumberLengthEqualsPrecision")
+				.Returns(true),
+			new TestCaseData("12345", 4, 2, false)
+				.SetName("ShouldBeFalse_WhenNumberLengthMoreThenPrecision")
+				.Returns(false)
+		};
+
+		private static TestCaseData[] casesForScale =
+		{
+			new TestCaseData("123.4", 4, 2, false)
+				.SetName("ShouldBeTrue_WhenNumberLengthLessThenScale")
+				.Returns(true),
+			new TestCaseData("12.34", 4, 2, false)
+				.SetName("ShouldBeTrue_WhenNumberLengthEqualsScale")
+				.Returns(true),
+			new TestCaseData("1.234", 4, 2, false)
+				.SetName("ShouldBeFalse_WhenNumberLengthMoreThenScale")
+				.Returns(false)
+		};
+
+		private static TestCaseData[] casesForSign =
+		{
+			new TestCaseData("-1234", 4, 2, false)
+				.SetName("PrecisionShouldConsiderMinus")
+				.Returns(false),
+			new TestCaseData("+1234", 4, 2, false)
+				.SetName("PrecisionShouldConsiderPlus")
+				.Returns(false)
+		};
 	}
 }
