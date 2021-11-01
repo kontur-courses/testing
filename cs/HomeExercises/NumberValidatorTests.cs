@@ -8,6 +8,29 @@ namespace HomeExercises
 	public class NumberValidatorTests
 	{
 		[Test]
+		public void OriginalTests()
+        {
+			Assert.Throws<ArgumentException>(() => new NumberValidator(-1, 2, true));
+			Assert.DoesNotThrow(() => new NumberValidator(1, 0, true));
+			Assert.Throws<ArgumentException>(() => new NumberValidator(-1, 2, false));
+			Assert.DoesNotThrow(() => new NumberValidator(1, 0, true));
+
+			Assert.IsTrue(new NumberValidator(17, 2, true).IsValidNumber("0.0"));
+			Assert.IsTrue(new NumberValidator(17, 2, true).IsValidNumber("0"));
+			//Assert.IsTrue(new NumberValidator(17, 2, true).IsValidNumber("0.0")); - repeats 18 line
+			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("00.00"));
+			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("-0.00"));
+			//Assert.IsTrue(new NumberValidator(17, 2, true).IsValidNumber("0.0")); -repeats 18 line
+			//Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("+0.00")); - almost repeats 22 line
+			Assert.IsTrue(new NumberValidator(4, 2, true).IsValidNumber("+1.23"));
+			//Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("+1.23")); - quiet similiar to 22 line
+			Assert.IsFalse(new NumberValidator(17, 2, true).IsValidNumber("0.000"));
+			//Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("-1.23")); -almost repeats 25 line
+			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("a.sd"));
+
+
+		}
+		[Test]
 		public void ShouldThrowExceptionWhenPrecisionIsNotPositive()
 		{
 			Action act1 = () => new NumberValidator(-1, 2, false);
