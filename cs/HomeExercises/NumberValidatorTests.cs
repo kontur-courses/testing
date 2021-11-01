@@ -20,14 +20,19 @@ namespace HomeExercises
 		[TestCase(1, 2, TestName = "ScaleIsGreaterThanPrecision_ThrowsArgumentException")]
 		[TestCase(1, 1, TestName = "ScaleEqualsPrecision_ThrowsArgumentException")]
 		public void Ctor_Throws_WithInvalidArgs(int precision, int scale)
-		{ 
+		{
 			Action action = () => new NumberValidator(precision, scale);
 			action.Should().Throw<ArgumentException>();
 		}
 
 		[TestCase("30.99", 4, 1, TestName = "FracPartIsMoreThanScale_False", ExpectedResult = false)]
+		[TestCase("30.99", 4, 2, TestName = "FracPartEqualsScale_True", ExpectedResult = true)]
+		[TestCase("30.99", 4, 3, TestName = "FracPartIsLessThanScale_True", ExpectedResult = true)]
 		[TestCase("12345", 4, 2, TestName = "IntPartIsMoreThanPrecision_False", ExpectedResult = false)]
+		[TestCase("12345", 5, 2, TestName = "IntPartEqualsPrecision_True", ExpectedResult = true)]
 		[TestCase("-1234", 4, 2, TestName = "IntPartWithSignIsMoreThanPrecision_False", ExpectedResult = false)]
+		[TestCase("-1234", 5, 2, TestName = "IntPartWithSignEqualsPrecision_True", ExpectedResult = true)]
+		[TestCase("30.99", 5, 2, TestName = "IntPartPlusFracPartIsLessThanPrecision_True", ExpectedResult = true)]
 		[TestCase("30.99", 3, 2, TestName = "IntPartPlusFracPartIsMoreThanPrecision_False", ExpectedResult = false)]
 		[TestCase("-1.5", 4, 2, true, TestName = "IsNegativeWhenOnlyPositiveTrue_False", ExpectedResult = false)]
 		[TestCase("", 2, 1, TestName = "EmptyString_False", ExpectedResult = false)]
@@ -36,6 +41,7 @@ namespace HomeExercises
 		[TestCase("0.002", 4, 3, TestName = "ValidIntAndFracPart_True", ExpectedResult = true)]
 		[TestCase("+5", 4, 2, TestName = "PositiveSign_True", ExpectedResult = true)]
 		[TestCase("a.sd", 4, 2, TestName = "StringWithLetters_False", ExpectedResult = false)]
+		[TestCase("30,99", 4, 2, TestName = "CommaInsteadOfDot_True", ExpectedResult = true)]
 		public bool IsValidNumber(string value, int precision, int scale, bool onlyPositive = false)
 		{
 			var validator = new NumberValidator(precision, scale, onlyPositive);
@@ -61,7 +67,7 @@ namespace HomeExercises
 				throw new ArgumentException("precision must be a non-negative number less or equal than precision");
 			numberRegex = new Regex(@"^([+-]?)(\d+)([.,](\d+))?$", RegexOptions.IgnoreCase);
 		}
-		
+
 		public bool IsValidNumber(string value)
 		{
 			// Проверяем соответствие входного значения формату N(m,k), в соответствии с правилом, 
