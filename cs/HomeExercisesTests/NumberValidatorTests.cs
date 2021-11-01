@@ -6,7 +6,6 @@ using static HomeExercisesTests.NumberValidatorTestData;
 
 namespace HomeExercisesTests
 {
-	[TestFixture]
 	public class NumberValidatorTests
 	{
 		[TestCase(-1, 0, "precision must be a positive number", TestName = "PrecisionIsNegative")]
@@ -20,22 +19,12 @@ namespace HomeExercisesTests
 				.WithMessage(expectedMessage);
 		}
 
-		[TestCase(1, 0, false, TestName = "ArgumentsCorrect")]
-		public void Create_NotThrow_When(int precision, int scale, bool onlyPositive)
-		{
-			Action action = () => NumberValidator.Create(precision, scale, onlyPositive);
-
-			action.Should().NotThrow();
-		}
-
 		[TestCaseSource(typeof(NumberValidatorTestData), nameof(CorrectInputCases))]
 		[TestCaseSource(typeof(NumberValidatorTestData), nameof(InvalidInputCases))]
 		[TestCaseSource(typeof(NumberValidatorTestData), nameof(NumberNotMeetValidatorRestrictionsCases))]
-		public void IsValidNumber(string value, int precision, int scale, bool onlyPositive, bool expected)
+		public void IsValidNumber(string value, NumberValidator sut, bool expected)
 		{
-			var validator = NumberValidator.Create(precision, scale, onlyPositive);
-
-			validator.IsValidNumber(value).Should().Be(expected);
+			sut.IsValidNumber(value).Should().Be(expected);
 		}
 	}
 }
