@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using FluentAssertions;
 using NUnit.Framework;
 
@@ -17,90 +18,118 @@ namespace HomeExercises
 			action.Should().Throw<ArgumentException>();
 		}
 
-		[Test, TestCaseSource(nameof(casesForRegex))]
-		[TestCaseSource(nameof(casesForEmptyAndNull))]
-		[TestCaseSource(nameof(casesForPrecision))]
-		[TestCaseSource(nameof(casesForScale))]
-		[TestCaseSource(nameof(casesForSign))]
-		[TestCase("-1", 2, 0, true,
-			ExpectedResult = false,
-			TestName = "ShouldBeFalse_WhenOnlyPositiveTrueAndNumberNegative")]
-		public bool IsValidNumber(string number, int precision,
-			int scale, bool onlyPositive)
+		[Test, TestCaseSource(nameof(CasesForRegex))]
+		[TestCaseSource(nameof(CasesForEmptyAndNull))]
+		[TestCaseSource(nameof(CasesForPrecision))]
+		[TestCaseSource(nameof(CasesForScale))]
+		[TestCaseSource(nameof(CasesForSign))]
+		[TestCaseSource(nameof(CaseForOnlyPositive))]
+		public bool IsValidNumber(string number, NumberValidator validator)
 		{
-			var validator = new NumberValidator(precision, scale, onlyPositive);
 			return validator.IsValidNumber(number);
 		}
 
-		private static TestCaseData[] casesForRegex =
+		private static IEnumerable<TestCaseData> CasesForRegex
 		{
-			new TestCaseData("1234567890", 10, 0, false)
-				.SetName("ShouldBeTrue_WhenAllDigitsUsed")
-				.Returns(true),
-			new TestCaseData("1,0", 4, 2, false)
-				.SetName("ShouldBeTrue_WhenAllDigitsUsed")
-				.Returns(true),
-			new TestCaseData("1.0", 4, 2, false)
-				.SetName("ShouldBeTrue_WhenSeparatorIsDot")
-				.Returns(true),
-			new TestCaseData("asd.f", 4, 2, false)
-				.SetName("ShouldBeFalse_WhenNotNumber")
-				.Returns(false),
-			new TestCaseData("1.2.3", 4, 2, false)
-				.SetName("ShouldBeFalse_WithManyDots")
-				.Returns(false),
-			new TestCaseData("123.", 4, 2, false)
-				.SetName("ShouldBeFalse_WhenEndsWithSeparator")
-				.Returns(false),
-			new TestCaseData(".123", 4, 2, false)
-				.SetName("ShouldBeFalse_WhenBeginsWithSeparator")
-				.Returns(false)
-		};
+			get
+			{
+				var validator = new NumberValidator(10);
+				yield return new TestCaseData("1234567890", validator)
+					.SetName("ShouldBeTrue_WhenAllDigitsUsed")
+					.Returns(true);
+				validator = new NumberValidator(4, 2);
+				yield return new TestCaseData("1,0", validator)
+					.SetName("ShouldBeTrue_WhenAllDigitsUsed")
+					.Returns(true);
+				yield return new TestCaseData("1.0", validator)
+					.SetName("ShouldBeTrue_WhenSeparatorIsDot")
+					.Returns(true);
+				yield return new TestCaseData("asd.f", validator)
+					.SetName("ShouldBeFalse_WhenNotNumber")
+					.Returns(false);
+				yield return new TestCaseData("1.2.3", validator)
+					.SetName("ShouldBeFalse_WithManyDots")
+					.Returns(false);
+				yield return new TestCaseData("123.", validator)
+					.SetName("ShouldBeFalse_WhenEndsWithSeparator")
+					.Returns(false);
+				yield return new TestCaseData(".123", validator)
+					.SetName("ShouldBeFalse_WhenBeginsWithSeparator")
+					.Returns(false);
+			}
+		}
 
-        private static TestCaseData[] casesForEmptyAndNull =
+        private static IEnumerable<TestCaseData> CasesForEmptyAndNull
 		{
-			new TestCaseData("", 4, 2, false)
-				.SetName("ShouldBeFalse_WhenEmptyWord")
-				.Returns(false),
-			new TestCaseData(null, 4, 2, false)
-				.SetName("ShouldBeFalse_WhenNull")
-				.Returns(false)
-		};
+			get
+			{
+				var validator = new NumberValidator(4, 2);
+				yield return new TestCaseData("", validator)
+					.SetName("ShouldBeFalse_WhenEmptyWord")
+					.Returns(false);
+				yield return new TestCaseData(null, validator)
+					.SetName("ShouldBeFalse_WhenNull")
+					.Returns(false);
+			}
+		}
 
-		private static TestCaseData[] casesForPrecision =
+		private static IEnumerable<TestCaseData> CasesForPrecision
 		{
-			new TestCaseData("123", 4, 2, false)
-				.SetName("ShouldBeTrue_WhenNumberLengthLessThenPrecision")
-				.Returns(true),
-			new TestCaseData("1234", 4, 2, false)
-				.SetName("ShouldBeTrue_WhenNumberLengthEqualsPrecision")
-				.Returns(true),
-			new TestCaseData("12345", 4, 2, false)
-				.SetName("ShouldBeFalse_WhenNumberLengthMoreThenPrecision")
-				.Returns(false)
-		};
+			get
+			{
+				var validator = new NumberValidator(4, 2);
+				yield return new TestCaseData("123", validator)
+					.SetName("ShouldBeTrue_WhenNumberLengthLessThenPrecision")
+					.Returns(true);
+				yield return new TestCaseData("1234", validator)
+					.SetName("ShouldBeTrue_WhenNumberLengthEqualsPrecision")
+					.Returns(true);
+				yield return new TestCaseData("12345", validator)
+					.SetName("ShouldBeFalse_WhenNumberLengthMoreThenPrecision")
+					.Returns(false);
+			}
+		}
 
-		private static TestCaseData[] casesForScale =
+		private static IEnumerable<TestCaseData> CasesForScale 
 		{
-			new TestCaseData("123.4", 4, 2, false)
-				.SetName("ShouldBeTrue_WhenNumberLengthLessThenScale")
-				.Returns(true),
-			new TestCaseData("12.34", 4, 2, false)
-				.SetName("ShouldBeTrue_WhenNumberLengthEqualsScale")
-				.Returns(true),
-			new TestCaseData("1.234", 4, 2, false)
-				.SetName("ShouldBeFalse_WhenNumberLengthMoreThenScale")
-				.Returns(false)
-		};
+			get
+			{
+				var validator = new NumberValidator(4, 2);
+				yield return new TestCaseData("123.4", validator)
+					.SetName("ShouldBeTrue_WhenNumberLengthLessThenScale")
+					.Returns(true);
+				yield return new TestCaseData("12.34", validator)
+					.SetName("ShouldBeTrue_WhenNumberLengthEqualsScale")
+					.Returns(true);
+				yield return new TestCaseData("1.234", validator)
+					.SetName("ShouldBeFalse_WhenNumberLengthMoreThenScale")
+					.Returns(false);
+			}
+		}
 
-		private static TestCaseData[] casesForSign =
+		private static IEnumerable<TestCaseData> CasesForSign
 		{
-			new TestCaseData("-1234", 4, 2, false)
-				.SetName("PrecisionShouldConsiderMinus")
-				.Returns(false),
-			new TestCaseData("+1234", 4, 2, false)
-				.SetName("PrecisionShouldConsiderPlus")
-				.Returns(false)
-		};
+			get
+			{
+				var validator = new NumberValidator(4, 2);
+				yield return new TestCaseData("-1234", validator)
+					.SetName("PrecisionShouldConsiderMinus")
+					.Returns(false);
+				yield return new TestCaseData("+1234", validator)
+					.SetName("PrecisionShouldConsiderPlus")
+					.Returns(false);
+			}
+		}
+
+		private static IEnumerable<TestCaseData> CaseForOnlyPositive
+		{
+			get
+			{
+				var validator = new NumberValidator(2, 0, true);
+				yield return new TestCaseData("-1", validator)
+					.SetName("ShouldBeFalse_WhenOnlyPositiveTrueAndNumberNegative")
+					.Returns(false);
+			}
+		}
 	}
 }
