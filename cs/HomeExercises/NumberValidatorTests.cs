@@ -32,8 +32,10 @@ namespace HomeExercises
 			 *Отсутствует тест конструктора, проверяющий поведение при отрицательном scale,
 			 *Скудность проверки выражений, отличающихся от заданного формата,
 			 *отсутствие проверки на null и пустую строку
-			 *Слишком мало тестовых примеров, возникает ситуация, что часто один случай проверяет сразу несколько важных особеннностей,
+			 *Слишком мало тестовых примеров, возникает ситуация, 
+			 *что часто один случай проверяет сразу несколько важных особеннностей,
 			 *может быть непонятно, на какой именнно мы допустили ошибку.
+			 *Кроме этого, слишком много проверок в одном тесте
 			*/
 
 		}
@@ -43,7 +45,8 @@ namespace HomeExercises
 		public void ShouldThrowExceptionWhenPrecisionIsNotPositive1()
 		{
 			Action act = () => new NumberValidator(-1, 2, false);
-			act.Should().ThrowExactly<ArgumentException>().WithMessage("precision must be a positive number");
+			act.Should().ThrowExactly<ArgumentException>()
+				.WithMessage("precision must be a positive number");
 		}
 
 
@@ -51,7 +54,8 @@ namespace HomeExercises
 		public void ShouldThrowExceptionWhenPrecisionIsNotPositive2()
 		{
 			Action act = () => new NumberValidator(0, -1, true);
-			act.Should().ThrowExactly<ArgumentException>().WithMessage("precision must be a positive number");
+			act.Should().ThrowExactly<ArgumentException>()
+				.WithMessage("precision must be a positive number");
 		}
 
 
@@ -59,7 +63,8 @@ namespace HomeExercises
 		public void ShouldThrowExceptionWhenScaleIsNegative()
 		{
 			Action validator = () => new NumberValidator(1, -1, false);
-			validator.Should().ThrowExactly<ArgumentException>().WithMessage("scale must be a non-negative number less than precision");
+			validator.Should().ThrowExactly<ArgumentException>()
+				.WithMessage("scale must be a non-negative number less than precision");
 		}
 
 
@@ -67,7 +72,8 @@ namespace HomeExercises
 		public void ShouldThrowExceptionWhenScaleIsGreaterThenPrecision()
 		{
 			Action validator = () => new NumberValidator(1, 2, false);
-			validator.Should().ThrowExactly<ArgumentException>().WithMessage("scale must be a non-negative number less than precision");
+			validator.Should().ThrowExactly<ArgumentException>()
+				.WithMessage("scale must be a non-negative number less than precision");
 		}
 
 
@@ -97,7 +103,8 @@ namespace HomeExercises
 		public void IsValidForPrecision
 			(string valueForCheck, int precision, int scale, bool onlyPositive, bool expectedResultOfChecking)
 			=> IsValidFor(valueForCheck, precision, scale, onlyPositive, expectedResultOfChecking,
-				" and\n the maximum number of characters in a valid number, including a sign, must not exceed the precision");
+				" and\n the maximum number of characters in a valid number, " +
+				"including a sign, must not exceed the precision");
 
 
 		[TestCase("", 17, 4, true, false)]
@@ -114,7 +121,8 @@ namespace HomeExercises
 		public void IsValidForScale
 			(string valueForCheck, int precision, int scale, bool onlyPositive, bool expectedResultOfChecking)
 			=> IsValidFor(valueForCheck, precision, scale, onlyPositive, expectedResultOfChecking,
-				" and\n the maximum number of decimal digits of a valid number must not exceed the size of the \"scale\" parameter");
+				" and\n the maximum number of decimal digits of a valid number" +
+				" must not exceed the size of the \"scale\" parameter");
 
 
 		[TestCase("-1.23", 17, 2, true, false)]
@@ -122,7 +130,8 @@ namespace HomeExercises
 		public void IsValidWithMinus
 			(string valueForCheck, int precision, int scale, bool onlyPositive, bool expectedResultOfChecking)
 			=> IsValidFor(valueForCheck, precision, scale, onlyPositive, expectedResultOfChecking,
-				" and\n if there is a minus in the number, we must specify it in the constructor");
+				" and\n if there is a minus in the number, " +
+				"we must specify it in the constructor");
 
 
 		[TestCase("+", 17, 4, true, false)]
@@ -152,16 +161,20 @@ namespace HomeExercises
 				"");
 
 
-		public void IsValidFor(string valueForCheck, int precision, int scale, bool onlyPositive, bool expectedResultOfChecking,string whatWrong)
+		public void IsValidFor(string valueForCheck, int precision, int scale, 
+			bool onlyPositive, bool expectedResultOfChecking,string whatWrong)
 		{
 			var valid = " is valid number for NumberValidator";
 			var notValid = " is not valid number for NumberValidator";
-			var isValidNumber = new NumberValidator(precision, scale, onlyPositive).IsValidNumber(valueForCheck);
+			var isValidNumber = new NumberValidator(precision, scale, onlyPositive)
+				.IsValidNumber(valueForCheck);
 			if (expectedResultOfChecking)
-				isValidNumber.Should().BeTrue($"{valueForCheck}{valid}({precision}, {scale}, {onlyPositive})" +
+				isValidNumber.Should().BeTrue
+					($"{valueForCheck}{valid}({precision}, {scale}, {onlyPositive})" +
 					$"{whatWrong}");
 			else
-				isValidNumber.Should().BeFalse($"{valueForCheck}{notValid}({precision}, {scale}, {onlyPositive})" +
+				isValidNumber.Should().BeFalse
+					($"{valueForCheck}{notValid}({precision}, {scale}, {onlyPositive})" +
 					$"{whatWrong}");
 		}
 	}
