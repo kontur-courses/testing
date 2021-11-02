@@ -33,8 +33,8 @@ namespace HomeExercises
 			var initialValidator = new NumberValidator(4, 1);
 
 			new NumberValidator(1, 0);
-
 			var actual = initialValidator.IsValidNumber("123.1");
+
 			actual.Should().BeTrue();
 		}
 
@@ -44,8 +44,8 @@ namespace HomeExercises
 			var initialValidator = new NumberValidator(2, onlyPositive: true);
 
 			new NumberValidator(2, onlyPositive: false);
-
 			var actual = initialValidator.IsValidNumber("-1");
+
 			actual.Should().BeFalse();
 		}
 
@@ -106,125 +106,99 @@ namespace HomeExercises
 		[TestCase("+,1")]
 		[TestCase("1,222.333")]
 		[TestCase("1.222,333")]
+		[TestCase("1;1")]
 		public void IsValidNumber_False_WithIncorrectFraction(string value)
 		{
 			var actual = defaultFractionValidator.IsValidNumber(value);
 			actual.Should().BeFalse();
 		}
 
-		[Test]
-		public void IsValidNumber_False_WithScaleLessThanFractionLength()
+		[TestCase("1.23", 3, 1)]
+		[TestCase("1,23", 3, 1)]
+		public void IsValidNumber_False_WithScaleLessThanFractionLength(string value, int precision, int scale)
 		{
-			var validator = new NumberValidator(2, 1);
-			var actual = validator.IsValidNumber("1.23");
-			actual.Should().BeFalse();
-		}
-
-		[Test]
-		public void IsValidNumber_False_WithPrecisionLessThanIntegerLength()
-		{
-			var validator = new NumberValidator(1);
-			var actual = validator.IsValidNumber("12");
+			var validator = new NumberValidator(precision, scale);
+			var actual = validator.IsValidNumber(value);
 			actual.Should().BeFalse();
 		}
 
 		[TestCase("1.100")]
 		[TestCase("1,100")]
-		public void IsValidNumber_False_WithUnaccountedInScale_FollowingZerosInFraction(string value)
+		public void IsValidNumber_False_WithUnconsideredFollowingZerosInScale(string value)
 		{
-			var validator = new NumberValidator(2, 1);
+			var validator = new NumberValidator(int.MaxValue, 1);
 			var actual = validator.IsValidNumber(value);
 			actual.Should().BeFalse();
 		}
 
-		[Test]
-		public void IsValidNumber_False_WithUnaccountedInPrecision_LeadingZeros()
+		[TestCase("12")]
+		[TestCase("001", TestName = "with leading zeros")]
+		public void IsValidNumber_False_WhenPrecisionUnconsideredIntegerLength(string value)
 		{
-			var validator = new NumberValidator(3);
-			var actual = validator.IsValidNumber("0001");
+			var validator = new NumberValidator(1);
+			var actual = validator.IsValidNumber(value);
 			actual.Should().BeFalse();
 		}
 
-		[TestCase("+1")]
-		[TestCase("-1")]
-		public void IsValidNumber_False_WithUnaccountedInPrecision_IntegerSign(string value)
+		[TestCase("+123", 3)]
+		[TestCase("-123", 3)]
+		[TestCase("-1.1", 2, 1)]
+		[TestCase("+1.1", 2, 1)]
+		[TestCase("-1,1", 2, 1)]
+		[TestCase("+1,1", 2, 1)]
+		public void IsValidNumber_False_WithUnconsideredSingInPrecision(string value, int precision, int scale = 0)
 		{
-			var validator = new NumberValidator(1);
+			var validator = new NumberValidator(precision, scale);
 			var actual = validator.IsValidNumber(value);
 			actual.Should().BeFalse();
 		}
 
 		[TestCase("100.12")]
 		[TestCase("100,12")]
-		public void IsValidNumber_False_WithUncountedInPrecision_Fraction(string value)
+		public void IsValidNumber_False_WithUncountedFractionLengthInPrecision(string value)
 		{
 			var validator = new NumberValidator(3, 2);
 			var actual = validator.IsValidNumber(value);
 			actual.Should().BeFalse();
 		}
 
-		[TestCase("+100.12")]
-		[TestCase("-100,12")]
-		[TestCase("+100,12")]
-		[TestCase("-100.12")]
-		public void IsValidNumber_False_WithUncountedInPrecision_SignedFraction(string value)
-		{
-			var validator = new NumberValidator(4, 2);
-			var actual = validator.IsValidNumber(value);
-			actual.Should().BeFalse();
-		}
-
 		[TestCase("-1.2", 3, 1)]
-		[TestCase("-1", 2, 0)]
-		[TestCase("-0")]
-		public void IsValidNumber_False_WithOnlyPositiveAndValue(string value, int precision = 1, int scale = 0)
+		[TestCase("-1", 2)]
+		[TestCase("-0", 2)]
+		public void IsValidNumber_False_WithOnlyPositiveAndValue(string value, int precision, int scale = 0)
 		{
 			var validator = new NumberValidator(precision, scale, true);
 			var actual = validator.IsValidNumber(value);
 			actual.Should().BeFalse();
 		}
 
-		[Test]
-		public void IsValidNumber_True_WithInteger()
+		[TestCase("123", 3, TestName = "equals to integer length")]
+		[TestCase("123", 10, TestName = "greater than integer length")]
+		public void IsValidNumber_True_WithIntegerAndPrecision(string value, int precision)
 		{
-			var validator = new NumberValidator(3);
-			var actual = validator.IsValidNumber("123");
-			actual.Should().BeTrue();
-		}
-
-		[TestCase("-123")]
-		[TestCase("+123")]
-		public void IsValidNumber_True_WithSignedInteger(string value)
-		{
-			var validator = new NumberValidator(4);
+			var validator = new NumberValidator(precision);
 			var actual = validator.IsValidNumber(value);
 			actual.Should().BeTrue();
 		}
 
-		[Test]
-		public void IsValidNumber_True_WithPrecisionGreaterThanIntegerLength()
-		{
-			var validator = new NumberValidator(10);
-			var actual = validator.IsValidNumber("1");
-			actual.Should().BeTrue();
-		}
-
-		[TestCase("1.1")]
-		[TestCase("1,1")]
-		public void IsValidNumber_True_WithFraction(string value)
-		{
-			var validator = new NumberValidator(2, 1);
-			var actual = validator.IsValidNumber(value);
-			actual.Should().BeTrue();
-		}
-
+		[TestCase("+12", 0)]
+		[TestCase("-12", 0)]
 		[TestCase("-1.1")]
 		[TestCase("+1.1")]
 		[TestCase("-1,1")]
 		[TestCase("+1,1")]
-		public void IsValidNumber_True_WithSignedFraction(string value)
+		public void IsValidNumber_True_WithConsideredSingInPrecision(string value, int scale = 1)
 		{
-			var validator = new NumberValidator(3, 1);
+			var validator = new NumberValidator(3, scale);
+			var actual = validator.IsValidNumber(value);
+			actual.Should().BeTrue();
+		}
+
+		[TestCase("1.1", TestName = "has dot separator")]
+		[TestCase("1,1", TestName = "has comma separator")]
+		public void IsValidNumber_True_WhenFraction(string value, int precision = 2, int scale = 1)
+		{
+			var validator = new NumberValidator(precision, scale);
 			var actual = validator.IsValidNumber(value);
 			actual.Should().BeTrue();
 		}
@@ -246,7 +220,8 @@ namespace HomeExercises
 		[TestCase("0")]
 		public void IsValidNumber_True_WithOnlyPositiveInteger(string value)
 		{
-			var actual = defaultIntegerValidator.IsValidNumber(value);
+			var validator = new NumberValidator(int.MaxValue, onlyPositive: true);
+			var actual = validator.IsValidNumber(value);
 			actual.Should().BeTrue();
 		}
 
@@ -255,7 +230,8 @@ namespace HomeExercises
 		[TestCase("0.0")]
 		public void IsValidNumber_True_WithOnlyPositiveFraction(string value)
 		{
-			var actual = defaultFractionValidator.IsValidNumber(value);
+			var validator = new NumberValidator(int.MaxValue, int.MaxValue - 1, true);
+			var actual = validator.IsValidNumber(value);
 			actual.Should().BeTrue();
 		}
 
