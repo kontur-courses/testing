@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text.RegularExpressions;
 using FluentAssertions;
 using NUnit.Framework;
@@ -10,130 +9,117 @@ namespace HomeExercises
 	[TestFixture]
 	public class NumberValidator_Should
 	{
-		private NumberValidator validator;
-		[SetUp]
-		public void SetUpUniversalCorrect10n5NotOnlyPositiveValidator()
-        {
-			validator = new NumberValidator(10, 5);
-        }
+		private NumberValidator validator = new NumberValidator(10, 5);
 
-		[Test]
-		public void Constructor_OnNegativePrecision_ThrowsArgumentException()
+		[TestCase(-1, 0, false)]
+		[TestCase(-2, -3, false)]
+		[TestCase(-3, -2, true)]
+		public void Constructor_OnNegativePrecision_ShouldThrowArgumentException(int precision, int scale, bool isPositive)
         {
-			Action t1 = () => new NumberValidator(-1);
-			Action t2 = () => new NumberValidator(-2, -3);
-			Action t3 = () => new NumberValidator(-3, -2, true);
+			Action t1 = () => new NumberValidator(precision, scale, isPositive);
 			t1.Should().Throw<ArgumentException>();
-			t2.Should().Throw<ArgumentException>();
-			t3.Should().Throw<ArgumentException>();
         }
 
-		[Test]
-		public void IsValidNumber_OnValidPositiveNumbersWithOnlyPositiveValidator_ShouldBeTrue()
+		[TestCase(10, 5, false)]
+		[TestCase(10, 5, true)]
+		[TestCase(1, 0, true)]
+		[TestCase(2, 1, false)]
+		[TestCase(5,1,true)]
+		[TestCase(100000, 1000, false)]
+		public void Constructor_OnCorrectInitialization_ShouldNotThrow(int precision, int scale, bool onlyPositive)
+        {
+			Action action = () => new NumberValidator(precision, scale, onlyPositive);
+			action.Should().NotThrow();
+		}
+
+		[TestCase("d0.0")]
+		[TestCase("=1.1")]
+		[TestCase("!-1.1")]
+		[TestCase("+-1.2")]
+		public void IsValidNumber_OnIncorrectSign_ShouldBeFalse(string number)
+        {
+			validator.IsValidNumber(number).Should().BeFalse();
+        }
+
+		[TestCase("-1")]
+		[TestCase("-1.01")]
+		[TestCase("-0.1")]
+		[TestCase("-1,2")]
+		[TestCase("-0,1")]
+		public void IsValidNumber_OnNegativeNumberWithOnlyPositiveIsTrue_ShouldBeFalse(string number)
         {
 			var numberValidator = new NumberValidator(10, 5, true);
-			numberValidator.IsValidNumber("0.0").Should().BeTrue();
-			numberValidator.IsValidNumber("0").Should().BeTrue();
-			numberValidator.IsValidNumber("1.2").Should().BeTrue();
-			numberValidator.IsValidNumber("12345.67891").Should().BeTrue();
-			numberValidator.IsValidNumber("0.01").Should().BeTrue();
-			numberValidator.IsValidNumber("+1.23").Should().BeTrue();
-			numberValidator.IsValidNumber("1,5").Should().BeTrue();
-        }
-
-		[Test]
-		public void Constructor_OnCorrectInitialization_DoesNotThrow()
-        {
-            List<Action> actions = new List<Action>
-            {
-                () => new NumberValidator(10, 5, false),
-                () => new NumberValidator(10, 5, true),
-                () => new NumberValidator(1, 0, true),
-                () => new NumberValidator(2, 1, false),
-                () => new NumberValidator(5, 1, true),
-                () => new NumberValidator(10000, 1000, false)
-            };
-            foreach (var action in actions)
-            {
-				action.Should().NotThrow();
-            }
+			numberValidator.IsValidNumber(number).Should().BeFalse();
 		}
 
 		[Test]
-		public void IsValidNumber_OnIncorrectSign_ShouldBeFalse()
+		[TestCase("123456")]
+		[TestCase("1234.56")]
+		[TestCase("123.456")]
+		[TestCase("423256267345343453453")]
+		[TestCase("-23456")]
+		[TestCase("-456.88")]
+		[TestCase("+456.33")]
+		[TestCase("+12345")]
+		public void IsValidNumber_OnNumbersLongerThanPrecision_ShouldBeFalse(string number)
         {
-			validator.IsValidNumber("d0.0").Should().BeFalse();
-			validator.IsValidNumber("=1.1").Should().BeFalse();
-			validator.IsValidNumber("!-1.1").Should().BeFalse();
-			validator.IsValidNumber("+-1.2").Should().BeFalse();
-        }
-
-		[Test]
-		public void IsValidNumber_OnNegativeNumberWithOnlyPositiveIsTrue_ShouldBeFalse()
+			var numberValidator = new NumberValidator(5, 3);
+			numberValidator.IsValidNumber(number).Should().BeFalse();
+		}
+		[TestCase("0.1111")]
+		[TestCase("-0.1111")]
+		[TestCase("0.0000")]
+		public void IsValidNumber_OnNumbersWithFracLongerThanScale_ShouldBeFalse(string number)
         {
+			var numberValidator = new NumberValidator(5, 3);
+			numberValidator.IsValidNumber(number).Should().BeFalse();
+		}
+		[TestCase("skb.kontur")]
+		[TestCase("ayylmao")]
+		[TestCase(null)]
+		[TestCase("")]
+		[TestCase("-1.1f1")]
+		[TestCase("- . ")]
+		[TestCase("-.")]
+		[TestCase("-")]
+		[TestCase(" ")]
+		public void IsValidNumber_OnNotNumbers_ShouldBeFalse(string number)
+        {
+			validator.IsValidNumber(number).Should().BeFalse();
+		}
+		[TestCase("1d5")]
+		[TestCase("1 5")]
+		[TestCase("1]5")]
+		[TestCase("1/5")]
+		[TestCase("-1-5")]
+		[TestCase("1=5")]
+		public void IsValidNumber_WhenDotIsNotDot_ShouldBeFalse(string number)
+        {
+			validator.IsValidNumber(number).Should().BeFalse();
+		}
+		[TestCase("0.0")]
+		[TestCase("0")]
+		[TestCase("1.2")]
+		[TestCase("12345.67891")]
+		[TestCase("0.01")]
+		[TestCase("+1.23")]
+		[TestCase("1,5")]
+		public void IsValidNumber_OnValidPositiveNumbersWithOnlyPositiveValidator_ShouldBeTrue(string number)
+		{
 			var numberValidator = new NumberValidator(10, 5, true);
-			numberValidator.IsValidNumber("-1").Should().BeFalse();
-			numberValidator.IsValidNumber("-1.01").Should().BeFalse();
-			numberValidator.IsValidNumber("-0.1").Should().BeFalse();
-			numberValidator.IsValidNumber("-1,2").Should().BeFalse();
-			numberValidator.IsValidNumber("-0,1").Should().BeFalse();
+			numberValidator.IsValidNumber(number).Should().BeTrue();
 		}
-
-		[Test]
-		public void IsValidNumber_OnNumbersLongerThanPrecision_ShouldBeFalse()
+		[TestCase("1.5")]
+		[TestCase("33,6")]
+		[TestCase("-11.3")]
+		[TestCase("+2.3")]
+		[TestCase("-8.123")]
+		[TestCase("+4.4004")]
+		[TestCase("10000")]
+		[TestCase("-1")]
+		public void IsValidNumber_OnValidNumbers_ShouldBeTrue(string number)
         {
-			var numberValidator = new NumberValidator(5, 3);
-			numberValidator.IsValidNumber("123456").Should().BeFalse();
-			numberValidator.IsValidNumber("1234.56").Should().BeFalse();
-			numberValidator.IsValidNumber("123.456").Should().BeFalse();
-			numberValidator.IsValidNumber("12345634534534534534534534").Should().BeFalse();
-			numberValidator.IsValidNumber("-23456").Should().BeFalse();
-			numberValidator.IsValidNumber("-456.99").Should().BeFalse();
-			numberValidator.IsValidNumber("+456.99").Should().BeFalse();
-			numberValidator.IsValidNumber("+12345").Should().BeFalse();
-		}
-		[Test]
-		public void IsValidNumber_OnNumbersWithFracLongerThanScale_ShouldBeFalse()
-        {
-			var numberValidator = new NumberValidator(5, 3);
-			numberValidator.IsValidNumber("0.1111").Should().BeFalse();
-			numberValidator.IsValidNumber("-0.1111").Should().BeFalse();
-			numberValidator.IsValidNumber("0.0000").Should().BeFalse();
-		}
-		[Test]
-		public void IsValidNumber_OnNotNumbers_ShouldBeFalse()
-        {
-			validator.IsValidNumber("skb.kontur").Should().BeFalse();
-			validator.IsValidNumber("ayylmao").Should().BeFalse();
-			validator.IsValidNumber(null).Should().BeFalse();
-			validator.IsValidNumber("").Should().BeFalse();
-			validator.IsValidNumber("-1.1f1").Should().BeFalse();
-			validator.IsValidNumber("- . ").Should().BeFalse();
-			validator.IsValidNumber("-.").Should().BeFalse();
-			validator.IsValidNumber("-").Should().BeFalse();
-			validator.IsValidNumber(" ").Should().BeFalse();
-		}
-		[Test]
-		public void IsValidNumber_WhenDotIsNotDot_ShouldBeFalse()
-        {
-			validator.IsValidNumber("1d5").Should().BeFalse();
-			validator.IsValidNumber("1 5").Should().BeFalse();
-			validator.IsValidNumber("1]5").Should().BeFalse();
-			validator.IsValidNumber("1/5").Should().BeFalse();
-			validator.IsValidNumber("-1-5").Should().BeFalse();
-			validator.IsValidNumber("1=5").Should().BeFalse();
-		}
-		[Test]
-		public void IsValidNumber_OnValidNumbers_ShouldBeTrue()
-        {
-			validator.IsValidNumber("1.5").Should().BeTrue();
-			validator.IsValidNumber("33,6").Should().BeTrue();
-			validator.IsValidNumber("-11.3").Should().BeTrue();
-			validator.IsValidNumber("+2.3").Should().BeTrue();
-			validator.IsValidNumber("-8.123").Should().BeTrue();
-			validator.IsValidNumber("+4.4004").Should().BeTrue();
-			validator.IsValidNumber("10000").Should().BeTrue();
-			validator.IsValidNumber("-1").Should().BeTrue();
+			validator.IsValidNumber(number).Should().BeTrue();
 		}
 	}
 
@@ -153,7 +139,7 @@ namespace HomeExercises
 				throw new ArgumentException("precision must be a positive number");
 			if (scale < 0 || scale >= precision)
 				throw new ArgumentException("precision must be a non-negative number less or equal than precision");
-			numberRegex = new Regex(@"^([+-]?)(\d+)([.,](\d+))?$", RegexOptions.IgnoreCase);
+			numberRegex = new Regex(@"^(?<sign>[+-]?)(?<intPart>\d+)([.,](?<fracPart>\d+))?$", RegexOptions.IgnoreCase);
 		}
 
 		public bool IsValidNumber(string value)
@@ -171,15 +157,13 @@ namespace HomeExercises
 			if (!match.Success)
 				return false;
 
-			// Знак и целая часть
-			var intPart = match.Groups[1].Value.Length + match.Groups[2].Value.Length;
-			// Дробная часть
-			var fracPart = match.Groups[4].Value.Length;
+			var intAndSignPartLength = match.Groups["sign"].Value.Length + match.Groups["intPart"].Value.Length;
+			var fracPartLength = match.Groups["fracPart"].Value.Length;
 
-			if (intPart + fracPart > precision || fracPart > scale)
+			if (intAndSignPartLength + fracPartLength > precision || fracPartLength > scale)
 				return false;
 
-			if (onlyPositive && match.Groups[1].Value == "-")
+			if (onlyPositive && match.Groups["sign"].Value == "-")
 				return false;
 			return true;
 		}

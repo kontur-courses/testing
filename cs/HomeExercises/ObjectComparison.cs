@@ -16,15 +16,19 @@ namespace HomeExercises
 				new Person("Vasili III of Russia", 28, 170, 60, null));
 
 			// Перепишите код на использование Fluent Assertions.
-			actualTsar.Name.Should().Be(expectedTsar.Name);
-			actualTsar.Age.Should().Be(expectedTsar.Age);
-			actualTsar.Height.Should().Be(expectedTsar.Height);
-			actualTsar.Weight.Should().Be(expectedTsar.Weight);
 
-			actualTsar.Parent!.Name.Should().Be(expectedTsar.Parent!.Name);
-			actualTsar.Parent.Age.Should().Be(expectedTsar.Parent.Age);
-			actualTsar.Parent.Height.Should().Be(expectedTsar.Parent.Height);
-			actualTsar.Parent.Parent.Should().Be(expectedTsar.Parent.Parent);
+			//Правильно ли я понял, что мы сравниваем только по сыну и отцу?...
+
+			actualTsar.Should().BeEquivalentTo(expectedTsar, cfg => cfg
+			.Excluding(x => x.SelectedMemberPath.EndsWith("Id"))
+			.ExcludingNestedObjects()
+			.Excluding(x => x.SelectedMemberPath.EndsWith("Parent")));
+
+			actualTsar.Parent.Should().BeEquivalentTo(expectedTsar.Parent, cfg => cfg
+			.Excluding(x => x.SelectedMemberPath.EndsWith("Id"))
+			.ExcludingNestedObjects()
+			.Excluding(x => x.SelectedMemberPath.EndsWith("Parent")));
+
 			//Данный код лучше альтернативного решения тем, что нам:
 			//1. Не нужно каждый раз переписывать метод AreEqual при изменении Person
 			//2. Если альтернативный тест не пройдёт, мы не узнаем, какое именно поле Person это вызвало,
@@ -33,7 +37,9 @@ namespace HomeExercises
 			//But was:  False
 			//Что не даёт практически никакой информации.
 			//Такой же вариант достаточно легко читается, мы сразу понимаем, что не так, если что-то не так
-			//и имеем возможность простого и быстрого расширения.
+			//и расширение происходит автоматически при добавлении новых полей
+
+
 		}
 
 		[Test]
