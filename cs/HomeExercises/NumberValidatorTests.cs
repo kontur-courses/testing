@@ -7,8 +7,6 @@ namespace HomeExercises
 {
 	public class NumberValidatorTests
 	{
-		private const string valid = " is valid number for NumberValidator";
-		private const string notValid = " is not valid number for NumberValidator";
 		/*
 			Assert.Throws<ArgumentException>(() => new NumberValidator(-1, 2, true));
 			Assert.DoesNotThrow(() => new NumberValidator(1, 0, true));
@@ -76,19 +74,12 @@ namespace HomeExercises
 		}
 
 
-
-
-
-
-
-
-
-
-
-		[TestCase("1.23", 4, 2, true)]
-		[TestCase("+1.23", 4, 2, true)]
-		[TestCase("-1.23", 4, 2, false)]
-		[TestCase("1.00", 3, 2, true)]
+		[TestCase("1.23", 4, 2, true,
+			TestName = "Number 1.23 with three digits and precision=4 should be valid a number")]
+		[TestCase("+1.23", 4, 2, true,
+			TestName = "Number +1.23 with three digits, sign and precision=4 should be valid a number")]
+		[TestCase("1.00", 3, 2, true,
+			TestName = "Number 1.00 with three digits and precision=3 should be valid a number")]
 		public void IsValidForPrecision
 			(string valueForCheck, int precision, int scale,
 			bool onlyPositive)
@@ -96,18 +87,19 @@ namespace HomeExercises
 			var isValidNumber =
 				new NumberValidator(precision, scale, onlyPositive)
 				.IsValidNumber(valueForCheck);
-			/*
-			isValidNumber.Should().BeTrue
-					($"{valueForCheck}{valid}({precision}, " +
-					$"{scale}, {onlyPositive})");
-			*/
 			isValidNumber.Should().BeTrue();
 		}
 
 
-		[TestCase("+1.23", 3, 2, true)]
-		[TestCase("-1.23", 3, 2, false)]
-		[TestCase("00.00", 3, 2, true)]
+		[TestCase("-1.23", 3, 2, false,
+			TestName = "Number -1.23 with sign, three digits and precision=3 " +
+			"shouldn't be valid a number")]
+		[TestCase("111.23", 3, 2, true,
+			TestName = "Number 111.23 with five digits and precision=3 " +
+			"shouldn't be valid a number")]
+		[TestCase("00.00", 3, 2, true,
+			TestName = "Number 00.00 with four digits and precision=3 " +
+			"shouldn't be valid a number")]
 		public void IsUnvalidForPrecision
 			(string valueForCheck, int precision, int scale,
 			bool onlyPositive)
@@ -115,15 +107,14 @@ namespace HomeExercises
 			var isValidNumber =
 				new NumberValidator(precision, scale, onlyPositive)
 				.IsValidNumber(valueForCheck);
-
-			isValidNumber.Should().BeFalse
-					($"{valueForCheck}{notValid}({precision}, " +
-					$"{scale}, {onlyPositive})");
+			isValidNumber.Should().BeFalse();
 		}
 
 
-		[TestCase("", 17, 4, true)]
-		[TestCase(null, 17, 4, true)]
+		[TestCase("", 17, 4, true,
+			TestName = "Empty string shouldn't be valid a number")]
+		[TestCase(null, 17, 4, true,
+			TestName ="Null shouldn't be valid a number")]
 		public void IsUnvalidForNullOrEmptyString
 			(string valueForCheck, int precision, int scale,
 			bool onlyPositive)
@@ -131,14 +122,13 @@ namespace HomeExercises
 			var isValidNumber =
 				new NumberValidator(precision, scale, onlyPositive)
 				.IsValidNumber(valueForCheck);
-
-				isValidNumber.Should().BeFalse
-					($"{valueForCheck}{notValid}({precision}, " +
-					$"{scale}, {onlyPositive})");
+			isValidNumber.Should().BeFalse();
 		}
 
 
-		[TestCase("0.000", 17, 2, true)]
+		[TestCase("0.000", 17, 2, true,
+			TestName = "Number 0.000 with a fractional part of 3 digits " +
+			"and scale=2 shouldn't be a valid number")]
 		public void IsUnvalidForScale
 			(string valueForCheck, int precision, int scale,
 			bool onlyPositive)
@@ -146,15 +136,16 @@ namespace HomeExercises
 			var isValidNumber =
 				new NumberValidator(precision, scale, onlyPositive)
 				.IsValidNumber(valueForCheck);
-
-			isValidNumber.Should().BeFalse
-				($"{valueForCheck}{notValid}({precision}, " +
-				$"{scale}, {onlyPositive})");
+			isValidNumber.Should().BeFalse();
 		}
 		
 
-		[TestCase("+1.23", 17, 2, true)]
-		[TestCase("0.1", 17, 2, true)]
+		[TestCase("+1.23", 17, 2, true,
+			TestName = "Number +1.23 with a fractional part of " +
+			"2 digits and scale=2 should be a valid number")]
+		[TestCase("0.1", 17, 2, true,
+			TestName = "Number 0.1 with a fractional part of " +
+			"1 digits and scale=2 should be a valid number")]
 		public void IsValidForScale
 			(string valueForCheck, int precision, int scale,
 			bool onlyPositive)
@@ -162,14 +153,12 @@ namespace HomeExercises
 			var isValidNumber =
 				new NumberValidator(precision, scale, onlyPositive)
 				.IsValidNumber(valueForCheck);
-
-			isValidNumber.Should().BeTrue
-					($"{valueForCheck}{valid}({precision}, " +
-					$"{scale}, {onlyPositive})");
+			isValidNumber.Should().BeTrue();
 		}
 
-
-		[TestCase("-1.23", 17, 2, true)]
+		[TestCase("-1.23", 17, 2, true,
+			TestName = "Negative number -1.23 without the specified minus " +
+			"shouldn't be a valid number")]
 		public void IsUnvalidForNumber_WithMinus
 			(string valueForCheck, int precision, int scale,
 			bool onlyPositive)
@@ -177,14 +166,12 @@ namespace HomeExercises
 			var isValidNumber =
 				new NumberValidator(precision, scale, onlyPositive)
 				.IsValidNumber(valueForCheck);
-
-			isValidNumber.Should().BeFalse
-				($"{valueForCheck}{notValid}({precision}, " +
-				$"{scale}, {onlyPositive})");
+			isValidNumber.Should().BeFalse();
 		}
 
 
-		[TestCase("-1.23", 17, 2, false)]
+		[TestCase("-1.23", 17, 2, false,
+			TestName = "Negative number -1.23 with the specified minus should be a valid number")]
 		public void IsValidForNumber_WithMinus
 			(string valueForCheck, int precision, int scale,
 			bool onlyPositive)
@@ -192,19 +179,20 @@ namespace HomeExercises
 			var isValidNumber =
 				new NumberValidator(precision, scale, onlyPositive)
 				.IsValidNumber(valueForCheck);
-
-			isValidNumber.Should().BeTrue
-					($"{valueForCheck}{valid}({precision}, " +
-					$"{scale}, {onlyPositive})");
+			isValidNumber.Should().BeTrue();
 		}
 
 
-		[TestCase("+", 17, 4, true)]
-		[TestCase("-0.", 17, 4, false)]
-		[TestCase("+0.", 17, 4, true)]
-		[TestCase(".1", 17, 4, true)]
-		[TestCase("-.0", 17, 4, true)]
-		[TestCase("+1;7", 17, 4, true)]
+		[TestCase("+", 17, 4, true,
+			TestName ="+ shouldn't be a valid number")]
+		[TestCase("-0.", 17, 4, false,
+			TestName ="-0. shouldn't be a valid number")]
+		[TestCase(".1", 17, 4, true,
+			TestName =".1 shouldn't be a valid number")]
+		[TestCase("-.0", 17, 4, true,
+			TestName = "-.0 shouldn't be a valid number")]
+		[TestCase("+1;7", 17, 4, true,
+			TestName = "+1;7 shouldn't be a valid number")]
 		[TestCase("a.sd", 6, 4, true)]
 		public void IsUnvalidForFormat
 			(string valueForCheck, int precision, int scale,
@@ -213,14 +201,12 @@ namespace HomeExercises
 			var isValidNumber =
 				new NumberValidator(precision, scale, onlyPositive)
 				.IsValidNumber(valueForCheck);
-
-			isValidNumber.Should().BeFalse
-				($"{valueForCheck}{notValid}({precision}, " +
-				$"{scale}, {onlyPositive})");
+			isValidNumber.Should().BeFalse();
 		}
 
 
-		[TestCase("+1,7", 17, 4, true)]
+		[TestCase("+1,7", 17, 4, true,
+			TestName = "+1,7 should be a valid number")]
 		public void IsValidForFormat
 			(string valueForCheck, int precision, int scale,
 			bool onlyPositive)
@@ -228,130 +214,11 @@ namespace HomeExercises
 			var isValidNumber =
 				new NumberValidator(precision, scale, onlyPositive)
 				.IsValidNumber(valueForCheck);
-
-			isValidNumber.Should().BeTrue
-					($"{valueForCheck}{valid}({precision}, " +
-					$"{scale}, {onlyPositive})");
-		}
-
-
-
-
-
-
-
-
-		//-------------------------------------------------
-
-
-
-
-
-		[TestCase("1.23", 4, 2, true, true)]
-		[TestCase("+1.23", 4, 2, true, true)]
-		[TestCase("-1.23", 4, 2, false, true)]
-		[TestCase("1.00", 3, 2, true, true)]
-
-
-		[TestCase("+1.23", 3, 2, true, false)]
-		[TestCase("-1.23", 3, 2, false, false)]
-		[TestCase("00.00", 3, 2, true, false)]
-		public void IsValidForPrecision
-			(string valueForCheck, int precision, int scale,
-			bool onlyPositive, bool expectedResultOfChecking)
-			=> IsValidFor(valueForCheck, precision, 
-				scale, onlyPositive, expectedResultOfChecking,
-				" and\n the maximum number of characters in a valid number, " +
-				"including a sign, must not exceed the precision");
-
-
-		[TestCase("", 17, 4, true, false)]
-		[TestCase(null, 17, 4, true, false)]
-		public void IsValidNullOrEmpty
-			(string valueForCheck, int precision, int scale, 
-			bool onlyPositive, bool expectedResultOfChecking)
-			=> IsValidFor(valueForCheck, precision, 
-				scale, onlyPositive, expectedResultOfChecking,
-				" and\n empty string or null is not a valid number");
-
-
-		[TestCase("0.000", 17, 2, true, false)]
-		[TestCase("-1.001", 17, 2, true, false)]
-
-		[TestCase("+1.23", 17, 2, true, true)]
-		[TestCase("0.1", 17, 2, true, true)]
-		public void IsValidForScale
-			(string valueForCheck, int precision, int scale,
-			bool onlyPositive, bool expectedResultOfChecking)
-			=> IsValidFor(valueForCheck, precision, 
-				scale, onlyPositive, expectedResultOfChecking,
-				" and\n the maximum number of decimal digits of a valid number" +
-				" must not exceed the size of the \"scale\" parameter");
-
-
-		[TestCase("-1.23", 17, 2, true, false)]
-
-		[TestCase("-1.23", 17, 2, false, true)]
-		public void IsValidWithMinus
-			(string valueForCheck, int precision, int scale, 
-			bool onlyPositive, bool expectedResultOfChecking)
-			=> IsValidFor(valueForCheck, precision, 
-				scale, onlyPositive, expectedResultOfChecking,
-				" and\n if there is a minus in the number, " +
-				"we must specify it in the constructor");
-
-
-		[TestCase("+", 17, 4, true, false)]
-		[TestCase("-0.", 17, 4, false, false)]
-		[TestCase("+0.", 17, 4, true, false)]
-		[TestCase(".1", 17, 4, true, false)]
-		[TestCase("-.0", 17, 4, true, false)]
-		[TestCase("+1;7", 17, 4, true, false)]
-		[TestCase("a.sd", 6, 4, true, false)]
-
-		[TestCase("+1,7", 17, 4, true, true)]
-		public void IsValidForFormat
-			(string valueForCheck, int precision, int scale, 
-			bool onlyPositive, bool expectedResultOfChecking)
-			=> IsValidFor(valueForCheck, precision, 
-				scale, onlyPositive, expectedResultOfChecking,
-				" and\n because the format of a numeric value " +
-				"assumes two sets of digits separated by a dot or comma,\n " +
-				"and each set must have at least one digit, the first set\n " +
-				"can also be preceded by a plus or minus sign");
-
-		/*
-		[TestCase("+0.00", 3, 2, true, false)]
-		[TestCase("-0.00", 3, 2, true, false)]
-
-		[TestCase("0.0", 17, 2, true, true)]
-		[TestCase("0", 17, 2, true, true)]
-		public void IsValidForAdditionalTests
-			(string valueForCheck, int precision, int scale, 
-			bool onlyPositive, bool expectedResultOfChecking)
-			=> IsValidFor(valueForCheck, precision, 
-				scale, onlyPositive, expectedResultOfChecking,
-				"");
-		*/
-
-		public void IsValidFor(string valueForCheck, int precision, int scale, 
-			bool onlyPositive, bool expectedResultOfChecking,string what_Wrong)
-		{
-			var isValidNumber = 
-				new NumberValidator(precision, scale, onlyPositive)
-				.IsValidNumber(valueForCheck);
-			if (expectedResultOfChecking)
-				isValidNumber.Should().BeTrue
-					($"{valueForCheck}{valid}({precision}, " +
-					$"{scale}, {onlyPositive})" +
-					$"{what_Wrong}");
-			else
-				isValidNumber.Should().BeFalse
-					($"{valueForCheck}{notValid}({precision}, " +
-					$"{scale}, {onlyPositive})" +
-					$"{what_Wrong}");
+			isValidNumber.Should().BeTrue();
 		}
 	}
+
+
 	public class NumberValidator
 	{
 		private readonly Regex numberRegex;
