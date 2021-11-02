@@ -11,12 +11,9 @@ namespace HomeExercises
 		[TestCase(1, -1, TestName = "Negative scale")]
 		[TestCase(1, 2, TestName = "Scale bigger than precision")]
 		[TestCase(1, 1, TestName = "Scale same as precision")]
-		public void Constructor_ThrowsAt(int precision, int scale)
+		public void Constructor_ThrowsArgumentException(int precision, int scale)
 		{
-			Action create = () =>
-			{
-				var numberValidator = new NumberValidator(precision, scale, true);
-			};
+			Action create = () => { new NumberValidator(precision, scale, true); };
 			create.Should().Throw<ArgumentException>();
 		}
 		
@@ -36,23 +33,24 @@ namespace HomeExercises
 		[TestCase( "1.", TestName = "Dot without fraction")]
 		public void IsValidNumber_False_WithIncorrectValue(string value)
 		{
-			var numberValidator = new NumberValidator(100, 50, false);
+			var numberValidator = new NumberValidator(100, 50);
 			numberValidator.IsValidNumber(value).Should().BeFalse();
 		}
 
-		[Test]
-		public void IsValidNumber_OnlyPositiveFlag_FalseWithNegativeValue()
+		[TestCase("-1")]
+		public void IsValidNumber_OnlyPositiveFlag_FalseWithNegativeValue(string value)
 		{
 			var numberValidator = new NumberValidator(10, 2, true);
-			numberValidator.IsValidNumber("-1").Should().BeFalse();
+			numberValidator.IsValidNumber(value).Should().BeFalse();
 		}
 		
-		[Test]
-		public void IsValidNumber_OnlyPositiveFlag_TrueWithPositiveValue()
+		[TestCase("1")]
+		[TestCase("0")]
+		[TestCase("+1")]
+		public void IsValidNumber_OnlyPositiveFlag_TrueWithPositiveValue(string value)
 		{
 			var numberValidator = new NumberValidator(10, 2, true);
-			numberValidator.IsValidNumber("1").Should().BeTrue();
-			numberValidator.IsValidNumber("+1").Should().BeTrue();
+			numberValidator.IsValidNumber(value).Should().BeTrue();
 		}
 		
 		[TestCase(17,2, "0")]
@@ -62,7 +60,7 @@ namespace HomeExercises
 		[TestCase(4,2, "-1.23")]
 		public void IsValidNumber_ShouldBeTrue(int precision, int scale, string value)
 		{
-			var numberValidator = new NumberValidator(precision, scale, false);
+			var numberValidator = new NumberValidator(precision, scale);
 			numberValidator.IsValidNumber(value).Should().BeTrue();
 		}
 		
@@ -72,7 +70,7 @@ namespace HomeExercises
 		[TestCase(3,2, "11100", TestName = "Too long number")]
 		public void IsValidNumber_ShouldBeFalse(int precision, int scale, string value)
 		{
-			var numberValidator = new NumberValidator(precision, scale, false);
+			var numberValidator = new NumberValidator(precision, scale);
 			numberValidator.IsValidNumber(value).Should().BeFalse();
 		}
 	}
