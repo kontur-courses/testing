@@ -5,10 +5,15 @@ namespace HomeExercises
 {
     public class NumberValidator
     {
-        private readonly Regex numberRegex;
+        private static readonly Regex numberRegex;
         private readonly bool onlyPositive;
         private readonly int precision; // Максимальное количество цифр
         private readonly int scale; // Максимальное количество цифр в дробной части
+
+        static NumberValidator()
+        {
+            numberRegex = new Regex(@"^([+-]?)(\d+)([.,](\d+))?$", RegexOptions.IgnoreCase | RegexOptions.Compiled);
+        }
 
         /// <summary>
         /// Создает объект NumberValidator
@@ -23,11 +28,8 @@ namespace HomeExercises
             this.onlyPositive = onlyPositive;
             if (precision <= 0)
                 throw new ArgumentException("precision must be a positive number");
-            if (scale < 0 || scale >= precision)
-                // Было "scale must be a non-negative number less or equal than precision" -
-                // не соотвeтствовало устловию scale >= precision
-                throw new ArgumentException("scale must be a non-negative number less than precision");
-            numberRegex = new Regex(@"^([+-]?)(\d+)([.,](\d+))?$", RegexOptions.IgnoreCase);
+            if (scale < 0 || scale > precision)
+                throw new ArgumentException("scale must be a non-negative number less or equal than precision");            
         }
 
         public bool IsValidNumber(string value)
