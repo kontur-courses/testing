@@ -14,8 +14,11 @@ namespace HomeExercises
             var expectedTsar = new Person("Ivan IV The Terrible", 54, 170, 70,
                 new Person("Vasili III of Russia", 28, 170, 60, null));
 
+            // Если попадается циклическая ссылка в сообщении видно все несовпадающие поля,
+            // и есть уведомление "Cyclic reference to type ... detected"
             actualTsar.Should().BeEquivalentTo(expectedTsar, options => options
-                .Excluding(o => o.Path.EndsWith("Id")));
+                .Excluding(o => o.Path == "Id" || o.Path.EndsWith(".Id"))
+                .AllowingInfiniteRecursion());
         }
 
         [Test]
@@ -64,8 +67,7 @@ namespace HomeExercises
     {
         public static Person GetCurrentTsar()
         {
-            return new Person(
-                "Ivan IV The Terrible", 54, 170, 70,
+           return new Person("Ivan IV The Terrible", 54, 170, 70, 
                 new Person("Vasili III of Russia", 28, 170, 60, null));
         }
     }
