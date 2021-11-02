@@ -19,9 +19,9 @@ namespace HomeExercises
 
 			// Перепишите код на использование Fluent Assertions.
 			actualTsar.Should()
-				.BeEquivalentTo(expectedTsar, options
-				=> options.Excluding
-				(tsar => tsar.SelectedMemberPath.EndsWith(nameof(expectedTsar.Id))));
+				.BeEquivalentTo(expectedTsar, options => options.Excluding(
+					tsar => tsar.SelectedMemberPath.EndsWith(nameof(expectedTsar.Id)))
+				);
 		}
 
 		[Test]
