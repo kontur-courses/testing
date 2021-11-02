@@ -1,5 +1,7 @@
 ﻿using FluentAssertions;
 using NUnit.Framework;
+using System;
+using System.Linq.Expressions;
 
 namespace HomeExercises
 {
@@ -16,8 +18,10 @@ namespace HomeExercises
 				new Person("Vasili III of Russia", 28, 170, 60, null));
 
 			// Перепишите код на использование Fluent Assertions.
-			actualTsar.Should().BeEquivalentTo(expectedTsar, options
-				=> options.Excluding(tsar => tsar.SelectedMemberPath.EndsWith("Id")));
+			actualTsar.Should()
+				.BeEquivalentTo(expectedTsar, options
+				=> options.Excluding
+				(tsar => tsar.SelectedMemberPath.EndsWith(nameof(expectedTsar.Id))));
 		}
 
 		[Test]
