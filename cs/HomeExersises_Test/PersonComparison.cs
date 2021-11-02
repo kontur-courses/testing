@@ -11,15 +11,20 @@ namespace HomeExersises_Test
         [Description("Проверка текущего царя")]
         public void CheckCurrentTsar()
         {
-            var actualTsar = TsarRegistry.GetCurrentTsar();
-            var expectedTsar = new Person("Ivan IV The Terrible", 54, 170, 70,
-            new Person("Vasili III of Russia", 28, 170, 60, null));
+            //var actualTsar = TsarRegistry.GetCurrentTsar();
+            //var expectedTsar = new Person("Ivan IV The Terrible", 54, 170, 70,
+            //new Person("Vasili III of Russia", 28, 170, 60, null));
+
+            var actualTsar = TsarRegistry.GetCurrentTsar0();
+            var expectedTsar = new Person("", 28, 170, 60, null);
+            expectedTsar.Parent = expectedTsar;            
 
             // Если попадается циклическая ссылка в сообщении видно все несовпадающие поля,
             // и есть уведомление "Cyclic reference to type ... detected"
             actualTsar.Should().BeEquivalentTo(expectedTsar, options => options
                 .Excluding(o => o.DeclaringType == typeof(Person) && o.Name == nameof(Person.Id))
-                .AllowingInfiniteRecursion());
+                .AllowingInfiniteRecursion()
+                .IgnoringCyclicReferences());
         }
 
         [Test]
