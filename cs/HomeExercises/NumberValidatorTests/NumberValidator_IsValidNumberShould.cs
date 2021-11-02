@@ -77,7 +77,7 @@ namespace HomeExercises
         [TestCase("+12.3", TestName = "True_WhenNotOnlyPositive_OnPositive")]
         [TestCase("-12.3", TestName = "True_WhenNotOnlyPositive_OnNegative")]
         [TestCase("12.3", TestName = "True_WhenNotOnlyPositive_WithoutSign")]
-        public void True_WhenNotOnlyPositive_OnPositive(string value)
+        public void True_WhenNotOnlyPositive(string value)
         {
             var validator = new NumberValidator(8, 2, onlyPositive: false);
             validator.IsValidNumber(value).Should().BeTrue();
