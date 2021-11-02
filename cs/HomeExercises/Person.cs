@@ -7,8 +7,9 @@
         public string Name;
         public Person? Parent;
         public int Id;
+        public County country;
 
-        public Person(string name, int age, int height, int weight, Person? parent)
+        public Person(string name, int age, int height, int weight, Person? parent, County? county)
         {
             Id = IdCounter++;
             Name = name;
@@ -16,6 +17,12 @@
             Height = height;
             Weight = weight;
             Parent = parent;
+            this.country = country;
         }
+    }
+
+    public class County
+    {
+        public int Id;
     }
 }
