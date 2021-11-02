@@ -19,13 +19,12 @@ namespace HomeExercises
 
         [TestCase(1, -1, true, TestName = "Throw_WhenNegativeScale")]
         [TestCase(1, 2, true, TestName = "Throw_WhenScaleGreaterThanPrecision")]
-        [TestCase(1, 1, true, TestName = "Throw_WhenScaleEqualsPrecision")]
         public void Throw_WhenScaleIsNegativeOrGreaterThanPrec(int precision, int scale, bool onlyPositive)
         {
             Action validatorInit = () => new NumberValidator(precision, scale, onlyPositive);
             validatorInit.Should()
                 .Throw<ArgumentException>()
-                .WithMessage("scale must be a non-negative number less than precision");
+                .WithMessage("scale must be a non-negative number less or equal than precision");
         }
 
         [Test]
@@ -53,6 +52,12 @@ namespace HomeExercises
         public void NotTwhrow_OnCorrectInput_WitoutOptionalArguements_Scale_And_OnlyPositive()
         {
             Action validatorInit = () => new NumberValidator(8);
+            validatorInit.Should().NotThrow();
+        }
+
+        public void NotTwhrow_OnCorrectInput_ScaleEqualsPrecision()
+        {
+            Action validatorInit = () => new NumberValidator(1, 1);
             validatorInit.Should().NotThrow();
         }
     }
