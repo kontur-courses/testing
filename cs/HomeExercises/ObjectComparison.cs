@@ -20,11 +20,14 @@ namespace HomeExercises
 				new Person("Vasili III of Russia", 28, 170, 60, null));
 
 			// Перепишите код на использование Fluent Assertions.
-			// Работает)))
+			// Работает))) Выбирал между DeclaringType и ReflectedType.
+			// В итоге понял для себя, что первое возвращает тот тип, который объявил поле, метод
+			// А второй возвращает тот тип, который использовался для получения этого поля, метода
+			// Поэтому оставил первый вариант
 			actualTsar.Should().BeEquivalentTo(expectedTsar,
 				config => config.AllowingInfiniteRecursion()
 					.Excluding(p => 
-						p.SelectedMemberInfo.Name == nameof(expectedTsar.Id) && p.SelectedMemberInfo.MemberType == typeof(int)));
+						p.SelectedMemberInfo.Name == nameof(expectedTsar.Id) && p.SelectedMemberInfo.DeclaringType == typeof(Person)));
 		}
 
 		[Test]
