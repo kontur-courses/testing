@@ -84,45 +84,44 @@ namespace HomeExercises
 			0,
 			true,
 			"123",
-			TestName =
-				"Number is integer and it has length less than precision")]
+			TestName = "Number is integer and its length is less than precision")]
 		[TestCase(5,
 			0,
 			true,
 			"12345",
-			TestName =
-				"Number is integer and it has same length as precision")]
+			TestName = "Number is integer and its length is same as precision")]
 		[TestCase(5,
 			2,
 			true,
 			"1.4",
-			TestName =
-				"Fractional part lenght is less than scale")]
+			TestName = "Fractional part lenght is less than scale")]
 		[TestCase(5,
 			2,
 			true,
 			"1.45",
-			TestName =
-				"Fractional part lenght is same as scale")]
+			TestName = "Fractional part lenght is same as scale")]
 		[TestCase(5,
-			2,
+			3,
 			true,
 			"123.45",
-			TestName =
-				"Sum of Integer and Fractional parts lenght same as precision")]
+			TestName = "Sum of lenght of Integer and Fractional parts same as precision")]
 		[TestCase(5,
 			0,
 			false,
 			"-123",
-			TestName =
-				"Negative integer have size less than precision and negative numbers Allowed")]
+			TestName = "Negative integer have size less than precision and negative numbers allowed")]
+		[TestCase(5,
+			0,
+			false,
+			"-123.4",
+			TestName = "Negative number with same size as precision and negative numbers allowed")]
 		[TestCase(5,
 			2,
 			false,
 			"+12.3",
-			TestName =
-				"Correct positive number when negative numbers allowed")]
-		public void IsValidNumber_ReturnTrue_WhenInputMatchesRules(
+			TestName = "Correct positive number when negative numbers allowed")]
+		[TestCase(5, 2, true, "12,3", TestName = "Using comma instead of point allowed")]
+		public void IsValidNumber_ReturnTrue_WhenInputMatchesRequirements(
 			int precision,
 			int scale,
 			bool positiveOnly,
