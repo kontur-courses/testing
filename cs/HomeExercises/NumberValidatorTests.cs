@@ -7,8 +7,8 @@ namespace HomeExercises
 {
 	public class NumberValidatorTests
 	{
-		private readonly string valid = " is valid number for NumberValidator";
-		private readonly string notValid = " is not valid number for NumberValidator";
+		private const string valid = " is valid number for NumberValidator";
+		private const string notValid = " is not valid number for NumberValidator";
 		/*
 			Assert.Throws<ArgumentException>(() => new NumberValidator(-1, 2, true));
 			Assert.DoesNotThrow(() => new NumberValidator(1, 0, true));
