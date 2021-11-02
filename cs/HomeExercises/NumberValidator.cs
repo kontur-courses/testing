@@ -12,7 +12,8 @@ namespace HomeExercises
 
         static NumberValidator()
         {
-            numberRegex = new Regex(@"^([+-]?)(\d+)([.,](\d+))?$", RegexOptions.IgnoreCase | RegexOptions.Compiled);
+            // Для валидности ".2" пришлось поправить паттерн \d* вместо \d+ в группе 2
+            numberRegex = new Regex(@"^([+-]?)(\d*)([.,](\d+))?$", RegexOptions.IgnoreCase | RegexOptions.Compiled);
         }
 
         /// <summary>
