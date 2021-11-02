@@ -1,6 +1,4 @@
-﻿using System;
-using FluentAssertions;
-using FluentAssertions.Equivalency;
+﻿using FluentAssertions;
 using NUnit.Framework;
 
 namespace HomeExercises
@@ -19,7 +17,9 @@ namespace HomeExercises
 			actualTsar.Should().BeEquivalentTo(expectedTsar, 
 				options => options
 					.AllowingInfiniteRecursion()
-					.Excluding(info =>  info.SelectedMemberInfo.Name == nameof(Person.Id)));
+					.IgnoringCyclicReferences()
+					.Excluding(info =>  info.SelectedMemberInfo.Name == nameof(Person.Id) &&
+					                    info.SelectedMemberInfo.DeclaringType == typeof(Person)));
 		}
 
 		[Test]
@@ -29,11 +29,11 @@ namespace HomeExercises
 			var actualTsar = TsarRegistry.GetCurrentTsar();
 			var expectedTsar = new Person("Ivan IV The Terrible", 54, 170, 70,
 				new Person("Vasili III of Russia", 28, 170, 60, null));
-
 			// Какие недостатки у такого подхода?
 			//1)При ошибке не понятно в чем различия
 			//2)При добавлении поля нужно дополнять AreEqual, при этом тест ещё и будет проходить будет оставаться зелёным
 			//3)Плохая читаемость из-за того, что нужно смотреть в другой метод
+			//4)Тест виснет если в графе цикл
 			Assert.True(AreEqual(actualTsar, expectedTsar));
 		}
 
@@ -62,7 +62,7 @@ namespace HomeExercises
 
 	public class Person
 	{
-		public static int IdCounter = 0;
+		public static int IdCounter;
 		public int Age, Height, Weight;
 		public string Name;
 		public Person? Parent;
