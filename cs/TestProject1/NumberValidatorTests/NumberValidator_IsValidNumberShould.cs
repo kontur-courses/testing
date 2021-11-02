@@ -1,7 +1,8 @@
 ﻿using FluentAssertions;
 using NUnit.Framework;
+using HomeExercises;
 
-namespace HomeExercises
+namespace HomeExersises_Test
 {
     public class NumberValidator_IsValidNumberShould
     {
