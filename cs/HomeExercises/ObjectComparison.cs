@@ -20,7 +20,7 @@ namespace HomeExercises
 				.IgnoringCyclicReferences() // На случай циклических ссылок
 				.Excluding(member => 
 					member.SelectedMemberInfo.DeclaringType == typeof(Person) &&
-					member.SelectedMemberInfo.Name == "Id"));
+					member.SelectedMemberInfo.Name == nameof(Person.Id)));
 		}
 
 		[Test]
@@ -36,6 +36,7 @@ namespace HomeExercises
 				Если захотим добавить новое поле, то придется лезть в AreEqual,
 				при чем, если новое поле будет ссылочного типа, то возможно придется писать еще один метод,
 				либо создавать аналогичное BeEquivalentTo решение
+				Также не исключен вариант бесконечной 
 			*/
 			Assert.True(AreEqual(actualTsar, expectedTsar));
 		}
