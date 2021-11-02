@@ -1,34 +1,33 @@
 ﻿using System;
 using System.Text.RegularExpressions;
 using FluentAssertions;
-using FluentAssertions.Execution;
 using NUnit.Framework;
+using static FluentAssertions.FluentActions;
+
 
 namespace HomeExercises
 {
-	public class PlugException : Exception{}
-	
 	public class NumberValidatorTests
 	{
 		// 1 - пустая строка или null
-		[TestCase(null, false, TestName = "validation test with null")]
-		[TestCase("", false, TestName = "validation test with empty string")]
-		// [TestCase(" ", false)]
+		[TestCase(null, false, 1, 0, false, TestName = "validation test with null")]
+		[TestCase("", false, 1, 0, false, TestName = "validation test with empty string")]
 		
 		// 2 - проверка на регур
-		// [TestCase("a.sd", false)]
-		[TestCase("1.1d", false, TestName = "validation test with non-number in fractional part")]
-		[TestCase("d.1", false, TestName = "validation test with non-number in precision")]
-		[TestCase("d1", false, TestName = "validation test with non-number")]
+		[TestCase("1.1d", false, 4, 3, false, TestName = "validation test with non-number in fractional part")]
+		[TestCase("d.1", false, 3, 1, false, TestName = "validation test with non-number in precision")]
+		[TestCase("d1", false, 3, 1, false, TestName = "validation test with non-number")]
 		
-		[TestCase("1.1.1", false, TestName = "validation test with three dots")]
-		[TestCase(".1", false, TestName = "validation test with dot but without precision")]
-		[TestCase("1.", false, TestName = "validation test with dot but without fractional part")]
-		[TestCase(".", false, TestName = "validation test with dot only")]
+		[TestCase("1.1.1", false, 6, 5, false, TestName = "validation test with three dots")]
+		[TestCase(".1", false, 3, 1, false, TestName = "validation test with dot but without precision")]
+		[TestCase("1.", false, 3, 1, false, TestName = "validation test with dot but without fractional part")]
+		[TestCase(".", false, 3, 1, false, TestName = "validation test with dot only")]
 		
-		[TestCase("--1.0", false, 17, 2, false, TestName = "validation test double sign")]
-		[TestCase("1+1.0", false, 17, 2, false, TestName = "validation test with digit before sign")]
-		[TestCase("1.0+", false, TestName = "validation test with sign in the end of number")]
+		[TestCase("--1.0", false, 4, 2, false, TestName = "validation test double sign")]
+		[TestCase("1+1.0", false, 4, 2, false, TestName = "validation test with digit before sign")]
+		[TestCase("1.0+", false, 3, 2, false, TestName = "validation test with sign in the end of number")]
+		
+		[TestCase("2,1", true, 2, 1, true, TestName = "comma validation test")]
 		
 		// 3 
 		// проварка на общую длину
@@ -37,116 +36,108 @@ namespace HomeExercises
 		[TestCase("21.23", true, 5, 2, false, TestName = "number lenght validation test")] 
 		
 		// проверка на длину дробной части
-		[TestCase("+1.234", false, 55, 2, false, TestName = "fractional part lenght validation test")]
-		[TestCase("+1.234", true, 55, 3, false, TestName = "fractional part lenght validation test")]
-		[TestCase("+1.23", true, 55, 2, false, TestName = "fractional part lenght validation test")]
+		[TestCase("+1.234", false, 5, 2, false, TestName = "fractional part lenght validation test")]
+		[TestCase("+1.234", true, 5, 3, false, TestName = "fractional part lenght validation test")]
+		[TestCase("+1.23", true, 5, 3, false, TestName = "fractional part lenght validation test")]
 		
 		// 4 - проверка на знак
-		[TestCase("-2.1", false, 10, 5, true, TestName = "sign validation test")]
-		[TestCase("+2.1", true, 10, 5, true, TestName = "sign validation test")]
-		[TestCase("-2.1", true, 10, 5, false, TestName = "sign validation test")]
-		[TestCase("+2.1", true, 10, 5, false, TestName = "sign validation test")]
-		
-		[TestCase("2,1", true, TestName = "comma validation test")]
+		[TestCase("-2.1", false, 3, 1, true, TestName = "sign validation test")]
+		[TestCase("+2.1", true, 3, 1, true, TestName = "sign validation test")]
+		[TestCase("-2.1", true, 3, 1, false, TestName = "sign validation test")]
+		[TestCase("+2.1", true, 3, 1, false, TestName = "sign validation test")]
 		public void Test_IsValidNumber(
 			string numberForCheck,
 			bool expected, 
-			int precision = 17, 
-			int scale = 2, 
-			bool onlyPositive = true)
-		{
-			var message = $"Number {numberForCheck} with parameters: " +
-			              $"\n\tprecision = {precision}, " +
-			              $"\n\tscale = {scale}, " +
-			              $"\n\tonlyPositive = {onlyPositive}" +
-			              $"\n\n  IsValidNumber result";
-
-			var builder = TestNumberValidatorBuilder.AValidator()
-				.WithPrecision(precision)
-				.WithScale(scale)
-				.WithSignMode(onlyPositive);
-			var validator = builder.Build();
-			
-			var firstCallActual = validator.IsValidNumber(numberForCheck);
-			var secondCallActual = validator.IsValidNumber(numberForCheck);
-			var secondConstructorCallActual = builder.Build().IsValidNumber(numberForCheck);
-			
-			if (expected)
-			{
-				Assert.That(firstCallActual, Is.True, message);
-				Assert.That(secondCallActual, Is.True, $"Exception on double call\n{message}");
-				Assert.That(secondConstructorCallActual, Is.True, $"Exception on double NumberValidator constructor call\n{message}");
-			}
-			else
-			{
-				Assert.That(firstCallActual, Is.False, message);
-				Assert.That(secondCallActual, Is.False, $"Exception on double call\n{message}");
-				Assert.That(secondConstructorCallActual, Is.False, $"Exception on double NumberValidator constructor call\n{message}");
-			}
-		}
-
-		[TestCase(-1, 0, 
-			"*precision must be a positive*", 
-			TestName = "NumberValidator constructor test with precision = -1 and scale = 0")]
-		[TestCase(0, 0,
-			"*precision must be a positive*", 
-			TestName = "NumberValidator constructor test with precision = 0 and scale = 0")]
-		[TestCase(2, -1, 
-			"*precision must be a non-negative number less or equal than precision*", 
-			TestName = "NumberValidator constructor test with precision = 2 and scale = -1")]
-		[TestCase(2, 2, 
-			"*precision must be a non-negative number less or equal than precision*", 
-			TestName = "NumberValidator constructor test with precision = 2 and scale = 2")]
-		[TestCase(2, 3, 
-			"*precision must be a non-negative number less or equal than precision*", 
-			TestName = "NumberValidator constructor test with precision = 2 and scale = 3")]
-		public void NumberValidatorConstructor_ThrowArgumentException_IncorrectPrecisionOrScale(
 			int precision, 
 			int scale, 
-			string requiredMessage)
+			bool onlyPositive)
 		{
-			var builder1 = TestNumberValidatorBuilder
-				.AValidator()
+			var message = $"\nNumber \"{numberForCheck}\" with parameters: " +
+			              $"\n\tprecision = {precision}, " +
+			              $"\n\tscale = {scale}, " +
+			              $"\n\tonlyPositive = {onlyPositive}\n";
+
+			var validator = TestNumberValidatorBuilder.AValidator()
 				.WithPrecision(precision)
 				.WithScale(scale)
-				.WithSignMode(false);
-			var builder2 = builder1
-				.But()
-				.WithSignMode(true);
+				.WithSignMode(onlyPositive)
+				.Build();
 			
-			Action action1 = () => builder1.Build();
-			Action action2 = () => builder2.Build();
+			var actual = validator.IsValidNumber(numberForCheck);
+			
+			actual.Should().Be(expected, message);
+		}
 
-			using (new AssertionScope())
-			{
-				action1.Should().ThrowExactly<ArgumentException>().WithMessage(requiredMessage);
-				action1.Should().ThrowExactly<ArgumentException>().WithMessage(requiredMessage);
-				action2.Should().ThrowExactly<ArgumentException>().WithMessage(requiredMessage);
-				action2.Should().ThrowExactly<ArgumentException>().WithMessage(requiredMessage);
-			}
+		[Test]
+		public void NumberValidator_ShouldReturnSameResults_WhenTwoCallInARow()
+		{
+			var validator = TestNumberValidatorBuilder.AValidator()
+				.WithPrecision(17)
+				.WithScale(2)
+				.Build();
+
+			var firstCallResult = validator.IsValidNumber("1.234");
+			var secondCallResult = validator.IsValidNumber("1.234");
+
+			firstCallResult.Should().Be(secondCallResult, "method result should return same value with same parameters every time");
 		}
 		
-		[TestCase(1, 0, TestName = "NumberValidator constructor test with precision = 1 and scale = 0")]
-		[TestCase(2, 0, TestName = "NumberValidator constructor test with precision = 2 and scale = 0")]
-		[TestCase(2, 1, TestName = "NumberValidator constructor test with precision = 2 and scale = 1")]
-		public void NumberValidatorConstructor_DoesNotThrow_CorrectPrecisionAndScale(int precision, int scale)
+		[Test]
+		public void NumberValidator_ShouldReturnSameResults_AfterCreateAnotherValidator()
 		{
-			var builder1 = TestNumberValidatorBuilder
+			var builder = TestNumberValidatorBuilder.AValidator()
+				.WithPrecision(17)
+				.WithScale(3);
+
+			var validator = builder.Build();
+			var firstCallResult = validator.IsValidNumber("1.234");
+			builder
+				.But()
+				.WithScale(2)
+				.Build();
+			var secondCallResult = validator.IsValidNumber("1.234");
+			
+			firstCallResult.Should().Be(secondCallResult, "method result should return same value after another validator creating");
+		}
+
+		[TestCase(-1, 0, TestName = "NumberValidator constructor Throw ArgumentException with precision = -1, scale = 0")]
+		[TestCase(0, 0, TestName = "NumberValidator constructor Throw ArgumentException with precision = 0, scale = 0")]
+		[TestCase(2, -1, TestName = "NumberValidator constructor Throw ArgumentException with precision = 2, scale = -1")]
+		[TestCase(2, 2, TestName = "NumberValidator constructor Throw ArgumentException with precision = 2, scale = 2")]
+		[TestCase(2, 3, TestName = "NumberValidator constructor Throw ArgumentException with precision = 2, scale = 3")]
+		public void NumberValidatorConstructor_ThrowArgumentException_WhenIncorrectArguments(int precision, int scale)
+		{
+			var builderWithOnlyPositive = TestNumberValidatorBuilder
 				.AValidator()
 				.WithPrecision(precision)
 				.WithScale(scale)
-				.WithSignMode(false);
-			var builder2 = builder1
-				.But()
 				.WithSignMode(true);
-			
-			Action action1 = () => builder1.Build();
-			Action action2 = () => builder2.Build();
-			
-			action1.Should().NotThrow();
-			action1.Should().NotThrow();
-			action2.Should().NotThrow();
-			action2.Should().NotThrow();
+
+			var builderWithoutOnlyPositive = builderWithOnlyPositive
+				.But()
+				.WithSignMode(false);
+
+			Invoking(() => builderWithOnlyPositive.Build()).Should().Throw<ArgumentException>();
+			Invoking(() => builderWithoutOnlyPositive.Build()).Should().Throw<ArgumentException>();
+		}
+		
+		[TestCase(1, 0, TestName = "NumberValidator constructor NotThrow with precision = 1 and scale = 0")]
+		[TestCase(2, 0, TestName = "NumberValidator constructor NotThrow with precision = 2 and scale = 0")]
+		[TestCase(2, 1, TestName = "NumberValidator constructor NotThrow with precision = 2 and scale = 1")]
+		public void NumberValidatorConstructor_NotThrow_WhenCorrectArguments(int precision, int scale)
+		{
+			var builderWithOnlyPositive = TestNumberValidatorBuilder
+				.AValidator()
+				.WithPrecision(precision)
+				.WithScale(scale)
+				.WithSignMode(true);
+
+			var builderWithoutOnlyPositive = builderWithOnlyPositive
+				.But()
+				.WithSignMode(false);
+
+			Invoking(() => builderWithOnlyPositive.Build()).Should().NotThrow();
+			Invoking(() => builderWithoutOnlyPositive.Build()).Should().NotThrow();
 		}
 	}
 
@@ -193,10 +184,10 @@ namespace HomeExercises
 
 	public class NumberValidator
 	{
-		private  Regex numberRegex;
-		private  bool onlyPositive;
-		private  int precision;
-		private  int scale;
+		private readonly Regex numberRegex;
+		private readonly bool onlyPositive;
+		private readonly int precision;
+		private readonly int scale;
 
 		public NumberValidator(int precision, int scale = 0, bool onlyPositive = false)
 		{
