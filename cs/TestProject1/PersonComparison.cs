@@ -12,17 +12,13 @@ namespace HomeExersises_Test
         public void CheckCurrentTsar()
         {
             var actualTsar = TsarRegistry.GetCurrentTsar();
-            //var expectedTsar = new Person("Ivan IV The Terrible", 54, 170, 70,
-            //new Person("Vasili III of Russia", 28, 170, 60, null));
-
             var expectedTsar = new Person("Ivan IV The Terrible", 54, 170, 70,
-                 new Person("Vasili III of Russia", 28, 170, 60, null,
-                 new County { Id = 1 }), new County { Id = 15 });
+            new Person("Vasili III of Russia", 28, 170, 60, null));
 
             // Если попадается циклическая ссылка в сообщении видно все несовпадающие поля,
             // и есть уведомление "Cyclic reference to type ... detected"
             actualTsar.Should().BeEquivalentTo(expectedTsar, options => options
-                .Excluding(o => o.DeclaringType == typeof(Person) && o.Name == "Id")
+                .Excluding(o => o.DeclaringType == typeof(Person) && o.Name == nameof(Person.Id))
                 .AllowingInfiniteRecursion());
         }
 
@@ -31,12 +27,8 @@ namespace HomeExersises_Test
         public void CheckCurrentTsar_WithCustomEquality()
         {
             var actualTsar = TsarRegistry.GetCurrentTsar();
-            //var expectedTsar = new Person("Ivan IV The Terrible", 54, 170, 70,
-            //    new Person("Vasili III of Russia", 28, 170, 60, null));
-
             var expectedTsar = new Person("Ivan IV The Terrible", 54, 170, 70,
-                 new Person("Vasili III of Russia", 28, 170, 60, null,
-                 new County { Id = 1 }), new County { Id = 15 });
+                new Person("Vasili III of Russia", 28, 170, 60, null));
 
             /*
             НЕДОСТАТКИ:
