@@ -7,9 +7,7 @@ namespace HomeExercises
 {
 	public class NumberValidatorTests
 	{
-		[Test]
-		public void OriginalTests()
-        {
+		/*
 			Assert.Throws<ArgumentException>(() => new NumberValidator(-1, 2, true));
 			Assert.DoesNotThrow(() => new NumberValidator(1, 0, true));
 			Assert.Throws<ArgumentException>(() => new NumberValidator(-1, 2, false));
@@ -27,7 +25,7 @@ namespace HomeExercises
 			Assert.IsFalse(new NumberValidator(17, 2, true).IsValidNumber("0.000"));
 			//Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("-1.23")); -almost repeats 25 line
 			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("a.sd"));
-
+		*/
 			/*
 			 *Отсутствует тест конструктора, проверяющий поведение при отрицательном scale,
 			 *Скудность проверки выражений, отличающихся от заданного формата,
@@ -37,9 +35,7 @@ namespace HomeExercises
 			 *может быть непонятно, на какой именнно мы допустили ошибку.
 			 *Кроме этого, слишком много проверок в одном тесте
 			*/
-
-		}
-
+		
 
 		[Test]
 		public void ShouldThrowExceptionWhenPrecisionIsNotPositive1()
