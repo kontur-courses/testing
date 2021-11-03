@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using System.Text.RegularExpressions;
 using FluentAssertions;
 using NUnit.Framework;
 
@@ -54,11 +55,12 @@ namespace HomeExercises
 			var expectedTsar = new Person("Ivan IV The Terrible", 54, 170, 70,
 				new Person("Vasili III of Russia", 28, 170, 60, null));
 
+			var unwantedMembers = new Regex("\\.Id$|^Id$", RegexOptions.Compiled);
+
 			//Данное решение проще, чем с рефлексией и понятнее
 
-			actualTsar.Should().BeEquivalentTo(expectedTsar, options =>
-				options.Excluding(p => p.Id)
-					.Excluding(p => p.Parent.Id));
+			actualTsar.Should().BeEquivalentTo(expectedTsar, options => options
+				.Excluding(p => unwantedMembers.IsMatch(p.SelectedMemberPath)));
 		}
 
 
