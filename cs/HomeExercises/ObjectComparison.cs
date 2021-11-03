@@ -15,23 +15,11 @@ namespace HomeExercises
 			var expectedTsar = new Person("Ivan IV The Terrible", 54, 170, 70,
 				new Person("Vasili III of Russia", 28, 170, 60, null));
 
-			// Перепишите код на использование Fluent Assertions.
-			//actualTsar.Should().BeEquivalentTo(expectedTsar);
 			actualTsar.Should().BeEquivalentTo(
 				expectedTsar, 
 				options => options
-					.Including(t => t.Name)
-					.Including(t => t.Age)
-					.Including(t => t.Height)
-					.Including(t => t.Weight)
-				);
-			actualTsar.Parent.Should().BeEquivalentTo(
-				expectedTsar.Parent,
-				options => options
-					.Including(p => p!.Name)
-					.Including(p => p.Age)
-					.Including(p => p.Height)
-					.Including(p => p.Parent)
+					.Excluding(t => t.Id)
+					.Excluding(t => t!.Parent!.Id)
 				);
 		}
 
@@ -46,15 +34,20 @@ namespace HomeExercises
 			// Какие недостатки у такого подхода? 
 			Assert.True(AreEqual(actualTsar, expectedTsar));
 			/*
-			 В данном решении присутствует дополнительная проверка на то,
-			 что actual.Parent.Weight == expected.Parent.Weight, это в принципе делает проверки не эквивалетными,
-			 несмотря на совпадение результатов проверки: если expectedTsar.Parent.Weight = 61, то первый тест зайдёт, а 
-			 этот нет.
-			 В данном решении нет возможности поменять условия для детей и родителей индивидуально, то есть
-			 условия в строчках 60,61,63-67 должны выполняться как для child, так и для parent, в моём же решении 
-			 условия для детей и родителей не совпадают. (+Гибкость)
-			 Также моё решение лучше читается, в этом же подходе не очень очевидно, как работает сравнение царей.
-			 (+Читаемость)
+			 - читаемость: не очевидно, как работает AreEqual, 
+			 также можно подумать, что тест проверяет метод AreEqual;
+			 (в моём решении строк меньше, читаемость лучше засчёт FluentAssertions)
+			 
+			 - гибкость: после добавления новых полей в Person 
+			 надо будет дополнить условие в методе AreEqual;
+			 (в моём решении, если поле надо учитывать при сравнении, то ничего дописывать не надо)
+			 
+			 - возможно исключение StackOverflowException
+			 (в моём решении есть даже настройка рекурсии при сравнении)
+
+			 - мне кажется, что далеко не лучший вариант писать,
+			 а затем использовать методы с непростой логикой, как в данном случае, возможно, стоит этот метод потестить,
+			 чтобы корректность метода AreEqual была актульна при смене контекста
 			 */
 		}
 

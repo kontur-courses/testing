@@ -23,32 +23,42 @@ namespace HomeExercises
 
 		[TestCase(1, 1)]
 		[TestCase(1, 2)]
-		public void NumberValidation_ThrowArgumentException_IfScaleIsMoreOrEqualPrecision(int p, int s)
+		public void NumberValidation_ThrowArgumentException_IfScaleIsMoreOrEqualPrecision(int precision, int scale)
 		{
-			Action act = () => new NumberValidator(p, s, true);
-			act.Should().Throw<ArgumentException>($"precision is {p} and scale is {s}");
+			Action act = () => new NumberValidator(precision, scale, true);
+			act.Should().Throw<ArgumentException>($"precision is {precision} and scale is {scale}");
 		}
 
-		[Test]
-		public void
-			NumberValidation_DoesNotThrowArgumentException_IfPrecisionIsPositiveAndScaleIsNotNegativeAndLessThanPrecision()
+		[TestCase(1, 0, true)]
+		[TestCase(2, 1, true)]
+		[TestCase(1, 0, false)]
+		
+		public void NumberValidation_DoesNotThrowArgumentException_IfPrecisionIsPositiveAndScaleIsNotNegativeAndLessThanPrecision(
+			int precision,
+			int scale,
+			bool onlyPositive
+			)
 		{
-			Action act = () => new NumberValidator(1, 0, true);
-			act.Should().NotThrow<ArgumentException>("precision is 1 and scale is 0");
+			Action act = () => new NumberValidator(precision, scale, onlyPositive);
+			act.Should().NotThrow<ArgumentException>(
+				$"precision is \"{precision}\" and scale is \"{scale}\", number validator positive: \"{onlyPositive}\""
+				);
 		}
 
 		[Test]
 		public void IsValidNumber_False_ValueIsNull()
 		{
-			var res = new NumberValidator(1, 0, true).IsValidNumber(null);
-			res.Should().BeFalse("value is null");
+			var validator = new NumberValidator(1, 0, true);
+			var	result = validator.IsValidNumber(null);
+			result.Should().BeFalse("value is null");
 		}
 
 		[Test]
 		public void IsValidNumber_False_ValueIsEmpty()
 		{
-			var res = new NumberValidator(1, 0, true).IsValidNumber("");
-			res.Should().BeFalse("value is \"\"");
+			var validator = new NumberValidator(1, 0, true);
+			var	result = validator.IsValidNumber("");
+			result.Should().BeFalse("value is \"\"");
 		}
 
 		[TestCase("a")]
@@ -58,8 +68,9 @@ namespace HomeExercises
 		[TestCase("1+.3")]
 		public void IsValidNumber_False_ValueIsNan(string value)
 		{
-			var res = new NumberValidator(3, 2, true).IsValidNumber(value);
-			res.Should().BeFalse($"value is \"{value}\"");
+			var validator = new NumberValidator(3, 2, true);
+			var result = validator.IsValidNumber(value);
+			result.Should().BeFalse($"value is \"{value}\"");
 		}
 
 		[TestCase("00.00")]
@@ -67,30 +78,35 @@ namespace HomeExercises
 		[TestCase("+0.00")]
 		public void IsValidNumber_False_SumOfIntAndFracPartsIsBiggerThanPrecision(string value)
 		{
-			var res = new NumberValidator(3, 2, true).IsValidNumber(value);
-			res.Should().BeFalse($"value is \"{value}\"");
+			var validator = new NumberValidator(3, 2, true); 
+			var result = validator.IsValidNumber(value);
+			result.Should().BeFalse($"value is \"{value}\"");
 		}
 
 		[Test]
 		public void IsValidNumber_False_FracPartIsLongerThanScale()
 		{
-			var res = new NumberValidator(17, 2, true).IsValidNumber("0.000");
-			res.Should().BeFalse("value is 0.000");
+			var validator = new NumberValidator(17, 2, true);
+			var result = validator.IsValidNumber("0.000");
+			result.Should().BeFalse("value is 0.000");
 		}
 
-		[Test]
-		public void IsValidNumber_False_ValueIsNegativeAndNumberValidatorIsOnlyPositive()
+		[TestCase("-1", Description = "number validator is onlyPositive")]
+		[TestCase("-54", Description = "number validator is onlyPositive")]
+		public void IsValidNumber_False_ValueIsNegative(string value)
 		{
-			var res = new NumberValidator(17, 2, true).IsValidNumber("-1");
-			res.Should().BeFalse("value is -1 and onlyPositive=true");
+			var validator = new NumberValidator(17, 2, true);
+			var result = validator.IsValidNumber("-1");
+			result.Should().BeFalse($"value is \"{value}\" and number validator is onlyPositive");
 		}
 
-		[TestCase("0")]
-		[TestCase("+0")]
-		public void IsValidNumber_True_ValueIsNotNegativeAndNumberValidatorIsOnlyPositive(string value)
+		[TestCase("0", Description = "number validator is onlyPositive")]
+		[TestCase("1", Description = "number validator is onlyPositive")]
+		public void IsValidNumber_True_ValueIsNotNegative(string value)
 		{
-			var res = new NumberValidator(17, 2, true).IsValidNumber(value);
-			res.Should().BeTrue($"value is \"{value}\"");
+			var validator = new NumberValidator(17, 2, true); 
+			var result = validator.IsValidNumber(value);
+			result.Should().BeTrue($"value is \"{value}\" and number validator is onlyPositive");
 		}
 	}
 
