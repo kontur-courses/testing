@@ -31,20 +31,19 @@ namespace HomeExercises
 
 		[TestCase(1, 0)]
 		[TestCase(2, 1)]
-		
 		public void NumberValidation_DoesNotThrowArgumentException(int precision, int scale)
 		{
 			Action act = () => new NumberValidator(precision, scale);
 			act.Should().NotThrow<ArgumentException>(
 				$"precision is \"{precision}\" and scale is \"{scale}"
-				);
+			);
 		}
 
 		[Test]
 		public void IsValidNumber_False_ValueIsNull()
 		{
 			var validator = new NumberValidator(1, 0, true);
-			var	result = validator.IsValidNumber(null);
+			var result = validator.IsValidNumber(null);
 			result.Should().BeFalse("value is null");
 		}
 
@@ -52,7 +51,7 @@ namespace HomeExercises
 		public void IsValidNumber_False_ValueIsEmpty()
 		{
 			var validator = new NumberValidator(1, 0, true);
-			var	result = validator.IsValidNumber("");
+			var result = validator.IsValidNumber("");
 			result.Should().BeFalse("value is \"\"");
 		}
 
@@ -73,7 +72,7 @@ namespace HomeExercises
 		[TestCase("+0.00")]
 		public void IsValidNumber_False_SumOfIntAndFracPartsIsBiggerThanPrecision(string value)
 		{
-			var validator = new NumberValidator(3, 2, true); 
+			var validator = new NumberValidator(3, 2, true);
 			var result = validator.IsValidNumber(value);
 			result.Should().BeFalse($"value is \"{value}\"");
 		}
@@ -100,7 +99,7 @@ namespace HomeExercises
 		[TestCase("1", true)]
 		public void IsValidNumber_True_ValueIsNotNegative(string value, bool onlyPositive)
 		{
-			var validator = new NumberValidator(17, 2, onlyPositive); 
+			var validator = new NumberValidator(17, 2, onlyPositive);
 			var result = validator.IsValidNumber(value);
 			result.Should().BeTrue($"value is \"{value}\" and number validator is onlyPositive");
 		}

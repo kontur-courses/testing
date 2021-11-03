@@ -16,10 +16,10 @@ namespace HomeExercises
 				new Person("Vasili III of Russia", 28, 170, 60, null));
 
 			actualTsar.Should().BeEquivalentTo(
-				expectedTsar, 
+				expectedTsar,
 				options => options
 					.Excluding(ctx => ctx.SelectedMemberPath.EndsWith("Id"))
-				);
+			);
 		}
 
 		[Test]
