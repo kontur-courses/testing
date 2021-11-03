@@ -1,4 +1,5 @@
 ﻿using FluentAssertions;
+using FluentAssertions.Common;
 using NUnit.Framework;
 
 namespace HomeExercises
@@ -15,16 +16,10 @@ namespace HomeExercises
 			var expectedTsar = new Person("Ivan IV The Terrible", 54, 170, 70,
 				new Person("Vasili III of Russia", 28, 170, 60, null));
 
-			// Перепишите код на использование Fluent Assertions.
-			Assert.AreEqual(actualTsar.Name, expectedTsar.Name);
-			Assert.AreEqual(actualTsar.Age, expectedTsar.Age);
-			Assert.AreEqual(actualTsar.Height, expectedTsar.Height);
-			Assert.AreEqual(actualTsar.Weight, expectedTsar.Weight);
+            // Перепишите код на использование Fluent Assertions.
+            actualTsar.Should().BeEquivalentTo(expectedTsar, options => options
+	            .Excluding(p => p.SelectedMemberInfo.Name == "Id"));
 
-			Assert.AreEqual(expectedTsar.Parent!.Name, actualTsar.Parent!.Name);
-			Assert.AreEqual(expectedTsar.Parent.Age, actualTsar.Parent.Age);
-			Assert.AreEqual(expectedTsar.Parent.Height, actualTsar.Parent.Height);
-			Assert.AreEqual(expectedTsar.Parent.Parent, actualTsar.Parent.Parent);
 		}
 
 		[Test]
@@ -35,7 +30,13 @@ namespace HomeExercises
 			var expectedTsar = new Person("Ivan IV The Terrible", 54, 170, 70,
 				new Person("Vasili III of Russia", 28, 170, 60, null));
 
-			// Какие недостатки у такого подхода? 
+			// Какие недостатки у такого подхода?
+			/*
+			1. Если тест упадет, то сообщение об ошибке будет неинформативным: "Expected: True; But was: False".
+			- В случае использования библиотеки FluentAssertion сообщение будет содержать информацию о том, какие именно поля класса отличаются 
+			2. При добавлении новых полей в класс Person придется дописать метод AreEqual
+			   - Метод BeEquivalentTo умеет сравнивать объекты структурно(по полям класса) и имеет гибкие настройки, в данном случае можно было указать какие поля не включать в сравнение, 				
+			 */
 			Assert.True(AreEqual(actualTsar, expectedTsar));
 		}
 
