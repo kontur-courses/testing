@@ -29,19 +29,14 @@ namespace HomeExercises
 			act.Should().Throw<ArgumentException>($"precision is {precision} and scale is {scale}");
 		}
 
-		[TestCase(1, 0, true)]
-		[TestCase(2, 1, true)]
-		[TestCase(1, 0, false)]
+		[TestCase(1, 0)]
+		[TestCase(2, 1)]
 		
-		public void NumberValidation_DoesNotThrowArgumentException_IfPrecisionIsPositiveAndScaleIsNotNegativeAndLessThanPrecision(
-			int precision,
-			int scale,
-			bool onlyPositive
-			)
+		public void NumberValidation_DoesNotThrowArgumentException(int precision, int scale)
 		{
-			Action act = () => new NumberValidator(precision, scale, onlyPositive);
+			Action act = () => new NumberValidator(precision, scale);
 			act.Should().NotThrow<ArgumentException>(
-				$"precision is \"{precision}\" and scale is \"{scale}\", number validator positive: \"{onlyPositive}\""
+				$"precision is \"{precision}\" and scale is \"{scale}"
 				);
 		}
 
@@ -91,20 +86,21 @@ namespace HomeExercises
 			result.Should().BeFalse("value is 0.000");
 		}
 
-		[TestCase("-1", Description = "number validator is onlyPositive")]
-		[TestCase("-54", Description = "number validator is onlyPositive")]
-		public void IsValidNumber_False_ValueIsNegative(string value)
+		[TestCase("-1", true)]
+		[TestCase("-54", true)]
+		public void IsValidNumber_False_ValueIsNegative(string value, bool onlyPositive)
 		{
-			var validator = new NumberValidator(17, 2, true);
+			var validator = new NumberValidator(17, 2, onlyPositive);
 			var result = validator.IsValidNumber("-1");
 			result.Should().BeFalse($"value is \"{value}\" and number validator is onlyPositive");
 		}
 
-		[TestCase("0", Description = "number validator is onlyPositive")]
-		[TestCase("1", Description = "number validator is onlyPositive")]
-		public void IsValidNumber_True_ValueIsNotNegative(string value)
+		[TestCase("0", true)]
+		[TestCase("+0", true)]
+		[TestCase("1", true)]
+		public void IsValidNumber_True_ValueIsNotNegative(string value, bool onlyPositive)
 		{
-			var validator = new NumberValidator(17, 2, true); 
+			var validator = new NumberValidator(17, 2, onlyPositive); 
 			var result = validator.IsValidNumber(value);
 			result.Should().BeTrue($"value is \"{value}\" and number validator is onlyPositive");
 		}
