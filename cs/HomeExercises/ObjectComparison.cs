@@ -10,31 +10,14 @@ namespace HomeExercises
 		[Category("ToRefactor")]
 		public void CheckCurrentTsar()
 		{
-			var actualTsar = TsarRegistry.GetCurrentTsar();
-
 			Person expectedTsar = new Person("Ivan IV The Terrible", 54, 170, 70,
 				new Person("Vasili III of Russia", 28, 170, 60, null));
 
-			while (actualTsar != null | expectedTsar != null)
-			{
-				actualTsar.Should().BeEquivalentTo(expectedTsar, o => o.Excluding(d => d!.Id).Excluding(d => d!.Parent));
-				actualTsar = actualTsar!.Parent;
-				expectedTsar = expectedTsar!.Parent;
-			}
+			var actualTsar = TsarRegistry.GetCurrentTsar();
 
-            // Перепишите код на использование Fluent Assertions.
-
-            //Assert.AreEqual(actualTsar.Name, expectedTsar.Name);
-            //Assert.AreEqual(actualTsar.Age, expectedTsar.Age);
-            //Assert.AreEqual(actualTsar.Height, expectedTsar.Height);
-            //Assert.AreEqual(actualTsar.Weight, expectedTsar.Weight);
-
-            //Assert.AreEqual(expectedTsar.Parent!.Name, actualTsar.Parent!.Name);
-            //Assert.AreEqual(expectedTsar.Parent.Age, actualTsar.Parent.Age);
-            //Assert.AreEqual(expectedTsar.Parent.Height, actualTsar.Parent.Height);
-            //Assert.AreEqual(expectedTsar.Parent.Parent, actualTsar.Parent.Parent);
-
-        }
+			actualTsar.Should().BeEquivalentTo
+				(expectedTsar, option => option.Excluding(info => info.SelectedMemberPath.EndsWith(nameof(Person.Id))));
+		}
 
         [Test]
 		[Description("Альтернативное решение. Какие у него недостатки?")]
@@ -47,8 +30,12 @@ namespace HomeExercises
 			// Какие недостатки у такого подхода? 
 			Assert.True(AreEqual(actualTsar, expectedTsar));
 		}
-		//При добавлении новых свойств нужно будет дописывать условия сравнения, что можно забыть сделать
-		//При непрохождении теста нет никакой информации о том какие из свойств не равны
+		//При добавлении новых свойств нужно будет дописывать условия сравнения
+		//При падении теста нет никакой информации о том какие из свойств не равны
+		//Логика сравнения скрывается в отдельном методе
+		//Много логики и можно допустить ошибку
+		//Нельзя ограничить проверку по глубине вложенности,
+		//		можно зациклиться если обе персоны будут указывать друг на друга в предках
 
 		private bool AreEqual(Person? actual, Person? expected)
 		{
