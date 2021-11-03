@@ -7,104 +7,118 @@ namespace HomeExercises
 {
 	public class NumberValidatorTests
 	{
+		private static void Process
+		(string value,
+			int precision = 5,
+			int scale = 4,
+			bool onlyPositive = false,
+			bool expected = true)
+		{
+			var validator = new NumberValidator(precision, scale, onlyPositive);
+
+			var isValidNumber = validator.IsValidNumber(value);
+
+			if (!expected)
+				isValidNumber.Should().BeFalse();
+
+			else
+				isValidNumber.Should().BeTrue();
+		}
+
 		[Test]
 		public void PrecisionShouldBeNotNegative()
 		{
-			new Func<NumberValidator>(() => new NumberValidator(-1, 2, true))
-				.Should().Throw<ArgumentException>();
+			Assert.Throws<ArgumentException>(()
+				=> new NumberValidator(-1, 2, true));
 		}
 
 		[Test]
 		public void ScaleShouldBeNotNegative()
 		{
-			new Func<NumberValidator>(() => new NumberValidator(1, -1, true))
-				.Should().Throw<ArgumentException>();
+			Assert.Throws<ArgumentException>(()
+				=> new NumberValidator(1, -1, true));
 		}
 
 		[Test]
-		public void ScaleShouldBeLessThanPrecision()
+		public void ScaleCanBeZero()
 		{
-			new Func<NumberValidator>(() => new NumberValidator(1, 1, true))
-				.Should().Throw<ArgumentException>();
-			new Func<NumberValidator>(() => new NumberValidator(1, 2, true))
-				.Should().Throw<ArgumentException>();
+			Assert.DoesNotThrow(() => new NumberValidator(1, 0));
 		}
 
-		[Test]
-		public void ValidateShouldBeFalseWhenValueIsEmptyStringOrNull()
+		[TestCase(1, TestName = "Check when scale equally precision")]
+		[TestCase(2, TestName = "Check when scale greater than precision")]
+		public void ScaleShouldBeLessThanPrecision(int scale)
 		{
-			Assert.IsFalse(new NumberValidator(10, 9, true).IsValidNumber(""));
-			Assert.IsFalse(new NumberValidator(10, 9, true).IsValidNumber(null));
+			Assert.Throws<ArgumentException>(()
+				=> new NumberValidator(1, scale));
 		}
 
-		[Test]
-		public void SeparatingSymbolShouldNotBeTakenInCountOfDigits()
+		[TestCase("", TestName = "Check empty string")]
+		[TestCase(null, TestName = "Check null")]
+		public void ValidateShouldBeFalseWhenValueIsEmptyStringOrNull(string value)
 		{
-			Assert.IsTrue(new NumberValidator(2, 1, false).IsValidNumber("0.1"));
-			Assert.IsTrue(new NumberValidator(2, 1, false).IsValidNumber("0,1"));
+			Process(value, expected: false);
 		}
 
-		[Test]
-		public void MinusShouldBeTakenInCountOfDigits()
+		[TestCase("0.1", TestName = "Check dot")]
+		[TestCase("0,1", TestName = "Check comma")]
+		public void SeparatingSymbolShouldNotBeTakenInCountOfDigits(string value)
 		{
-			Assert.IsFalse(new NumberValidator(1, 0, false).IsValidNumber("-1"));
-			Assert.IsFalse(new NumberValidator(4, 3, false).IsValidNumber("-1.002"));
+			Process(value, 2, 1);
 		}
 
-		[Test]
-		public void PlusShouldBeTakenInCountOfDigits()
+		[TestCase(1, 0, "-1", TestName = "Check negative integer")]
+		[TestCase(1, 0, "+1", TestName = "Check positive integer")]
+		[TestCase(4, 3, "-1.002", TestName = "Check negative real number")]
+		[TestCase(4, 3, "+1.002", TestName = "Check positive real number")]
+		public void SignShouldBeTakenInCountDigits(int precision, int scale, string value)
 		{
-			Assert.IsFalse(new NumberValidator(1, 0, false).IsValidNumber("+1"));
-			Assert.IsFalse(new NumberValidator(4, 3, false).IsValidNumber("+1.002"));
+			Process(value, precision, scale, expected: false);
 		}
 
-		[TestCase(17, 2, true, "0.0")]
-		[TestCase(17, 2, true, "0")]
-		[TestCase(17, 2, false, "-1")]
-		[TestCase(17, 2, false, "-1.1")]
-		[TestCase(17, 2, false, "+1.1")]
-		[TestCase(17, 2, false, "-1,1")]
-		[TestCase(17, 2, false, "+1,1")]
-		[TestCase(17, 2, false, "+1,11")]
-		public void CorrectValidateWithCorrectNumber(int precision, int scale, bool onlyPositive, string number)
+		[TestCase("0.0", TestName = "Check real number without sign")]
+		[TestCase("0", TestName = "Check integer without sign")]
+		[TestCase("-1", TestName = "Check integer with minus")]
+		[TestCase("-1.1", TestName = "Check real number with minus")]
+		[TestCase("+1.1", TestName = "Check real number with plus")]
+		[TestCase("+1", TestName = "Check integer with plus")]
+		public void CorrectValidateWithCorrectNumber(string value)
 		{
-			Assert.IsTrue(new NumberValidator(precision, scale, onlyPositive).IsValidNumber(number));
+			Process(value);
 		}
 
-		[TestCase(4, 3, false, "12212")]
-		[TestCase(4, 3, false, "0.2212")]
-		public void CorrectValidateWhenDigitsInNumberGreaterThenPrecision
-			(int precision, int scale, bool onlyPositive, string number)
+		[TestCase("12212", TestName = "Check integer")]
+		[TestCase("0.2212", TestName = "Check real number")]
+		public void CorrectValidateWhenDigitsInNumberGreaterThenPrecision(string value)
 		{
-			Assert.IsFalse(new NumberValidator(precision, scale, onlyPositive).IsValidNumber(number));
+			Process(value, 4, 3, expected: false);
 		}
 
-		[TestCase(10, 3, false, "0.1234")]
-		[TestCase(10, 2, false, "-12.1234")]
-		[TestCase(10, 0, false, "0.1")]
+		[TestCase(3, "0.1234", TestName = "Check positive number")]
+		[TestCase(2, "-12.1234", TestName = "Check negative number")]
+		[TestCase(0, "0.1", TestName = "Check when scale is 0")]
+		[TestCase(3, "1.0000", TestName = "Check when number has many zeros in fractional part")]
 		public void CorrectValidateWhenDigitsInFractionalPartGreaterThenScale
-			(int precision, int scale, bool onlyPositive, string number)
+			(int scale, string value)
 		{
-			Assert.IsFalse(new NumberValidator(precision, scale, onlyPositive).IsValidNumber(number));
+			Process(value, 10, scale, expected: false);
 		}
 
-		[TestCase(10, 9, "-12.1234")]
-		[TestCase(10, 9, "-0,1")]
-		[TestCase(10, 9, "-0")]
-		public void CorrectValidateWhenNegativeNumberAndOnlyPositiveMod
-			(int precision, int scale, string number)
+		[TestCase("-1", TestName = "Check integer")]
+		[TestCase("-0,1", TestName = "Check real number")]
+		[TestCase("-0", TestName = "Check zero with minus")]
+		public void CorrectValidateWhenNegativeNumberAndOnlyPositiveMod(string value)
 		{
-			Assert.IsFalse(new NumberValidator(precision, scale, true).IsValidNumber(number));
+			Process(value, 10, 9, true, false);
 		}
 
-		[TestCase("ad.g")]
-		[TestCase("ad.1")]
-		[TestCase("1.g")]
-		[TestCase("ad")]
-		public void CorrectValidateWhenStrokeHasNotDigits
-			(string stroke)
+		[TestCase("1ad.1g", TestName = "Check when non digits in ceil and fractional parts")]
+		[TestCase("ad.1", TestName = "Check when non digits in ceil part")]
+		[TestCase("1.g", TestName = "Check when non digits in fractional part")]
+		[TestCase("a1d", TestName = "Check when non digits in ceil part without fractional part")]
+		public void CorrectValidateWhenStrokeHasNotDigits(string value)
 		{
-			Assert.IsFalse(new NumberValidator(10, 9, true).IsValidNumber(stroke));
+			Process(value, expected: false);
 		}
 
 
