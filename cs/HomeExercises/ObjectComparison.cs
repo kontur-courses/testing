@@ -7,7 +7,6 @@ namespace HomeExercises
 	{
 		[Test]
 		[Description("Проверка текущего царя")]
-		[Category("ToRefactor")]
 		public void CheckCurrentTsar()
 		{
 			var actualTsar = TsarRegistry.GetCurrentTsar();
@@ -17,7 +16,9 @@ namespace HomeExercises
 
 			// Перепишите код на использование Fluent Assertions.
 			actualTsar.Should().BeEquivalentTo(expectedTsar, options => options
-				.Excluding(p => p.SelectedMemberInfo.Name == "Id"));
+				.Excluding(p =>
+					p.SelectedMemberInfo.Name == nameof(Person.Id) &&
+					p.SelectedMemberInfo.DeclaringType.Name == nameof(Person)));
 		}
 
 		[Test]
