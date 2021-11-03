@@ -24,7 +24,7 @@ namespace HomeExercises
 			 * то тест не пройдёт.
 			 */
 			expectedTsar.Should().BeEquivalentTo(actualTsar, opts =>
-				opts.Excluding(tsar => tsar.Id).Excluding(tsar => tsar.Parent!.Id));
+				opts.Excluding(member => member.SelectedMemberPath.EndsWith("Id")));
 		}
 
 		[Test]
@@ -40,6 +40,8 @@ namespace HomeExercises
 			 * AreEqual плохо расширяемый, потому что для каждого нового поля
 			 * нужно добавлять сравнение, а это можно легко забыть, приэтом тест будет
 			 * проходить всё равно. Это может создать проблемы в будущем.
+			 * Это плохо для этого случая, потому что надо полностью сравнить два объекта.
+			 * Если бы нужно было сравнить два поля, то такой подход был бы ничем не хуже.
 			 */
 			Assert.True(AreEqual(actualTsar, expectedTsar));
 		}
