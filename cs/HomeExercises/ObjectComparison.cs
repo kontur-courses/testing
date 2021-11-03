@@ -1,5 +1,4 @@
 ﻿using FluentAssertions;
-using FluentAssertions.Common;
 using NUnit.Framework;
 
 namespace HomeExercises
@@ -16,10 +15,9 @@ namespace HomeExercises
 			var expectedTsar = new Person("Ivan IV The Terrible", 54, 170, 70,
 				new Person("Vasili III of Russia", 28, 170, 60, null));
 
-            // Перепишите код на использование Fluent Assertions.
-            actualTsar.Should().BeEquivalentTo(expectedTsar, options => options
-	            .Excluding(p => p.SelectedMemberInfo.Name == "Id"));
-
+			// Перепишите код на использование Fluent Assertions.
+			actualTsar.Should().BeEquivalentTo(expectedTsar, options => options
+				.Excluding(p => p.SelectedMemberInfo.Name == "Id"));
 		}
 
 		[Test]
@@ -65,11 +63,11 @@ namespace HomeExercises
 
 	public class Person
 	{
-		public static int IdCounter = 0;
+		public static int IdCounter;
 		public int Age, Height, Weight;
+		public int Id;
 		public string Name;
 		public Person? Parent;
-		public int Id;
 
 		public Person(string name, int age, int height, int weight, Person? parent)
 		{
