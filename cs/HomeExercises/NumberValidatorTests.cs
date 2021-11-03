@@ -7,106 +7,48 @@ namespace HomeExercises
 {
 	public class NumberValidatorTests
 	{
-		private static readonly NumberValidator DefaultNumberValidator = new NumberValidator(100, 99, false);
-
-		[Test]
-		public void NumberValidator_ShouldThrowException_IfIncorrectArguments()
+		[TestCase(-3, 2, true, "precision must be a positive number", TestName = "Exception if precision is negative")]
+		[TestCase(1, 2, false, "precision must be a non-negative number less or equal than precision", TestName = "Exception if scale greater than precision")]
+		[TestCase(1, -2, false, "precision must be a non-negative number less or equal than precision", TestName = "Exception if scale is negative")]
+		public void NumberValidator_ShouldThrowException_IfIncorrectArguments(int precision, int scale,
+			bool onlyPositive, string exceptionMessage)
 		{
-			((Action)(() => new NumberValidator(-3, 2, true)))
-				.Should()
+			Action act = () => new NumberValidator(precision, scale, onlyPositive);
+			act.Should()
 				.Throw<ArgumentException>()
-				.WithMessage("precision must be a positive number");
-
-			((Action)(() => new NumberValidator(1, 2, false)))
-				.Should()
-				.Throw<ArgumentException>("because scale must be less or equal than precision");
-
-			((Action)(() => new NumberValidator(1, -2, false)))
-				.Should()
-				.Throw<ArgumentException>("because scale should be non-negative number");
+				.WithMessage(exceptionMessage);
 		}
 
-		[Test]
-		public void NumberValidator_DoesNotThrow_IfCorrectArguments()
+		[TestCase(1, 0, true, TestName = "Precision is positive number")]
+		[TestCase(2, 1, true, TestName = "Scale is non-negative and less than precision")]
+		[TestCase(1, 0, false, TestName = "Not only positive numbers")]
+		public void NumberValidator_DoesNotThrow_IfCorrectArguments(int precision, int scale, bool onlyPositive)
 		{
-			((Action)(() => new NumberValidator(1, 0, true))).Should().NotThrow();
+			Action act = () => new NumberValidator(precision, scale, onlyPositive);
+			act.Should().NotThrow();
 		}
-
-		[Test]
-		public void IsValidNumber_IsTrue_IfCheckZero()
+		
+		
+		[TestCase(17, 2, true, "1.123", ExpectedResult = false, TestName = "IsFalse_IfFracPartGreaterThanScale")]
+		[TestCase(3, 2, true, "123.123", ExpectedResult = false, TestName = "IsFalse_IfNumberOfDigitsMoreThanPrecision")]
+		[TestCase(3, 2, true, "-1.2", ExpectedResult = false, TestName = "IsFalse_IfNegativeNumberWhenOnlyPositiveIsAllowed")]
+		[TestCase(3, 2, true, "-1.23", ExpectedResult = false,  TestName = "IsFalse_IfSignIsOutOfBounds")]
+		[TestCase(3, 2, true, "abc", ExpectedResult = false, TestName = "IsFalse_IfPassedValueNotANumber")]
+		[TestCase(3, 2, true, "a.bc", ExpectedResult = false, TestName = "IsFalse_IfPassedValueNotANumberAndHasPoint")]
+		[TestCase(3, 2, true, "", ExpectedResult = false, TestName = "IsFalse_IfNumberIsEmpty")]
+		[TestCase(3, 2, true, null, ExpectedResult = false, TestName = "IsFalse_IfNumberIsNull")]
+		
+		[TestCase(3, 2, true, "0", ExpectedResult = true, TestName = "IsTrue_IfValueIsZero")]
+		[TestCase(3, 2, true, "1.5", ExpectedResult = true, TestName = "IsTrue_IfNumberInBounds")]
+		[TestCase(3, 2, true, "1,5", ExpectedResult = true, TestName = "IsTrue_IfNumberHasCommaInsteadPoint")]
+		[TestCase(3, 2, true, "+1.5", ExpectedResult = true, TestName = "IsTrue_IfNumberHasPlusSign")]
+		[TestCase(3, 2, false, "-1.5", ExpectedResult = true, TestName = "IsTrue_IfNumberIsNegativeWhenNegativeIsAllowed")]
+		[TestCase(3, 2, false, "12", ExpectedResult = true, TestName = "IsTrue_IfNumberNotHaveFracPart")]
+		public bool IsValidNumber_ReturnBool_IfPassValue(int precision, int scale, bool onlyPositive, string number)
 		{
-			DefaultNumberValidator.IsValidNumber("0.0").Should().BeTrue();
-			DefaultNumberValidator.IsValidNumber("0").Should().BeTrue();
-		}
+			var validator = new NumberValidator(precision, scale, onlyPositive);
 
-		[Test]
-		public void IsValidNumber_IsTrue_IfNumberInBounds()
-		{
-			DefaultNumberValidator.IsValidNumber("1.5")
-				.Should().BeTrue();
-		}
-
-		[Test]
-		public void IsValidNumber_IsFalse_IfFracPartGreaterThanScale()
-		{
-			var scale = 2;
-			var fracPart = "000";
-
-			(new NumberValidator(17, scale, true).IsValidNumber($"0.{fracPart}"))
-				.Should().BeFalse("because fracPart greater than scale");
-		}
-
-		[Test]
-		public void IsValidNumber_IsFalse_IfDigitsNumberGreaterThanPrecision()
-		{
-			var precision = 3;
-			var number = "123.123";
-
-			(new NumberValidator(precision, 2, true).IsValidNumber(number))
-				.Should().BeFalse("because count of digits should not be grater than precision");
-		}
-
-		[Test]
-		public void IsValidNumber_IsFalse_IfSignIsOutOfBounds()
-		{
-			var numWithoutSign = "12.22";
-			var numberValidator = new NumberValidator(4, 2, false);
-
-			numberValidator.IsValidNumber(numWithoutSign)
-				.Should().BeTrue();
-
-			numberValidator.IsValidNumber("-" + numWithoutSign)
-				.Should().BeFalse("because num with sign length greater than precision");
-		}
-
-		[Test]
-		public void IsValidNumber_IsFalse_IfValueIsNotNumber()
-		{
-			DefaultNumberValidator.IsValidNumber("a.sd")
-				.Should().BeFalse();
-		}
-
-		[Test]
-		public void IsValidNumber_IsFalse_IfNumberIsNegativeButShouldBePositive()
-		{
-			(new NumberValidator(3, 2, false).IsValidNumber("-1.2")).Should().BeTrue();
-			(new NumberValidator(3, 2, true).IsValidNumber("-1.2")).Should().BeFalse();
-		}
-
-		[Test]
-		public void IsValidNumber_IsTrue_IfNumberHasCommaInsteadPoint()
-		{
-			DefaultNumberValidator.IsValidNumber("1.2").Should().BeTrue();
-			DefaultNumberValidator.IsValidNumber("1,2").Should().BeTrue();
-		}
-
-		[Test]
-		public void IsValidNumber_IsFalse_IfNumberIsNullOrEmpty()
-		{
-			DefaultNumberValidator.IsValidNumber("")
-				.Should().BeFalse();
-			DefaultNumberValidator.IsValidNumber(null)
-				.Should().BeFalse();
+			return validator.IsValidNumber(number);
 		}
 	}
 

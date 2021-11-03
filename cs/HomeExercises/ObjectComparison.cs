@@ -15,27 +15,9 @@ namespace HomeExercises
 			var expectedTsar = new Person("Ivan IV The Terrible", 54, 170, 70,
 				new Person("Vasili III of Russia", 28, 170, 60, null));
 
-			// Перепишите код на использование Fluent Assertions.
-			/*Assert.AreEqual(actualTsar.Name, expectedTsar.Name);
-			Assert.AreEqual(actualTsar.Age, expectedTsar.Age);
-			Assert.AreEqual(actualTsar.Height, expectedTsar.Height);
-			Assert.AreEqual(actualTsar.Weight, expectedTsar.Weight);
-
-			Assert.AreEqual(expectedTsar.Parent!.Name, actualTsar.Parent!.Name);
-			Assert.AreEqual(expectedTsar.Parent.Age, actualTsar.Parent.Age);
-			Assert.AreEqual(expectedTsar.Parent.Height, actualTsar.Parent.Height);
-			Assert.AreEqual(expectedTsar.Parent.Parent, actualTsar.Parent.Parent);*/
-
-			expectedTsar.Should().BeEquivalentTo
-			(actualTsar, options => options
-				.Including(p => p.Name)
-				.Including(p => p.Age)
-				.Including(p => p.Height)
-				.Including(p => p.Weight)
-				.Including(p => p.Parent!.Name)
-				.Including(p => p.Parent!.Age)
-				.Including(p => p.Parent!.Height)
-				.Including(p => p.Parent!.Parent)
+			actualTsar.Should().BeEquivalentTo
+			(expectedTsar, options => options
+				.Excluding(p => p.SelectedMemberPath.EndsWith(nameof(Person.Id)))
 			);
 		}
 
@@ -50,11 +32,10 @@ namespace HomeExercises
 			// Какие недостатки у такого подхода?
 
 			// 1) Мы можем переопределить оператор ==
-			// 2) Чуть хуже читаемость
+			// 2) Хуже читаемость
 			// 3) При выводе ошибок непонятно где несовпадение
-			// а в fluentAssertions подробное описание того, что не совпало
+			// в fluentAssertions подробное описание того, что не совпало
 			// 4) При добавление нового свойства, поля надо лезть в другой метод, поправлять там код
-			// А в Fluent достаточно включить это свойство методом Including
 			Assert.True(AreEqual(actualTsar, expectedTsar));
 		}
 
