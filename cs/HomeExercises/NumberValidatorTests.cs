@@ -18,15 +18,6 @@ namespace HomeExercises
 			nv.Should().Throw<ArgumentException>();
 		}
 
-		[TestCase(1, 0, true, TestName = "precision is positive, scale is zero")]
-		[TestCase(5, 3, true, TestName = "precision and scale is positive")]
-		public void ShouldNotThrow_WithCorrectParametersInConstructor(int precision, int scale,
-			bool onlyPositive)
-		{
-			Action nv = () => new NumberValidator(precision, scale, onlyPositive);
-			nv.Should().NotThrow<ArgumentException>();
-		}
-
 		[TestCase(17, 2, true, "0.0", TestName = "dot separated with precision > scale")]
 		[TestCase(17, 2, true, "0,0", TestName = "comma separated with precision > scale")]
 		[TestCase(17, 2, true, "0", TestName = "0 without fracPart with precision > scale")]
