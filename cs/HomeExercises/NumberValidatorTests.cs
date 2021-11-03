@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections;
+using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using FluentAssertions;
 using NUnit.Framework;
@@ -21,10 +23,9 @@ namespace HomeExercises
 		}
 
 		[Test]
-		[TestCase(2, 1, true, TestName = "With positive precision")]
-		[TestCase(1, 0, false, TestName = "With default values")]
-		[TestCase(1, 0, true, TestName = "When only positive is true and default values")]
-		public void NumberValidator_ConstructorDoesNotThrows(int precision, int scale, bool onlyPositive)
+		[TestCaseSource(nameof(NumberValidator_IsValidNumber_ValidNumberGenerator))]
+		[TestCaseSource(nameof(NumberValidator_IsValidNumber_InvalidNumberGenerator))]
+		public void NumberValidator_ConstructorDoesNotThrows(int precision, int scale, bool onlyPositive, string _)
 		{
 			Action act = () => new NumberValidator(precision, scale, onlyPositive);
 
@@ -32,10 +33,7 @@ namespace HomeExercises
 		}
 
 		[Test]
-		[TestCase(10, 0, true, "0", TestName = "With integer")]
-		[TestCase(10, 1, true, "0.0", TestName = "With real")]
-		[TestCase(10, 1, true, "+0.0", TestName = "With plus at the beginnig")]
-		[TestCase(10, 5, false, "+0.0", TestName = "With positive when not onlyPositive")]
+		[TestCaseSource(nameof(NumberValidator_IsValidNumber_ValidNumberGenerator))]
 		public void NumberValidator_IsValidNumber(int precision, int scale, bool onlyPositive, string num)
 		{
 			var validator = new NumberValidator(precision, scale, onlyPositive);
@@ -44,17 +42,30 @@ namespace HomeExercises
 		}
 
 		[Test]
-		[TestCase(10, 5, true, null, TestName = "With null")]
-		[TestCase(10, 5, true, "", TestName = "With empty string")]
-		[TestCase(10, 5, true, "+a.b", TestName = "With not a num")]
-		[TestCase(10, 1, true, "0.00", TestName = "With frac part more than scale")]
-		[TestCase(3, 2, true, "00.00", TestName = "With int and frac parts more than precision")]
-		[TestCase(10, 5, true, "-1.23", TestName = "With minus when onlyPositive")]
-		public void NumberValidator_IsNotValidNumber(int precision, int scale, bool onlyPositive, string num)
+		[TestCaseSource(nameof(NumberValidator_IsValidNumber_InvalidNumberGenerator))]
+		public void NumberValidator_IsInvalidNumber(int precision, int scale, bool onlyPositive, string num)
 		{
 			var validator = new NumberValidator(precision, scale, onlyPositive);
 
 			validator.IsValidNumber(num).Should().BeFalse();
+		}
+
+		private static IEnumerable<TestCaseData> NumberValidator_IsValidNumber_InvalidNumberGenerator()
+		{
+			yield return new TestCaseData(10, 5, true, null).SetName("With null");
+			yield return new TestCaseData(10, 5, true, "").SetName("With empty string");
+			yield return new TestCaseData(10, 5, true, "+a.b").SetName("With not a num");
+			yield return new TestCaseData(10, 1, true, "0.00").SetName("With frac part more than scale");
+			yield return new TestCaseData(3, 2, true, "00.00").SetName("With int and frac parts more than precision");
+			yield return new TestCaseData(10, 5, true, "-1.23").SetName("With minus when onlyPositive");
+		}
+
+		private static IEnumerable<TestCaseData> NumberValidator_IsValidNumber_ValidNumberGenerator()
+		{
+			yield return new TestCaseData(10, 0, true, "0").SetName("With integer");
+			yield return new TestCaseData(10, 1, true, "0.0").SetName("With real");
+			yield return new TestCaseData(10, 1, true, "+0.0").SetName("With plus at the beginnig");
+			yield return new TestCaseData(10, 5, false, "+0.0").SetName("With positive when not onlyPositive");
 		}
 	}
 
