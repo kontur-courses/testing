@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using FluentAssertions;
 using NUnit.Framework;
@@ -7,17 +8,11 @@ namespace HomeExercises
 {
 	public class NumberValidatorTests
 	{
-		private NumberValidator validator;
-
-		[OneTimeSetUp]
-		public void Initialization()
-		{
-			validator = new NumberValidator(5, 2, true);
-		}
-		
-		[TestCase(2, 1, true, TestName = "Scale less than precision")]
-		[TestCase(1, 0, true, TestName = "Scale is zero")]
-		public void Constructor_ShouldCreateNumberValidator(int precision, int scale, bool onlyPositive)
+		[TestCase(2, 1, true,"", TestName = "Scale less than precision")]
+		[TestCase(1, 0, true,"", TestName = "Scale is zero")]
+		[TestCaseSource(nameof(IsValidShouldBeFalseTestCaseData))]
+		[TestCaseSource(nameof(IsValidShouldBeTrueTestCaseData))]
+		public void Constructor_ShouldCreateNumberValidator(int precision, int scale, bool onlyPositive, string _)
 		{
 			FluentActions.Invoking(
 					() => new NumberValidator(precision, scale, onlyPositive))
@@ -35,27 +30,50 @@ namespace HomeExercises
 				.Should().Throw<ArgumentException>();;
 		}
 
-		[TestCase("", TestName = "Value is empty string")]
-		[TestCase(" ", TestName = "Value is white space")]
-		[TestCase(null, TestName = "Value is null")]
-		[TestCase("a.sd", TestName = "Value is not a number")]
-		[TestCase("", TestName = "Value is not a number")]
-		[TestCase("-0.0", TestName = "NumberValidator is onlyPositive but value is negative")]
-		[TestCase("0.000", TestName = "Fractional part grater then scale")]
-		[TestCase(".0", TestName = "Value without int part")]
-		[TestCase("0.", TestName = "Value without fractional part but with separator")]
-		[TestCase("+000.00", TestName = "Int part plus fractional part greater than precision")]
-		public void IsValid_ShouldBeFalse(string value)
+		[TestCaseSource(nameof(IsValidShouldBeFalseTestCaseData))]
+		public void IsValid_ShouldBeFalse(int precision ,int scale, bool  onlyPositive, string value)
 		{
-			validator.IsValidNumber(value).Should().BeFalse();
+			var validator = new NumberValidator(precision, scale, onlyPositive);
+
+			var validatorResult = validator.IsValidNumber(value);
+
+			validatorResult.Should().BeFalse();
 		}
 
-		[TestCase(true, "0,0", TestName = "Separator is comma")]
-		[TestCase(true,"+0.0", TestName = "Value is positive")]
-		[TestCase(false, "-0.0", TestName = "Value is negative")]
-		public void IsValid_ShouldBeTrue(bool onlyPositive, string value)
+		[TestCaseSource(nameof(IsValidShouldBeTrueTestCaseData))]
+		public void IsValid_ShouldBeTrue(int precision, int scale,  bool onlyPositive, string value)
 		{
-			new NumberValidator(3,2, onlyPositive).IsValidNumber(value).Should().BeTrue();
+			var validator = new NumberValidator(precision, scale, onlyPositive);
+
+			var validatorResult = validator.IsValidNumber(value);
+
+			validatorResult.Should().BeTrue();
+		}
+
+		private static IEnumerable<TestCaseData> IsValidShouldBeFalseTestCaseData
+		{
+			get
+			{
+				yield return new TestCaseData(1, 0, true, "").SetName("Value is empty string");
+				yield return new TestCaseData(2, 1, true, " ").SetName("Value is white space");
+				yield return new TestCaseData(3, 2, true, null).SetName("Value is null");
+				yield return new TestCaseData(4, 3, true, "a.sd").SetName("Value is not a number");
+				yield return new TestCaseData(4, 1, true, "-0.0").SetName("NumberValidator is onlyPositive but value is negative");
+				yield return new TestCaseData(3, 2, true, "0.000").SetName("Fractional part grater then scale");
+				yield return new TestCaseData(3, 2, true, ".0").SetName("Value without int part");
+				yield return new TestCaseData(3, 2, true, "0.").SetName("Value without fractional part but with separator");
+				yield return new TestCaseData(5, 2, true, "+000.00").SetName("Int part plus fractional part greater than precision");
+			}
+		}
+		
+		private static IEnumerable<TestCaseData> IsValidShouldBeTrueTestCaseData
+		{
+			get
+			{
+				yield return new TestCaseData(3, 2, true, "0,0").SetName("Separator is comma");
+				yield return new TestCaseData(3, 2, true, "+0.0").SetName("Value is positive");
+				yield return new TestCaseData(3, 2, false, "-0.0").SetName("Value is negative");
+			}
 		}
 	}
 
