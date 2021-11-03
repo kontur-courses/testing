@@ -9,22 +9,27 @@ namespace HomeExercises
 	[TestFixture]
 	public class NumberValidator_Should
 	{
-		private NumberValidator validator = new NumberValidator(10, 5);
+		private NumberValidator validator;
+		[OneTimeSetUp]
+		public void OneTimeSetUp()
+        {
+			validator = new NumberValidator(10, 5);
+        }
 
 		[TestCase(-1, 0, false)]
 		[TestCase(-2, -3, false)]
 		[TestCase(-3, -2, true)]
 		public void Constructor_OnNegativePrecision_ShouldThrowArgumentException(int precision, int scale, bool isPositive)
         {
-			Action t1 = () => new NumberValidator(precision, scale, isPositive);
-			t1.Should().Throw<ArgumentException>();
+			Action action = () => new NumberValidator(precision, scale, isPositive);
+			action.Should().Throw<ArgumentException>();
         }
 
 		[TestCase(10, 5, false)]
 		[TestCase(10, 5, true)]
 		[TestCase(1, 0, true)]
 		[TestCase(2, 1, false)]
-		[TestCase(5,1,true)]
+		[TestCase(5, 1, true)]
 		[TestCase(100000, 1000, false)]
 		public void Constructor_OnCorrectInitialization_ShouldNotThrow(int precision, int scale, bool onlyPositive)
         {

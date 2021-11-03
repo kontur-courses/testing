@@ -1,5 +1,6 @@
 ﻿using FluentAssertions;
 using NUnit.Framework;
+using System.Text.RegularExpressions;
 
 namespace HomeExercises
 {
@@ -17,17 +18,10 @@ namespace HomeExercises
 
 			// Перепишите код на использование Fluent Assertions.
 
-			//Правильно ли я понял, что мы сравниваем только по сыну и отцу?...
+			// Надеюсь это именно то, что требовалось) 
 
 			actualTsar.Should().BeEquivalentTo(expectedTsar, cfg => cfg
-			.Excluding(x => x.SelectedMemberPath.EndsWith("Id"))
-			.ExcludingNestedObjects()
-			.Excluding(x => x.SelectedMemberPath.EndsWith("Parent")));
-
-			actualTsar.Parent.Should().BeEquivalentTo(expectedTsar.Parent, cfg => cfg
-			.Excluding(x => x.SelectedMemberPath.EndsWith("Id"))
-			.ExcludingNestedObjects()
-			.Excluding(x => x.SelectedMemberPath.EndsWith("Parent")));
+			.Excluding(x => x.SelectedMemberInfo.Name == "Id"));
 
 			//Данный код лучше альтернативного решения тем, что нам:
 			//1. Не нужно каждый раз переписывать метод AreEqual при изменении Person
