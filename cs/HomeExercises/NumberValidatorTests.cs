@@ -12,7 +12,7 @@ namespace HomeExercises
 		[TestCase(1, -1, TestName = "With negative scale")]
 		[TestCase(0, 1, TestName = "With zero precision")]
 		[TestCase(1, 2, TestName = "With scale greater than precision")]
-        [TestCase(1, 1, TestName = "With scale equals precision")]
+		[TestCase(1, 1, TestName = "With scale equals precision")]
 		public void NumberValidator_ConstructorThrows(int precision, int scale)
 		{
 			Action act = () => new NumberValidator(precision, scale);
@@ -32,21 +32,29 @@ namespace HomeExercises
 		}
 
 		[Test]
-		[TestCase(10, 0, true, "0", ExpectedResult = true, TestName = "With integer")]
-		[TestCase(10, 1, true, "0.0", ExpectedResult = true, TestName = "With real")]
-		[TestCase(10, 1, true, "+0.0", ExpectedResult = true, TestName = "With plus at the beginnig")]
-		[TestCase(10, 5, false, "+0.0", ExpectedResult = true, TestName = "With positive when not onlyPositive")]
-		[TestCase(10, 5, true, null, ExpectedResult = false, TestName = "With null")]
-		[TestCase(10, 5, true, "", ExpectedResult = false, TestName = "With empty string")]
-		[TestCase(10, 5, true, "+a.b", ExpectedResult = false, TestName = "With not a num")]
-		[TestCase(10, 1, true, "0.00", ExpectedResult = false, TestName = "With frac part more than scale")]
-		[TestCase(3, 2, true, "00.00", ExpectedResult = false, TestName = "With int and frac parts more than precision")]
-		[TestCase(10, 5, true, "-1.23", ExpectedResult = false, TestName = "With minus when onlyPositive")]
-		public bool NumberValidator_IsValidNumber_CustomParams(int precision, int scale, bool onlyPositive, string num)
+		[TestCase(10, 0, true, "0", TestName = "With integer")]
+		[TestCase(10, 1, true, "0.0", TestName = "With real")]
+		[TestCase(10, 1, true, "+0.0", TestName = "With plus at the beginnig")]
+		[TestCase(10, 5, false, "+0.0", TestName = "With positive when not onlyPositive")]
+		public void NumberValidator_IsValidNumber(int precision, int scale, bool onlyPositive, string num)
 		{
 			var validator = new NumberValidator(precision, scale, onlyPositive);
 
-			return validator.IsValidNumber(num);
+			validator.IsValidNumber(num).Should().BeTrue();
+		}
+
+		[Test]
+		[TestCase(10, 5, true, null, TestName = "With null")]
+		[TestCase(10, 5, true, "", TestName = "With empty string")]
+		[TestCase(10, 5, true, "+a.b", TestName = "With not a num")]
+		[TestCase(10, 1, true, "0.00", TestName = "With frac part more than scale")]
+		[TestCase(3, 2, true, "00.00", TestName = "With int and frac parts more than precision")]
+		[TestCase(10, 5, true, "-1.23", TestName = "With minus when onlyPositive")]
+		public void NumberValidator_IsNotValidNumber(int precision, int scale, bool onlyPositive, string num)
+		{
+			var validator = new NumberValidator(precision, scale, onlyPositive);
+
+			validator.IsValidNumber(num).Should().BeFalse();
 		}
 	}
 
