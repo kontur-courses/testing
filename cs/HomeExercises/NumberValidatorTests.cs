@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using FluentAssertions;
 using NUnit.Framework;
@@ -15,6 +16,14 @@ namespace HomeExercises
 		{
 			Action create = () => { new NumberValidator(precision, scale, true); };
 			create.Should().Throw<ArgumentException>();
+		}
+		
+		[TestCaseSource(nameof(ShouldBeFalseTestData))]
+		[TestCaseSource(nameof(ShouldBeTrueTestData))]
+		public void Constructor_DoesNotThrowsException(int precision, int scale, string value)
+		{
+			Action create = () => { new NumberValidator(precision, scale, true); };
+			create.Should().NotThrow();
 		}
 		
 		[TestCase(null)]
@@ -53,25 +62,35 @@ namespace HomeExercises
 			numberValidator.IsValidNumber(value).Should().BeTrue();
 		}
 		
-		[TestCase(17,2, "0")]
-		[TestCase(17,2, "0.00")]
-		[TestCase(17,2, "0,0", TestName = "WorksWithComma")]
-		[TestCase(4,2, "+1.23")]
-		[TestCase(4,2, "-1.23")]
+		[TestCaseSource(nameof(ShouldBeTrueTestData))]
 		public void IsValidNumber_ShouldBeTrue(int precision, int scale, string value)
 		{
 			var numberValidator = new NumberValidator(precision, scale);
 			numberValidator.IsValidNumber(value).Should().BeTrue();
 		}
 		
-		[TestCase(17,2, "0.000", TestName = "Fractional part longer than scale")]
-		[TestCase(3,2, "+0.00", TestName = "Sign counts in precision")]
-		[TestCase(3,2, "00.00", TestName = "Leading zero counts")]
-		[TestCase(3,2, "11100", TestName = "Too long number")]
+		[TestCaseSource(nameof(ShouldBeFalseTestData))]
 		public void IsValidNumber_ShouldBeFalse(int precision, int scale, string value)
 		{
 			var numberValidator = new NumberValidator(precision, scale);
 			numberValidator.IsValidNumber(value).Should().BeFalse();
+		}
+
+		private static IEnumerable<TestCaseData> ShouldBeTrueTestData()
+		{
+			yield return new TestCaseData(17, 2, "0");
+			yield return new TestCaseData(17, 2, "0.00");
+			yield return new TestCaseData(17, 2, "0,0") { TestName = "WorksWithComma" };
+			yield return new TestCaseData(4, 2, "+1.23");
+			yield return new TestCaseData(4, 2, "-1.23");
+		}
+
+		private static IEnumerable<TestCaseData> ShouldBeFalseTestData()
+		{
+			yield return new TestCaseData(17, 2, "0.000") { TestName = "Fractional part longer than scale" };
+			yield return new TestCaseData(3, 2, "+0.00") { TestName = "Sign counts in precision" };
+			yield return new TestCaseData(3, 2, "00.00") { TestName = "Leading zero counts" };
+			yield return new TestCaseData(3, 2, "11100") { TestName = "Too long number" };
 		}
 	}
 
