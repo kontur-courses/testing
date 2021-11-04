@@ -11,18 +11,13 @@ namespace HomeExercises
 		public void CheckCurrentTsar()
 		{
 			var actualTsar = TsarRegistry.GetCurrentTsar();
-			
 			var expectedTsar = new Person("Ivan IV The Terrible", 54, 170, 70,
 				new Person("Vasili III of Russia", 28, 170, 60, null));
-			
-			actualTsar.Should().BeEquivalentTo(expectedTsar, options => options
-				.Excluding(x => x.Id)
-				.Excluding(x => x.Parent));
-			
-			actualTsar.Parent.Should().BeEquivalentTo(expectedTsar.Parent, options => options
-				.Excluding(x => x!.Id));
+
+			actualTsar.Should()
+				.BeEquivalentTo(expectedTsar,
+					options => options.Excluding(x => x.SelectedMemberInfo.Name == nameof(Person.Id)));
 		}
-		
 
 		[Test]
 		[Description("Альтернативное решение. Какие у него недостатки?")]
@@ -33,6 +28,7 @@ namespace HomeExercises
 				new Person("Vasili III of Russia", 28, 170, 60, null));
 
 			// Какие недостатки у такого подхода? 
+			// При падении теста не понятно, какие именно поля не совпали.
 			// При добавлении новых полей в класс Person придется
 			// добавлять новый код в метод AreEqual, и в итоге он может стать очень длинным
 			// Также если родители сравниваемых элементов имеют родителей, их родители тоже имеют родителей и так далее, то
@@ -44,12 +40,8 @@ namespace HomeExercises
 		{
 			if (actual == expected) return true;
 			if (actual == null || expected == null) return false;
-			return
-				actual.Name == expected.Name
-				&& actual.Age == expected.Age
-				&& actual.Height == expected.Height
-				&& actual.Weight == expected.Weight
-				&& AreEqual(actual.Parent, expected.Parent);
+			return actual.Name == expected.Name && actual.Age == expected.Age && actual.Height == expected.Height &&
+			       actual.Weight == expected.Weight && AreEqual(actual.Parent, expected.Parent);
 		}
 	}
 
@@ -57,8 +49,7 @@ namespace HomeExercises
 	{
 		public static Person GetCurrentTsar()
 		{
-			return new Person(
-				"Ivan IV The Terrible", 54, 170, 70,
+			return new Person("Ivan IV The Terrible", 54, 170, 70,
 				new Person("Vasili III of Russia", 28, 170, 60, null));
 		}
 	}
