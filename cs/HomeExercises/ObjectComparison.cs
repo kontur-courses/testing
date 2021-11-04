@@ -21,6 +21,8 @@ namespace HomeExercises
 			// 2. Не нужно будет добавлять лишние проверки при добавлении полей/свойств в класс Person
 			actualTsar.Should().BeEquivalentTo(expectedTsar, option => 
 				option
+					.AllowingInfiniteRecursion()
+					.IgnoringCyclicReferences()
 					.Excluding(member =>
 						member.SelectedMemberInfo.Name == nameof(Person.Id) &&
 						member.SelectedMemberInfo.DeclaringType == typeof(Person)));
