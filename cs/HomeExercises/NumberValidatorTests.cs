@@ -7,28 +7,6 @@ namespace HomeExercises
 {
 	public class NumberValidatorTests
 	{
-		[Test]
-		public void Test()
-		{
-			Assert.Throws<ArgumentException>(() => new NumberValidator(-1, 2, true));
-			Assert.DoesNotThrow(() => new NumberValidator(1, 0, true));
-			Assert.Throws<ArgumentException>(() => new NumberValidator(-1, 2, false));
-			Assert.DoesNotThrow(() => new NumberValidator(1, 0, true));
-
-			Assert.IsTrue(new NumberValidator(17, 2, true).IsValidNumber("0.0"));
-			Assert.IsTrue(new NumberValidator(17, 2, true).IsValidNumber("0"));
-			Assert.IsTrue(new NumberValidator(17, 2, true).IsValidNumber("0.0"));
-			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("00.00"));
-			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("-0.00"));
-			Assert.IsTrue(new NumberValidator(17, 2, true).IsValidNumber("0.0"));
-			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("+0.00"));
-			Assert.IsTrue(new NumberValidator(4, 2, true).IsValidNumber("+1.23"));
-			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("+1.23"));
-			Assert.IsFalse(new NumberValidator(17, 2, true).IsValidNumber("0.000"));
-			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("-1.23"));
-			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("a.sd"));
-		}
-
 		[TestCase(-1, 2, true, TestName = "Precision can't be negative")]
 		[TestCase(0, 1, true, TestName = "Precision can't be equal to zero")]
 		[TestCase(1, -1, true, TestName = "Scale can't be negative")]
@@ -43,7 +21,6 @@ namespace HomeExercises
 			action.Should().Throw<ArgumentException>();
 		}
 
-
 		[TestCase("", TestName = "Empty string is not a number")]
 		[TestCase(null, TestName = "Null is not a number")]
 		[TestCase("      ", TestName = "Multiplied white spaces are not a number")]
@@ -51,7 +28,7 @@ namespace HomeExercises
 		[TestCase("a1b2c3", TestName = "Group of letters and digits are not a number")]
 		[TestCase("-", TestName = "Symbol '-' is not a number")]
 		[TestCase("+", TestName = "Symbol '+' is not a number")]
-		[TestCase("+-12", TestName = "Minus are plus are not allowed together")]
+		[TestCase("+-12", TestName = "Minus and plus are not allowed together")]
 		[TestCase("12.3.4", TestName = "Two points in number are not allowed")]
 		[TestCase(".12", TestName = "Number can't start from point")]
 		[TestCase("12.", TestName = "Number can't end on point")]
@@ -80,46 +57,14 @@ namespace HomeExercises
 			validator.IsValidNumber(input).Should().BeFalse();
 		}
 
-		[TestCase(5,
-			0,
-			true,
-			"123",
-			TestName = "Number is integer and its length is less than precision")]
-		[TestCase(5,
-			0,
-			true,
-			"12345",
-			TestName = "Number is integer and its length is same as precision")]
-		[TestCase(5,
-			2,
-			true,
-			"1.4",
-			TestName = "Fractional part lenght is less than scale")]
-		[TestCase(5,
-			2,
-			true,
-			"1.45",
-			TestName = "Fractional part lenght is same as scale")]
-		[TestCase(5,
-			3,
-			true,
-			"123.45",
-			TestName = "Sum of lenght of Integer and Fractional parts same as precision")]
-		[TestCase(5,
-			0,
-			false,
-			"-123",
-			TestName = "Negative integer have size less than precision and negative numbers allowed")]
-		[TestCase(5,
-			0,
-			false,
-			"-123.4",
-			TestName = "Negative number with same size as precision and negative numbers allowed")]
-		[TestCase(5,
-			2,
-			false,
-			"+12.3",
-			TestName = "Correct positive number when negative numbers allowed")]
+		[TestCase(5, 0, true,"123", TestName = "Number is integer and its length is less than precision")]
+		[TestCase(5, 0, true, "12345", TestName = "Number is integer and its length is same as precision")]
+		[TestCase(5, 2, true, "1.4", TestName = "Fractional part lenght is less than scale")]
+		[TestCase(5, 2, true, "1.45", TestName = "Fractional part lenght is same as scale")]
+		[TestCase(5, 3, true, "123.45", TestName = "Sum of lenght of Integer and Fractional parts same as precision")]
+		[TestCase(5, 0, false, "-123", TestName = "Negative integer have size less than precision and negative numbers allowed")]
+		[TestCase(5, 2, false, "-123.4", TestName = "Negative number with same size as precision and negative numbers allowed")]
+		[TestCase(5, 2, false, "+12.3", TestName = "Correct positive number when negative numbers allowed")]
 		[TestCase(5, 2, true, "12,3", TestName = "Using comma instead of point allowed")]
 		public void IsValidNumber_ReturnTrue_WhenInputMatchesRequirements(
 			int precision,
@@ -131,8 +76,6 @@ namespace HomeExercises
 
 			validator.IsValidNumber(input).Should().BeTrue();
 		}
-
-
 
 		//Нашел 2 сценария, на которых реализация возвращает неправильный ответ 
 		/*[Test]

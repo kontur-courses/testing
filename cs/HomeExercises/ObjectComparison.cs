@@ -1,5 +1,4 @@
-﻿using System.Text.RegularExpressions;
-using FluentAssertions;
+﻿using FluentAssertions;
 using NUnit.Framework;
 
 namespace HomeExercises
@@ -77,14 +76,12 @@ namespace HomeExercises
 				170,
 				70,
 				new Person("Vasili III of Russia", 28, 170, 60, null));
-			//Регулярка находит строки формата "Id", "Parent.Id", "Parent.Parent.Id" и тд
-			var idFieldRegex = new Regex("^((Parent\\.)*Id)$");
 
 			actualTsar
 				.Should()
-				.BeEquivalentTo(
-					expectedTsar,
-					config => config.Excluding(ctx => idFieldRegex.IsMatch(ctx.SelectedMemberPath)));
+				.BeEquivalentTo(expectedTsar,  config => config.Excluding(ctx =>
+					ctx.SelectedMemberInfo.Name == nameof(actualTsar.Id) &&
+					ctx.SelectedMemberInfo.DeclaringType == typeof(Person)));
 		}
 	}
 
