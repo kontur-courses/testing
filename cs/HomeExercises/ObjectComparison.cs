@@ -3,6 +3,7 @@ using NUnit.Framework;
 
 namespace HomeExercises
 {
+	[TestFixture]
 	public class ObjectComparison
 	{
 		[Test]
@@ -15,16 +16,20 @@ namespace HomeExercises
 			var expectedTsar = new Person("Ivan IV The Terrible", 54, 170, 70,
 				new Person("Vasili III of Russia", 28, 170, 60, null));
 
-			// Перепишите код на использование Fluent Assertions.
-			Assert.AreEqual(actualTsar.Name, expectedTsar.Name);
-			Assert.AreEqual(actualTsar.Age, expectedTsar.Age);
-			Assert.AreEqual(actualTsar.Height, expectedTsar.Height);
-			Assert.AreEqual(actualTsar.Weight, expectedTsar.Weight);
+			actualTsar.Should().BeEquivalentTo(expectedTsar, options =>
+				options.Excluding(current => current.Id)
+				.Using<Person>(curTsar => curTsar.Subject.Should().BeEquivalentTo(curTsar.Expectation, personEqOptions =>
+					personEqOptions
+						.Using<int>(e => e.Subject.Should().Be(e.Subject))
+							.When(info => info.Path.EndsWith("Id"))))
+					.When(info => info.Path.EndsWith("Parent")).AllowingInfiniteRecursion()
+				.AllowingInfiniteRecursion());
 
-			Assert.AreEqual(expectedTsar.Parent!.Name, actualTsar.Parent!.Name);
-			Assert.AreEqual(expectedTsar.Parent.Age, actualTsar.Parent.Age);
-			Assert.AreEqual(expectedTsar.Parent.Height, actualTsar.Parent.Height);
-			Assert.AreEqual(expectedTsar.Parent.Parent, actualTsar.Parent.Parent);
+			//Мой метод лучше тк
+			//1)Он не так чувствителен к структурным изменениям класса Person
+			//2)При большом кол-ве полей выигрывает банально по количеству кода,
+			//если у них не будет большое кол-во условий на поля (к примеру не учитывать Id во вложенных полях и тд)
+			//3)Новым людям будет проще понять его
 		}
 
 		[Test]
@@ -37,6 +42,10 @@ namespace HomeExercises
 
 			// Какие недостатки у такого подхода? 
 			Assert.True(AreEqual(actualTsar, expectedTsar));
+
+			//Лишние методы, нужные только для тестов(если сравнивать нужно только в тесте)
+			//Необходимость изменять метод сравнения при структурном изменнеии класса, под который заточен метод
+			//Кастомный метод сравнения может быть в разы больше чем тот который написан через FA
 		}
 
 		private bool AreEqual(Person? actual, Person? expected)
