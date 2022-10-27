@@ -1,10 +1,21 @@
-﻿using FluentAssertions;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using FluentAssertions;
 using NUnit.Framework;
 
 namespace HomeExercises
 {
 	public class ObjectComparison
 	{
+
+		[SetUp]
+		public void SetUp()
+		{
+			// не думаю, что есть известное дерево предков с глубиной 100
+			AssertionOptions.FormattingOptions.MaxDepth = 100;
+		}
+
 		[Test]
 		[Description("Проверка текущего царя")]
 		[Category("ToRefactor")]
@@ -15,16 +26,9 @@ namespace HomeExercises
 			var expectedTsar = new Person("Ivan IV The Terrible", 54, 170, 70,
 				new Person("Vasili III of Russia", 28, 170, 60, null));
 
-			// Перепишите код на использование Fluent Assertions.
-			Assert.AreEqual(actualTsar.Name, expectedTsar.Name);
-			Assert.AreEqual(actualTsar.Age, expectedTsar.Age);
-			Assert.AreEqual(actualTsar.Height, expectedTsar.Height);
-			Assert.AreEqual(actualTsar.Weight, expectedTsar.Weight);
-
-			Assert.AreEqual(expectedTsar.Parent!.Name, actualTsar.Parent!.Name);
-			Assert.AreEqual(expectedTsar.Parent.Age, actualTsar.Parent.Age);
-			Assert.AreEqual(expectedTsar.Parent.Height, actualTsar.Parent.Height);
-			Assert.AreEqual(expectedTsar.Parent.Parent, actualTsar.Parent.Parent);
+			actualTsar.Should().BeEquivalentTo(expectedTsar, options =>
+				options.Excluding(member => 
+					member.DeclaringType == typeof(Person)  && member.Name == nameof(Person.Id)));
 		}
 
 		[Test]
@@ -36,6 +40,14 @@ namespace HomeExercises
 				new Person("Vasili III of Russia", 28, 170, 60, null));
 
 			// Какие недостатки у такого подхода? 
+			// Из очевидного, что при удалении/добавлении нового свойства(поля) в класс придется менять и тест
+			
+			// в случае ошибки, чтобы понять, в каком конкретном участке кода произошла ошибка, придется дебажить
+			// (если смотреть на пример, то мы не сможем понять, у нас не совпадают имена или же возраст, без дебага)
+
+			// AreEqual - не совсем говорящее название: как конкретно происходит сравнение на равенство из названия неясно
+			// это уменьшает читабельность кода
+
 			Assert.True(AreEqual(actualTsar, expectedTsar));
 		}
 
@@ -65,10 +77,12 @@ namespace HomeExercises
 	public class Person
 	{
 		public static int IdCounter = 0;
-		public int Age, Height, Weight;
-		public string Name;
-		public Person? Parent;
-		public int Id;
+		public int Age { get; set; }
+		public int Height { get; set; }
+		public int Weight { get; set; }
+		public string Name { get; set; }
+		public Person? Parent { get; set; }
+		public int Id { get; set; }
 
 		public Person(string name, int age, int height, int weight, Person? parent)
 		{
