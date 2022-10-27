@@ -7,27 +7,30 @@ namespace HomeExercises
 {
 	public class NumberValidatorTests
 	{
-		[TestCase(0, 2, "precision cannot be zero")]
-		[TestCase(-1, 2, "precision cannot be negative")]
-		[TestCase(1, -2, "scale cannot be negative")]
-		[TestCase(1, 1, "scale cannot be equals to precision")]
-		[TestCase(1, 2, "scale cannot be greater than precision")]
-		public void Constructor_ThrowExceptions_OnIncorrectArguments(int precision, int scale, string because)
+		[TestCase(0, 2, TestName = "Precision zero")]
+		[TestCase(-1, 2, TestName = "Precision negative")]
+		[TestCase(1, -2, TestName = "Scale negative")]
+		[TestCase(1, 1, TestName = "Scale equals to precision")]
+		[TestCase(1, 2, TestName = "Scale is greater than precision")]
+		public void Constructor_ThrowExceptions_OnIncorrectArguments(int precision, int scale)
 		{
-			Action action = () => new NumberValidator(precision, scale, true);
-			action.Should().Throw<ArgumentException>(because);
+			Action onlyPositive = () => new NumberValidator(precision, scale, true);
+			Action allRange = () => new NumberValidator(precision, scale, false);
+
+			onlyPositive.Should().Throw<ArgumentException>();
+			allRange.Should().Throw<ArgumentException>();
 		}
 
-		[TestCase(1, 0)]
-		[TestCase(int.MaxValue, 0)]
-		[TestCase(int.MaxValue, int.MaxValue - 1)]
+		[TestCase(1, 0, TestName = "Small values")]
+		[TestCase(int.MaxValue, 0, TestName = "Big precision value")]
+		[TestCase(int.MaxValue, int.MaxValue - 1, TestName = "Big precision and scale values")]
 		public void Constructor_ThrowNoExceptions_OnCorrectArguments(int precision, int scale)
 		{
 			Action onlyPositive = () => new NumberValidator(precision, scale, true);
 			Action allRange = () => new NumberValidator(precision, scale, false);
 
-			onlyPositive.Should().NotThrow("arguments are correct");
-			allRange.Should().NotThrow("arguments are correct");
+			onlyPositive.Should().NotThrow();
+			allRange.Should().NotThrow();
 		}
 
 		[Test]
