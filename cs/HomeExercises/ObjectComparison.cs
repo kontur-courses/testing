@@ -16,15 +16,10 @@ namespace HomeExercises
 				new Person("Vasili III of Russia", 28, 170, 60, null));
 
 			// Перепишите код на использование Fluent Assertions.
-			Assert.AreEqual(actualTsar.Name, expectedTsar.Name);
-			Assert.AreEqual(actualTsar.Age, expectedTsar.Age);
-			Assert.AreEqual(actualTsar.Height, expectedTsar.Height);
-			Assert.AreEqual(actualTsar.Weight, expectedTsar.Weight);
-
-			Assert.AreEqual(expectedTsar.Parent!.Name, actualTsar.Parent!.Name);
-			Assert.AreEqual(expectedTsar.Parent.Age, actualTsar.Parent.Age);
-			Assert.AreEqual(expectedTsar.Parent.Height, actualTsar.Parent.Height);
-			Assert.AreEqual(expectedTsar.Parent.Parent, actualTsar.Parent.Parent);
+			actualTsar.Should()
+				.BeEquivalentTo(expectedTsar, options => options
+					.Excluding(person => person.Id)
+					.Excluding(person => person.Parent.Id));
 		}
 
 		[Test]
@@ -36,6 +31,15 @@ namespace HomeExercises
 				new Person("Vasili III of Russia", 28, 170, 60, null));
 
 			// Какие недостатки у такого подхода? 
+			/*
+			 * 1. При внесении изменений в тестируемый класс, нужно корректировать метод AreEqual.
+			 * 2. Нет гарантий того, что сам метод AreEqual корректен.
+			 * 3. Метод AreEqual нагружает класс тестов
+			 * 4. Логика теста вынесена из самого теста - надо искать метод сравнения,
+			 * если нужно разобраться, почему тест падает.
+			 * 5. Неочевидно, как метод сравнения работает - какие поля он сравнивает,
+			 * а какие игнорирует, что было опущено специально, а что просто забыли дописать.
+			 */
 			Assert.True(AreEqual(actualTsar, expectedTsar));
 		}
 
