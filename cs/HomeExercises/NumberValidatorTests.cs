@@ -7,26 +7,39 @@ namespace HomeExercises
 {
 	public class NumberValidatorTests
 	{
+		[TestCase(-1)]
+		[TestCase(2, -1)]
+		[TestCase(2, 3)]
 		[Test]
-		public void Test()
+		public void TestThrowsExceptions(int precision, int scale = 0, bool onlyPositive = false)
 		{
-			Assert.Throws<ArgumentException>(() => new NumberValidator(-1, 2, true));
-			Assert.DoesNotThrow(() => new NumberValidator(1, 0, true));
-			Assert.Throws<ArgumentException>(() => new NumberValidator(-1, 2, false));
-			Assert.DoesNotThrow(() => new NumberValidator(1, 0, true));
+			FluentActions.Invoking(() =>
+				new NumberValidator(precision, scale, onlyPositive)).Should().Throw<ArgumentException>();
+		}
 
-			Assert.IsTrue(new NumberValidator(17, 2, true).IsValidNumber("0.0"));
-			Assert.IsTrue(new NumberValidator(17, 2, true).IsValidNumber("0"));
-			Assert.IsTrue(new NumberValidator(17, 2, true).IsValidNumber("0.0"));
-			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("00.00"));
-			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("-0.00"));
-			Assert.IsTrue(new NumberValidator(17, 2, true).IsValidNumber("0.0"));
-			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("+0.00"));
-			Assert.IsTrue(new NumberValidator(4, 2, true).IsValidNumber("+1.23"));
-			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("+1.23"));
-			Assert.IsFalse(new NumberValidator(17, 2, true).IsValidNumber("0.000"));
-			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("-1.23"));
-			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("a.sd"));
+		[TestCase(1, 0, false, null, false)]
+		[TestCase(1, 0, false, "", false)]
+		[TestCase(1, 0, false, "        ", false)]
+		[TestCase(2, 0, false, " 1", false)]
+		[TestCase(2, 0, false, "1 ", false)]
+		[TestCase(2, 0, false, "/1", false)]
+		[TestCase(2, 0, false, "1+", false)]
+		[TestCase(5, 0, false, "12r34", false)]
+		[TestCase(5, 0, false, "12 34", false)]
+		[TestCase(2, 0, false, "111", false)]
+		[TestCase(2, 0, false, "-1.1", false)]
+		[TestCase(3, 1, false, "2.22", false)]
+		[TestCase(3, 1, true, "-1.1", false)]
+		[TestCase(3, 1, false, "-1.1", true)]
+		[TestCase(7, 4, true, "000,0000", true)] // Проверка на запятую
+		[TestCase(10, 4, true, "000.0000", true)]
+		[TestCase(6, 2, false, "+000.00", true)]
+		[TestCase(6, 2, false, "-000.00", true)]
+		[Test]
+		public void TestFunctional(int precision, int scale, bool onlyPositive,
+			string? value, bool result)
+		{
+			new NumberValidator(precision, scale, onlyPositive).IsValidNumber(value!).Should().Be(result);
 		}
 	}
 
