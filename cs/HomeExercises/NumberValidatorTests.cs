@@ -1,4 +1,7 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
+using System.Linq;
+using System.Reflection.Metadata.Ecma335;
 using System.Text.RegularExpressions;
 using FluentAssertions;
 using NUnit.Framework;
@@ -7,27 +10,43 @@ namespace HomeExercises
 {
 	public class NumberValidatorTests
 	{
-		[Test]
-		public void Test()
-		{
-			Assert.Throws<ArgumentException>(() => new NumberValidator(-1, 2, true));
-			Assert.DoesNotThrow(() => new NumberValidator(1, 0, true));
-			Assert.Throws<ArgumentException>(() => new NumberValidator(-1, 2, false));
-			Assert.DoesNotThrow(() => new NumberValidator(1, 0, true));
+		[TestCase(30, 10, false, null, ExpectedResult = false)]
+		[TestCase(30, 10, false, "", ExpectedResult = false)]
+		[TestCase(30, 10, false, "    ", ExpectedResult = false)]
+		[TestCase(30, 10, false, "abc", ExpectedResult = false)]
+		[TestCase(30, 10, false, "0.00?", ExpectedResult = false)]
+		[TestCase(30, 10, false, "0,12", ExpectedResult = true)]
+		[TestCase(30, 10, false, "0 12", ExpectedResult = false)]
+		[TestCase(30, 10, false, "0:12", ExpectedResult = false)]
+		[TestCase(30, 10, false, "0-12", ExpectedResult = false)]
+		[TestCase(30, 10, false, "0.12.0", ExpectedResult = false)]
+		[TestCase(30, 10, false, "aaa.bcd", ExpectedResult = false)]
+		[TestCase(17,2, false, "0.0", ExpectedResult = true)]
+		[TestCase(17, 2, false, "0", ExpectedResult = true)]
+		[TestCase(4, 2, true, "+1.23", ExpectedResult = true)]
+		[TestCase(4, 2, true, "-1.23", ExpectedResult = false)]
+		[TestCase(3, 2, true, "+1.23", ExpectedResult = false)]
+		[TestCase(3, 2, true, "00.00", ExpectedResult = false)]
+		[TestCase(3, 2, true, "-0.00", ExpectedResult = false)]
+		[TestCase(3, 2, true, "+0.00", ExpectedResult = false)]
 
-			Assert.IsTrue(new NumberValidator(17, 2, true).IsValidNumber("0.0"));
-			Assert.IsTrue(new NumberValidator(17, 2, true).IsValidNumber("0"));
-			Assert.IsTrue(new NumberValidator(17, 2, true).IsValidNumber("0.0"));
-			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("00.00"));
-			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("-0.00"));
-			Assert.IsTrue(new NumberValidator(17, 2, true).IsValidNumber("0.0"));
-			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("+0.00"));
-			Assert.IsTrue(new NumberValidator(4, 2, true).IsValidNumber("+1.23"));
-			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("+1.23"));
-			Assert.IsFalse(new NumberValidator(17, 2, true).IsValidNumber("0.000"));
-			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("-1.23"));
-			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("a.sd"));
+		public bool Test_IsValidNumber(int precision, int scale, bool onlyPositive, string number)
+		{
+			return new NumberValidator(precision, scale, onlyPositive).IsValidNumber(number);
 		}
+
+		[TestCase(-1,2,true)]
+		[TestCase(-1, 2, false)]
+		[TestCase(2, 3, false)]
+		[TestCase(1, -1, false)]
+		[TestCase(1, -1, true)]
+		[TestCase(0, 0, true)]
+		public void Test_ExceptionOnInitialization_ShouldBeThrownException(int precision, int scale, bool onlyPositive)
+		{
+			Action action = () => new NumberValidator(precision, scale, onlyPositive);
+			action.Should().Throw<ArgumentException>();
+		}
+
 	}
 
 	public class NumberValidator
