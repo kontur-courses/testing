@@ -14,17 +14,11 @@ namespace HomeExercises
 
 			var expectedTsar = new Person("Ivan IV The Terrible", 54, 170, 70,
 				new Person("Vasili III of Russia", 28, 170, 60, null));
-
-			// Перепишите код на использование Fluent Assertions.
-			Assert.AreEqual(actualTsar.Name, expectedTsar.Name);
-			Assert.AreEqual(actualTsar.Age, expectedTsar.Age);
-			Assert.AreEqual(actualTsar.Height, expectedTsar.Height);
-			Assert.AreEqual(actualTsar.Weight, expectedTsar.Weight);
-
-			Assert.AreEqual(expectedTsar.Parent!.Name, actualTsar.Parent!.Name);
-			Assert.AreEqual(expectedTsar.Parent.Age, actualTsar.Parent.Age);
-			Assert.AreEqual(expectedTsar.Parent.Height, actualTsar.Parent.Height);
-			Assert.AreEqual(expectedTsar.Parent.Parent, actualTsar.Parent.Parent);
+			
+			actualTsar.Should().BeEquivalentTo(expectedTsar, options =>
+				options.Excluding(member => 
+					member.SelectedMemberInfo.DeclaringType == typeof(Person)
+					&& member.SelectedMemberInfo.Name == nameof(Person.Id)));
 		}
 
 		[Test]
@@ -35,7 +29,13 @@ namespace HomeExercises
 			var expectedTsar = new Person("Ivan IV The Terrible", 54, 170, 70,
 				new Person("Vasili III of Russia", 28, 170, 60, null));
 
-			// Какие недостатки у такого подхода? 
+			/* Какие недостатки у такого подхода? 
+			 * 1.	Придется дополнительно изучить метод AreEqual.
+			 * 2.	Код в AreEqual сложнее читать, чем если бы мы сделали через FluentAssertions.
+			 * 3.	Создаем дополнительный мусорный метод, который потом будет мешаться в подсказках от IDE.
+			 * 4.	Код получится длиннее, чем если бы мы использовали FluentAssertions.
+			 * 5.	При добавлении новых полей в класс Person придется добавлять новые условия в метод AreEqual.
+			 */
 			Assert.True(AreEqual(actualTsar, expectedTsar));
 		}
 
