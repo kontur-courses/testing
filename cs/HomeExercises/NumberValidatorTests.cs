@@ -63,6 +63,8 @@ namespace HomeExercises
 
 		[TestCase("1234", TestName = "Integer number")]
 		[TestCase("12.34", TestName = "Float number")]
+		[TestCase("0000", TestName = "Only zeros")]
+		[TestCase("0.000", TestName = "Zeros with dot")]
 		public void IsValidNumber_ReturnFalse_OnTooLongNumber(string value)
 		{
 			new NumberValidatorBuilder().SetPrecision(3).SetScale(2).Build().IsValidNumber(value).Should().BeFalse();
