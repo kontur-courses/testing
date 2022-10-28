@@ -7,26 +7,74 @@ namespace HomeExercises
 {
 	public class NumberValidatorTests
 	{
-		[Test]
-		public void Test()
+		[TestCase(1, 0, true, "1")]
+		[TestCase(2, 0, true, "+1")]
+		[TestCase(2, 0, false, "-1")]
+		[TestCase(3, 1, true, "1.0")]
+		[TestCase(10, 5, false, "-100.00001")]
+		public void Validator_ShouldWork_WithCorrectData(int precision, int scale, bool onlyPositive, string number)
 		{
-			Assert.Throws<ArgumentException>(() => new NumberValidator(-1, 2, true));
-			Assert.DoesNotThrow(() => new NumberValidator(1, 0, true));
-			Assert.Throws<ArgumentException>(() => new NumberValidator(-1, 2, false));
-			Assert.DoesNotThrow(() => new NumberValidator(1, 0, true));
+			var validator = new NumberValidator(precision, scale, onlyPositive);
+			validator.IsValidNumber(number).Should().Be(true);
+		}
 
-			Assert.IsTrue(new NumberValidator(17, 2, true).IsValidNumber("0.0"));
-			Assert.IsTrue(new NumberValidator(17, 2, true).IsValidNumber("0"));
-			Assert.IsTrue(new NumberValidator(17, 2, true).IsValidNumber("0.0"));
-			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("00.00"));
-			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("-0.00"));
-			Assert.IsTrue(new NumberValidator(17, 2, true).IsValidNumber("0.0"));
-			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("+0.00"));
-			Assert.IsTrue(new NumberValidator(4, 2, true).IsValidNumber("+1.23"));
-			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("+1.23"));
-			Assert.IsFalse(new NumberValidator(17, 2, true).IsValidNumber("0.000"));
-			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("-1.23"));
-			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("a.sd"));
+		[Test]
+		public void Validator_ShouldThrowArgumentException_WhenPrecisionNotPositive()
+		{
+			Action actionNegative = () => new NumberValidator(-1, 2, true);
+			actionNegative.Should().Throw<ArgumentException>().WithMessage("precision must be a positive number");
+			Action actionZero = () => new NumberValidator(0, 2, true);
+			actionZero.Should().Throw<ArgumentException>().WithMessage("precision must be a positive number");
+		}
+
+		[Test]
+		public void Validator_ShouldNotThrowArgumentException_WithCorrectData()
+		{
+			Action correctIni = () => new NumberValidator(1, 0, true);
+			correctIni.Should().NotThrow<ArgumentException>();
+		}
+
+		[Test]
+		public void Validator_ShouldThrowArgumentException_WhenScaleNegative()
+		{
+			Action action = () => new NumberValidator(17, -1, true);
+			action.Should().Throw<ArgumentException>()
+				.WithMessage("precision must be a non-negative number less or equal than precision");
+		}
+
+		[Test]
+		public void Validator_ShouldThrowArgumentException_WhenPrecisionLessThanScale()
+		{
+			Action action = () => new NumberValidator(1, 2, true);
+			action.Should().Throw<ArgumentException>()
+				.WithMessage("precision must be a non-negative number less or equal than precision");
+		}
+
+
+		[TestCase(null, Description = "Should work correctly with null", TestName = "null")]
+		[TestCase("", Description = "Should work correctly with empty string", TestName = "empty string")]
+		[TestCase("+-0,0", Description = "Should work correctly with incorrect regex", TestName = "unmatched regex")]
+		[TestCase("+a.bc", Description = "Should work correctly with incorrect number", TestName = "not a number")]
+		public void Validator_ReturnFalse_WithIncorrectStringFormat(string number)
+		{
+			var validator = new NumberValidator(17, 2, true);
+			validator.IsValidNumber(number).Should().Be(false);
+		}
+
+		[TestCase("0.001", Description = "Should match number's scale", TestName = "scale length")]
+		[TestCase("5000.0", Description = "Should match number's precision", TestName = "precision length")]
+		[TestCase("+5000", Description = "Character should be contained in number precision", TestName = "character")]
+		public void Validator_ReturnFalse_WithNotValidNumberLenght(string number)
+		{
+			var validator = new NumberValidator(4, 2, true);
+			validator.IsValidNumber(number).Should().Be(false);
+		}
+
+		[Test]
+		public void Validator_ReturnFalse_WhenNumberDoesntMatchPositiveCondition()
+		{
+			var validator = new NumberValidator(3, 2, true);
+			validator.IsValidNumber("-0.1").Should().Be(false);
 		}
 	}
 

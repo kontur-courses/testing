@@ -1,4 +1,7 @@
-﻿using FluentAssertions;
+﻿using System;
+using FluentAssertions;
+using FluentAssertions.Common;
+using FluentAssertions.Equivalency;
 using NUnit.Framework;
 
 namespace HomeExercises
@@ -16,15 +19,10 @@ namespace HomeExercises
 				new Person("Vasili III of Russia", 28, 170, 60, null));
 
 			// Перепишите код на использование Fluent Assertions.
-			Assert.AreEqual(actualTsar.Name, expectedTsar.Name);
-			Assert.AreEqual(actualTsar.Age, expectedTsar.Age);
-			Assert.AreEqual(actualTsar.Height, expectedTsar.Height);
-			Assert.AreEqual(actualTsar.Weight, expectedTsar.Weight);
+			EquivalencyAssertionOptions<Person> TsarEquivalencyOptions(EquivalencyAssertionOptions<Person> options) =>
+				options.Excluding(pr => pr.SelectedMemberInfo.Name == "Id");
 
-			Assert.AreEqual(expectedTsar.Parent!.Name, actualTsar.Parent!.Name);
-			Assert.AreEqual(expectedTsar.Parent.Age, actualTsar.Parent.Age);
-			Assert.AreEqual(expectedTsar.Parent.Height, actualTsar.Parent.Height);
-			Assert.AreEqual(expectedTsar.Parent.Parent, actualTsar.Parent.Parent);
+			actualTsar.Should().BeEquivalentTo(expectedTsar, TsarEquivalencyOptions);
 		}
 
 		[Test]
@@ -36,6 +34,8 @@ namespace HomeExercises
 				new Person("Vasili III of Russia", 28, 170, 60, null));
 
 			// Какие недостатки у такого подхода? 
+			// A: При фейле теста мы не знаем, что именно провалило тест. Данный тест не дает конкретной информации.
+			// В свою очередь тест написанный на Fluent Assertions выводит имя поля с ожидаемым и полученным значением.
 			Assert.True(AreEqual(actualTsar, expectedTsar));
 		}
 
