@@ -32,7 +32,7 @@ namespace HomeExercises
 			 2. Легко совершить ошибку в методе AreEqual или забыть дописать какую-либо проверку
 			 3. Сложнее читается из-за метода AreEqual
 			 4. При проверке с помощью FluentAssertions будет показано какое поле не прошло проверку, здесь не будет
-			 5. В конце концов проверка с помощью FLuentAssertion выглядит более чисто
+			 5. Ппроверка с помощью FLuentAssertion выглядит более лаконично
 			 */
 			Assert.True(AreEqual(actualTsar, expectedTsar));
 		}
