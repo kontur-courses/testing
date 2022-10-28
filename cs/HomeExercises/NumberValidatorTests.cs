@@ -11,7 +11,7 @@ namespace HomeExercises
 		[TestCase(0, 0, TestName = "Zero precision")]
 		[TestCase(-1, 0, TestName = "Simple negative precision")]
 		[TestCase(int.MinValue, 0, TestName = "Max negative precision")]
-		public void ArgumentException_When_Negative_Zero_Precision(int precision, int scale)
+		public void ArgumentException_WhenNegativeZeroPrecision(int precision, int scale)
 		{
 			Action validatorAction = () => new NumberValidator(precision, scale);
 			validatorAction.Should().Throw<ArgumentException>("precision must be a positive number");
@@ -21,7 +21,7 @@ namespace HomeExercises
 		[TestCase(int.MaxValue, int.MaxValue, TestName = "Precision equal scale maxInteger")]
 		[TestCase(10, -10, TestName = "Negative scale")]
 		[TestCase(10, int.MinValue, TestName = "Negative scale minInteger")]
-		public void ArgumentException_When_Negative_UpperPrecision_Scale(int precision, int scale)
+		public void ArgumentException_WhenNegativeUpperPrecisionScale(int precision, int scale)
 		{
 			Action validatorAction = () => new NumberValidator(precision, scale);
 			validatorAction.Should()
@@ -33,7 +33,7 @@ namespace HomeExercises
 		[TestCase("abc", TestName = "Simple strings")]
 		[TestCase("#$%^&*", TestName = "Special symbol")]
 		[TestCase("200a", TestName = "String with number")]
-		public void IsValidNumber_Not_Number(string value)
+		public void IsValidNumber_NotNumber(string value)
 		{
 			var NumberValidator = new NumberValidator(1, 0, true).IsValidNumber(value);
 			NumberValidator.Should().BeFalse();
@@ -42,7 +42,7 @@ namespace HomeExercises
 		[TestCase("20,0", TestName = "String with comma")]
 		[TestCase("20 0", TestName = "String with whitespace")]
 		[TestCase("20-0", TestName = "String with minus")]
-		public void IsValidNumber_Have_Not_Dot(string value)
+		public void IsValidNumber_HaveNotDot(string value)
 		{
 			var numberValidator = new NumberValidator(1, 0, true).IsValidNumber(value);
 			numberValidator.Should().BeFalse();
@@ -51,7 +51,7 @@ namespace HomeExercises
 		[TestCase("-1", TestName = "Simple value without dot")]
 		[TestCase("-1.0", TestName = "Special value with dot")]
 
-		public void IsValidNumber_Only_Positive_With_Negative(string value)
+		public void IsValidNumber_OnlyPositiveButNegative(string value)
 		{
 			var numberValidator = new NumberValidator(10, 1, true).IsValidNumber(value);
 			numberValidator.Should().BeFalse();
@@ -59,7 +59,7 @@ namespace HomeExercises
 
 		[TestCase("1.0", TestName = "Null number validator")]
 
-		public void IsValidNumber_Null(string value)
+		public void IsValidNumberNull(string value)
 		{
 			NumberValidator numberValidator = null;
 			Action action = () => numberValidator.IsValidNumber(value);
@@ -69,7 +69,7 @@ namespace HomeExercises
 		[TestCase(".10", TestName = "Number without int part")]
 		[TestCase("10.", TestName = "Number without fractional part")]
 		[TestCase("$1.10", TestName = "Number with special symbol")]
-		public void IsValidNumber_Not_Match_With_Regex(string value)
+		public void IsValidNumber_NotMatchWithRegex(string value)
 		{
 			var numberValidator = new NumberValidator(4, 3).IsValidNumber(value);
 			numberValidator.Should().BeFalse();
@@ -81,7 +81,7 @@ namespace HomeExercises
 		[TestCase("+1.0", TestName = "Positive int")]
 		[TestCase("-1.1", TestName = "Negative int")]
 
-		public void IsValidNumber_When_Int_And_Fractional_Part_Not_Bigger_Precision(string value)
+		public void IsValidNumber_WhenIntAndFractionalPart_NotBiggerPrecision(string value)
 		{
 			var numberValidator = new NumberValidator(3, 2).IsValidNumber(value);
 			numberValidator.Should().BeTrue();
@@ -90,7 +90,7 @@ namespace HomeExercises
 		[TestCase("1.100", TestName = "Positive int with big scale")]
 		[TestCase("-1.10", TestName = "Negative int with scale")]
 
-		public void IsValidNumber_When_Fractional_Part_Not_Bigger_Scale(string value)
+		public void IsValidNumber_WhenFractionalPart_NotBiggerScale(string value)
 		{
 			var numberValidator = new NumberValidator(4, 3).IsValidNumber(value);
 			numberValidator.Should().BeTrue();
@@ -101,7 +101,7 @@ namespace HomeExercises
 		[TestCase("100.00", TestName = "Positive int bigger precision")]
 		[TestCase("-100.00", TestName = "Negative int bigger precision")]
 
-		public void IsValidNumber_When_Int_And_Fractional_Part_Bigger_Precision(string value)
+		public void IsValidNumber_WhenIntAndFractionalPartBiggerPrecision(string value)
 		{
 			var numberValidator = new NumberValidator(3, 2).IsValidNumber(value);
 			numberValidator.Should().BeFalse();
@@ -110,7 +110,7 @@ namespace HomeExercises
 		[TestCase("+1.1000", TestName = "Positive fractional with scale")]
 		[TestCase("-1.1000", TestName = "Negative fractional with scale")]
 
-		public void IsValidNumber_When_Fractional_Part_Bigger_Scale(string value)
+		public void IsValidNumber_WhenFractionalPartBiggerScale(string value)
 		{
 			var numberValidator = new NumberValidator(4, 3).IsValidNumber(value);
 			numberValidator.Should().BeFalse();
