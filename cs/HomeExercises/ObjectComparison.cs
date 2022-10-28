@@ -15,16 +15,8 @@ namespace HomeExercises
 			var expectedTsar = new Person("Ivan IV The Terrible", 54, 170, 70,
 				new Person("Vasili III of Russia", 28, 170, 60, null));
 
-			// Перепишите код на использование Fluent Assertions.
-			Assert.AreEqual(actualTsar.Name, expectedTsar.Name);
-			Assert.AreEqual(actualTsar.Age, expectedTsar.Age);
-			Assert.AreEqual(actualTsar.Height, expectedTsar.Height);
-			Assert.AreEqual(actualTsar.Weight, expectedTsar.Weight);
-
-			Assert.AreEqual(expectedTsar.Parent!.Name, actualTsar.Parent!.Name);
-			Assert.AreEqual(expectedTsar.Parent.Age, actualTsar.Parent.Age);
-			Assert.AreEqual(expectedTsar.Parent.Height, actualTsar.Parent.Height);
-			Assert.AreEqual(expectedTsar.Parent.Parent, actualTsar.Parent.Parent);
+			actualTsar.Should().BeEquivalentTo(expectedTsar,
+				options => options.Excluding(p => p.Id).Excluding(p => p.Parent!.Id));
 		}
 
 		[Test]
@@ -35,7 +27,13 @@ namespace HomeExercises
 			var expectedTsar = new Person("Ivan IV The Terrible", 54, 170, 70,
 				new Person("Vasili III of Russia", 28, 170, 60, null));
 
-			// Какие недостатки у такого подхода? 
+			/* Какие недостатки у такого подхода?
+			 1. При добавлении нового поля придется править метод AreEqual (наиболее вероятно)
+			 2. Легко совершить ошибку в методе AreEqual или забыть дописать какую-либо проверку
+			 3. Сложнее читается из-за метода AreEqual
+			 4. При проверке с помощью FluentAssertions будет показано какое поле не прошло проверку, здесь не будет
+			 5. В конце концов проверка с помощью FLuentAssertion выглядит более чисто
+			 */
 			Assert.True(AreEqual(actualTsar, expectedTsar));
 		}
 
