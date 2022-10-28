@@ -7,26 +7,65 @@ namespace HomeExercises
 {
 	public class NumberValidatorTests
 	{
-		[Test]
-		public void Test()
+		[TestCase(-1, 2, true, "Отрицательное количество цифр быть не может")]
+		[TestCase(0, 2, true, "Нулевое количество цифр быть не может")]
+		[TestCase(10, -1, true, "Отрицательное количество цифр после запятой быть не может")]
+		[TestCase(5, 5, true, "Количество цифр после запятой должно быть меньше всего количества цифр")]
+		[TestCase(5, 6, true, "Количество цифр после запятой должно быть меньше всего количества цифр")]
+		public void NumberValidator_ThrowArgumentException_WhenIncorrectParams(
+			int precision, int scale, bool onlyPositive, string description = "")
 		{
-			Assert.Throws<ArgumentException>(() => new NumberValidator(-1, 2, true));
-			Assert.DoesNotThrow(() => new NumberValidator(1, 0, true));
-			Assert.Throws<ArgumentException>(() => new NumberValidator(-1, 2, false));
-			Assert.DoesNotThrow(() => new NumberValidator(1, 0, true));
+			Action createNewNumberValidator = () =>
+			{
+				var numberValidator = new NumberValidator(precision, scale, onlyPositive);
+			};
+			createNewNumberValidator.Should().Throw<ArgumentException>(description);
+		}
+		
+		[TestCase(3, 1, true)]
+		[TestCase(3, 1, false)]
+		[TestCase(3, 0, true)]
+		[TestCase(3, 0, false)]
+		public void NumberValidator_DoesNotThrowArgumentException_WhenCorrectParams(
+			int precision, int scale, bool onlyPositive)
+		{
+			Action createNewNumberValidator = () =>
+			{
+				var numberValidator = new NumberValidator(precision, scale, onlyPositive);
+			};
+			createNewNumberValidator.Should().NotThrow<ArgumentException>("Все передаваемые параметры верны");
+		}
+		
+		
+		[TestCase(17, 2, true, "0", "целое число")]
+		[TestCase(17, 0, true, "0", "целое число, когда нет десятичныйх знаков")]
+		[TestCase(17, 2, true, "0.0", "десятичное число")]
+		[TestCase(4, 2, true, "+10.3", "входит максимум элементов всего")]
+		[TestCase(4, 2, true, "1.35", "входит максимум элементов в дробную часть")]
+		[TestCase(4, 2, false, "-1.23", "проходит отрицательное значение")]
+		[TestCase(4, 2, true, "1,23", "подходит запятая как разделитель")]
+		public void IsValidNumber_ReturnTrue_WhenInputIsCorrect(
+			int precision, int scale, bool onlyPositive, string numberToCheck, string description = "")
+		{
+			var numberValidator = new NumberValidator(precision, scale, onlyPositive);
+			numberValidator.IsValidNumber(numberToCheck).Should().Be(true, description);
+		}
 
-			Assert.IsTrue(new NumberValidator(17, 2, true).IsValidNumber("0.0"));
-			Assert.IsTrue(new NumberValidator(17, 2, true).IsValidNumber("0"));
-			Assert.IsTrue(new NumberValidator(17, 2, true).IsValidNumber("0.0"));
-			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("00.00"));
-			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("-0.00"));
-			Assert.IsTrue(new NumberValidator(17, 2, true).IsValidNumber("0.0"));
-			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("+0.00"));
-			Assert.IsTrue(new NumberValidator(4, 2, true).IsValidNumber("+1.23"));
-			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("+1.23"));
-			Assert.IsFalse(new NumberValidator(17, 2, true).IsValidNumber("0.000"));
-			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("-1.23"));
-			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("a.sd"));
+		[TestCase(3, 2, true, "123.0", "переполнение цифр")]
+		[TestCase(3, 2, false, "-80.9", "переполнение цифр со знаком")]
+		[TestCase(17, 2, true, "1.009", "переполнение дробной части")]
+		[TestCase(17, 2, true, "-7", "отрицательное число в положительное")]
+		[TestCase(17, 9, true, "not.number", "не числовое значение")]
+		[TestCase(17, 9, true, "15.number", "не числовое значение")]
+		[TestCase(17, 5, true, "4:78", "неправильный разделитель")]
+		[TestCase(17, 5, true, "*4.78", "неправильный знак перед числом")]
+		[TestCase(17, 9, true, "", "пустая строка -> неверно")]
+		[TestCase(17, 9, true, " ", "пробельная строка -> неверно")]
+		public void IsValidNumber_ReturnTrue_WhenInputIsIncorrect(
+			int precision, int scale, bool onlyPositive, string numberToCheck, string description = "")
+		{
+			var numberValidator = new NumberValidator(precision, scale, onlyPositive);
+			numberValidator.IsValidNumber(numberToCheck).Should().Be(false, description);
 		}
 	}
 
