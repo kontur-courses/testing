@@ -1,4 +1,6 @@
-﻿using FluentAssertions;
+﻿using System;
+using System.Net.Sockets;
+using FluentAssertions;
 using NUnit.Framework;
 
 namespace HomeExercises
@@ -14,17 +16,11 @@ namespace HomeExercises
 
 			var expectedTsar = new Person("Ivan IV The Terrible", 54, 170, 70,
 				new Person("Vasili III of Russia", 28, 170, 60, null));
-
-			// Код, преписанный на использование Fluent Assertions.
-			actualTsar.Name.Should().Be(expectedTsar.Name);
-			actualTsar.Age.Should().Be(expectedTsar.Age);
-			actualTsar.Height.Should().Be(expectedTsar.Height);
-			actualTsar.Weight.Should().Be(expectedTsar.Weight);
-
-			actualTsar.Parent!.Name.Should().Be(expectedTsar.Parent!.Name);
-			actualTsar.Parent.Age.Should().Be(expectedTsar.Parent.Age);
-			actualTsar.Parent.Height.Should().Be(expectedTsar.Parent.Height);
-			actualTsar.Parent.Parent.Should().Be(expectedTsar.Parent.Parent);
+			
+			// Данная проверка позволяет сравнивать двух людей по всем полям,
+			// не учитывая Id самих людей и всех их родителей
+			actualTsar.Should().BeEquivalentTo(expectedTsar, options =>
+				options.Excluding(member => member.Path.EndsWith("Id")));
 		}
 
 		[Test]
