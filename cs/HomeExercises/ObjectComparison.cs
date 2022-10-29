@@ -1,4 +1,5 @@
-﻿using FluentAssertions;
+﻿using System;
+using FluentAssertions;
 using NUnit.Framework;
 
 namespace HomeExercises
@@ -11,9 +12,9 @@ namespace HomeExercises
 		public void CheckCurrentTsar()
 		{
 			var actualTsar = TsarRegistry.GetCurrentTsar();
-
-			var expectedTsar = new Person("Ivan IV The Terrible", 54, 170, 70,
-				new Person("Vasili III of Russia", 28, 170, 60, null));
+			var expectedTsar = new Person(
+				"Ivan IV The Terrible", 54, 170, 70, new DateTime(1530, 08, 25),
+				new Person("Vasili III of Russia", 28, 170, 60, new DateTime(1479, 03, 25), null));
 
 			actualTsar.Should().BeEquivalentToPersonIgnoringIdentifiers(expectedTsar);
 		}
@@ -23,10 +24,11 @@ namespace HomeExercises
 		public void CheckCurrentTsar_WithCustomEquality()
 		{
 			var actualTsar = TsarRegistry.GetCurrentTsar();
-			var expectedTsar = new Person("Ivan IV The Terrible", 54, 170, 70,
-				new Person("Vasili III of Russia", 28, 170, 60, null));
+			var expectedTsar = new Person(
+				"Ivan IV The Terrible", 54, 170, 70, new DateTime(1530, 08, 25),
+				new Person("Vasili III of Russia", 28, 170, 60, new DateTime(1479, 03, 25), null));
 
-			// Какие недостатки у такого подхода? 
+			// Какие недостатки у такого подхода?
 			Assert.True(AreEqual(actualTsar, expectedTsar));
 		}
 
@@ -48,8 +50,8 @@ namespace HomeExercises
 		public static Person GetCurrentTsar()
 		{
 			return new Person(
-				"Ivan IV The Terrible", 54, 170, 70,
-				new Person("Vasili III of Russia", 28, 170, 60, null));
+				"Ivan IV The Terrible", 54, 170, 70, new DateTime(1530, 08, 25),
+				new Person("Vasili III of Russia", 28, 170, 60, new DateTime(1533, 12, 3), null));
 		}
 	}
 
@@ -60,14 +62,16 @@ namespace HomeExercises
 		public string Name;
 		public Person? Parent;
 		public int Id;
+		public DateTime DayOfBirth;
 
-		public Person(string name, int age, int height, int weight, Person? parent)
+		public Person(string name, int age, int height, int weight, DateTime dayOfBirth, Person? parent)
 		{
 			Id = IdCounter++;
 			Name = name;
 			Age = age;
 			Height = height;
 			Weight = weight;
+			DayOfBirth = dayOfBirth;
 			Parent = parent;
 		}
 	}
