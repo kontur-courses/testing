@@ -7,26 +7,64 @@ namespace HomeExercises
 {
 	public class NumberValidatorTests
 	{
-		[Test]
-		public void Test()
+		[TestCase(-1, 2, TestName = "precision < 0")]
+		[TestCase(0, 2, TestName = "precision == 0")]
+		[TestCase(1, -2, TestName = "scale < 0")]
+		[TestCase(1, 2, TestName = "scale > precision")]
+		[TestCase(1, 1, TestName = "scale == precision")]
+		public void Constructor_OnIncorrectParams_ThrowArgumentException(int precision, int scale)
 		{
-			Assert.Throws<ArgumentException>(() => new NumberValidator(-1, 2, true));
-			Assert.DoesNotThrow(() => new NumberValidator(1, 0, true));
-			Assert.Throws<ArgumentException>(() => new NumberValidator(-1, 2, false));
-			Assert.DoesNotThrow(() => new NumberValidator(1, 0, true));
+			Action action = () => new NumberValidator(precision, scale);
+			action.Should().Throw<ArgumentException>();
+		}
 
-			Assert.IsTrue(new NumberValidator(17, 2, true).IsValidNumber("0.0"));
-			Assert.IsTrue(new NumberValidator(17, 2, true).IsValidNumber("0"));
-			Assert.IsTrue(new NumberValidator(17, 2, true).IsValidNumber("0.0"));
-			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("00.00"));
-			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("-0.00"));
-			Assert.IsTrue(new NumberValidator(17, 2, true).IsValidNumber("0.0"));
-			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("+0.00"));
-			Assert.IsTrue(new NumberValidator(4, 2, true).IsValidNumber("+1.23"));
-			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("+1.23"));
-			Assert.IsFalse(new NumberValidator(17, 2, true).IsValidNumber("0.000"));
-			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("-1.23"));
-			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("a.sd"));
+
+		[TestCase(17, 2, false, null, TestName = "string is null")]
+		[TestCase(17, 2, false, "", TestName = "string is empty")]
+		public void IsValidNumber_EmptyOrNullString_False(int precision, int scale, bool onlyPositive, string value)
+		{
+			new NumberValidator(precision, scale, onlyPositive).IsValidNumber(value).Should().BeFalse();
+		}
+
+
+		[TestCase(17, 10, false, "abc", TestName = "only letters without dot and comma")]
+		[TestCase(17, 10, false, "a.bc", TestName = "only letters and dot")]
+		[TestCase(17, 10, false, "a,bc", TestName = "only letters and comma")]
+		[TestCase(17, 10, false, "1.2.3", TestName = "many dots")]
+		[TestCase(17, 10, false, "1,2,3", TestName = "many commas")]
+		[TestCase(17, 10, false, "1..1", TestName = "many dots in a row")]
+		[TestCase(17, 10, false, "1,,1", TestName = "many commas in a row")]
+		[TestCase(17, 10, false, ".1", TestName = "start with dot")]
+		[TestCase(17, 10, false, "1.", TestName = "ends with dot")]
+		[TestCase(17, 10, false, ",1", TestName = "start with comma")]
+		[TestCase(17, 10, false, "1,", TestName = "ends with comma")]
+		[TestCase(17, 10, false, "+-12", TestName = "many +-")]
+		public void IsValidNumber_NaN_False(int precision, int scale, bool onlyPositive, string value)
+		{
+			new NumberValidator(precision, scale, onlyPositive).IsValidNumber(value).Should().BeFalse();
+		}
+
+
+		[TestCase(17, 2, false, "1.234", TestName = "scale > 0 and < number scale")]
+		[TestCase(17, 0, false, "1.0", TestName = "scale == 0 and < number scale")]
+		[TestCase(4, 2, false, "123.34", TestName = "precision < number precision, scale > 0")]
+		[TestCase(5, 0, false, "123456", TestName = "precision < number precision, scale == 0")]
+		public void IsValidNumber_BadScaleOrPrecision_False(int precision, int scale, bool onlyPositive, string value)
+		{
+			new NumberValidator(precision, scale, onlyPositive).IsValidNumber(value).Should().BeFalse();
+		}
+
+
+		[TestCase(2, 0, true, "+1", ExpectedResult = true)]
+		[TestCase(1, 0, true, "1", ExpectedResult = true)]
+		[TestCase(2, 0, false, "-1", ExpectedResult = true)]
+		[TestCase(17, 2, false, "123.34", ExpectedResult = true)]
+		[TestCase(6, 0, true, "123456", ExpectedResult = true)]
+		[TestCase(17, 2, true, "-123.34", ExpectedResult = false)]
+		[TestCase(6, 0, true, "-10", ExpectedResult = false)]
+		public bool IsValidNumber_WithOrWithoutSign(int precision, int scale, bool onlyPositive, string value)
+		{
+			return new NumberValidator(precision, scale, onlyPositive).IsValidNumber(value);
 		}
 	}
 
