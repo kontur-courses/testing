@@ -7,12 +7,12 @@ namespace HomeExercises
 {
 	public class NumberValidatorTests
 	{
-		[TestCase(1, 0, true, "1")]
-		[TestCase(2, 0, true, "+1")]
-		[TestCase(2, 0, false, "-1")]
-		[TestCase(3, 1, true, "1.0")]
-		[TestCase(10, 5, false, "-100.00001")]
-		public void Validator_ShouldWork_WithCorrectData(int precision, int scale, bool onlyPositive, string number)
+		[TestCase(1, 0, true, "1", TestName = "Simple number")]
+		[TestCase(2, 0, true, "+1", TestName = "Positive number")]
+		[TestCase(2, 0, false, "-1", TestName = "Negative number")]
+		[TestCase(3, 1, true, "1.0", TestName = "Float number")]
+		[TestCase(10, 5, false, "-100.00001", TestName = "Float Negative number")]
+		public void Validator_ReturnTrue_WhenNumberIsValid(int precision, int scale, bool onlyPositive, string number)
 		{
 			var validator = new NumberValidator(precision, scale, onlyPositive);
 			validator.IsValidNumber(number).Should().Be(true);
@@ -26,13 +26,7 @@ namespace HomeExercises
 			Action actionZero = () => new NumberValidator(0, 2, true);
 			actionZero.Should().Throw<ArgumentException>().WithMessage("precision must be a positive number");
 		}
-
-		[Test]
-		public void Validator_ShouldNotThrowArgumentException_WithCorrectData()
-		{
-			Action correctIni = () => new NumberValidator(1, 0, true);
-			correctIni.Should().NotThrow<ArgumentException>();
-		}
+		
 
 		[Test]
 		public void Validator_ShouldThrowArgumentException_WhenScaleNegative()
@@ -55,7 +49,7 @@ namespace HomeExercises
 		[TestCase("", Description = "Should work correctly with empty string", TestName = "empty string")]
 		[TestCase("+-0,0", Description = "Should work correctly with incorrect regex", TestName = "unmatched regex")]
 		[TestCase("+a.bc", Description = "Should work correctly with incorrect number", TestName = "not a number")]
-		public void Validator_ReturnFalse_WithIncorrectStringFormat(string number)
+		public void Validator_ReturnFalse_WithIncorrectString(string number)
 		{
 			var validator = new NumberValidator(17, 2, true);
 			validator.IsValidNumber(number).Should().Be(false);
