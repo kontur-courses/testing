@@ -7,14 +7,8 @@ namespace HomeExercises
 {
 	public static class FluentAssertionExtensions
 	{
-		public static void BeEquivalentToPersonIgnoringIdentifiers(this ObjectAssertions assertions, Person person)
-		{
-			assertions.BeAssignableTo<Person>()
-				.And.BeEquivalentTo(person, ExcludingPersonIdentifiers);
-		}
-
-		private static EquivalencyAssertionOptions<Person> ExcludingPersonIdentifiers(
-			this EquivalencyAssertionOptions<Person> assertionOptions)
+		public static EquivalencyAssertionOptions<T> ExcludingPersonIdentifiers<T>(
+			this EquivalencyAssertionOptions<T> assertionOptions)
 		{
 			Expression<Func<IMemberInfo, bool>> excludingExpression = memberInfo =>
 				CheckPersonIdMember(memberInfo);

@@ -16,7 +16,7 @@ namespace HomeExercises
 				"Ivan IV The Terrible", 54, 170, 70, new DateTime(1530, 08, 25),
 				new Person("Vasili III of Russia", 28, 170, 60, new DateTime(1479, 03, 25), null));
 
-			actualTsar.Should().BeEquivalentToPersonIgnoringIdentifiers(expectedTsar);
+			actualTsar.Should().BeEquivalentTo(expectedTsar, FluentAssertionExtensions.ExcludingPersonIdentifiers);
 		}
 
 		[Test]
@@ -29,6 +29,11 @@ namespace HomeExercises
 				new Person("Vasili III of Russia", 28, 170, 60, new DateTime(1479, 03, 25), null));
 
 			// Какие недостатки у такого подхода?
+			// В случае ошибки мы получим малоинформативное сообщение и не узнаем какие конкретно члены у полученного экземпляра и ожидаемого экземпляры различаются
+			// Если добавим новое поле в класс Person, нужно будет отредактировать AreEqual
+			// Для каждой сущности, на подобии класса Person потребуется собственный метод AreEqual 
+			// Можно допустить ошибку при написании метода AreEqual
+			// В реализации с FluentAssertion я настроил игнорирование поля Id, но в большинстве случаев дополнительная настройка не требуется 
 			Assert.True(AreEqual(actualTsar, expectedTsar));
 		}
 
