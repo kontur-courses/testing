@@ -7,26 +7,72 @@ namespace HomeExercises
 {
 	public class NumberValidatorTests
 	{
-		[Test]
-		public void Test()
-		{
-			Assert.Throws<ArgumentException>(() => new NumberValidator(-1, 2, true));
-			Assert.DoesNotThrow(() => new NumberValidator(1, 0, true));
-			Assert.Throws<ArgumentException>(() => new NumberValidator(-1, 2, false));
-			Assert.DoesNotThrow(() => new NumberValidator(1, 0, true));
+		[TestCase(1, 0, TestName = "Positive precision, scale equal zero")]
+		[TestCase(2, 1, TestName = "Positive precision, scale less than precision")]
+		public void NumberValidatorConstructor_DoesntThrowException_OnCorrectParams(int precision, int scale = 0)
+        {
+			Action action = () => new NumberValidator(precision, scale);
+			action.Should().NotThrow<ArgumentException>();
+		}
 
-			Assert.IsTrue(new NumberValidator(17, 2, true).IsValidNumber("0.0"));
-			Assert.IsTrue(new NumberValidator(17, 2, true).IsValidNumber("0"));
-			Assert.IsTrue(new NumberValidator(17, 2, true).IsValidNumber("0.0"));
-			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("00.00"));
-			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("-0.00"));
-			Assert.IsTrue(new NumberValidator(17, 2, true).IsValidNumber("0.0"));
-			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("+0.00"));
-			Assert.IsTrue(new NumberValidator(4, 2, true).IsValidNumber("+1.23"));
-			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("+1.23"));
-			Assert.IsFalse(new NumberValidator(17, 2, true).IsValidNumber("0.000"));
-			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("-1.23"));
-			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("a.sd"));
+		[TestCase(0, TestName = "Precision equal zero")]
+		[TestCase(-10, TestName = "Negative precision")]
+		[TestCase(10, 10, TestName = "Scale equal precision")]
+		[TestCase(10, 11, TestName = "Scale more than precision")]
+		[TestCase(10, -10, TestName = "Negative scale")]
+		public void NumberValidatorConstructor_ThrowException_OnIncorrectParams(int precision, int scale = 0)
+		{
+			Action action = () => new NumberValidator(precision, scale);
+			action.Should().Throw<ArgumentException>();
+		}
+
+		[TestCase("1. 2", TestName = "Value contains space")]
+		[TestCase("abcd", TestName = "Only letters")]
+		[TestCase("1.2abcd", TestName = "Number and letters")]
+		[TestCase("*/", TestName = "Only special symbols")]
+		[TestCase("1.2*/", TestName = "Number and special symbols")]
+		[TestCase("\t\n", TestName = "Only escape-subsequence")]
+		[TestCase("1.2\t\n", TestName = "Number and escape-subsequence")]
+		[TestCase("1..2", TestName = "Number contains two dots and a fractional part")]
+		[TestCase("1..", TestName = "Number contains two dots and no fractional part")]
+		[TestCase("1,,2", TestName = "Number contains two comma and a fractional part")]
+		[TestCase("1,,", TestName = "Number contains two comma and no fractional part")]
+		[TestCase(".2", TestName = "No integer part befor dot")]
+		[TestCase(",2", TestName = "No integer part befor comma")]
+		[TestCase("--12", TestName = "Two minus signs")]
+		[TestCase("++12", TestName = "Two plus signs")]
+		public void IsValidNumber_False_OnIncorrectValueFormat(string value)
+		{
+			new NumberValidator(10, 2).IsValidNumber(value).Should().BeFalse();
+		}
+
+		[TestCase("100", 2, 1, TestName = "Length of integer part more than precision, and no sign")]
+		[TestCase("+10", 2, 1, TestName = "Length of integer part with sign plus more than precision")]
+		[TestCase("-10", 2, 1, TestName = "Length of integer part with sign minus more than precision")]
+		[TestCase("1.2", 1, 0, TestName = "Length of integer part and fractional part more than precision, and no sign")]
+		[TestCase("+1.2", 2, 1, TestName = "Length of integer part with sign plus and fractional part more than precision")]
+		[TestCase("-1.2", 2, 1, TestName = "Length of integer part with sign minus and fractional part more than precision")]
+		[TestCase("1.2222", 10, 3, TestName = "Length of fractional part more than scale")]
+		public void IsValidNumber_False_InvalidValue(string value, int precision, int scale)
+		{
+			new NumberValidator(precision, scale).IsValidNumber(value).Should().BeFalse();
+		}
+
+		[TestCase("-10", TestName = "Negative value and onlyPositive is true")]
+		public void IsValidNumber_False_OnNegativeValue_WhenOnlyPositiveValueIsExpected(string value, bool onlyPositive = true)
+		{
+			new NumberValidator(5, 1, onlyPositive).IsValidNumber(value).Should().BeFalse();
+		}
+
+		[TestCase("10.1", true, TestName = "Positive unsigned number and onlyPositive is true")]
+		[TestCase("10.1", TestName = "Positive unsigned number and onlyPositive is false")]
+		[TestCase("+10.1", true, TestName = "Positive number with plus sign and onlyPositive is true")]
+		[TestCase("+10.1", TestName = "Positive number with plus sign and onlyPositive is false")]
+		[TestCase("-10.1", TestName = "Nigative number and onlyPositive is false")]
+		public void IsValidNumber_True_OnCorrectParams(string value, bool onlyPositive = false)
+		{
+			var validator = new NumberValidator(5, 1, onlyPositive);
+			validator.IsValidNumber(value).Should().BeTrue();
 		}
 	}
 
@@ -45,7 +91,8 @@ namespace HomeExercises
 			if (precision <= 0)
 				throw new ArgumentException("precision must be a positive number");
 			if (scale < 0 || scale >= precision)
-				throw new ArgumentException("precision must be a non-negative number less or equal than precision");
+				// В месседже была опечатка. Заменил "precision" на "scale", иначе утверждение имеет мало смысла
+				throw new ArgumentException("scale must be a non-negative number less or equal than precision");
 			numberRegex = new Regex(@"^([+-]?)(\d+)([.,](\d+))?$", RegexOptions.IgnoreCase);
 		}
 
