@@ -2,7 +2,6 @@
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Reflection.Metadata.Ecma335;
-using System.Text.RegularExpressions;
 using FluentAssertions;
 using NUnit.Framework;
 
@@ -10,90 +9,60 @@ namespace HomeExercises
 {
 	public class NumberValidatorTests
 	{
-		[TestCase(30, 10, false, null, ExpectedResult = false)]
-		[TestCase(30, 10, false, "", ExpectedResult = false)]
-		[TestCase(30, 10, false, "    ", ExpectedResult = false)]
-		[TestCase(30, 10, false, "abc", ExpectedResult = false)]
-		[TestCase(30, 10, false, "0.00?", ExpectedResult = false)]
-		[TestCase(30, 10, false, "0,12", ExpectedResult = true)]
-		[TestCase(30, 10, false, "0 12", ExpectedResult = false)]
-		[TestCase(30, 10, false, "0:12", ExpectedResult = false)]
-		[TestCase(30, 10, false, "0-12", ExpectedResult = false)]
-		[TestCase(30, 10, false, "0.12.0", ExpectedResult = false)]
-		[TestCase(30, 10, false, "aaa.bcd", ExpectedResult = false)]
-		[TestCase(17,2, false, "0.0", ExpectedResult = true)]
-		[TestCase(17, 2, false, "0", ExpectedResult = true)]
-		[TestCase(4, 2, true, "+1.23", ExpectedResult = true)]
-		[TestCase(4, 2, true, "-1.23", ExpectedResult = false)]
-		[TestCase(3, 2, true, "+1.23", ExpectedResult = false)]
-		[TestCase(3, 2, true, "00.00", ExpectedResult = false)]
-		[TestCase(3, 2, true, "-0.00", ExpectedResult = false)]
-		[TestCase(3, 2, true, "+0.00", ExpectedResult = false)]
+		[TestCase(null, TestName = "Number is null")]
+		[TestCase("", TestName = "emptyNumber")]
+		[TestCase("    ",TestName = "only whiteSpace")]
+		[TestCase("abc",TestName = "letters instead of numbers")]
+		[TestCase("aa.bc", TestName = "letters instead of numbers with separator")]
+		[TestCase("?0.00", TestName = "startsWith special symbol '?' ")]
+		[TestCase("!0.00", TestName = "startsWith special symbol '!' ")]
+		[TestCase("@0.00", TestName = "startsWith special symbol '@' ")]
+		[TestCase("^0.00", TestName = "startsWith special symbol '^' ")]
+		[TestCase("#0.00", TestName = "startsWith special symbol '#' ")]
+		[TestCase("$0.00", TestName = "startsWith special symbol '$' ")]
+		[TestCase("%0.00", TestName = "startsWith special symbol '%' ")]
+		[TestCase("0 12", TestName = "separator is whiteSpace")]
+		[TestCase("0:12", TestName = "separator is :")]
+		[TestCase("0-12", TestName = "separator is -")]
+		[TestCase("0.12.0", TestName = "second separator")]
+		[TestCase("-12.345", TestName = "length number with '-' > precision")]
+		[TestCase("+12.345", TestName = "length number with '+' > precision")]
+		[TestCase("123.456", TestName = "intLength + fracLength > precision")]
+		[TestCase("1.2345", TestName = "fracLength > scale")]
+		[TestCase("-1.23", true, TestName = "negative number with onlyPositive")]
 
-		public bool Test_IsValidNumber(int precision, int scale, bool onlyPositive, string number)
+		public void Test_IsValidNumber_ShouldBeFalse(string number, bool onlyPositive = false, int precision= 5, int scale =3)
 		{
-			return new NumberValidator(precision, scale, onlyPositive).IsValidNumber(number);
+			 new NumberValidator(precision, scale, onlyPositive).IsValidNumber(number).Should().BeFalse();
 		}
 
-		[TestCase(-1,2,true)]
-		[TestCase(-1, 2, false)]
-		[TestCase(2, 3, false)]
-		[TestCase(1, -1, false)]
-		[TestCase(1, -1, true)]
-		[TestCase(0, 0, true)]
-		public void Test_ExceptionOnInitialization_ShouldBeThrownException(int precision, int scale, bool onlyPositive)
+
+		[TestCase("12,345", TestName = "Separator .")]
+		[TestCase("12.345", TestName = "Separator ,")]
+		[TestCase("1.234", TestName = "number is`n full length")]
+		[TestCase("12", TestName = "number without fraction part")]
+		[TestCase("12.34", TestName = "fraction part Length < scale")]
+		[TestCase("0", false, 1, 0, TestName = "scale is zero")]
+		[TestCase("+12.34", true, TestName = "positive number with onlyPositive")]
+		[TestCase("+12.34", TestName = "positive number without onlyPositive")]
+		[TestCase("-12.34", TestName = "negative number")]
+		public void Test_IsValidNumber_ShouldBeTrue(string number, bool onlyPositive = false, int precision=5, int scale=3)
+		{
+			 new NumberValidator(precision, scale, onlyPositive).IsValidNumber(number).Should().BeTrue();
+		}
+
+
+		[TestCase(-1, 2, true, TestName = "negative Precision With OnlyPositive")]
+		[TestCase(-1, 2, false, TestName = "negative Precision without OnlyPositive")]
+		[TestCase(2, 3, false, TestName = "scale > precision")]
+		[TestCase(1, -1, false, TestName = "negative scale without OnlyPositive")]
+		[TestCase(1, -1, true, TestName = "negative scale with OnlyPositive")]
+		[TestCase(5, 5, true, TestName = "precision == scale")]
+		[TestCase(0, 0, true, TestName ="precision and scale are zero")]
+		public void Test_Initialization_ShouldBeThrownException(int precision, int scale, bool onlyPositive)
 		{
 			Action action = () => new NumberValidator(precision, scale, onlyPositive);
 			action.Should().Throw<ArgumentException>();
-		}
-
-	}
-
-	public class NumberValidator
-	{
-		private readonly Regex numberRegex;
-		private readonly bool onlyPositive;
-		private readonly int precision;
-		private readonly int scale;
-
-		public NumberValidator(int precision, int scale = 0, bool onlyPositive = false)
-		{
-			this.precision = precision;
-			this.scale = scale;
-			this.onlyPositive = onlyPositive;
-			if (precision <= 0)
-				throw new ArgumentException("precision must be a positive number");
-			if (scale < 0 || scale >= precision)
-				throw new ArgumentException("precision must be a non-negative number less or equal than precision");
-			numberRegex = new Regex(@"^([+-]?)(\d+)([.,](\d+))?$", RegexOptions.IgnoreCase);
-		}
-
-		public bool IsValidNumber(string value)
-		{
-			// Проверяем соответствие входного значения формату N(m,k), в соответствии с правилом, 
-			// описанным в Формате описи документов, направляемых в налоговый орган в электронном виде по телекоммуникационным каналам связи:
-			// Формат числового значения указывается в виде N(m.к), где m – максимальное количество знаков в числе, включая знак (для отрицательного числа), 
-			// целую и дробную часть числа без разделяющей десятичной точки, k – максимальное число знаков дробной части числа. 
-			// Если число знаков дробной части числа равно 0 (т.е. число целое), то формат числового значения имеет вид N(m).
-
-			if (string.IsNullOrEmpty(value))
-				return false;
-
-			var match = numberRegex.Match(value);
-			if (!match.Success)
-				return false;
-
-			// Знак и целая часть
-			var intPart = match.Groups[1].Value.Length + match.Groups[2].Value.Length;
-			// Дробная часть
-			var fracPart = match.Groups[4].Value.Length;
-
-			if (intPart + fracPart > precision || fracPart > scale)
-				return false;
-
-			if (onlyPositive && match.Groups[1].Value == "-")
-				return false;
-			return true;
 		}
 	}
 }
