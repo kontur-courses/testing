@@ -7,28 +7,6 @@ namespace HomeExercises
 {
 	public class NumberValidatorTests
 	{
-		[Test]
-		public void Test()
-		{
-			// Assert.Throws<ArgumentException>(() => new NumberValidator(-1, 2, true));
-			// Assert.DoesNotThrow(() => new NumberValidator(1, 0, true));
-			// Assert.Throws<ArgumentException>(() => new NumberValidator(-1, 2, false));
-			// Assert.DoesNotThrow(() => new NumberValidator(1, 0, true));
-			//
-			// Assert.IsTrue(new NumberValidator(17, 2, true).IsValidNumber("0.0"));
-			// Assert.IsTrue(new NumberValidator(17, 2, true).IsValidNumber("0"));
-			// Assert.IsTrue(new NumberValidator(17, 2, true).IsValidNumber("0.0"));
-			// Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("00.00"));
-			// Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("-0.00"));
-			// Assert.IsTrue(new NumberValidator(17, 2, true).IsValidNumber("0.0"));
-			// Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("+0.00"));
-			// Assert.IsTrue(new NumberValidator(4, 2, true).IsValidNumber("+1.23"));
-			// Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("+1.23"));
-			// Assert.IsFalse(new NumberValidator(17, 2, true).IsValidNumber("0.000"));
-			// Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("-1.23"));
-			// Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("a.sd"));
-		}
-
 		[TestCase(0, 2, TestName = "Zero precision")]
 		[TestCase(-1, 2, TestName = "Negative precision")]
 		[TestCase(10, -2, TestName = "Negative scale")]
@@ -37,7 +15,7 @@ namespace HomeExercises
 		public void Ctor_IncorrectParams_ThrowArgumentException(int precision, int scale)
 		{
 			// ReSharper disable once ObjectCreationAsStatement
-			Action createNumberValidator = () => new NumberValidator(precision, scale);
+			var createNumberValidator = (Action) (() => new NumberValidator(precision, scale));
 			createNumberValidator.Should().Throw<ArgumentException>();
 		}
 
@@ -46,8 +24,64 @@ namespace HomeExercises
 		public void Ctor_CorrectParams_NotThrowException(int precision, int scale)
 		{
 			// ReSharper disable once ObjectCreationAsStatement
-			Action createNumberValidator = () => new NumberValidator(precision, scale);
+			var createNumberValidator = (Action) (() => new NumberValidator(precision, scale));
 			createNumberValidator.Should().NotThrow<Exception>();
+		}
+
+		[TestCase(10, 5, true, "13.231", TestName = "Positive number")]
+		[TestCase(10, 5, false, "-13.231", TestName = "Negative number")]
+		[TestCase(10, 5, true, "+13.231", TestName = "Positive number with '+'")]
+		[TestCase(4, 1, true, "+13.3", TestName = "'+' include in precision")]
+		[TestCase(4, 1, false, "-13.3", TestName = "'-' include in precision")]
+		[TestCase(10, 5, false, "1,3", TestName = "Value with ','")]
+		public void IsValidNumber_ValidParams_True(int precision, int scale, bool onlyPositive, string value)
+		{
+			var numberValidator = new NumberValidator(precision, scale, onlyPositive);
+			numberValidator.IsValidNumber(value).Should().BeTrue();
+		}
+
+		[TestCase(3, 1, true, "123.1", TestName = "Value grater than precision")]
+		[TestCase(3, 1, true, "+123", TestName = "'+' include in precision")]
+		[TestCase(3, 1, false, "-123", TestName = "'-' include in precision")]
+		public void IsValidNumber_ValueWithLengthGreaterThanMaxPrecision_False(int precision, int scale,
+			bool onlyPositive, string value)
+		{
+			var numberValidator = new NumberValidator(precision, scale, onlyPositive);
+			numberValidator.IsValidNumber(value).Should().BeFalse();
+		}
+
+		
+		[TestCase(10, 5, false, null, TestName = "Null value")]
+		[TestCase(10, 5, false, "", TestName = "Empty string value")]
+		public void IsValidNumber_NullOrEmptyString_False(int precision, int scale, bool onlyPositive, string value)
+		{
+			var numberValidator = new NumberValidator(precision, scale, onlyPositive);
+			numberValidator.IsValidNumber(value).Should().BeFalse();		
+		}
+		
+		[TestCase(10, 5, false, "adfja", TestName = "Letters in value")]
+		[TestCase(10, 5, false, "1,,,,3", TestName = "Value contais a lot of ','")]
+		[TestCase(10, 5, false, "1;3", TestName = "Value contais incorrect seperator")]
+		[TestCase(10, 5, false, ";1.3", TestName = "Value start from incorrect symbol ';'")]
+		public void IsValidNumber_IncorrectValueForRegex_False(int precision, int scale, bool onlyPositive,
+			string value)
+		{
+			var numberValidator = new NumberValidator(precision, scale, onlyPositive);
+			numberValidator.IsValidNumber(value).Should().BeFalse();
+		}
+
+		[Test]
+		public void IsValidNumber_ParamOfScaleGreaterThanMaxScaleOfValidator_False()
+		{
+			var numberValidator = new NumberValidator(5, 1);
+			numberValidator.IsValidNumber("1.32").Should().BeFalse();
+		}
+
+		[Test]
+		public void IsValidNumber_NegativeValueWithOnlyPositiveParamTrue_False()
+		{
+			var numberValidator = new NumberValidator(5, 2, true);
+			numberValidator.IsValidNumber("-1.3").Should().BeFalse();		
 		}
 	}
 
