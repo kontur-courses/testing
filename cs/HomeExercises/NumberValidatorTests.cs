@@ -7,65 +7,88 @@ namespace HomeExercises
 {
 	public class NumberValidatorTests
 	{
-		[TestCase(-1, 2, true, "Отрицательное количество цифр быть не может")]
-		[TestCase(0, 2, true, "Нулевое количество цифр быть не может")]
-		[TestCase(10, -1, true, "Отрицательное количество цифр после запятой быть не может")]
-		[TestCase(5, 5, true, "Количество цифр после запятой должно быть меньше всего количества цифр")]
-		[TestCase(5, 6, true, "Количество цифр после запятой должно быть меньше всего количества цифр")]
-		public void NumberValidator_ThrowArgumentException_WhenIncorrectParams(
-			int precision, int scale, bool onlyPositive, string description = "")
+		[TestCase(-1, 2, "Отрицательное количество цифр быть не может")]
+		[TestCase(0, 2, "Нулевое количество цифр быть не может")]
+		[TestCase(10, -1, "Отрицательное количество цифр после запятой быть не может")]
+		[TestCase(5, 5, "Количество цифр после запятой должно быть меньше общего количества цифр")]
+		[TestCase(5, 6, "Количество цифр после запятой должно быть меньше общего количества цифр")]
+		public void Constructor_ShouldThrowArgumentException_WhenIncorrectParams(
+			int precision, int scale, string description = "")
 		{
 			Action createNewNumberValidator = () =>
 			{
-				var numberValidator = new NumberValidator(precision, scale, onlyPositive);
+				var _ = new NumberValidator(precision, scale);
 			};
 			createNewNumberValidator.Should().Throw<ArgumentException>(description);
 		}
 		
-		[TestCase(3, 1, true)]
-		[TestCase(3, 1, false)]
-		[TestCase(3, 0, true)]
-		[TestCase(3, 0, false)]
-		public void NumberValidator_DoesNotThrowArgumentException_WhenCorrectParams(
-			int precision, int scale, bool onlyPositive)
+		[TestCase(1, 0)]
+		[TestCase(8, 1)]
+		[TestCase(8, 7)]
+		public void Constructor_ShouldNotThrowArgumentException_WhenCorrectParams(
+			int precision, int scale)
 		{
 			Action createNewNumberValidator = () =>
 			{
-				var numberValidator = new NumberValidator(precision, scale, onlyPositive);
+				var _ = new NumberValidator(precision, scale);
 			};
 			createNewNumberValidator.Should().NotThrow<ArgumentException>("Все передаваемые параметры верны");
 		}
 		
 		
-		[TestCase(17, 2, true, "0", "целое число")]
-		[TestCase(17, 0, true, "0", "целое число, когда нет десятичныйх знаков")]
-		[TestCase(17, 2, true, "0.0", "десятичное число")]
-		[TestCase(4, 2, true, "+10.3", "входит максимум элементов всего")]
-		[TestCase(4, 2, true, "1.35", "входит максимум элементов в дробную часть")]
-		[TestCase(4, 2, false, "-1.23", "проходит отрицательное значение")]
-		[TestCase(4, 2, true, "1,23", "подходит запятая как разделитель")]
-		public void IsValidNumber_ReturnTrue_WhenInputIsCorrect(
+		[TestCase(1, 0, true, "0", "целое число, когда нет десятичныйх знаков")]
+		[TestCase(4, 2, true, "135.0", "входит максимум цифр")]
+		[TestCase(17, 2, true, "1.35", "входит максимум цифр в дробную часть")]
+		[TestCase(17, 8, false, "-1.35", "проходит отрицательное значение")]
+		[TestCase(17, 8, true, "1,35", "подходит запятая как разделитель")]
+		public void IsValidNumber_ShouldBeTrue_WhenInputIsCorrect(
 			int precision, int scale, bool onlyPositive, string numberToCheck, string description = "")
 		{
-			var numberValidator = new NumberValidator(precision, scale, onlyPositive);
-			numberValidator.IsValidNumber(numberToCheck).Should().Be(true, description);
+			IsValidNumber_Helper(precision, scale, onlyPositive, numberToCheck, true, description);
 		}
-
-		[TestCase(3, 2, true, "123.0", "переполнение цифр")]
-		[TestCase(3, 2, false, "-80.9", "переполнение цифр со знаком")]
+		
+		
+		[TestCase(3, 0, true, "1234", "переполнение цифр")]
 		[TestCase(17, 2, true, "1.009", "переполнение дробной части")]
-		[TestCase(17, 2, true, "-7", "отрицательное число в положительное")]
-		[TestCase(17, 9, true, "not.number", "не числовое значение")]
-		[TestCase(17, 9, true, "15.number", "не числовое значение")]
-		[TestCase(17, 5, true, "4:78", "неправильный разделитель")]
-		[TestCase(17, 5, true, "*4.78", "неправильный знак перед числом")]
-		[TestCase(17, 9, true, "", "пустая строка -> неверно")]
-		[TestCase(17, 9, true, " ", "пробельная строка -> неверно")]
-		public void IsValidNumber_ReturnTrue_WhenInputIsIncorrect(
+		[TestCase(3, 2, false, "-80.9", "переполнение цифр со знаком")]
+		public void IsValidNumber_ShouldBeFalse_WhenDigitsCountMoreThenExpected(
 			int precision, int scale, bool onlyPositive, string numberToCheck, string description = "")
 		{
+			IsValidNumber_Helper(precision, scale, onlyPositive, numberToCheck, false, description);
+		}
+		
+		
+		[Test]
+		public void IsValidNumber_ShouldBeFalse_WhenGetNegativeValue_ButMustBeOnlyPositive()
+		{
+			IsValidNumber_Helper(17, 2, true, "-7", false);
+		}
+		
+		
+		[TestCase("not.number", "не числовое значение")]
+		[TestCase("4:78", "неправильный разделитель")]
+		[TestCase("*4.78", "неправильный знак перед числом")]
+		public void IsValidNumber_ShouldBeFalse_WhenNotNumberValue(
+			string numberToCheck, string description = "")
+		{
+			IsValidNumber_Helper(17, 10, true, numberToCheck, false, description);
+		}
+		
+		
+		[TestCase("")]
+		[TestCase(" ")]
+		[TestCase(null)]
+		public void IsValidNumber_ShouldBeFalse_WhenNullOrEmptyValue(string numberToCheck)
+		{
+			IsValidNumber_Helper(17, 10, true, numberToCheck, false);
+		}
+		
+		
+		private static void IsValidNumber_Helper(
+			int precision, int scale, bool onlyPositive, string numberToCheck, bool shouldBe, string description = "")
+		{
 			var numberValidator = new NumberValidator(precision, scale, onlyPositive);
-			numberValidator.IsValidNumber(numberToCheck).Should().Be(false, description);
+			numberValidator.IsValidNumber(numberToCheck).Should().Be(shouldBe, description);
 		}
 	}
 
@@ -84,7 +107,7 @@ namespace HomeExercises
 			if (precision <= 0)
 				throw new ArgumentException("precision must be a positive number");
 			if (scale < 0 || scale >= precision)
-				throw new ArgumentException("precision must be a non-negative number less or equal than precision");
+				throw new ArgumentException("scale must be a non-negative number less than precision");
 			numberRegex = new Regex(@"^([+-]?)(\d+)([.,](\d+))?$", RegexOptions.IgnoreCase);
 		}
 
