@@ -17,7 +17,8 @@ namespace HomeExercises
 			var expectedTsar = new Person("Ivan IV The Terrible", 54, 170, 70,
 				new Person("Vasili III of Russia", 28, 170, 60, null));
 			actualTsar.Should().BeEquivalentTo(expectedTsar, config =>
-				config.AllowingInfiniteRecursion().Excluding(memberInfo => memberInfo.SelectedMemberInfo.Name.Contains("Id")));
+				config.IgnoringCyclicReferences()
+					.Excluding(memberInfo => memberInfo.SelectedMemberInfo.Name.Contains("Id")));
 			// SelectedMemberInfo.Name == "Id", но пользователь при расширении может добавить другое поле id
 		}
 
