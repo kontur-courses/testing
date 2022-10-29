@@ -1,5 +1,6 @@
 ﻿using FluentAssertions;
 using NUnit.Framework;
+using System.Text.RegularExpressions;
 
 namespace HomeExercises
 {
@@ -15,18 +16,29 @@ namespace HomeExercises
 			var expectedTsar = new Person("Ivan IV The Terrible", 54, 170, 70,
 				new Person("Vasili III of Russia", 28, 170, 60, null));
 
-			// Перепишите код на использование Fluent Assertions.
-			Assert.AreEqual(actualTsar.Name, expectedTsar.Name);
-			Assert.AreEqual(actualTsar.Age, expectedTsar.Age);
-			Assert.AreEqual(actualTsar.Height, expectedTsar.Height);
-			Assert.AreEqual(actualTsar.Weight, expectedTsar.Weight);
+			actualTsar.Should().BeEquivalentTo(expectedTsar, options => options
+				.Excluding(p => p.Id)
+				.Excluding(p => p.Parent!.Id)
+				.Excluding(p => p.Parent!.Weight) // в оригинале нет теста для weight
+				.Excluding(p => p.Parent!.Parent));
+			//Assert.AreEqual(expectedTsar.Parent.Parent, actualTsar.Parent.Parent); - сравнивает ссылки
+			actualTsar.Parent!.Parent.Should().BeSameAs(expectedTsar.Parent!.Parent);
+        }
+		[Test]
+		[Description("Вариация альтернативного решения")]
+		[Category("ToRefactorAlternative")]
+		public void CheckCurrentTsarAlternative()
+		{
+			var actualTsar = TsarRegistry.GetCurrentTsar();
 
-			Assert.AreEqual(expectedTsar.Parent!.Name, actualTsar.Parent!.Name);
-			Assert.AreEqual(expectedTsar.Parent.Age, actualTsar.Parent.Age);
-			Assert.AreEqual(expectedTsar.Parent.Height, actualTsar.Parent.Height);
-			Assert.AreEqual(expectedTsar.Parent.Parent, actualTsar.Parent.Parent);
+			var expectedTsar = new Person("Ivan IV The Terrible", 54, 170, 70,
+				new Person("Vasili III of Russia", 28, 170, 60, null));
+
+
+			var idField = new Regex(@"(^|\.)Id$");
+			actualTsar.Should().BeEquivalentTo(expectedTsar, options => options
+															.Excluding(p => idField.IsMatch(p.Path)));
 		}
-
 		[Test]
 		[Description("Альтернативное решение. Какие у него недостатки?")]
 		public void CheckCurrentTsar_WithCustomEquality()
@@ -37,9 +49,14 @@ namespace HomeExercises
 
 			// Какие недостатки у такого подхода? 
 			Assert.True(AreEqual(actualTsar, expectedTsar));
-		}
+			// 1 Не показательно - судя по названию методов тестирования, интересует не результат сравнения:
+			// равны объекты или нет, а проверить соответствует ли объект заданным параметрам и => всего 1 assert
+			// не будет показателен, в плане где именно произошло несоответствие
+			// 2 может уйти в цикл parent1.parent2.parent1...
+			// 3 проверка сильно привязана к структуре объекта
+        }
 
-		private bool AreEqual(Person? actual, Person? expected)
+        private bool AreEqual(Person? actual, Person? expected)
 		{
 			if (actual == expected) return true;
 			if (actual == null || expected == null) return false;
