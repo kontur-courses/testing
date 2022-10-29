@@ -1,4 +1,5 @@
-﻿using FluentAssertions;
+﻿using System;
+using FluentAssertions;
 using NUnit.Framework;
 
 namespace HomeExercises
@@ -18,8 +19,8 @@ namespace HomeExercises
 			actualTsar
 				.Should()
 				.BeEquivalentTo(expectedTsar, opt => opt
-				.Excluding(x => x.Id)
-				.Excluding(x => x.Parent.Id));
+					.Excluding(x => x.SelectedMemberPath.EndsWith("Id")));
+
 			/*
 			 * Такая реализация является более удачной, поскольку:
 			 * 1. Занимает меньше места, и проще читается
