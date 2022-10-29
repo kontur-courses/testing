@@ -1,4 +1,5 @@
 ﻿using FluentAssertions;
+using FluentAssertions.Equivalency;
 using NUnit.Framework;
 
 namespace HomeExercises
@@ -17,19 +18,15 @@ namespace HomeExercises
 				new Person("Vasili III of Russia", 28, 170, 60, null));
 
 			actualTsar.Should().BeEquivalentTo(expectedTsar, options =>
-				options.Excluding(current => current.Id)
-				.Using<Person>(curTsar => curTsar.Subject.Should().BeEquivalentTo(curTsar.Expectation, personEqOptions =>
-					personEqOptions
-						.Using<int>(e => e.Subject.Should().Be(e.Subject))
-							.When(info => info.Path.EndsWith("Id"))))
-					.When(info => info.Path.EndsWith("Parent")).AllowingInfiniteRecursion()
-				.AllowingInfiniteRecursion());
+				options
+					.Excluding((IMemberInfo mi) => mi.Name == nameof(Person.Id))
+					.AllowingInfiniteRecursion());
 
 			//Мой метод лучше тк
 			//1)Он не так чувствителен к структурным изменениям класса Person
-			//2)При большом кол-ве полей выигрывает банально по количеству кода,
-			//если у них не будет большое кол-во условий на поля (к примеру не учитывать Id во вложенных полях и тд)
+			//2)При большом кол-ве полей выигрывает банально по количеству кода
 			//3)Новым людям будет проще понять его
+			//4)Будет сразу понятно где упал тест, без дебагинга
 		}
 
 		[Test]
@@ -46,6 +43,7 @@ namespace HomeExercises
 			//Лишние методы, нужные только для тестов(если сравнивать нужно только в тесте)
 			//Необходимость изменять метод сравнения при структурном изменнеии класса, под который заточен метод
 			//Кастомный метод сравнения может быть в разы больше чем тот который написан через FA
+			//Нужно бежать дебагером чтобы найти где тест упал
 		}
 
 		private bool AreEqual(Person? actual, Person? expected)
