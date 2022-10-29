@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Text.RegularExpressions;
 using FluentAssertions;
 using NUnit.Framework;
@@ -39,9 +39,10 @@ namespace HomeExercises
 			NumberValidator.Should().BeFalse();
 		}
 
-		[TestCase("20,0", TestName = "String with comma")]
+		[TestCase("20,0", TestName = "String with  \",\"")]
 		[TestCase("20 0", TestName = "String with whitespace")]
-		[TestCase("20-0", TestName = "String with minus")]
+		[TestCase("20-0", TestName = "String with  \"-\"")]
+		[TestCase("20_0", TestName = "String with  \"_\"")]
 		public void IsValidNumber_HaveNotDot(string value)
 		{
 			var numberValidator = new NumberValidator(1, 0, true).IsValidNumber(value);
@@ -58,23 +59,32 @@ namespace HomeExercises
 		}
 
 		[TestCase("1.0", TestName = "Null number validator")]
-
-		public void IsValidNumberNull(string value)
+		public void IsValidNumberValidatorNull(string value)
 		{
 			NumberValidator numberValidator = null;
 			Action action = () => numberValidator.IsValidNumber(value);
-			action.Should().Throw<NullReferenceException>("NumberValidator must not be null");
+			action.Should().Throw<NullReferenceException>("NumberValidator must not be null or empty");
 		}
 
 		[TestCase(".10", TestName = "Number without int part")]
 		[TestCase("10.", TestName = "Number without fractional part")]
 		[TestCase("$1.10", TestName = "Number with special symbol")]
+		[TestCase(".", TestName = "Dot without number")]
+		[TestCase("1..1", TestName = "Number with double dot")]
+		[TestCase("1. 1", TestName = "Number with dot and whitespace")]
 		public void IsValidNumber_NotMatchWithRegex(string value)
 		{
 			var numberValidator = new NumberValidator(4, 3).IsValidNumber(value);
 			numberValidator.Should().BeFalse();
 		}
 
+		[TestCase("", TestName = "Empty valid number")]
+		[TestCase(null, TestName = "Null valid number")]
+		public void IsValidNumberNullOrEmpty(string value)
+		{
+			var numberValidator = new NumberValidator(4, 3).IsValidNumber(value);
+			numberValidator.Should().BeFalse();
+		}
 
 
 
@@ -100,20 +110,31 @@ namespace HomeExercises
 
 		[TestCase("100.00", TestName = "Positive int bigger precision")]
 		[TestCase("-100.00", TestName = "Negative int bigger precision")]
+		[TestCase("+1.1000", TestName = "Positive fractional with scale")]
+		[TestCase("-1.1000", TestName = "Negative fractional with scale")]
 
-		public void IsValidNumber_WhenIntAndFractionalPartBiggerPrecision(string value)
+		public void IsValidNumber_WhenIntOrFractionalPartBiggerPrecisionScale(string value)
 		{
 			var numberValidator = new NumberValidator(3, 2).IsValidNumber(value);
 			numberValidator.Should().BeFalse();
 		}
 
-		[TestCase("+1.1000", TestName = "Positive fractional with scale")]
-		[TestCase("-1.1000", TestName = "Negative fractional with scale")]
+		[TestCase("10.-1", TestName = "Negative fractional part with \"-\"")]
+		[TestCase("10.+1", TestName = "Positive fractional part with \"+\"")]
 
-		public void IsValidNumber_WhenFractionalPartBiggerScale(string value)
+		public void IsValidNumber_WhenFractionalPartNotFormat(string value)
 		{
-			var numberValidator = new NumberValidator(4, 3).IsValidNumber(value);
+			var numberValidator = new NumberValidator(5, 4).IsValidNumber(value);
 			numberValidator.Should().BeFalse();
+		}
+
+		[TestCase(int.MaxValue, int.MaxValue, TestName = "Max int part and fractional part")]
+		[TestCase(int.MinValue, int.MaxValue, TestName = "Min int part and fractional part")]
+		public void IsValidNumber_WhenIntWithScaleLimitInteger(int intPart, int fractionalPart)
+		{
+			var numberValidator =
+				new NumberValidator(int.MaxValue, int.MaxValue - 1).IsValidNumber(intPart + "." + fractionalPart);
+			numberValidator.Should().BeTrue();
 		}
 
 		[Test]
@@ -125,12 +146,13 @@ namespace HomeExercises
 		}
 
 		[Test]
-		public void IsValidNumber_WithMinInt()
+		public void IsValidNumber_WhenMaxIntWithScale()
 		{
 			var numberValidator =
-				new NumberValidator(int.MaxValue.ToString().Length + 1).IsValidNumber(int.MinValue.ToString());
+				new NumberValidator(int.MaxValue, int.MaxValue - 1).IsValidNumber(int.MaxValue + "." + int.MaxValue);
 			numberValidator.Should().BeTrue();
 		}
+
 	}
 
 	public class NumberValidator
