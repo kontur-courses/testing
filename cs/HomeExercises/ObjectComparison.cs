@@ -36,6 +36,11 @@ namespace HomeExercises
 
 			// Какие недостатки у такого подхода? 
 			Assert.True(AreEqual(actualTsar, expectedTsar));
+
+
+			// Добавление новых свойств в Person (например FootSize)
+			// влечет за собой добавление новых строк в метод сравнения
+			// в моем способе такой проблемы не возникает
 		}
 
 		private bool AreEqual(Person? actual, Person? expected)
