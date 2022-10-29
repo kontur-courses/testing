@@ -41,6 +41,7 @@ namespace HomeExercises
 				&& actual.Age == expected.Age
 				&& actual.Height == expected.Height
 				&& actual.Weight == expected.Weight
+				&& actual.DayOfBirth == expected.DayOfBirth
 				&& AreEqual(actual.Parent, expected.Parent);
 		}
 	}
@@ -51,7 +52,7 @@ namespace HomeExercises
 		{
 			return new Person(
 				"Ivan IV The Terrible", 54, 170, 70, new DateTime(1530, 08, 25),
-				new Person("Vasili III of Russia", 28, 170, 60, new DateTime(1533, 12, 3), null));
+				new Person("Vasili III of Russia", 28, 170, 60, new DateTime(1479, 03, 25), null));
 		}
 	}
 
