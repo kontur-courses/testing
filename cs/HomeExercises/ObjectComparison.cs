@@ -17,7 +17,7 @@ namespace HomeExercises
 			var expectedTsar = new Person("Ivan IV The Terrible", 54, 170, 70,
 				new Person("Vasili III of Russia", 28, 170, 60, null));
 			actualTsar.Should().BeEquivalentTo(expectedTsar, config =>
-				config.Excluding(memberInfo => memberInfo.SelectedMemberInfo.Name.Contains("Id")));
+				config.AllowingInfiniteRecursion().Excluding(memberInfo => memberInfo.SelectedMemberInfo.Name.Contains("Id")));
 			// SelectedMemberInfo.Name == "Id", но пользователь при расширении может добавить другое поле id
 		}
 
@@ -30,7 +30,7 @@ namespace HomeExercises
 				new Person("Vasili III of Russia", 28, 170, 60, null));
 
 			//Какие недостатки у такого подхода? 
-			//1) В методе AreEqual подробно сравнивается каждое поле класса Person, что запрещает
+			//1) В методе AreEqual подробно сравнивается каждое поле класса Parent, что запрещает
 			//   менять поля класса без вмешательства в код(т.к. эти поля не будут учитываться в сравнении)
 			//
 			//2) Сам по себе код Assert.True(AreEqual()) менее читаем чем в FluentAssertions ShouldBeEquivalentTo()-должно быть эквивалентно
