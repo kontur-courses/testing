@@ -5,6 +5,7 @@ using NUnit.Framework;
 
 namespace HomeExercises
 {
+	[TestFixture]
 	public class NumberValidatorTests
 	{
 		[TestCase(0, TestName = "Zero precision")]
@@ -21,7 +22,10 @@ namespace HomeExercises
 		[TestCase(2, 0, TestName = "Zero scale")]
 		[TestCase(2, 1, TestName = "Positive scale")]
 		[TestCase(3, 2, TestName = "Scale is less than precision")]
-		public void Constructor_DoesNotThrowArgumentException_OnCorrectParameters(int precision, int scale = 0)
+		[TestCase(3, 2, TestName = "Scale is less than precision")]
+		[TestCase(3, 2, true, TestName = "Setting onlyPositive parameter as true")]
+		[TestCase(3, 2, false, TestName = "Setting onlyPositive parameter as false")]
+		public void Constructor_DoesNotThrowArgumentException_OnCorrectParameters(int precision, int scale = 0, bool onlyPositive = false)
 		{
 			Action constructorCall = () => new NumberValidator(precision, scale);
 			constructorCall.Should().NotThrow<ArgumentException>();
@@ -37,6 +41,8 @@ namespace HomeExercises
 		[TestCase("-1,", TestName = "Negative number with a comma divider but no fractional part")]
 		[TestCase("+", TestName = "Plus sign with no integer part")]
 		[TestCase("-", TestName = "Minus sign with no integer part")]
+		[TestCase(".0", TestName = "Fractional part with no integer part")]
+		[TestCase("-.0", TestName = "Negative fractional part with no integer part")]
 		public void IsValidNumber_False_WhenValueDoesNotMatchFormat(string value)
 		{
 			var validator = new NumberValidator(1);
