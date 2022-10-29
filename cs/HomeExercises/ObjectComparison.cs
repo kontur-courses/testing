@@ -15,16 +15,17 @@ namespace HomeExercises
 			var expectedTsar = new Person("Ivan IV The Terrible", 54, 170, 70,
 				new Person("Vasili III of Russia", 28, 170, 60, null));
 
-			// Перепишите код на использование Fluent Assertions.
-			Assert.AreEqual(actualTsar.Name, expectedTsar.Name);
-			Assert.AreEqual(actualTsar.Age, expectedTsar.Age);
-			Assert.AreEqual(actualTsar.Height, expectedTsar.Height);
-			Assert.AreEqual(actualTsar.Weight, expectedTsar.Weight);
-
-			Assert.AreEqual(expectedTsar.Parent!.Name, actualTsar.Parent!.Name);
-			Assert.AreEqual(expectedTsar.Parent.Age, actualTsar.Parent.Age);
-			Assert.AreEqual(expectedTsar.Parent.Height, actualTsar.Parent.Height);
-			Assert.AreEqual(expectedTsar.Parent.Parent, actualTsar.Parent.Parent);
+			actualTsar
+				.Should()
+				.BeEquivalentTo(expectedTsar, opt => opt
+				.Excluding(x => x.Id)
+				.Excluding(x => x.Parent.Id));
+			/*
+			 * Такая реализация является более удачной, поскольку:
+			 * 1. Занимает меньше места, и проще читается
+			 * 2. Устойчива к изменению класса
+			 * 3. На провалах теста даёт больше информации о несоответствиях
+			 */
 		}
 
 		[Test]
@@ -35,7 +36,6 @@ namespace HomeExercises
 			var expectedTsar = new Person("Ivan IV The Terrible", 54, 170, 70,
 				new Person("Vasili III of Russia", 28, 170, 60, null));
 
-			// Какие недостатки у такого подхода? 
 			Assert.True(AreEqual(actualTsar, expectedTsar));
 		}
 
