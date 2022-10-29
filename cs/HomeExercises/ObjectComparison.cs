@@ -31,6 +31,9 @@ namespace HomeExercises
 				new Person("Vasili III of Russia", 28, 170, 60, null));
 
 			// Какие недостатки у такого подхода? 
+			// Во первых, неудобно расширять класс, тк придется постоянно переписывать AreEqual
+			// Во вторых, нужно еще и тестировать AreEqual
+			// В третьих, неочевидно где именно упала ошибка и какое поле некорректно
 			Assert.True(AreEqual(actualTsar, expectedTsar));
 		}
 
