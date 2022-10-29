@@ -1,5 +1,4 @@
-﻿using System;
-using System.Net.Sockets;
+﻿using System.Text.RegularExpressions;
 using FluentAssertions;
 using NUnit.Framework;
 
@@ -17,10 +16,15 @@ namespace HomeExercises
 			var expectedTsar = new Person("Ivan IV The Terrible", 54, 170, 70,
 				new Person("Vasili III of Russia", 28, 170, 60, null));
 			
-			// Данная проверка позволяет сравнивать двух людей по всем полям,
-			// не учитывая Id самих людей и всех их родителей
+			// Такая проверка, так же как и CheckCurrentTsar_WithCustomEquality, проверяет рекурсивно
+			// соответствие значений всех полей людей. За исключением поля Id, так как оно уникально у каждого
+			// экземпляра. Но в отличие от CheckCurrentTsar_WithCustomEquality она не требует дописывать новые проверки
+			// при добавлении или удалении полей в класс Person. Кроме этого, такой подход позволяет видеть,
+			// какие именно данные не совпадают у каких именно сущностей, что было недоступно в подходе
+			// в CheckCurrentTsar_WithCustomEquality.
+
 			actualTsar.Should().BeEquivalentTo(expectedTsar, options =>
-				options.Excluding(member => member.Path.EndsWith("Id")));
+				options.Excluding(person => Regex.IsMatch(person.Path, @"(Parent\.)*Id$")));
 		}
 
 		[Test]
