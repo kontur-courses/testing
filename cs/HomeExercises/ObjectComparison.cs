@@ -5,6 +5,7 @@ namespace HomeExercises
 {
 	public class ObjectComparison
 	{
+		//try сделать pull request
 		[Test]
 		[Description("Проверка текущего царя")]
 		[Category("ToRefactor")]
