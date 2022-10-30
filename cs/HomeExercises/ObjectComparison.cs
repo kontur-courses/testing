@@ -20,7 +20,7 @@ namespace HomeExercises
 				.Should()
 				.BeEquivalentTo(actualTsar, options => 
 					options
-						.Excluding(x => Regex.IsMatch(x.SelectedMemberPath, @"^[A-z]*.?Id$"))
+						.Excluding(x => Regex.IsMatch(x.SelectedMemberPath, @"(.Id$|^Id$)"))
 				);
 			/*
 				1. Код стал более читаемый
