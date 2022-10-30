@@ -11,8 +11,7 @@ namespace HomeExercises
 		[TestCase(5, 1, TestName = "Precision is pos, scale < precision")]
 		public void Constructor_WhenCorrectArgs_ShouldNoThrowEx(int precision, int scale)
 		{
-			Action action = () => new NumberValidator(precision, scale);
-			action.Should().NotThrow<ArgumentException>();
+			Assert.DoesNotThrow(() => new NumberValidator(precision, scale));
 		}
 
 		[TestCase(0, 0, TestName = "Precision = 0, Scale = 0")]
@@ -23,8 +22,7 @@ namespace HomeExercises
 		[TestCase(5, -5, TestName = "Precision is pos, Scale < 0")]
 		public void Constructor_WhenIncorrectArgs_ShouldThrowEx(int precision, int scale)
 		{
-			Action action = () => new NumberValidator(precision, scale);
-			action.Should().Throw<ArgumentException>();
+			Assert.Throws<ArgumentException>(() => new NumberValidator(precision, scale));
 		}
 
         [TestCase("5.5", TestName = "When point separator")]
@@ -42,8 +40,8 @@ namespace HomeExercises
 		[TestCase("5.5", TestName = "When INT and DEC is less")]
 		public void IsValidNumber_WhenCorrectArgs_ShouldBeTrue(string value)
 		{
-			var validator = new NumberValidator(8, 2);
-			validator.IsValidNumber(value).Should().BeTrue();
+			new NumberValidator(8, 2)
+				.IsValidNumber(value).Should().BeTrue();
 		}
 
 		[TestCase("1.7777777", TestName = "DEC is greater than Scale")]
@@ -52,8 +50,8 @@ namespace HomeExercises
 		[TestCase(".", TestName = "Only separator case")]
 		public void IsValidNumber_WhenIncorrectArgs_ShouldBeFalse(string value)
 		{
-			var validator = new NumberValidator(8, 2);
-			validator.IsValidNumber(value).Should().BeFalse();
+			new NumberValidator(8, 2)
+				.IsValidNumber(value).Should().BeFalse();
 		}
 
 		[TestCase("-33.3", TestName = "Explicit negative sign")]
@@ -61,24 +59,24 @@ namespace HomeExercises
 		[TestCase("00.00", TestName = "Explicit double zero prefix")]
         public void IsValidNumber_WhenExplicitSign_ShouldBeTrue(string value)
 		{
-			var validator = new NumberValidator(8, 2);
-			validator.IsValidNumber(value).Should().BeTrue();
-		}
+			new NumberValidator(8, 2)
+				.IsValidNumber(value).Should().BeTrue();
+        }
 
 		[TestCase("-123456.78", TestName = "Explicit negative sign overflow")]
 		[TestCase("+123456.78", TestName = "Explicit positive sign overflow")]
 		public void IsValidNumber_WhenExplicitSignOverflow_ShouldBeFalse(string value)
 		{
-			var validator = new NumberValidator(8, 2);
-			validator.IsValidNumber(value).Should().BeFalse();
-		}
+			new NumberValidator(8, 2)
+				.IsValidNumber(value).Should().BeFalse();
+        }
 
 		[TestCase("-1.11", TestName = "When float is negative")]
 		[TestCase("-1", TestName = "When INT is negative")]
 		public void IsValidNumber_WhenIsOnlyPositive_ShouldBeFalse(string value)
 		{
-			var validator = new NumberValidator(8, 2, onlyPositive: true);
-			validator.IsValidNumber(value).Should().BeFalse();
+			new NumberValidator(8, 2, onlyPositive: true)
+				.IsValidNumber(value).Should().BeFalse();
 		}
 
 		[TestCase("", TestName = "Empty value")]
@@ -92,12 +90,12 @@ namespace HomeExercises
 		[TestCase("666.6 ", TestName = "Space postfix in value")]
         [TestCase("qwe77.7c", TestName = "Not only numbers")]
 		[TestCase("qwerty.qw", TestName = "Only chars")]
-        [TestCase(".2", TestName = "True_WithoutIntegerPart")]
+        [TestCase(".2", TestName = "Missing INT part")]
         [TestCase("ccc\t5.6\t6", TestName = "When escapes and chars")]
 		public void IsValidNumber_WhenValueIsNaN_ShouldBeFalse(string value)
 		{
-			var validator = new NumberValidator(8, 4, onlyPositive: false);
-			validator.IsValidNumber(value).Should().BeFalse();
+			new NumberValidator(8, 4, onlyPositive: false)
+				.IsValidNumber(value).Should().BeFalse();
 		}
 
 		[TestCase("11.111", true, TestName = "Pos value and onlyPositive is true")]
@@ -107,8 +105,8 @@ namespace HomeExercises
 		[TestCase("-55.55", false, TestName = "Neg value and onlyPositive is false")]
 		public void IsValidNumber_IsCorrectValuesAndOnlyPosFlag_ShouldBeTrue(string value, bool onlyPositive)
 		{
-			var validator = new NumberValidator(5, 3, onlyPositive);
-			validator.IsValidNumber(value).Should().BeTrue();
+			new NumberValidator(5, 3, onlyPositive)
+				.IsValidNumber(value).Should().BeTrue();
 		}
 	}
 }

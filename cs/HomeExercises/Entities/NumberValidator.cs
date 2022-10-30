@@ -20,7 +20,7 @@ namespace HomeExercises.Entities
 				throw new ArgumentException("precision must be a positive number");
 
 			if (scale < 0 || scale >= precision)
-				throw new ArgumentException("precision must be a non-negative number less or equal than precision");
+				throw new ArgumentException("precision must be a non-negative number less or equal than scale");
 
 			numberRegex = new Regex(@"^([+-]?)(\d+)([.,](\d+))?$", RegexOptions.IgnoreCase);
 		}
