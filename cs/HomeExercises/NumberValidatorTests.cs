@@ -11,7 +11,7 @@ namespace HomeExercises
 		[TestCase(0, 0, TestName = "Zero precision")]
 		[TestCase(-1, 0, TestName = "Simple negative precision")]
 		[TestCase(int.MinValue, 0, TestName = "Max negative precision")]
-		public void ArgumentException_WhenNegativeZeroPrecision(int precision, int scale)
+		public void ArgumentException_WhenNegativeOrZeroPrecision(int precision, int scale)
 		{
 			Action validatorAction = () => new NumberValidator(precision, scale);
 			validatorAction.Should().Throw<ArgumentException>("precision must be a positive number");
@@ -21,16 +21,31 @@ namespace HomeExercises
 		[TestCase(int.MaxValue, int.MaxValue, TestName = "Precision equal scale maxInteger")]
 		[TestCase(10, -10, TestName = "Negative scale")]
 		[TestCase(10, int.MinValue, TestName = "Negative scale minInteger")]
-		public void ArgumentException_WhenNegativeUpperPrecisionScale(int precision, int scale)
+		public void ArgumentException_WhenNegativeNumberUpperThanPrecisionScaleOrEquals(int precision, int scale)
 		{
 			Action validatorAction = () => new NumberValidator(precision, scale);
 			validatorAction.Should()
 				.Throw<ArgumentException>("precision must be a non-negative number less or equal than precision");
 		}
+		[TestCase(null, null, null, TestName = "Null number validator")]
+		[TestCase(null, 0, true, TestName = "Null precision")]
+		[TestCase(0, null, true, TestName = "Null scale")]
+		[TestCase(0, 0, null, TestName = "Null onlyPositive")]
+		public void IsValidNumber_WhenValidatorArgumentsIsNull(int precision, int scale, bool onlyPositive)
+		{
+			Action action = () => new NumberValidator(precision, scale, onlyPositive).IsValidNumber("1.0");
+			action.Should().Throw<ArgumentException>("NumberValidator arguments must not be null or empty");
+		}
+		[Test]
+		public void IsValidNumber_WhenValidatorIsNull()
+		{
+			NumberValidator numberValidator = null;
+			Action action = () => numberValidator.IsValidNumber("1.0");
+			action.Should().Throw<NullReferenceException>("NumberValidator must not be null or empty");
+		}
 
 
-
-		[TestCase("abc", TestName = "Simple strings")]
+        [TestCase("abc", TestName = "Simple strings")]
 		[TestCase("#$%^&*", TestName = "Special symbol")]
 		[TestCase("200a", TestName = "String with number")]
 		public void IsValidNumber_NotNumber(string value)
@@ -58,13 +73,6 @@ namespace HomeExercises
 			numberValidator.Should().BeFalse();
 		}
 
-		[TestCase("1.0", TestName = "Null number validator")]
-		public void IsValidNumberValidatorNull(string value)
-		{
-			NumberValidator numberValidator = null;
-			Action action = () => numberValidator.IsValidNumber(value);
-			action.Should().Throw<NullReferenceException>("NumberValidator must not be null or empty");
-		}
 
 		[TestCase(".10", TestName = "Number without int part")]
 		[TestCase("10.", TestName = "Number without fractional part")]
