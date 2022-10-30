@@ -36,16 +36,9 @@ namespace HomeExercises
 			Action action = () => new NumberValidator(precision, scale, onlyPositive).IsValidNumber("1.0");
 			action.Should().Throw<ArgumentException>("NumberValidator arguments must not be null or empty");
 		}
-		[Test]
-		public void IsValidNumber_WhenValidatorIsNull()
-		{
-			NumberValidator numberValidator = null;
-			Action action = () => numberValidator.IsValidNumber("1.0");
-			action.Should().Throw<NullReferenceException>("NumberValidator must not be null or empty");
-		}
+		 
 
-
-        [TestCase("abc", TestName = "Simple strings")]
+        	[TestCase("abc", TestName = "Simple strings")]
 		[TestCase("#$%^&*", TestName = "Special symbol")]
 		[TestCase("200a", TestName = "String with number")]
 		public void IsValidNumber_NotNumber(string value)
