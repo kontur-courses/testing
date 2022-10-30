@@ -15,6 +15,8 @@ namespace HomeExercises
 			var expectedTsar = new Person("Ivan IV The Terrible", 54, 170, 70,
 				new Person("Vasili III of Russia", 28, 170, 60, null));
 
+			//код переписан в тесте "Should_FailToCheckTsars_When_FieldsOrNestedObjectsAreNotTheSame"
+			#region 
 			// Перепишите код на использование Fluent Assertions.
 			Assert.AreEqual(actualTsar.Name, expectedTsar.Name);
 			Assert.AreEqual(actualTsar.Age, expectedTsar.Age);
@@ -25,8 +27,30 @@ namespace HomeExercises
 			Assert.AreEqual(expectedTsar.Parent.Age, actualTsar.Parent.Age);
 			Assert.AreEqual(expectedTsar.Parent.Height, actualTsar.Parent.Height);
 			Assert.AreEqual(expectedTsar.Parent.Parent, actualTsar.Parent.Parent);
+			#endregion
 		}
 
+		[Test]
+		public void Should_FailToCheckTsars_When_FieldsOrNestedObjectsAreNotTheSame()
+		{
+			var actualTsar = TsarRegistry.GetCurrentTsar();
+
+			var expectedTsar = new Person("Ivan IV The Terrible", 54, 170, 70,
+				new Person("Vasili III of Russia", 28, 170, 60, null));
+			
+			actualTsar.Should().BeEquivalentTo(expectedTsar, options =>
+			options.Excluding(t => t.SelectedMemberInfo.Name == "Id"));
+		}
+		
+		/*
+		 * Решение в тесте "Should_FailToCheckTsars_When_FieldsOrNestedObjectsAreNotTheSame"
+		 * лучше решения в тесте "CheckCurrentTsar_WithCustomEquality" потому что:
+		 * 1: при добавлении новых полей в класс Person не придется изменять тест, он останется корректным
+		 * 2: более читабельный
+		 * 3: 1-й тест в случае несовпадения выведет что именно не совпало, а 2-й тест выведет только false
+		 * 4: можно запутаться и передать в метод "AreEqual" аргументы не в том порядке
+		 */
+		
 		[Test]
 		[Description("Альтернативное решение. Какие у него недостатки?")]
 		public void CheckCurrentTsar_WithCustomEquality()
