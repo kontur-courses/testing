@@ -7,24 +7,42 @@ namespace HomeExercises
 	{
 		[Test]
 		[Description("Проверка текущего царя")]
-		[Category("ToRefactor")]
-		public void CheckCurrentTsar()
+		public void TsarRegistryGetCurrentTsar_Fields_AreCorrect()
 		{
 			var actualTsar = TsarRegistry.GetCurrentTsar();
 
 			var expectedTsar = new Person("Ivan IV The Terrible", 54, 170, 70,
 				new Person("Vasili III of Russia", 28, 170, 60, null));
 
-			// Перепишите код на использование Fluent Assertions.
-			Assert.AreEqual(actualTsar.Name, expectedTsar.Name);
-			Assert.AreEqual(actualTsar.Age, expectedTsar.Age);
-			Assert.AreEqual(actualTsar.Height, expectedTsar.Height);
-			Assert.AreEqual(actualTsar.Weight, expectedTsar.Weight);
+			actualTsar.Should().BeEquivalentTo(expectedTsar, 
+				option => option.
+					AllowingInfiniteRecursion().
+					IgnoringCyclicReferences().
+					Excluding(member=> member.SelectedMemberInfo.Name == nameof(Person.Id)));
+		}
 
-			Assert.AreEqual(expectedTsar.Parent!.Name, actualTsar.Parent!.Name);
-			Assert.AreEqual(expectedTsar.Parent.Age, actualTsar.Parent.Age);
-			Assert.AreEqual(expectedTsar.Parent.Height, actualTsar.Parent.Height);
-			Assert.AreEqual(expectedTsar.Parent.Parent, actualTsar.Parent.Parent);
+		[Test]
+		[Category(nameof(Person.IdCounter))]
+		[Description("Проверка инкрементирования счетчика персон")]
+		public void PersonField_IdCounter_IsIncrementable()
+		{
+			Person.IdCounter = 5;
+
+			new Person("", 0, 0, 0, null);
+
+			Person.IdCounter.Should().Be(6);
+		}
+
+		[Test]
+		[Category(nameof(Person.IdCounter))]
+		[Description("Проверка инкрементирования счетчика персон")]
+		public void PersonField_IdCounter_AreIncrementedAfterNewPerson()
+		{
+			Person.IdCounter = 7;
+
+			var person = new Person("", 0, 0, 0, null);
+
+			person.Id.Should().Be(7);
 		}
 
 		[Test]
@@ -36,6 +54,15 @@ namespace HomeExercises
 				new Person("Vasili III of Russia", 28, 170, 60, null));
 
 			// Какие недостатки у такого подхода? 
+			/* 1.Сложно поддерживать тест. Добавляем поле в Person => правим AreEqual (
+			 * можно забыть это сделать, например, забыли включить Id или специально не
+			 * включили, но тесты для Id и счетчика не написали)
+			 * 2. По результатам теста невозможно понять, в чем именно ошибка
+			 * 3. Нет защиты от зацикливания (хотя в логике рассматриваемого случая вроде она не нужна)
+			 * 4. Метод AreEqual не тривиален, желательно написать тесты для его проверки
+			 * 5. Невозможно быстро убедиться в корректности теста
+			 * 6. Невозможно быстро понять, что тест проверяет, нужны дополнительные усилия
+			 */
 			Assert.True(AreEqual(actualTsar, expectedTsar));
 		}
 
