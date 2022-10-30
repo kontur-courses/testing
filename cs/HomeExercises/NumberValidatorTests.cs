@@ -8,25 +8,117 @@ namespace HomeExercises
 	public class NumberValidatorTests
 	{
 		[Test]
-		public void Test()
+		public void IsValidNumber_CountMinus_False()
+		{
+			new NumberValidator(3, 2, true).IsValidNumber("-0.00")
+				.Should().BeFalse("валидатор суммирует - к длине ");
+		}
+		[Test]
+		public void IsValidNumber_CountPlus_False()
+		{
+			new NumberValidator(3, 2, true).IsValidNumber("+0.00")
+				.Should().BeFalse("валидатор суммирует + к длине ");
+		}
+		[Test]
+		public void IsValidNumber_NegativeNumWhenPositiveValidator_False()
+		{
+			new NumberValidator(4, 2, true).IsValidNumber("-0.00")
+				.Should().BeFalse("валидатор принимает положительные числа");
+		}
+		
+		[Test]
+		public void IsValidNumber_NumberWithMinus_True()
+		{
+			new NumberValidator(4, 2).IsValidNumber("-1.23")
+				.Should().BeTrue("число с минусом, общая длина без точки равна precision");
+		}
+		[Test]
+		public void IsValidNumber_NumberWithPlus_True()
+		{
+			new NumberValidator(4, 2, true).IsValidNumber("+1.23")
+				.Should().BeTrue("число с плюсом, общая длина без точки равна precision");
+		}
+		
+		[Test]
+		public void IsValidNumber_IntegerNumber_True()
+		{
+			new NumberValidator(17, 2, true).IsValidNumber("0")
+				.Should().BeTrue("целое число, общая длина < precision");
+		}
+		[Test]
+		public void IsValidNumber_ThereIsFracPart_True()
+		{
+			new NumberValidator(17, 2, true).IsValidNumber("0.0")
+				.Should().BeTrue("общая длина без точки < precision, дробная часть < scale");
+
+		}
+		[Test]
+		public void IsValidNumber_FracPartMoreThanScale_False()
+		{
+			new NumberValidator(17, 2, true).IsValidNumber("0.000")
+				.Should().BeFalse("длина дробной части больше scale");
+
+		}
+		[Test]
+		public void IsValidNumber_NotRegexPattern_False()
+		{
+			new NumberValidator(3, 2, true).IsValidNumber("a.sd")
+				.Should().BeFalse("не соответствует формату числа");
+
+		}
+		
+		[Test]
+		public void IsValidNumber_AllLenghtMoreThanPrecision_False()
+		{
+			new NumberValidator(3, 2, true).IsValidNumber("00.00")
+				.Should().BeFalse("общая длина без точки больше precision");
+
+		}
+		
+		[Test]
+		public void IsValidNumber_EmptyString_False()
+		{
+			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber(""));
+			
+		}
+		
+		[Test]
+		public void IsValidNumber_NullString_False()
+		{
+			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber(null));
+			
+		}
+		
+
+		[Test]
+		public void CreateNV_NegativePrecision_ArgumentException()
 		{
 			Assert.Throws<ArgumentException>(() => new NumberValidator(-1, 2, true));
-			Assert.DoesNotThrow(() => new NumberValidator(1, 0, true));
-			Assert.Throws<ArgumentException>(() => new NumberValidator(-1, 2, false));
-			Assert.DoesNotThrow(() => new NumberValidator(1, 0, true));
+		}
+		
+		[Test]
+		public void CreateNV_PrecisionIsZero_ArgumentException()
+		{
+			Assert.Throws<ArgumentException>(() => new NumberValidator(0, 2, true));
+		}
+		
+		[Test]
+		public void CreateNV_NegativeScale_ArgumentException()
+		{
+			Assert.Throws<ArgumentException>(() => new NumberValidator(5, -1, true)); 
+		}
+		
+		[Test]
+		public void CreateNV_ScaleMoreThanPrecision_ArgumentException()
+		{
+			Assert.Throws<ArgumentException>(() => new NumberValidator(1, 2, true));
+			
+		}
 
-			Assert.IsTrue(new NumberValidator(17, 2, true).IsValidNumber("0.0"));
-			Assert.IsTrue(new NumberValidator(17, 2, true).IsValidNumber("0"));
-			Assert.IsTrue(new NumberValidator(17, 2, true).IsValidNumber("0.0"));
-			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("00.00"));
-			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("-0.00"));
-			Assert.IsTrue(new NumberValidator(17, 2, true).IsValidNumber("0.0"));
-			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("+0.00"));
-			Assert.IsTrue(new NumberValidator(4, 2, true).IsValidNumber("+1.23"));
-			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("+1.23"));
-			Assert.IsFalse(new NumberValidator(17, 2, true).IsValidNumber("0.000"));
-			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("-1.23"));
-			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("a.sd"));
+		[Test]
+		public void CreateNV_DoesNotThrowException()
+		{
+			Assert.DoesNotThrow(() => new NumberValidator(1, 0, true));
 		}
 	}
 
