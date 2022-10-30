@@ -14,41 +14,25 @@ namespace HomeExercises
 		[TestCase(1, 2, TestName = "Scale is greater than precision")]
 		public void Constructor_ThrowExceptions_OnIncorrectArguments(int precision, int scale)
 		{
-			Action onlyPositive = () => new NumberValidator(precision, scale, true);
-			Action allRange = () => new NumberValidator(precision, scale, false);
-
-			onlyPositive.Should().Throw<ArgumentException>();
-			allRange.Should().Throw<ArgumentException>();
+			Action action = () => new NumberValidator(precision, scale);
+			action.Should().Throw<ArgumentException>();
 		}
+
 
 		[TestCase(1, 0, TestName = "Small values")]
 		[TestCase(int.MaxValue, 0, TestName = "Big precision value")]
 		[TestCase(int.MaxValue, int.MaxValue - 1, TestName = "Big precision and scale values")]
 		public void Constructor_ThrowNoExceptions_OnCorrectArguments(int precision, int scale)
 		{
-			Action onlyPositive = () => new NumberValidator(precision, scale, true);
-			Action allRange = () => new NumberValidator(precision, scale, false);
-
-			onlyPositive.Should().NotThrow();
-			allRange.Should().NotThrow();
+			Action action = () => new NumberValidator(precision, scale);
+			action.Should().NotThrow();
 		}
 
-		[Test]
-		public void IsValidNumber_ReturnFalse_OnNullString()
-		{
-			NumberValidatorBuilder.Default.IsValidNumber(null).Should().BeFalse();
-		}
-
+		[TestCase(null, TestName = "Null value")]
 		[TestCase("", TestName = "Empty")]
 		[TestCase("abc", TestName = "Letters")]
 		[TestCase("a.bc", TestName = "Letters with dot")]
 		[TestCase("%&#", TestName = "Non digits")]
-		public void IsValidNumber_ReturnFalse_OnNonNumberFormattedString(string value)
-		{
-			NumberValidatorBuilder.Default.IsValidNumber(value).Should().BeFalse();
-		}
-
-
 		[TestCase(".", TestName = "Only dot")]
 		[TestCase(".56", TestName = "Without integer part")]
 		[TestCase("2.", TestName = "Dot without fractional part")]
@@ -56,9 +40,9 @@ namespace HomeExercises
 		[TestCase("2.,2", TestName = "Dot comma mixed")]
 		[TestCase("++5", TestName = "More than one plus sign")]
 		[TestCase("+-5", TestName = "Plus minus signs mixed")]
-		public void IsValidNumber_ReturnFalse_OnWrongNumberFormattedString(string value)
+		public void IsValidNumber_ReturnFalse_OnIncorrectFormattedString(string value)
 		{
-			NumberValidatorBuilder.Default.IsValidNumber(value).Should().BeFalse();
+			new NumberValidator(5, 2).IsValidNumber(value).Should().BeFalse();
 		}
 
 		[TestCase("1234", TestName = "Integer number")]
@@ -67,42 +51,45 @@ namespace HomeExercises
 		[TestCase("0.000", TestName = "Zeros with dot")]
 		public void IsValidNumber_ReturnFalse_OnTooLongNumber(string value)
 		{
-			new NumberValidatorBuilder().SetPrecision(3).SetScale(2).Build().IsValidNumber(value).Should().BeFalse();
+			new NumberValidator(3, 2).IsValidNumber(value).Should().BeFalse();
 		}
 
 		[Test]
 		public void IsValidNumber_ReturnFalse_OnTooLongFractionalPart()
 		{
-			new NumberValidatorBuilder().SetPrecision(1000).Build().IsValidNumber("1.234").Should().BeFalse();
+			new NumberValidator(1000, 2).IsValidNumber("1.234").Should().BeFalse();
 		}
 
 		[Test]
 		public void IsValidNumber_ReturnFalse_OnNegativeNumberForOnlyPositive()
 		{
-			new NumberValidatorBuilder().SetOnlyPositive(true).Build().IsValidNumber("-5").Should().BeFalse();
+			new NumberValidator(20, 10, true).IsValidNumber("-5").Should().BeFalse();
 		}
 
-		[TestCase("12", TestName = "Integer")]
-		[TestCase("12345", TestName = "Max length integer")]
-		[TestCase("0.1", TestName = "Float")]
-		[TestCase("123.45", TestName = "Max length float")]
-		[TestCase("+1234", TestName = "Max length integer with plus")]
+		public static readonly TestCaseData[] CorrectPositiveValuesTestCaseData =
+		{
+			new TestCaseData("12").SetName("Integer"),
+			new TestCaseData("12345").SetName("Max length integer"),
+			new TestCaseData("0.1").SetName("Float"),
+			new TestCaseData("123.45").SetName("Max length float"),
+			new TestCaseData("+1234").SetName("Max length integer with plus"),
+			new TestCaseData("+12.45").SetName("Max length float with plus"),
+			new TestCaseData("00000").SetName("Only zeros"),
+			new TestCaseData("00.00").SetName("Only zeros with dot")
+		};
+
+		[TestCaseSource(nameof(CorrectPositiveValuesTestCaseData))]
+		public void IsValidNumber_ReturnTrue_OnCorrectValueForOnlyPositive(string value)
+		{
+			new NumberValidator(5, 2, true).IsValidNumber(value).Should().BeTrue();
+		}
+
+		[TestCaseSource(nameof(CorrectPositiveValuesTestCaseData))]
 		[TestCase("-1234", TestName = "Max length integer with minus")]
 		[TestCase("-12.45", TestName = "Max length float with minus")]
 		public void IsValidNumber_ReturnTrue_OnCorrectValueForAllRange(string value)
 		{
-			NumberValidatorBuilder.Default.IsValidNumber(value).Should().BeTrue();
-		}
-
-		[TestCase("12", TestName = "Integer")]
-		[TestCase("12345", TestName = "Max length integer")]
-		[TestCase("0.1", TestName = "Float")]
-		[TestCase("123.45", TestName = "Max length float")]
-		[TestCase("+1234", TestName = "Max length integer with plus")]
-		[TestCase("+12.45", TestName = "Max length float with plus")]
-		public void IsValidNumber_ReturnTrue_OnCorrectValueForOnlyPositive(string value)
-		{
-			new NumberValidatorBuilder().SetOnlyPositive(true).Build().IsValidNumber(value).Should().BeTrue();
+			new NumberValidator(5, 2).IsValidNumber(value).Should().BeTrue();
 		}
 
 		[Test]
@@ -110,15 +97,14 @@ namespace HomeExercises
 		{
 			var bigInteger = new string('5', 10000);
 			var bigFloat = new string('1', 5000) + "." + new string('2', 5000);
-			var validator = new NumberValidatorBuilder().SetPrecision(int.MaxValue).SetScale(int.MaxValue - 1).Build();
+			var validator = new NumberValidator(int.MaxValue, int.MaxValue - 1);
 
 			validator.IsValidNumber(bigInteger).Should().BeTrue();
 			validator.IsValidNumber(bigFloat).Should().BeTrue();
 		}
 
 
-		[Test]
-		[Explicit]
+		[Test, Explicit]
 		public void Test()
 		{
 			Assert.Throws<ArgumentException>(() => new NumberValidator(-1, 2, true));
@@ -138,40 +124,6 @@ namespace HomeExercises
 			Assert.IsFalse(new NumberValidator(17, 2, true).IsValidNumber("0.000"));
 			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("-1.23"));
 			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("a.sd"));
-		}
-
-		private class NumberValidatorBuilder
-		{
-			private const int DefaultPrecision = 5;
-			private const int DefaultScale = 2;
-			private const bool DefaultOnlyPositive = false;
-
-			public static readonly NumberValidator Default =
-				new(DefaultPrecision, DefaultScale, DefaultOnlyPositive);
-
-			private int _precision = DefaultPrecision;
-			private int _scale = DefaultScale;
-			private bool _onlyPositive = DefaultOnlyPositive;
-
-			public NumberValidatorBuilder SetPrecision(int value)
-			{
-				_precision = value;
-				return this;
-			}
-
-			public NumberValidatorBuilder SetScale(int value)
-			{
-				_scale = value;
-				return this;
-			}
-
-			public NumberValidatorBuilder SetOnlyPositive(bool value)
-			{
-				_onlyPositive = value;
-				return this;
-			}
-
-			public NumberValidator Build() => new(_precision, _scale, _onlyPositive);
 		}
 	}
 
