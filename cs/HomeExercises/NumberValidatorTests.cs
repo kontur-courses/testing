@@ -8,25 +8,107 @@ namespace HomeExercises
 	public class NumberValidatorTests
 	{
 		[Test]
-		public void Test()
+		public void NumberValidator_ThrowsException_OnPrecisionLessThanOne()
 		{
-			Assert.Throws<ArgumentException>(() => new NumberValidator(-1, 2, true));
-			Assert.DoesNotThrow(() => new NumberValidator(1, 0, true));
-			Assert.Throws<ArgumentException>(() => new NumberValidator(-1, 2, false));
-			Assert.DoesNotThrow(() => new NumberValidator(1, 0, true));
+			Action action = () => new NumberValidator(-1, 2, true);
+			Action action2 = () => new NumberValidator(0, 2, true);
 
-			Assert.IsTrue(new NumberValidator(17, 2, true).IsValidNumber("0.0"));
-			Assert.IsTrue(new NumberValidator(17, 2, true).IsValidNumber("0"));
-			Assert.IsTrue(new NumberValidator(17, 2, true).IsValidNumber("0.0"));
-			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("00.00"));
-			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("-0.00"));
-			Assert.IsTrue(new NumberValidator(17, 2, true).IsValidNumber("0.0"));
-			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("+0.00"));
-			Assert.IsTrue(new NumberValidator(4, 2, true).IsValidNumber("+1.23"));
-			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("+1.23"));
-			Assert.IsFalse(new NumberValidator(17, 2, true).IsValidNumber("0.000"));
-			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("-1.23"));
-			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("a.sd"));
+			action
+				.Should()
+				.Throw<ArgumentException>()
+				.WithMessage("precision must be a positive number");
+			
+			action2
+				.Should()
+				.Throw<ArgumentException>()
+				.WithMessage("precision must be a positive number");
+		}
+		
+		
+		[Test]
+		public void NumberValidator_ThrowsException_OnPrecisionLessThanScale()
+		{
+			Action action = () => new NumberValidator(23, 24, true);
+
+			action
+				.Should()
+				.Throw<ArgumentException>()
+				.WithMessage("precision must be a non-negative number less or equal than precision");
+		}
+		
+		
+		[Test]
+		public void NumberValidator_ThrowsException_OnPrecisionEqualsScale()
+		{
+			Action action = () => new NumberValidator(24, 24, true);
+
+			action
+				.Should()
+				.Throw<ArgumentException>()
+				.WithMessage("precision must be a non-negative number less or equal than precision");
+		}
+
+
+		[Test]
+		public void IsValidNumber_GivesFalse_OnCharacters()
+		{
+			var v = new NumberValidator(3, 2, true);
+			var result = v.IsValidNumber("a.sd"); 
+			result.Should().Be(false);
+		}
+		
+		
+		[Test]
+		public void IsValidNumber_GivesFalse_WhenScaleTooBig()
+		{
+			var v = new NumberValidator(17, 2, true);
+			var result = v.IsValidNumber("0.000"); 
+			result.Should().Be(false);
+		}
+		
+		
+		[Test]
+		public void IsValidNumber_GivesFalse_OnMinusWhenOnlyPositive()
+		{
+			var v = new NumberValidator(17, 5, true);
+			var result = v.IsValidNumber("-0.000"); 
+			result.Should().Be(false);
+		}
+		
+		
+		[Test]
+		public void IsValidNumber_GivesFalse_WhenPrecisionTooBig()
+		{
+			var v = new NumberValidator(3, 2, true);
+			var result = v.IsValidNumber("00.00"); 
+			result.Should().Be(false);
+		}
+		
+		
+		[Test]
+		public void IsValidNumber_GivesTrue_WhenScaleIsZero()
+		{
+			var v = new NumberValidator(3, 2, true);
+			var result = v.IsValidNumber("0"); 
+			result.Should().Be(true);
+		}
+		
+		
+		[Test]
+		public void IsValidNumber_GivesFalse_WhenSignedNumberIsTooLong()
+		{
+			var v = new NumberValidator(3, 2, true);
+			var result = v.IsValidNumber("+0.00"); 
+			result.Should().Be(false);
+		}
+		
+		
+		[Test]
+		public void IsValidNumber_GivesFalse_OnEmptyString()
+		{
+			var v = new NumberValidator(3, 2, true);
+			var result = v.IsValidNumber(""); 
+			result.Should().Be(false);
 		}
 	}
 
