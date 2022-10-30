@@ -15,16 +15,10 @@ namespace HomeExercises
 			var expectedTsar = new Person("Ivan IV The Terrible", 54, 170, 70,
 				new Person("Vasili III of Russia", 28, 170, 60, null));
 
-			// Перепишите код на использование Fluent Assertions.
-			Assert.AreEqual(actualTsar.Name, expectedTsar.Name);
-			Assert.AreEqual(actualTsar.Age, expectedTsar.Age);
-			Assert.AreEqual(actualTsar.Height, expectedTsar.Height);
-			Assert.AreEqual(actualTsar.Weight, expectedTsar.Weight);
-
-			Assert.AreEqual(expectedTsar.Parent!.Name, actualTsar.Parent!.Name);
-			Assert.AreEqual(expectedTsar.Parent.Age, actualTsar.Parent.Age);
-			Assert.AreEqual(expectedTsar.Parent.Height, actualTsar.Parent.Height);
-			Assert.AreEqual(expectedTsar.Parent.Parent, actualTsar.Parent.Parent);
+			actualTsar.Should()
+				.BeEquivalentTo(expectedTsar, opt => 
+					opt.Excluding(p => p.SelectedMemberInfo.Name == nameof(Person.Id) &&
+					                   p.SelectedMemberInfo.DeclaringType == typeof(Person)));
 		}
 
 		[Test]
@@ -36,6 +30,13 @@ namespace HomeExercises
 				new Person("Vasili III of Russia", 28, 170, 60, null));
 
 			// Какие недостатки у такого подхода? 
+			/*
+			1) При падении теста мы не узнаем из за каких полей упал тест, потому что метод AreEqual возвращает bool.
+			2) При добавлении/удалении свойств из Person, придется дописывать/удалять необходимые сравнения в тесте.
+				 => в некоторых кейсах подобный подход будет следстием разрастания кода в тестах
+			3) При наличии замкнутых ссылок в свойстве Parent, можем получить StackOverflow
+			*/
+
 			Assert.True(AreEqual(actualTsar, expectedTsar));
 		}
 
