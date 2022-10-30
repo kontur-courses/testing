@@ -19,7 +19,10 @@ namespace HomeExercises
 			actualTsar
 				.Should()
 				.BeEquivalentTo(expectedTsar, opt => opt
-					.Excluding(x => x.SelectedMemberPath.EndsWith("Id")));
+					.Excluding(x => 
+						x.SelectedMemberInfo.DeclaringType == typeof(Person) && // У всех полей типа Person в нашем классе будет игнорироваться поле Id
+						x.SelectedMemberInfo.Name.Equals("Id") // Проверка на полное соответствие => с workId и тп всё хорошо, поля Id у объектов, тип которых не Person исключены не будут.
+						));
 
 			/*
 			 * Такая реализация является более удачной, поскольку:
