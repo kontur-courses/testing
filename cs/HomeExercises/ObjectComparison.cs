@@ -1,4 +1,5 @@
-﻿using FluentAssertions;
+﻿using System.Text.RegularExpressions;
+using FluentAssertions;
 using NUnit.Framework;
 
 namespace HomeExercises
@@ -14,17 +15,17 @@ namespace HomeExercises
 
 			var expectedTsar = new Person("Ivan IV The Terrible", 54, 170, 70,
 				new Person("Vasili III of Russia", 28, 170, 60, null));
-
-			// Перепишите код на использование Fluent Assertions.
-			Assert.AreEqual(actualTsar.Name, expectedTsar.Name);
-			Assert.AreEqual(actualTsar.Age, expectedTsar.Age);
-			Assert.AreEqual(actualTsar.Height, expectedTsar.Height);
-			Assert.AreEqual(actualTsar.Weight, expectedTsar.Weight);
-
-			Assert.AreEqual(expectedTsar.Parent!.Name, actualTsar.Parent!.Name);
-			Assert.AreEqual(expectedTsar.Parent.Age, actualTsar.Parent.Age);
-			Assert.AreEqual(expectedTsar.Parent.Height, actualTsar.Parent.Height);
-			Assert.AreEqual(expectedTsar.Parent.Parent, actualTsar.Parent.Parent);
+			
+			expectedTsar
+				.Should()
+				.BeEquivalentTo(actualTsar, options => 
+					options
+						.Excluding(x => Regex.IsMatch(x.SelectedMemberPath, @"^[A-z]*.?Id$"))
+				);
+			/*
+				1. Код стал более читаемый
+				2. При изменении или добавлении полей в классе Person, тест не упадет и будет корректно работать
+			*/
 		}
 
 		[Test]
@@ -37,6 +38,12 @@ namespace HomeExercises
 
 			// Какие недостатки у такого подхода? 
 			Assert.True(AreEqual(actualTsar, expectedTsar));
+			
+			/*
+				1. Изменение полей в классе Person приведет к поломке теста
+				2. Новые поля в классе Person не будут учитываться
+				3. Нужно писать лишний метод
+			*/
 		}
 
 		private bool AreEqual(Person? actual, Person? expected)
