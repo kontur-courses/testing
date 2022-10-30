@@ -15,16 +15,15 @@ namespace HomeExercises
 			var expectedTsar = new Person("Ivan IV The Terrible", 54, 170, 70,
 				new Person("Vasili III of Russia", 28, 170, 60, null));
 
-			// Перепишите код на использование Fluent Assertions.
-			Assert.AreEqual(actualTsar.Name, expectedTsar.Name);
-			Assert.AreEqual(actualTsar.Age, expectedTsar.Age);
-			Assert.AreEqual(actualTsar.Height, expectedTsar.Height);
-			Assert.AreEqual(actualTsar.Weight, expectedTsar.Weight);
-
-			Assert.AreEqual(expectedTsar.Parent!.Name, actualTsar.Parent!.Name);
-			Assert.AreEqual(expectedTsar.Parent.Age, actualTsar.Parent.Age);
-			Assert.AreEqual(expectedTsar.Parent.Height, actualTsar.Parent.Height);
-			Assert.AreEqual(expectedTsar.Parent.Parent, actualTsar.Parent.Parent);
+			actualTsar.Should().BeEquivalentTo(expectedTsar,
+				options =>
+				{
+					options.AllowingInfiniteRecursion();
+					options.Excluding(ctx =>
+						ctx.DeclaringType == typeof(Person) &&
+						ctx.Name == nameof(Person.Id)); 
+					return options;
+				});
 		}
 
 		[Test]
@@ -37,6 +36,12 @@ namespace HomeExercises
 
 			// Какие недостатки у такого подхода? 
 			Assert.True(AreEqual(actualTsar, expectedTsar));
+			
+			//Недостатками такого подхода является то, что:
+			//1) При иземенении полей, их количества, их названий, придется дописывать 
+			//метод AreEqual с учетом уктуальных полей, также легко пропустить важные 
+			//изменения в классе  
+			//2)В этом подходе тяжело понять, на каких именно сравнениях не проходит тест
 		}
 
 		private bool AreEqual(Person? actual, Person? expected)
