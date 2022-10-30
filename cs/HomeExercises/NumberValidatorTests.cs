@@ -1,34 +1,142 @@
 ﻿using System;
 using System.Text.RegularExpressions;
 using FluentAssertions;
+using FluentAssertions.Execution;
 using NUnit.Framework;
 
 namespace HomeExercises
 {
 	public class NumberValidatorTests
 	{
-		[Test]
-		public void Test()
-		{
-			Assert.Throws<ArgumentException>(() => new NumberValidator(-1, 2, true));
-			Assert.DoesNotThrow(() => new NumberValidator(1, 0, true));
-			Assert.Throws<ArgumentException>(() => new NumberValidator(-1, 2, false));
-			Assert.DoesNotThrow(() => new NumberValidator(1, 0, true));
+        [Test]
+        public void Constructor_ThrowsArgumentExceptionWithMessage_IfPrecisionLessThanZero()
+        {
+            FluentActions
+                .Invoking(() => new NumberValidator(-1))
+                .Should()
+                .Throw<ArgumentException>()
+                .WithMessage("precision must be a positive number");
+        }
 
-			Assert.IsTrue(new NumberValidator(17, 2, true).IsValidNumber("0.0"));
-			Assert.IsTrue(new NumberValidator(17, 2, true).IsValidNumber("0"));
-			Assert.IsTrue(new NumberValidator(17, 2, true).IsValidNumber("0.0"));
-			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("00.00"));
-			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("-0.00"));
-			Assert.IsTrue(new NumberValidator(17, 2, true).IsValidNumber("0.0"));
-			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("+0.00"));
-			Assert.IsTrue(new NumberValidator(4, 2, true).IsValidNumber("+1.23"));
-			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("+1.23"));
-			Assert.IsFalse(new NumberValidator(17, 2, true).IsValidNumber("0.000"));
-			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("-1.23"));
-			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("a.sd"));
-		}
-	}
+        [Test]
+        public void Constructor_ThrowsArgumentExceptionWithMessage_IfPrecisionEqualsZero()
+
+        {
+            FluentActions
+                .Invoking(() => new NumberValidator(0))
+                .Should()
+                .Throw<ArgumentException>()
+                .WithMessage("precision must be a positive number");
+        }
+
+        [Test]
+        public void Constructor_ThrowsArgumentExceptionWithMessage_IfScaleLessThanZero()
+        {
+            FluentActions
+                .Invoking(() => new NumberValidator(1, -1, true))
+                .Should()
+                .Throw<ArgumentException>()
+                .WithMessage("precision must be a non-negative number less or equal than precision");
+        }
+
+        [Test]
+        public void Constructor_ThrowsArgumentExceptionWithMessage_IfScaleEqualsPrecision()
+        {
+            FluentActions
+                .Invoking(() => new NumberValidator(1, 1, true))
+                .Should()
+                .Throw<ArgumentException>()
+                .WithMessage("precision must be a non-negative number less or equal than precision");
+        }
+
+        [Test]
+        public void Constructor_ThrowsArgumentExceptionWithMessage_IfScaleMoreThanPrecision()
+        {
+            FluentActions
+                .Invoking(() => new NumberValidator(1, 2, true))
+                .Should()
+                .Throw<ArgumentException>()
+                .WithMessage("precision must be a non-negative number less or equal than precision");
+        }
+
+        [Test]
+        public void IsValidNumber_ReturnsFalse_IfInputStringIsNull()
+        {
+            new NumberValidator(3, 2, true).IsValidNumber(null).Should().BeFalse();
+        }
+
+        [Test]
+        public void IsValidNumber_ReturnsFalse_IfInputStringIsEmpty()
+        {
+            new NumberValidator(3, 2, true).IsValidNumber(String.Empty).Should().BeFalse();
+        }
+
+        [TestCase(" +1")]
+        [TestCase("1+1")]
+        [TestCase("++1")]
+        [TestCase("+ 1")]
+        [TestCase("+1+")]
+        [TestCase("+ ")]
+        [TestCase("+1 ")]
+        [TestCase("+a")]
+        [TestCase("a")]
+        [TestCase(".")]
+        [TestCase(".1")]
+        [TestCase("1.")]
+        [TestCase("1..")]
+        [TestCase("1+")]
+        [TestCase("1 ")]
+        [TestCase("1a")]
+        [TestCase("1.+")]
+        [TestCase("1. ")]
+        [TestCase("1.a")]
+        [TestCase("1.1.")]
+        [TestCase("1.1+")]
+        [TestCase("1.1 ")]
+        [TestCase("1.1a")]
+        public void IsValidNumber_ReturnsFalse_IfRegexMatchIsNotSuccess(string inputString)
+        {
+            new NumberValidator(10).IsValidNumber(inputString).Should().BeFalse();
+        }
+
+        [TestCase("0")]
+        [TestCase("0.0")]
+        [TestCase("00.00")]
+        [TestCase("+0")]
+        [TestCase("+0.0")]
+        [TestCase("+00.00")]
+        public void IsValidNumber_ReturnsTrue_IfInputStringRepresentsValidPositiveNumber(string inputString)
+        {
+	        new NumberValidator(10, 5, true).IsValidNumber(inputString).Should().BeTrue();
+        }
+
+        [TestCase("00.00")]
+        [TestCase("+0.00")]
+        public void IsValidNumber_ReturnsFalse_IfNumberLengthMoreThanPrecision(string inputString)
+        {
+            new NumberValidator(3, 2, true).IsValidNumber(inputString).Should().BeFalse();
+        }
+
+        [Test]
+        public void IsValidNumber_ReturnsFalse_IfFractionalPartLengthMoreThanScale()
+        {
+            new NumberValidator(10, 2, true).IsValidNumber("0.000").Should().BeFalse();
+        }
+
+        [TestCase("-1")]
+        [TestCase("-1.0")]
+        [TestCase("-1.00")]
+        public void IsValidNumber_ReturnsTrue_IfInputStringRepresentsValidNegativeNumber(string inputString)
+        {
+            new NumberValidator(10, 5, false).IsValidNumber(inputString).Should().BeTrue();
+        }
+
+        [Test]
+        public void IsValidNumber_ReturnsFalse_IfInputStringRepresentsValidNegativeNumberAndOnlyPositiveIsTrue()
+        {
+            new NumberValidator(10, 5, true).IsValidNumber("-1").Should().BeFalse();
+        }
+    }
 
 	public class NumberValidator
 	{
