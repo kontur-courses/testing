@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Text.RegularExpressions;
 using NUnit.Framework;
-using FluentAssertions;
 
 namespace HomeExercises
 {
@@ -10,25 +9,25 @@ namespace HomeExercises
 		[Test]
 		public void NumberValidator_WithPrecisionLessThanZero_ShouldThrowException()
 		{
-			Action act = () => new NumberValidator(-1, 2, true);
+			var ex = Assert.Throws<ArgumentException>(() => new NumberValidator(-1, 2, true));
 
-			act.Should().Throw<ArgumentException>().WithMessage("precision must be a positive number");
+			Assert.AreEqual(ex.Message, "precision must be a positive number");
 		}
 		
 		[Test]
 		public void NumberValidator_WithScaleLessThanZero_ShouldThrowException()
 		{
-			Action act = () => new NumberValidator(1, -2, true);
+			var ex = Assert.Throws<ArgumentException>(() => new NumberValidator(1, -2, true));
 
-			act.Should().Throw<ArgumentException>().WithMessage("scale must be a non-negative number less or equal than precision");
+			Assert.AreEqual(ex.Message, "scale must be a non-negative number less or equal than precision");
 		}
 		
 		[Test]
 		public void NumberValidator_WithScaleGreaterThanPrecision_ShouldThrowException()
 		{
-			Action act = () => new NumberValidator(1, 2, true);
-			
-			act.Should().Throw<ArgumentException>().WithMessage("scale must be a non-negative number less or equal than precision");
+			var ex = Assert.Throws<ArgumentException>(() => new NumberValidator(1, 2, true));
+
+			Assert.AreEqual(ex.Message, "scale must be a non-negative number less or equal than precision");
 		}
 		
 		[TestCase(17, 2, true, "0.0")]
