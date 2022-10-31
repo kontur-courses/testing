@@ -7,16 +7,29 @@ namespace HomeExercises
 {
 	public class NumberValidatorTests
 	{
+		[TestCase(17, 2, true, " 0.00", Description = "number contains valid number and starting space")]
+		[TestCase(17, 2, true, "0.00 ", Description = "number contains valid number and ending space")]
+		[TestCase(17, 2, false, "- 0.00", Description = "number contains valid number and space between minus sign and number")]
 		[TestCase(17, 2, true, "0.000", Description = "number scale greater than specified scale")]
 		[TestCase(17, 2, true, "0000000000000000000",
 			Description = "count of digits in number greater than specified precision")]
+		[TestCase(17, 0, true, "00000000000000000.0",
+			Description = "specified digit after dot when scale is 0")]
 		[TestCase(17, 2, true, "-1", Description = "number is negative when accepted only positive numbers")]
 		[TestCase(17, 2, true, "одна целая и пять десятых", Description = "number is not match regular number format")]
+		[TestCase(17, 2, true, "", Description = "number is empty string")]
+		[TestCase(17, 2, true, "                   ", Description = "number contains only white spaces")]
+		[TestCase(17, 2, true, "\0\0\0\0\0\0\0\0\0", Description = "number contains only zero symbols")]
 		public void IsValidNumber_ShouldReturnsFalse_WhenCallingWithTheseParameters(int precision, int scale,
 			bool onlyPositive, string number)
 		{
+			//Arrange
 			var numberValidator = new NumberValidator(precision, scale, onlyPositive);
+			
+			//Act
 			var actual = numberValidator.IsValidNumber(number);
+			
+			//Assert
 			actual.Should().BeFalse();
 		}
 
@@ -30,45 +43,28 @@ namespace HomeExercises
 		public void IsValidNumber_ShouldReturnsTrue_WhenCallingWithTheseParameters(int precision, int scale,
 			bool onlyPositive, string number)
 		{
+			//Arrange
 			var numberValidator = new NumberValidator(precision, scale, onlyPositive);
+			
+			//Act
 			var actual = numberValidator.IsValidNumber(number);
+			
+			//Assert
 			actual.Should().BeTrue();
 		}
 
-		[Test]
-		public void ShouldThrows_WhenCreatingWithScaleEqualToPrecision()
+		[TestCase(1, 1, false, Description = "scale equal to precision")]
+		[TestCase(1, 2, false, Description = "scale greater than precision")]
+		[TestCase(1, -1, false, Description = "scale is negative")]
+		[TestCase(-1, 1, false, Description = "precision is negative")]
+		[TestCase(0, 0, false, Description = "precision is zero")]
+		public void Constructor_ShouldThrows_WhenCallingWithTheseParameters(int precision, int scale, bool onlyPositive)
 		{
-			Action action = () => _ = new NumberValidator(1, 1);
-			const string expectedMessage = "precision must be a non-negative number less or equal than precision";
-			action.Should().ThrowExactly<ArgumentException>()
-				.WithMessage(expectedMessage);
-		}
-
-		[Test]
-		public void ShouldThrows_WhenCreatingWithNegativeScale()
-		{
-			Action action = () => _ = new NumberValidator(1, -1);
-			const string expectedMessage = "precision must be a non-negative number less or equal than precision";
-			action.Should().ThrowExactly<ArgumentException>()
-				.WithMessage(expectedMessage);
-		}
-
-		[Test]
-		public void ShouldThrows_WhenCreatingWithZeroPrecision()
-		{
-			Action action = () => _ = new NumberValidator(0);
-			const string expectedMessage = "precision must be a positive number";
-			action.Should().ThrowExactly<ArgumentException>()
-				.WithMessage(expectedMessage);
-		}
-
-		[Test]
-		public void ShouldThrows_WhenCreatingWithNegativePrecision()
-		{
-			Action action = () => _ = new NumberValidator(-1);
-			const string expectedMessage = "precision must be a positive number";
-			action.Should().ThrowExactly<ArgumentException>()
-				.WithMessage(expectedMessage);
+			//Arrange
+			Action action = () => _ = new NumberValidator(precision, scale, onlyPositive);
+			
+			//Act & Assert
+			action.Should().Throw<ArgumentException>();
 		}
 	}
 

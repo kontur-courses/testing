@@ -11,12 +11,22 @@ namespace HomeExercises
 		[Category("ToRefactor")]
 		public void CheckCurrentTsar()
 		{
-			var actualTsar = TsarRegistry.GetCurrentTsar();
+			//Arrange
 			var expectedTsar = new Person(
 				"Ivan IV The Terrible", 54, 170, 70, new DateTime(1530, 08, 25),
 				new Person("Vasili III of Russia", 28, 170, 60, new DateTime(1479, 03, 25), null));
 
-			actualTsar.Should().BeEquivalentTo(expectedTsar, FluentAssertionExtensions.ExcludingPersonIdentifiers);
+			//Act
+			var actualTsar = TsarRegistry.GetCurrentTsar();
+
+			//Assert
+			actualTsar.Should().BeEquivalentTo(expectedTsar,
+				options => options.Excluding(memberInfo =>
+						memberInfo.SelectedMemberInfo.DeclaringType == typeof(Person)
+						&& memberInfo.SelectedMemberInfo.Name == nameof(Person.Id)
+						&& memberInfo.SelectedMemberInfo.MemberType == typeof(int))
+					.Excluding(memberInfo =>
+						memberInfo.SelectedMemberPath.StartsWith("Parent.Parent")));
 		}
 
 		[Test]
@@ -26,7 +36,8 @@ namespace HomeExercises
 			var actualTsar = TsarRegistry.GetCurrentTsar();
 			var expectedTsar = new Person(
 				"Ivan IV The Terrible", 54, 170, 70, new DateTime(1530, 08, 25),
-				new Person("Vasili III of Russia", 28, 170, 60, new DateTime(1479, 03, 25), null));
+				new Person("Vasili III of Russia", 28, 170, 60, new DateTime(1479, 03, 25),  
+					new Person("Ivan the Great", 65, 180, 75, new DateTime(1440, 01, 22), null)));
 
 			// Какие недостатки у такого подхода?
 			// В случае ошибки мы получим малоинформативное сообщение и не узнаем какие конкретно члены у полученного экземпляра и ожидаемого экземпляры различаются
