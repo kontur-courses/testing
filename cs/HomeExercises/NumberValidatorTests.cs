@@ -8,24 +8,24 @@ namespace HomeExercises
 	public class NumberValidatorTests
 	{
 		[TestCase(1,0,true)]
-		public void NumberValidator_WithСorrectParameters_DoesNotThrow(int precision, int scale, bool onlyPositive)
+		public void NumberValidator_WithCorrectParameters_DoesNotThrow(int precision, int scale, bool onlyPositive)
 		{
 			Assert.DoesNotThrow(() => new NumberValidator(precision, scale, onlyPositive));
 		}
 		
-		[TestCase(0, 0, TestName = "NumberValidator_WithPrecisionZero_ThrowArgumentException")]
-		[TestCase(-1, 0, TestName = "NumberValidator_WithNegativePrecision_ThrowArgumentException")]
-		[TestCase(1, -1, TestName = "NumberValidator_WithNegativeScale_ThrowArgumentException")] 
-		[TestCase(1, 1, TestName = "NumberValidator_WithPrecisionEqualScale_ThrowArgumentException")]
-		[TestCase(1, 2, TestName = "NumberValidator_WithPrecisionLessScale_ThrowArgumentException")]
-		public void NumberValidator_WithNotCorrectParameters_ThrowArgumentException(int precision, int scale)
+		[TestCase(0, 0, TestName = "NumberValidator_WithPrecisionZero_ShouldThrowArgumentException")]
+		[TestCase(-1, 0, TestName = "NumberValidator_WithNegativePrecision_ShouldThrowArgumentException")]
+		[TestCase(1, -1, TestName = "NumberValidator_WithNegativeScale_ShouldThrowArgumentException")] 
+		[TestCase(1, 1, TestName = "NumberValidator_WithPrecisionEqualScale_ShouldThrowArgumentException")]
+		[TestCase(1, 2, TestName = "NumberValidator_WithPrecisionLessScale_ShouldThrowArgumentException")]
+		public void NumberValidator_WithNotCorrectParameters_ShouldThrowArgumentException(int precision, int scale)
 		{
 			Assert.Throws<ArgumentException>(() => new NumberValidator(precision, scale));
 		}
 
 		[TestCase("")]
 		[TestCase(null)]
-		public void IsValidNumber_IsFalse_WithNullOrEmptyString(string input)
+		public void IsValidNumber_ShouldReturnFalse_WithNullOrEmptyString(string input)
 		{
 			var numberValidator = new NumberValidator(3, 2, true);
 			numberValidator.IsValidNumber(input).Should().BeFalse();
@@ -36,7 +36,7 @@ namespace HomeExercises
 		[TestCase("a.0")]
         [TestCase("0.a")]
         [TestCase("0 0")]
-        public void IsValidNumber_IsFalse_WithNotRegexString(string input)
+        public void IsValidNumber_ShouldReturnFalse_WithNotRegexString(string input)
         {
 	        var numberValidator = new NumberValidator(3, 2, true);
 	        numberValidator.IsValidNumber(input).Should().BeFalse();
@@ -44,7 +44,7 @@ namespace HomeExercises
 
         [TestCase("+0.00")]
         [TestCase("00.00")]
-        public void IsValidNumber_False_WhenLenMorePrecisionString(string input)
+        public void IsValidNumber_ShouldReturnFalse_WhenLenMorePrecisionString(string input)
         {
 	        var numberValidator = new NumberValidator(3, 2, true);
 	        numberValidator.IsValidNumber(input).Should()
@@ -52,7 +52,7 @@ namespace HomeExercises
         }
 
 		[Test]
-		public void IsValidNumber_False_WhenLenFracMoreScale()
+		public void IsValidNumber_ShouldReturnFalse_WhenLenFracMoreScale()
 		{
 			var numberValidator = new NumberValidator(4, 2, true);
 			numberValidator.IsValidNumber("0.111").Should()
@@ -60,7 +60,7 @@ namespace HomeExercises
 		}
 
 		[Test] 
-		public void IsValidNumber_False_WhenOnlyPositiveTrueButNumberNegative()
+		public void IsValidNumber_ShouldReturnFalse_WhenOnlyPositiveTrueButNumberNegative()
 		{
 			var numberValidator = new NumberValidator(3, 2, true);
 			numberValidator.IsValidNumber("-2.2").Should()
@@ -73,7 +73,7 @@ namespace HomeExercises
 		[TestCase("1,11")]
 		[TestCase("+0.0")]
 		[TestCase("-2.2")]
-		public void IsValidNumber_IsTrue_WithCorrectInput(string input)
+		public void IsValidNumber_ShouldReturnTrue_WithCorrectInput(string input)
 		{
 			var numberValidator = new NumberValidator(3, 2, false);
 			numberValidator.IsValidNumber(input).Should()
@@ -82,7 +82,7 @@ namespace HomeExercises
 
 		[TestCase("+012343838388330.00")]
 		[TestCase("2.22555555555555555")]
-		public void IsValidNumber_True_WithBigPrecisionAndScale(string input)
+		public void IsValidNumber_ShouldReturnTrue_WithBigPrecisionAndScale(string input)
 		{
 			var numberValidator2 = new NumberValidator(21, 18, true);
 			numberValidator2.IsValidNumber(input).Should()
