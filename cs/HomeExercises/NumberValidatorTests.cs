@@ -9,12 +9,15 @@ namespace HomeExercises
 		[Test]
 		[Category(nameof(Ctor_ThrowException_WhenArgumentsInclude))]
 		[Description("Проверка выдачи исключения при некорректных аргументах конструктора")]
-		[TestCase(-1, 2, true, TestName = "negative precision and only positive flag")]
-		[TestCase(-1, 2, false, TestName = "negative precision and only negative flag")]
+		[TestCase(-1, 0, true, TestName = "negative precision and only positive flag")]
+		[TestCase(-1, 0, false, TestName = "negative precision and only negative flag")]
 		[TestCase(0, TestName = "zero precision")]
 		[TestCase(1, -1, TestName = "scale less than zero")]
 		[TestCase(2, 3, TestName = "scale more precision")]
 		[TestCase(5, 5, TestName = "scale equals precision")]
+		[TestCase(null, TestName = "null precision")]
+		[TestCase(0, null, TestName = "null scale")]
+		[TestCase(0, 0, null, TestName = "null onlyPositive")]
 		public void Ctor_ThrowException_WhenArgumentsInclude(int precision, int scale = 0, bool onlyPositive = false)
 		{
 			Action action = () => new NumberValidator(precision, scale, onlyPositive);
@@ -22,15 +25,18 @@ namespace HomeExercises
 		}
 
 		[Test]
-		[Category(nameof(Ctor_NotThrowException_WhenValidArgumentsInclude))]
-		[Description("Проверка отсутствия исключений при корректных аргументах конструктора")]
-		[TestCase(1, TestName = "construct with valid precision and default arguments")]
-		[TestCase(1, 0, true, TestName = "positive precision, zero scale and only positive")]
-		[TestCase(2, 1, false, TestName = "positive precision, zero scale and only negative")]
-		public void Ctor_NotThrowException_WhenValidArgumentsInclude(int precision, int scale = 0, bool onlyPositive = false)
+		[Category(nameof(IsValidNumber_NotThrowException_WhenUsedDefaultCtorArguments))]
+		[Description("Проверка, что метод IsValidNumber возвращает true при конструкторе по умолчанию")]
+		[TestCase(1, "5", TestName = "single precision")]
+		[TestCase(3, "555", TestName = "precision = 3")]
+		public void IsValidNumber_NotThrowException_WhenUsedDefaultCtorArguments(int precision, string value)
 		{
-			Action action = () => new NumberValidator(precision, scale, onlyPositive);
+			bool actionResult = false;
+
+			Action action = () => actionResult = new NumberValidator(precision).IsValidNumber(value);
+
 			action.Should().NotThrow();
+			actionResult.Should().BeTrue();
 		}
 
 		[Test]
