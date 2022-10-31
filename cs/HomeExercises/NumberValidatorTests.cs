@@ -10,112 +10,55 @@ namespace HomeExercises
 	public class NumberValidatorTests
 	{
 		[Test]
-		public void Creation_NegativePrecision_ShouldThrowException()
+		[TestCase(-1, 2, true, TestName = "Creation_NegativePrecision_ShouldThrowException")]
+		[TestCase(0, 0, true, TestName = "Creation_PrecisionIsZero_ShouldThrowException")]
+		[TestCase(2, -1, true, TestName = "Creation_NegativeScale_ShouldThrowException")]
+		[TestCase(1, 2, true, TestName = "Creation_ScaleGreaterThenPrecision_ShouldThrowException")]
+		
+		public void Creation_ShouldThrowArgumentException(int precision, int scale, bool onlyPositive)
 		{
-			Action creation = () => new NumberValidator(-1, 2, true);
+			Action creation = () => new NumberValidator(precision, scale, onlyPositive);
 			creation.Should().Throw<ArgumentException>();
 		}
 
 		[Test]
-		public void Creation_PositivePrecision_ShouldNotThrowException()
+		[TestCase(1, 0, true, TestName = "Creation_PositivePrecision_ShouldNotThrowException")]
+		public void Creation_ShouldNotThrowException(int precision, int scale, bool onlyPositive)
 		{
-			Action creation = () => new NumberValidator(1, 0, true);
+			Action creation = () => new NumberValidator(precision, scale, onlyPositive);
 			creation.Should().NotThrow<ArgumentException>();
 		}
 
 		[Test]
-		public void Creation_PrecisionIsZero_ShouldThrowException()
+		[TestCase(17, 2, true, null, TestName = "IsValidNumber_NullString_ShouldBeFalse")]
+		[TestCase(17, 2, true, "", TestName = "IsValidNumber_EmptyString_ShouldBeFalse")]
+		[TestCase(3, 2, true, "a.sd", TestName = "IsValidNumber_NotNumber_ShouldBeFalse")]
+		[TestCase(17, 2, true, ".0", TestName = "IsValidNumber_WithoutIntPart_ShouldBeFalse")]
+		[TestCase(3, 2, true, "00.00",
+			TestName = "IsValidNumber_NumberPrecisionGreaterThanValidatorPrecision_ShouldBeFalse")]
+		[TestCase(3, 2, true, "+1.23",
+			TestName = "IsValidNumber_NumberPrecisionGreaterThanValidatorPrecision_ShouldBeFalse")]
+		[TestCase(17, 2, true, "0.000",
+			TestName = "IsValidNumber_NumberScaleGreaterThanValidatorScale_ShouldBeFalse")]
+		[TestCase(10, 5, true, "-1.23",
+			TestName = "IsValidNumber_NegativeNumberWithOnlyPositiveValidator_ShouldBeFalse")]
+		
+		public void IsValidNumber_ShouldBeFalse(int precision, int scale, bool onlyPositive, string numberString)
 		{
-			Action creation = () => new NumberValidator(0, 0, true);
-			creation.Should().Throw<ArgumentException>();
-		}
-
-		[Test]
-		public void Creation_NegativeScale_ShouldThrowException()
-		{
-			Action creation = () => new NumberValidator(2, -1, true);
-			creation.Should().Throw<ArgumentException>();
-		}
-
-		[Test]
-		public void Creation_ScaleGreaterThenPrecision_ShouldThrowException()
-		{
-			Action creation = () => new NumberValidator(1, 2, true);
-			creation.Should().Throw<ArgumentException>();
-		}
-
-		[Test]
-		public void IsValidNumber_NullString_ShouldBeFalse()
-		{
-			NumberValidator validator = new NumberValidator(17, 2,true);
-			validator.IsValidNumber(null).Should().BeFalse();
+			NumberValidator validator = new NumberValidator(precision, scale,onlyPositive);
+			validator.IsValidNumber(numberString).Should().BeFalse();
 		}
 		
 		[Test]
-		public void IsValidNumber_EmptyString_ShouldBeFalse()
-		{
-			NumberValidator validator = new NumberValidator(17, 2,true);
-			validator.IsValidNumber(String.Empty).Should().BeFalse();
-		}
-
-		[Test]
-		public void IsValidNumber_NotNumber_ShouldBeFalse()
-		{
-			NumberValidator validator = new NumberValidator(3, 2,true);
-			validator.IsValidNumber("a.sd").Should().BeFalse();
-		}
-
-		[Test]
-		public void IsValidNumber_WithoutFractionPart_ShouldBeTrue()
-		{
-			NumberValidator validator = new NumberValidator(17, 2,true);
-			validator.IsValidNumber("0").Should().BeTrue();
-		}
-
-		[Test]
-		public void IsValidNumber_WithoutIntPart_ShouldBeFalse()
-		{
-			NumberValidator validator = new NumberValidator(17, 2,true);
-			validator.IsValidNumber(".0").Should().BeFalse();
-		}
-
-		[Test]
-		[TestCase("00.00")]
-		[TestCase("+1.23")]
-		public void IsValidNumber_NumberPrecisionGreaterThanValidatorPrecision_ShouldBeFalse(string number)
-		{
-			NumberValidator validator = new NumberValidator(3, 2,true);
-			validator.IsValidNumber(number).Should().BeFalse();
-		}
+		[TestCase(17, 2, true, "0.0", TestName = "IsValidNumber_ValidNumber_ShouldBeTrue")]
+		[TestCase(17, 2, true, "0", TestName = "IsValidNumber_WithoutFractionPart_ShouldBeTrue")]
+		[TestCase(4, 2, true, "00.00",
+			TestName = "IsValidNumber_NumberPrecisionEqualValidatorPrecision_ShouldBeTrue")]
 		
-		[Test]
-		[TestCase("00.00")]
-		[TestCase("+1.23")]
-		public void IsValidNumber_NumberPrecisionEqualValidatorPrecision_ShouldBeTrue(string number)
+		public void IsValidNumber_ShouldBeTrue(int precision, int scale, bool onlyPositive, string numberString)
 		{
-			NumberValidator numberValidator = new NumberValidator(4, 2, true);
-			numberValidator.IsValidNumber(number).Should().BeTrue();
-		}
-		
-		[Test]
-		public void IsValidNumber_NumberScaleGreaterThanValidatorScale_ShouldBeFalse()
-		{
-			NumberValidator validator = new NumberValidator(17, 2,true);
-			validator.IsValidNumber("0.000").Should().BeFalse();
-		}
-		
-		[Test]
-		public void IsValidNumber_NegativeNumberWithOnlyPositiveValidator_ShouldBeFalse()
-		{
-			NumberValidator numberValidator = new NumberValidator(10, 5, true);
-			numberValidator.IsValidNumber("-1.23").Should().BeFalse();
-		}
-		
-		[Test]
-		public void IsValidNumber_ValidNumber_ShouldBeTrue()
-		{
-			NumberValidator numberValidator = new NumberValidator(17, 2, true);
-			numberValidator.IsValidNumber("0.0").Should().BeTrue();
+			NumberValidator validator = new NumberValidator(precision, scale, onlyPositive);
+			validator.IsValidNumber(numberString).Should().BeTrue();
 		}
 	}
 
