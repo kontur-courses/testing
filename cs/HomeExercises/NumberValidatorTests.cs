@@ -8,11 +8,6 @@ namespace HomeExercises
 {
 	public class NumberValidatorTests
 	{
-		// [TestCase(0, 2, TestName = "Zero precision")]
-		// [TestCase(-1, 2, TestName = "Negative precision")]
-		// [TestCase(10, -2, TestName = "Negative scale")]
-		// [TestCase(5, 10, TestName = "Scale greater than precision")]
-		// [TestCase(5, 5, TestName = "Scale equal precision")]
 		[TestCaseSource(typeof(TestData), nameof(TestData.IncorrectCtorParams))]
 		[Parallelizable(scope: ParallelScope.All)]	
 		public void Ctor_IncorrectParams_ThrowArgumentException(int precision, int scale)
@@ -22,8 +17,6 @@ namespace HomeExercises
 			createNumberValidator.Should().Throw<ArgumentException>();
 		}
 
-		// [TestCase(10, 5, TestName = "Precision greater than zero")]
-		// [TestCase(10, 0, TestName = "Scale equal to zero")]
 		[TestCaseSource(typeof(TestData), nameof(TestData.CorrectCtorParams))]
 		[Parallelizable(scope: ParallelScope.All)]	
 		public void Ctor_CorrectParams_NotThrowException(int precision, int scale)
@@ -33,70 +26,12 @@ namespace HomeExercises
 			createNumberValidator.Should().NotThrow<Exception>();
 		}
 
-		// [TestCase(10, 5, true, "13.231", TestName = "Positive number")]
-		// [TestCase(10, 5, false, "-13.231", TestName = "Negative number")]
-		// [TestCase(10, 5, true, "+13.231", TestName = "Positive number with '+'")]
-		// [TestCase(4, 1, true, "+13.3", TestName = "'+' include in precision")]
-		// [TestCase(4, 1, false, "-13.3", TestName = "'-' include in precision")]
-		// [TestCase(10, 5, false, "1,3", TestName = "Value with ','")]
-		[TestCaseSource(typeof(TestData), nameof(TestData.ValidParams))]
-		[Parallelizable(scope: ParallelScope.All)]	
-		public void IsValidNumber_ValidParams_True(int precision, int scale, bool onlyPositive, string value)
+		[TestCaseSource(typeof(TestData), nameof(TestData.ValidNumberParams))]
+		[Parallelizable(scope: ParallelScope.All)]
+		public bool NumberValidator_IsValidNumber(int precision, int scale, bool onlyPositive, string value)
 		{
 			var numberValidator = new NumberValidator(precision, scale, onlyPositive);
-			numberValidator.IsValidNumber(value).Should().BeTrue();
-		}
-
-		// [TestCase(3, 1, true, "123.1", TestName = "Value grater than precision")]
-		// [TestCase(3, 1, true, "+123", TestName = "'+' include in precision")]
-		// [TestCase(3, 1, false, "-123", TestName = "'-' include in precision")]
-		[TestCaseSource(typeof(TestData), nameof(TestData.ValueWithLengthGreaterThanMaxPrecision))]
-		[Parallelizable(scope: ParallelScope.All)]	
-		public void IsValidNumber_ValueWithLengthGreaterThanMaxPrecision_False(int precision, int scale,
-			bool onlyPositive, string value)
-		{
-			var numberValidator = new NumberValidator(precision, scale, onlyPositive);
-			numberValidator.IsValidNumber(value).Should().BeFalse();
-		}
-
-		
-		// [TestCase(10, 5, false, null, TestName = "Null value")]
-		// [TestCase(10, 5, false, "", TestName = "Empty string value")]
-		[TestCaseSource(typeof(TestData), nameof(TestData.NullOrEmptyString))]
-		[Parallelizable(scope: ParallelScope.All)]	
-		public void IsValidNumber_NullOrEmptyString_False(int precision, int scale, bool onlyPositive, string value)
-		{
-			var numberValidator = new NumberValidator(precision, scale, onlyPositive);
-			numberValidator.IsValidNumber(value).Should().BeFalse();		
-		}
-		
-		// [TestCase(10, 5, false, "adfja", TestName = "Letters in value")]
-		// [TestCase(10, 5, false, "1,,,,3", TestName = "Value contais a lot of ','")]
-		// [TestCase(10, 5, false, "1;3", TestName = "Value contais incorrect seperator")]
-		// [TestCase(10, 5, false, ";1.3", TestName = "Value start from incorrect symbol ';'")]
-		[TestCaseSource(typeof(TestData), nameof(TestData.IncorrectValueForRegex))]
-		[Parallelizable(scope: ParallelScope.All)]	
-		public void IsValidNumber_IncorrectValueForRegex_False(int precision, int scale, bool onlyPositive,
-			string value)
-		{
-			var numberValidator = new NumberValidator(precision, scale, onlyPositive);
-			numberValidator.IsValidNumber(value).Should().BeFalse();
-		}
-
-		[Test]
-		[Parallelizable(scope: ParallelScope.Self)]	
-		public void IsValidNumber_ParamOfScaleGreaterThanMaxScaleOfValidator_False()
-		{
-			var numberValidator = new NumberValidator(5, 1);
-			numberValidator.IsValidNumber("1.32").Should().BeFalse();
-		}
-
-		[Test]
-		[Parallelizable(scope: ParallelScope.Self)]
-		public void IsValidNumber_NegativeValueWithOnlyPositiveParamTrue_False()
-		{
-			var numberValidator = new NumberValidator(5, 2, true);
-			numberValidator.IsValidNumber("-1.3").Should().BeFalse();		
+			return numberValidator.IsValidNumber(value);
 		}
 	}
 
@@ -161,37 +96,32 @@ namespace HomeExercises
 			new TestCaseData(10, 0).SetName("Scale equal to zero")
 		};
 
-		public static TestCaseData[] ValidParams =
+		public static TestCaseData[] ValidNumberParams =
 		{
-			new TestCaseData(10, 5, true, "13.231").SetName("Positive number"),
-			new TestCaseData(10, 5, false, "-13.231").SetName("Negative number"),
-			new TestCaseData(10, 5, true, "+13.231").SetName("Positive number with '+'"),
-			new TestCaseData(4, 1, true, "+13.3").SetName("'+' include in precision"),
-			new TestCaseData(4, 1, false, "-13.3").SetName("'-' include in precision"),
-			new TestCaseData(10, 5, false, "1,3").SetName("Value with ','")
-		};
+			new TestCaseData(10, 5, true, "13.231").SetName("Valid number").Returns(true),
+			new TestCaseData(10, 5, false, "-13.231").SetName("Valid number with '-'").Returns(true),
+			new TestCaseData(10, 5, true, "+13.231").SetName("Valid number with '+'").Returns(true),
+			new TestCaseData(4, 1, true, "+13.3").SetName("'+' most include in precision").Returns(true),
+			new TestCaseData(4, 1, false, "-13.3").SetName("'-' most include in precision").Returns(true),
+			new TestCaseData(10, 5, false, "1,3").SetName("Value most to be correct with ','").Returns(true),
 
-		public static TestCaseData[] ValueWithLengthGreaterThanMaxPrecision =
-		{
-			new TestCaseData(3, 1, true, "123.1").SetName("Value grater than precision"),
-			new TestCaseData(3, 1, true, "+123").SetName("'+' include in precision"),
-			new TestCaseData(3, 1, false, "-123").SetName("'-' include in precision")
-		};
-
-		public static TestCaseData[] NullOrEmptyString =
-		{
-			new TestCaseData(10, 5, false, null).SetName("Null value"),
-			new TestCaseData(10, 5, false, "").SetName("Empty string value")
-		};
-
-		public static TestCaseData[] IncorrectValueForRegex =
-		{
-			new TestCaseData(10, 5, false, "adfa").SetName("Letters in value"),
-			new TestCaseData(10, 5, false, "adf.f").SetName("Letters with '.'"),
-			new TestCaseData(10, 5, false, "1.a").SetName("Letter in fractal part"),
-			new TestCaseData(10, 5, false, "1,,,4").SetName("Value contais a lot of ','"),
-			new TestCaseData(10, 5, false, "1;3").SetName("Value contais incorrect seperator"),
+			new TestCaseData(10, 5, false, null).SetName("Null value").Returns(false),
+			new TestCaseData(10, 5, false, "").SetName("Empty string value").Returns(false),
+			new TestCaseData(10, 5, false, "adfa").SetName("Letters in value").Returns(false),
+			new TestCaseData(10, 5, false, "adf.f").SetName("Letters in int and frac parts").Returns(false),
+			new TestCaseData(10, 5, false, "1.a").SetName("Letter in fractal part").Returns(false),
+			new TestCaseData(10, 5, false, "1;3").SetName("Value contais incorrect seperator").Returns(false),
+			
+			new TestCaseData(5, 1, false, "1.32").SetName("Scale greater than max scale of validator")
+				.Returns(false),
+			new TestCaseData(5, 2, true, "-1.3").SetName("Negative value with onlyPositive param in true")
+				.Returns(false),
 			new TestCaseData(10, 5, false, ";1.3").SetName("Value start from incorrect symbol ';'")
+				.Returns(false),
+			new TestCaseData(10, 5, false, "1,,,4").SetName("Value contais a lot of seperators ','")
+				.Returns(false),
+			new TestCaseData(3, 1, true, "123.1").SetName("Int part length grater than precision")
+				.Returns(false)
 		};
 	}
 }
