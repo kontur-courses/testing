@@ -38,7 +38,7 @@ namespace HomeExercises
 		{
 			new Action(() =>
 				{
-					var numberValidator = new NumberValidator(precision);
+					var numberValidator = new NumberValidator(precision,scale);
 				})
 				.Should().Throw<ArgumentException>();
 		}
