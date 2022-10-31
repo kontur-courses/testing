@@ -3,6 +3,7 @@ using NUnit.Framework;
 
 namespace HomeExercises
 {
+	[TestFixture]
 	public class ObjectComparison
 	{
 		[Test]
@@ -16,7 +17,8 @@ namespace HomeExercises
 				new Person("Vasili III of Russia", 28, 170, 60, null));
 
 			actualTsar.Should().BeEquivalentTo(expectedTsar, options =>
-				options.Excluding(ctx => ctx.SelectedMemberPath.EndsWith(nameof(Person.Id))));
+				options.Excluding(ctx => ctx.SelectedMemberInfo.DeclaringType == typeof(Person) && 
+				                         ctx.SelectedMemberInfo.Name == nameof(Person.Id)));
 		}
 
 		[Test]
@@ -29,8 +31,8 @@ namespace HomeExercises
 
 			// Какие недостатки у такого подхода? 
 			// - возможна бесконечная рекурсия если будет цикл в графе родителей (глубина рекурсии не ограничена)
-			// - неудобно расширять класс, придется вносить изменения в тесты
-			// - тяжело обнаружить где именно упал тест
+			// - неудобно расширять класс, придется вносить изменения в метод сравнения
+			// - тяжело обнаружить какое именно поле не прошло сравнение
 			Assert.True(AreEqual(actualTsar, expectedTsar));
 		}
 
