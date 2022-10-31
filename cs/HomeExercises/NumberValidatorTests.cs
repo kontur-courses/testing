@@ -12,7 +12,7 @@ namespace HomeExercises
 		[TestCase(2, 0, false, "-1", TestName = "Negative number")]
 		[TestCase(3, 1, true, "1.0", TestName = "Float number")]
 		[TestCase(10, 5, false, "-100.00001", TestName = "Float Negative number")]
-		public void Validator_ReturnTrue_WhenNumberIsValid(int precision, int scale, bool onlyPositive, string number)
+		public void IsValidNumber_ReturnTrue_WhenNumberIsValid(int precision, int scale, bool onlyPositive, string number)
 		{
 			var validator = new NumberValidator(precision, scale, onlyPositive);
 			validator.IsValidNumber(number).Should().Be(true);
@@ -49,7 +49,7 @@ namespace HomeExercises
 		[TestCase("", Description = "Should work correctly with empty string", TestName = "empty string")]
 		[TestCase("+-0,0", Description = "Should work correctly with incorrect regex", TestName = "unmatched regex")]
 		[TestCase("+a.bc", Description = "Should work correctly with incorrect number", TestName = "not a number")]
-		public void Validator_ReturnFalse_WithIncorrectString(string number)
+		public void IsValidNumber_ReturnFalse_WithIncorrectString(string number)
 		{
 			var validator = new NumberValidator(17, 2, true);
 			validator.IsValidNumber(number).Should().Be(false);
@@ -58,14 +58,14 @@ namespace HomeExercises
 		[TestCase("0.001", Description = "Should match number's scale", TestName = "scale length")]
 		[TestCase("5000.0", Description = "Should match number's precision", TestName = "precision length")]
 		[TestCase("+5000", Description = "Character should be contained in number precision", TestName = "character")]
-		public void Validator_ReturnFalse_WithNotValidNumberLenght(string number)
+		public void IsValidNumber_ReturnFalse_WithNotValidNumberLenght(string number)
 		{
 			var validator = new NumberValidator(4, 2, true);
 			validator.IsValidNumber(number).Should().Be(false);
 		}
 
 		[Test]
-		public void Validator_ReturnFalse_WhenNumberDoesntMatchPositiveCondition()
+		public void IsValidNumber_ReturnFalse_WhenNumberDoesntMatchPositiveCondition()
 		{
 			var validator = new NumberValidator(3, 2, true);
 			validator.IsValidNumber("-0.1").Should().Be(false);

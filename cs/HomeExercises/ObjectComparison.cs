@@ -20,7 +20,7 @@ namespace HomeExercises
 
 			// Перепишите код на использование Fluent Assertions.
 			EquivalencyAssertionOptions<Person> TsarEquivalencyOptions(EquivalencyAssertionOptions<Person> options) =>
-				options.Excluding(pr => pr.SelectedMemberInfo.Name == "Id");
+				options.Excluding(pr => pr.SelectedMemberInfo.Name == "Id").IgnoringCyclicReferences();
 
 			actualTsar.Should().BeEquivalentTo(expectedTsar, TsarEquivalencyOptions);
 		}
