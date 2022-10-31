@@ -1,19 +1,55 @@
 ﻿using System;
+using System.Globalization;
+using System.Linq;
 using System.Text.RegularExpressions;
+using BenchmarkDotNet.Attributes;
+using BenchmarkDotNet.Engines;
+using BenchmarkDotNet.Running;
 using FluentAssertions;
 using NUnit.Framework;
 
 namespace HomeExercises
 {
+	public class NumberValidatorIsValidNumberBenchmark
+	{
+		private readonly NumberValidator numberValidator = new NumberValidator(17, 2);
+		private readonly string number;
+
+		public NumberValidatorIsValidNumberBenchmark()
+		{
+			number =
+				((new Random(20221031).NextDouble() - 0.5) * 1000000000000000).ToString(CultureInfo.InvariantCulture);
+		}
+
+
+		[Benchmark()]
+		public void NumberValidator() => numberValidator.IsValidNumber(number);
+	}
+
 	public class NumberValidatorTests
 	{
+		[Test]
+		[Category("Benchmark")]
+		public void IsValidNumber_RunsLessThan800Nanoseconds_Benchmark()
+		{
+			//Arrange & Act 
+			var summary = BenchmarkRunner.Run<NumberValidatorIsValidNumberBenchmark>();
+			
+			//Assert
+			var actual = summary.Reports.First().AllMeasurements
+				.Where(x => x.IterationMode == IterationMode.Workload && x.IterationStage == IterationStage.Actual)
+				.Average(x => x.GetAverageTime().Nanoseconds);
+			actual.Should().BeLessThan(800);
+		}
+
 		[TestCase(17, 2, true, "1.2.3", Description = "number is three digits separated by dots")]
 		[TestCase(17, 2, true, "1,2,3", Description = "number is three digits separated by commas")]
 		[TestCase(17, 2, true, "1,", Description = "there aren`t digits after integer part and comma")]
 		[TestCase(17, 2, false, "+-1", Description = "number contains two signs")]
 		[TestCase(17, 2, true, " 0.00", Description = "number contains valid number and starting space")]
 		[TestCase(17, 2, true, "0.00 ", Description = "number contains valid number and ending space")]
-		[TestCase(17, 2, false, "- 0.00", Description = "number contains valid number and space between minus sign and number")]
+		[TestCase(17, 2, false, "- 0.00",
+			Description = "number contains valid number and space between minus sign and number")]
 		[TestCase(17, 2, true, "0.000", Description = "number scale greater than specified scale")]
 		[TestCase(17, 2, true, "0000000000000000000",
 			Description = "count of digits in number greater than specified precision")]
@@ -29,10 +65,10 @@ namespace HomeExercises
 		{
 			//Arrange
 			var numberValidator = new NumberValidator(precision, scale, onlyPositive);
-			
+
 			//Act
 			var actual = numberValidator.IsValidNumber(number);
-			
+
 			//Assert
 			actual.Should().BeFalse();
 		}
@@ -49,10 +85,10 @@ namespace HomeExercises
 		{
 			//Arrange
 			var numberValidator = new NumberValidator(precision, scale, onlyPositive);
-			
+
 			//Act
 			var actual = numberValidator.IsValidNumber(number);
-			
+
 			//Assert
 			actual.Should().BeTrue();
 		}
@@ -66,7 +102,7 @@ namespace HomeExercises
 		{
 			//Arrange
 			Action action = () => _ = new NumberValidator(precision, scale, onlyPositive);
-			
+
 			//Act & Assert
 			action.Should().Throw<ArgumentException>();
 		}

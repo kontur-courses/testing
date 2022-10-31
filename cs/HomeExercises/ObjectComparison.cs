@@ -36,7 +36,7 @@ namespace HomeExercises
 			var actualTsar = TsarRegistry.GetCurrentTsar();
 			var expectedTsar = new Person(
 				"Ivan IV The Terrible", 54, 170, 70, new DateTime(1530, 08, 25),
-				new Person("Vasili III of Russia", 28, 170, 60, new DateTime(1479, 03, 25),  
+				new Person("Vasili III of Russia", 28, 170, 60, new DateTime(1479, 03, 25),
 					new Person("Ivan the Great", 65, 180, 75, new DateTime(1440, 01, 22), null)));
 
 			// Какие недостатки у такого подхода?
