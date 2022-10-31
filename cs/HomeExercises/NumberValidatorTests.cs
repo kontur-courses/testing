@@ -8,25 +8,94 @@ namespace HomeExercises
 	public class NumberValidatorTests
 	{
 		[Test]
-		public void Test()
+		public void NegativePrecision()
 		{
 			Assert.Throws<ArgumentException>(() => new NumberValidator(-1, 2, true));
+		}
+		[Test]
+		public void CorrectInitial()
+		{			
 			Assert.DoesNotThrow(() => new NumberValidator(1, 0, true));
+		}
+		[Test]
+		public void ScaleBiggerThanPrecision()
+		{
 			Assert.Throws<ArgumentException>(() => new NumberValidator(1, 2, false));
+		}
+		[Test]
+		public void NegativeScale()
+		{
 			Assert.Throws<ArgumentException>(() => new NumberValidator(1, -1, false));
-			Assert.IsTrue(new NumberValidator(17, 2, true).IsValidNumber("0.0"));
+		}
+		[Test]
+		public void ZeroValue()
+		{			
 			Assert.IsTrue(new NumberValidator(17, 2, true).IsValidNumber("0"));
+		}
+		[Test]
+		public void ZeroWithFrac()
+		{
+			Assert.IsTrue(new NumberValidator(17, 2, true).IsValidNumber("0.0"));
+		}
+		[Test]
+		public void IntAndFracPartBiggerThenPrecision()
+		{
 			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("00.00"));
+		}
+		[Test]
+		public void NegativeIntAndFracPathBiggerThanPrecision()
+		{
 			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("-0.00"));
+		}
+		[Test]
+		public void CorrectNegative()
+		{
 			Assert.IsTrue(new NumberValidator(4, 2).IsValidNumber("-1.23"));
+		}
+		[Test]
+		public void CorrectValue()
+		{
 			Assert.IsTrue(new NumberValidator(4, 2).IsValidNumber("1.23"));
+		}
+		[Test]
+		public void CorrectNegativeWithoutFrac()
+		{
 			Assert.IsTrue(new NumberValidator(4, 2).IsValidNumber("-1"));
+		}
+		[Test]
+		public void UncorrectValue()
+		{
 			Assert.IsFalse(new NumberValidator(4, 2).IsValidNumber("-+1"));
+		}
+		[Test]
+		public void CorrectValueWithPlus()
+		{
 			Assert.IsTrue(new NumberValidator(4, 2, true).IsValidNumber("+1.23"));
+		}
+		[Test]
+		public void FracPathBiggerThanScale()
+		{
 			Assert.IsFalse(new NumberValidator(17, 2, true).IsValidNumber("0.000"));
+		}
+		[Test]
+		public void UncorrectValueWithLetters()
+		{
 			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("a.sd"));
+		}
+		[Test]
+		public void WithoutFracPathAfterDot()
+		{
 			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("1."));
-			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("1.."));
+		}
+		[Test]
+		public void WithFracPathAfterTwoDot()
+		{
+			Assert.IsFalse(new NumberValidator(4, 2, true).IsValidNumber("1..1"));
+		}
+		[Test]
+		public void OnlyDot()
+		{
+			Assert.IsFalse(new NumberValidator(4, 2, true).IsValidNumber("."));
 		}
 	}
 	public class NumberValidator
