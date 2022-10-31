@@ -1,45 +1,81 @@
 ﻿using System;
 using System.Text.RegularExpressions;
-using FluentAssertions;
 using NUnit.Framework;
 
 namespace HomeExercises
 {
 	public class NumberValidatorTests
 	{
-		[Test]
 		[TestCase(-1, 2, true)]
 		[TestCase(1, -1, true)]
 		[TestCase(1, 2, true)]
-		public void NumberValidator_ShouldThrowException(int precision, int scale, bool onlyPositive)
+		public void NumberValidator_WithIncorrectArguments_ShouldThrowException(int precision, int scale, bool onlyPositive)
 		{
 			Assert.Throws<ArgumentException>(() => new NumberValidator(precision, scale, onlyPositive));
 		}
 		
-		[Test]
-		// Значение не пустое и не null
-		[TestCase(1, 0, true, "", false)]
-		[TestCase(1, 0, true, null, false)]
-		// Проверка Regex
-		[TestCase(1, 0, true, "-12zxc.v32bn", false)]
-		[TestCase(1, 0, true, "-12.00.12", false)]
-		[TestCase(1, 0, true, "-+1.0", false)]
-		// Проверки с успешным исходом
-		[TestCase(17, 2, true, "0.0", true)]
-		[TestCase(17, 2, true, "0", true)]
-		// Проверки на знак
-		[TestCase(3, 2, true, "-0.0", false)]
-		[TestCase(3, 2, true, "+0.0", true)]
-		// Проверки на длину числа
-		[TestCase(4, 2, false, "+1.23", true)]
-		[TestCase(3, 2, false, "-1.23", false)]
-		[TestCase(3, 2, true, "+1.23", false)]
-		[TestCase(3, 2, true, "00.00", false)]
-		// Проверки на длину дробной части
-		[TestCase(17, 2, true, "0.000", false)]
-		public void NumberValidator_Tests(int precision, int scale, bool onlyPositive, string value, object exceptedValue)
+		[TestCase(17, 2, true, "0.0", ExpectedResult = true)]
+		[TestCase(17, 2, true, "0", ExpectedResult = true)]
+		[TestCase(3, 2, true, "+0.0", ExpectedResult = true)]
+		[TestCase(4, 2, false, "+1.23", ExpectedResult = true)]
+		public bool IsValidNumber_SuccessPath_ShouldReturnTrue(int precision, int scale, bool onlyPositive,
+			string value)
 		{
-			Assert.AreEqual(exceptedValue, new NumberValidator(precision, scale, onlyPositive).IsValidNumber(value));
+			var numberValidator = new NumberValidator(precision, scale, onlyPositive);
+
+			return numberValidator.IsValidNumber(value);
+		}
+		
+		[TestCase(1, 0, true, "", ExpectedResult = false)]
+		[TestCase(1, 0, true, null, ExpectedResult = false)]
+		public bool IsValidNumber_WithNullOrEmptyValue_ShouldReturnFalse(int precision, int scale, bool onlyPositive,
+			string value)
+		{
+			var numberValidator = new NumberValidator(precision, scale, onlyPositive);
+
+			return numberValidator.IsValidNumber(value);
+		}
+		
+		[TestCase(1, 0, true, "-12zxc.v32bn", ExpectedResult = false)]
+		[TestCase(1, 0, true, "-12.00.12", ExpectedResult = false)]
+		[TestCase(1, 0, true, "-+1.0", ExpectedResult = false)]
+		public bool IsValidNumber_WithIncorrectValue_ShouldReturnFalse(int precision, int scale, bool onlyPositive,
+			string value)
+		{
+			var numberValidator = new NumberValidator(precision, scale, onlyPositive);
+
+			return numberValidator.IsValidNumber(value);
+		}
+		
+		[TestCase(3, 2, true, "-0.0", ExpectedResult = false)]
+		[TestCase(3, 2, true, "-0", ExpectedResult = false)]
+		public bool IsValidNumber_OnlyPositiveWithNegativeNumber_ShouldReturnFalse(int precision, int scale, bool onlyPositive,
+			string value)
+		{
+			var numberValidator = new NumberValidator(precision, scale, onlyPositive);
+
+			return numberValidator.IsValidNumber(value);
+		}
+		
+		[TestCase(3, 2, false, "-1.23", ExpectedResult = false)]
+		[TestCase(3, 2, true, "+1.23", ExpectedResult = false)]
+		[TestCase(3, 2, true, "00.00", ExpectedResult = false)]
+		public bool IsValidNumber_WithNumberLengthGreaterThanPrecision_ShouldReturnFalse(int precision, int scale, bool onlyPositive,
+			string value)
+		{
+			var numberValidator = new NumberValidator(precision, scale, onlyPositive);
+
+			return numberValidator.IsValidNumber(value);
+		}
+		
+		[TestCase(17, 2, true, "0.000", ExpectedResult = false)]
+		[TestCase(17, 0, false, "-0.0", ExpectedResult = false)]
+		public bool IsValidNumber_WithFracPartGreaterThanScale_ShouldReturnFalse(int precision, int scale, bool onlyPositive,
+			string value)
+		{
+			var numberValidator = new NumberValidator(precision, scale, onlyPositive);
+
+			return numberValidator.IsValidNumber(value);
 		}
 	}
 
