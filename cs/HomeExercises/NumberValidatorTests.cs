@@ -35,6 +35,84 @@ namespace HomeExercises
 		{
 			Assert.Throws<ArgumentException>(() => new NumberValidator(precision, scale));
 		}
+
+		[TestCase("")]
+		[TestCase(null)]
+		public void IsValidNumber_IsFalse_WithNullOrEmptyString(string input)
+		{
+			var numberValidator = new NumberValidator(3, 2, true);
+			numberValidator.IsValidNumber(input).Should().BeFalse();
+		}
+
+		[TestCase(".0")]
+		[TestCase("0.")]
+		[TestCase("a.0")]
+        [TestCase("0.a")]
+        [TestCase("0 0")]
+        public void IsValidNumber_IsFalse_WithNotRegexString(string input)
+        {
+	        var numberValidator = new NumberValidator(3, 2, true);
+	        numberValidator.IsValidNumber(input).Should().BeFalse();
+        }
+
+        [TestCase("+0.00")]
+        [TestCase("00.00")]
+        public void IsValidNumber_False_WhenLenMorePrecisionString(string input)
+        {
+	        var numberValidator = new NumberValidator(3, 2, true);
+	        numberValidator.IsValidNumber(input).Should()
+		        .BeFalse("для NumberValidator с precision=3 количество знаков без точки должно быть меньше 4");
+        }
+
+		[Test]
+		public void IsValidNumber_False_WhenLenFracMoreScale()
+		{
+			var numberValidator = new NumberValidator(4, 2, true);
+			numberValidator.IsValidNumber("0.111").Should()
+				.BeFalse("для NumberValidator с scale=2 количество знаков после запятой должно быть меньше 3");
+		}
+
+		[Test] 
+		public void IsValidNumber_False_WhenOnlyPositiveTrueButNumberNegative()
+		{
+			var numberValidator = new NumberValidator(3, 2, true);
+			numberValidator.IsValidNumber("-2.2").Should()
+				.BeFalse("для NumberValidator с onlyPositive=true число \"-2.2\" должно быть без минуса");
+		}
+
+		[TestCase("0")]
+		[TestCase("000")]
+		[TestCase("1.1")]
+		[TestCase("1,11")]
+		[TestCase("+0.0")]
+		[TestCase("-2.2")]
+		public void IsValidNumber_IsTrue_WithCorrectInput(string input)
+		{
+			var numberValidator = new NumberValidator(3, 2, false);
+			numberValidator.IsValidNumber(input).Should()
+				.BeTrue("для NumberValidator(3,2,false) IsValidNumber для строки \""+input+"\" должен быть true");
+		}
+
+		[TestCase("+0.00")]
+		[TestCase("22.22")]
+		[TestCase("0.000")]
+		public void IsValidNumber_DependsOnNumberValidator(string input)
+		{
+			var numberValidator1 = new NumberValidator(3, 2, true);
+			numberValidator1.IsValidNumber(input).Should().BeFalse();
+			var numberValidator2 = new NumberValidator(4, 3, true);
+			numberValidator2.IsValidNumber(input).Should().BeTrue();
+		}
+
+		[TestCase("+012343838388330.00")]
+		[TestCase("2.22555555555555555")]
+		public void IsValidNumber_True_WithBigPrecisionAndScale(string input)
+		{
+			var numberValidator2 = new NumberValidator(21, 18, true);
+			numberValidator2.IsValidNumber(input).Should()
+				.BeTrue("для NumberValidator(21,18,true) IsValidNumber для строки \"" + input + "\" должен быть true");
+		}
+
 	}
 
 	public class NumberValidator
