@@ -9,7 +9,7 @@ namespace HomeExercises
 		[Description("Проверка текущего царя")]
 		[Category("ToRefactor")]
 		public void CheckCurrentTsar()
-		{
+		{ 
 			var actualTsar = TsarRegistry.GetCurrentTsar();
 
             var expectedTsar = new Person("Ivan IV The Terrible", 54, 170, 70,
@@ -28,8 +28,9 @@ namespace HomeExercises
 			var expectedTsar = new Person("Ivan IV The Terrible", 54, 170, 70,
 				new Person("Vasili III of Russia", 28, 170, 60, null));
 
-		// Какие недостатки у такого подхода? 
-
+			// Какие недостатки у такого подхода? 
+			// Не понятно на каком параметре упал тест, какое значение должно быть. 
+			// Выдается лишь сообщение Message: Expected: True But was: False
 			Assert.True(AreEqual(actualTsar, expectedTsar));
 		}
 
