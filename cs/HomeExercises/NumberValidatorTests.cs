@@ -38,7 +38,10 @@ namespace HomeExercises
 		[TestCase("+12.345", 5, 3, false, TestName = "length number with '+' > precision")]
 		[TestCase("123.456", 5, 3, false, TestName = "integer length + fraction length > precision")]
 		[TestCase("1.2345", 5, 3, false, TestName = "fraction length > scale")]
+
 		[TestCase("-12.34", 5, 3, true, TestName = "negative number with onlyPositive")]
+		
+		[TestCase("12.", 5, 3, false, TestName = "no digits after separator")]
 		public void Test_IsValidNumber_ShouldBeFalse(string number, int precision, int scale, bool onlyPositive)
 		{
 			new NumberValidator(precision, scale, onlyPositive).IsValidNumber(number).Should().BeFalse();
@@ -50,7 +53,7 @@ namespace HomeExercises
 		[TestCase("1.234", 5, 3, false, TestName = "number is`n full length")]
 		[TestCase("12", 5, 3, false, TestName = "number without fraction part")]
 		[TestCase("12.34", 5, 3, false, TestName = "fraction part Length < scale")]
-		[TestCase("0", 5, 3, false, TestName = "scale is zero")]
+		[TestCase("12345", 5, 0, false, TestName = "scale is zero")]
 
 		[TestCase("+12.34", 5, 3, true, TestName = "positive number with onlyPositive")]
 		[TestCase("+12.34", 5, 3, false, TestName = "positive number without onlyPositive")]
