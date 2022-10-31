@@ -10,7 +10,8 @@ namespace HomeExercises
 		[TestCase(1,0,true)]
 		public void NumberValidator_WithCorrectParameters_DoesNotThrow(int precision, int scale, bool onlyPositive)
 		{
-			Assert.DoesNotThrow(() => new NumberValidator(precision, scale, onlyPositive));
+			Action act = () => { var numberValidator = new NumberValidator(precision, scale, onlyPositive); };
+			act.Should().NotThrow();
 		}
 		
 		[TestCase(0, 0, TestName = "NumberValidator_WithPrecisionZero_ShouldThrowArgumentException")]
@@ -20,7 +21,8 @@ namespace HomeExercises
 		[TestCase(1, 2, TestName = "NumberValidator_WithPrecisionLessScale_ShouldThrowArgumentException")]
 		public void NumberValidator_WithNotCorrectParameters_ShouldThrowArgumentException(int precision, int scale)
 		{
-			Assert.Throws<ArgumentException>(() => new NumberValidator(precision, scale));
+			Action act = () => { var numberValidator = new NumberValidator(precision, scale); };
+			act.Should().Throw<ArgumentException>();
 		}
 
 		[TestCase("")]
