@@ -5,138 +5,141 @@ using NUnit.Framework;
 
 namespace HomeExercises
 {
-	[TestFixture]
-	public class NumberValidatorTests
-	{
-		class ConstructorTests
-		{
-			[TestCase(-10, 10, false, TestName = "When precision < 0")]
-			[TestCase(0, 10, false, TestName = "When precision = 0")]
-			public void Should_ThrowArgumentException_OnIncorrectPrecision(int precision, int scale, bool onlyPositive)
-			{
-				Action act = () => new NumberValidator(precision, scale, onlyPositive);
-				act.Should().Throw<ArgumentException>().WithMessage("precision must be a positive number");
-			}
-			[TestCase(1, 10, true, TestName = "When scale > precision")]
-			[TestCase(10, 10, true, TestName = "When scale = precision")]
-			[TestCase(1, -10, false, TestName = "When scale < 0")]
-			public void Should_ThrowArgumentException_OnIncorrectScale(int precision, int scale, bool onlyPositive)
-			{
-				Action act = () => new NumberValidator(precision, scale, onlyPositive);
-				act.Should().Throw<ArgumentException>().WithMessage("precision must be a non-negative number less or equal than precision");
-			}
-		
-			[TestCase(10, 2, false, TestName = "When scale > 0")]
-			[TestCase(10, 0, false, TestName = "When scale = 0")]
-			public void Should_NotThrowArgumentException_OnCorrectArguments(int precision, int scale, bool onlyPositive)
-			{
-				Action act = () => new NumberValidator(precision, scale, onlyPositive);
-				act.Should().NotThrow<ArgumentException>();
-			}
-		}
-		class IsValidNumberTests
-		{
-			[TestCase(4,2,true, "", TestName = "When string is empty")]
-			[TestCase(4,2, true, null, TestName = "When string = null")]
-			public void Should_ReturnFalse_When_InputIsNullOrEmpty(int precision, int scale, bool onlyPositive, string value)
-			{
-				new NumberValidator(precision, scale, onlyPositive).IsValidNumber(value).Should().BeFalse();
-			}
-			
-			[TestCase(3,2,true, ".11", TestName = "When starts with point")]
-			[TestCase(4,2,true, "1.1.1.1", TestName = "When count of points > 1")]
-			[TestCase(4,2,true, "a.sd", TestName = "When contains unresolved symbols")]
-			[TestCase(2,0,true, "11.", TestName = "When ends with point")]
-			[TestCase(1,0,false, "-", TestName = "When contains only sing")]
-			[TestCase(3,2,false, "-.11", TestName = "When starts with sing and point")]
-			[TestCase(4,2,false, "1.-11", TestName = "When sing isn't ahead")]
-			public void Should_ReturnFalse_When_InputDoesNotMatchRegex(int precision, int scale, bool onlyPositive, string value)
-			{
-				new NumberValidator(precision, scale, onlyPositive).IsValidNumber(value).Should().BeFalse();
-			}
+    public class NumberValidatorTests
+    {
+        #region Tests for constructor
 
-			[TestCase(3,2,false, "11.23", TestName = "When input doesn't contain sign")]
-			[TestCase(3,2,false, "+0.00", TestName = "When input contains sign")]
-			public void Should_ReturnFalse_When_InputLongerThanPrecision(int precision, int scale, bool onlyPositive, string value)
-			{
-				new NumberValidator(precision, scale, onlyPositive).IsValidNumber(value).Should().BeFalse();
-			}
-			
-			[Test]
-			public void Should_ReturnFalse_When_FracPartLongerThanScale()
-			{
-				new NumberValidator(5, 2, true).IsValidNumber("11.111").Should().BeFalse();
-			}
-			
-			[Test]
-			public void Should_ReturnTrue_When_FlagOnlyPositiveIsFalseAndInputIsPositive()
-			{
-				new NumberValidator(5, 2, false).IsValidNumber("11.11").Should().BeFalse();
-			}
-			
-			[Test]
-			public void Should_ReturnFalse_When_FlagOnlyPositiveIsTrueAndInputIsNegative()
-			{
-				new NumberValidator(5, 2, true).IsValidNumber("-11.11").Should().BeFalse();
-			}
-			
-			[TestCase(5,2,false, "-10,15", TestName = "When num is negative and \",\" instead \".\"")]
-			[TestCase(2,0,false, "-0", TestName = "When num = -0")]
-			[TestCase(17,2,true, "0.0", TestName = "When input shorter than precision and scale > frac part")]
-			[TestCase(17,2,true, "0", TestName = "When input shorter than precision, scale > 0 and frac part is missing")]
-			public void Should_ReturnTrue_When_InputIsCorrect(int precision, int scale, bool onlyPositive, string value)
-			{
-				new NumberValidator(precision, scale, onlyPositive).IsValidNumber(value).Should().BeTrue();
-			}
-		}
+        [TestCase(-10, 10, TestName = "Precision < 0")]
+        [TestCase(0, 10, TestName = "Precision = 0")]
+        public void Constructor_ShouldThrowArgumentException_OnIncorrectPrecision(int precision, int scale)
+        {
+            Assert.Throws<ArgumentException>(() => new NumberValidator(precision, scale));
+        }
 
-	}
 
-	public class NumberValidator
-	{
-		private readonly Regex numberRegex;
-		private readonly bool onlyPositive;
-		private readonly int precision;
-		private readonly int scale;
+        [TestCase(1, 10, TestName = "Scale > precision")]
+        [TestCase(10, 10, TestName = "Scale = precision")]
+        [TestCase(1, -10, TestName = "Scale < 0")]
+        public void Constructor_ShouldThrowArgumentException_OnIncorrectScale(int precision, int scale)
+        {
+            Assert.Throws<ArgumentException>(() => new NumberValidator(precision, scale));
+        }
 
-		public NumberValidator(int precision, int scale = 0, bool onlyPositive = false)
-		{
-			this.precision = precision;
-			this.scale = scale;
-			this.onlyPositive = onlyPositive;
-			if (precision <= 0)
-				throw new ArgumentException("precision must be a positive number");
-			if (scale < 0 || scale >= precision)
-				throw new ArgumentException("precision must be a non-negative number less or equal than precision");
-			numberRegex = new Regex(@"^([+-]?)(\d+)([.,](\d+))?$", RegexOptions.IgnoreCase);
-		}
+        [TestCase(10, 2, TestName = "Scale > 0")]
+        [TestCase(10, 0, TestName = "Scale = 0")]
+        public void Constructor_ShouldNotThrowArgumentException_OnCorrectArguments(int precision, int scale)
+        {
+            Assert.DoesNotThrow(() => new NumberValidator(precision, scale));
+        }
 
-		public bool IsValidNumber(string value)
-		{
-			// Проверяем соответствие входного значения формату N(m,k), в соответствии с правилом, 
-			// описанным в Формате описи документов, направляемых в налоговый орган в электронном виде по телекоммуникационным каналам связи:
-			// Формат числового значения указывается в виде N(m.к), где m – максимальное количество знаков в числе, включая знак (для отрицательного числа), 
-			// целую и дробную часть числа без разделяющей десятичной точки, k – максимальное число знаков дробной части числа. 
-			// Если число знаков дробной части числа равно 0 (т.е. число целое), то формат числового значения имеет вид N(m).
+        #endregion
 
-			if (string.IsNullOrEmpty(value))
-				return false;
+        #region Tests for IsValidNumber
 
-			var match = numberRegex.Match(value);
-			if (!match.Success)
-				return false;
+        [TestCase(4, 2, "", TestName = "String is empty")]
+        [TestCase(4, 2, null, TestName = "String = null")]
+        public void IsValidNumber_ShouldReturnFalse_WhenInputIsNullOrEmpty(int precision, int scale,
+            string value)
+        {
+            new NumberValidator(precision, scale).IsValidNumber(value).Should().BeFalse();
+        }
 
-			// Знак и целая часть
-			var intPart = match.Groups[1].Value.Length + match.Groups[2].Value.Length;
-			// Дробная часть
-			var fracPart = match.Groups[4].Value.Length;
+        [TestCase(3, 0, "+-1", TestName = "Starts with 2 signs")]
+        [TestCase(3, 1, "1..1", TestName = "Contains 2 points in a row")]
+        [TestCase(3, 2, ".11", TestName = "Starts with point")]
+        [TestCase(4, 2, "1.1.1.1", TestName = "Count of points > 1")]
+        [TestCase(4, 2, "a.sd", TestName = "Contains unresolved symbols")]
+        [TestCase(2, 0, "11.", TestName = "Ends with point")]
+        [TestCase(1, 0, "-", TestName = "Contains only sing")]
+        [TestCase(1, 0, ".", TestName = "Contains only point")]
+        [TestCase(3, 2, "-.11", TestName = "Starts with sing and point")]
+        [TestCase(4, 2, "1.-11", TestName = "Sing isn't ahead")]
+        public void IsValidNumber_ShouldReturnFalse_WhenInputDoesNotMatchRegex(int precision, int scale,
+            string value)
+        {
+            new NumberValidator(precision, scale).IsValidNumber(value).Should().BeFalse();
+        }
 
-			if (intPart + fracPart > precision || fracPart > scale)
-				return false;
+        [TestCase(3, 2, "11.23", TestName = "Input longer than precision and doesn't contain sign")]
+        [TestCase(3, 2, "+0.00", TestName = "Input longer than precision and contains sign")]
+        [TestCase(5, 2, "11.111", TestName = "Frac part longer than scale")]
+        [TestCase(2, 0, "-10", TestName = "Sign included in precision")]
+        public void IsValidNumber_ShouldReturnFalse_OnIncorrectPrecisionOrScale(int precision, int scale,
+            string value)
+        {
+            new NumberValidator(precision, scale).IsValidNumber(value).Should().BeFalse();
+        }
 
-			if (onlyPositive && match.Groups[1].Value == "-")
-				return false;
-			return true;
-		}
-	}
+        [TestCase(2, 0, true, "-1", TestName = "Negative number")]
+        [TestCase(2, 0, true, "-0", TestName = "Number is -0")]
+        public void IsValidNumber_ShouldReturnFalse_WhenFlagOnlyPositiveIsTrueAndInputIsNegative(int precision,
+            int scale, bool onlyPositive,
+            string value)
+        {
+            new NumberValidator(precision, scale, onlyPositive).IsValidNumber(value).Should().BeFalse();
+        }
+
+        [TestCase(6, 2, false, "-10,15", TestName = "Num is negative, \",\" instead \".\"")]
+        [TestCase(2, 0, false, "10", TestName = "Positive integer, onlyPositive is false")]
+        [TestCase(17, 2, true, "0.0", TestName = "Input shorter than precision and scale > frac part")]
+        [TestCase(4, 2, true, "10.11", TestName = "Precision = lenght of input (except point), scale = frac part")]
+        [TestCase(4, 2, false, "+1",
+            TestName = "OnlyPositive is false and num is positive, scale > 0 and frac part is missing")]
+        [TestCase(100, 0, false, "13", TestName = "Input shorter than precision")]
+        public void IsValidNumber_ShouldReturnTrue_OnCorrectInput(int precision, int scale, bool onlyPositive,
+            string value)
+        {
+            new NumberValidator(precision, scale, onlyPositive).IsValidNumber(value).Should().BeTrue();
+        }
+
+        #endregion
+    }
+
+    public class NumberValidator
+    {
+        private readonly Regex numberRegex;
+        private readonly bool onlyPositive;
+        private readonly int precision;
+        private readonly int scale;
+
+        public NumberValidator(int precision, int scale = 0, bool onlyPositive = false)
+        {
+            this.precision = precision;
+            this.scale = scale;
+            this.onlyPositive = onlyPositive;
+            if (precision <= 0)
+                throw new ArgumentException("precision must be a positive number");
+            if (scale < 0 || scale >= precision)
+                throw new ArgumentException("precision must be a non-negative number less or equal than precision");
+            numberRegex = new Regex(@"^([+-]?)(\d+)([.,](\d+))?$", RegexOptions.IgnoreCase);
+        }
+
+        public bool IsValidNumber(string value)
+        {
+            // Проверяем соответствие входного значения формату N(m,k), в соответствии с правилом, 
+            // описанным в Формате описи документов, направляемых в налоговый орган в электронном виде по телекоммуникационным каналам связи:
+            // Формат числового значения указывается в виде N(m.к), где m – максимальное количество знаков в числе, включая знак (для отрицательного числа), 
+            // целую и дробную часть числа без разделяющей десятичной точки, k – максимальное число знаков дробной части числа. 
+            // Если число знаков дробной части числа равно 0 (т.е. число целое), то формат числового значения имеет вид N(m).
+
+            if (string.IsNullOrEmpty(value))
+                return false;
+
+            var match = numberRegex.Match(value);
+            if (!match.Success)
+                return false;
+
+            // Знак и целая часть
+            var intPart = match.Groups[1].Value.Length + match.Groups[2].Value.Length;
+            // Дробная часть
+            var fracPart = match.Groups[4].Value.Length;
+
+            if (intPart + fracPart > precision || fracPart > scale)
+                return false;
+
+            if (onlyPositive && match.Groups[1].Value == "-")
+                return false;
+            return true;
+        }
+    }
 }
