@@ -10,11 +10,10 @@ namespace HomeExercises
 	public class NumberValidatorTests
 	{
 		[Test]
-		[TestCase(-1, 2, true, TestName = "Creation_NegativePrecision_ShouldThrowException")]
-		[TestCase(0, 0, true, TestName = "Creation_PrecisionIsZero_ShouldThrowException")]
-		[TestCase(2, -1, true, TestName = "Creation_NegativeScale_ShouldThrowException")]
-		[TestCase(1, 2, true, TestName = "Creation_ScaleGreaterThenPrecision_ShouldThrowException")]
-		
+		[TestCase(-1, 2, true, TestName = "NegativePrecision")]
+		[TestCase(0, 0, true, TestName = "PrecisionIsZero")]
+		[TestCase(2, -1, true, TestName = "NegativeScale")]
+		[TestCase(1, 2, true, TestName = "ScaleGreaterThenPrecision")]
 		public void Creation_ShouldThrowArgumentException(int precision, int scale, bool onlyPositive)
 		{
 			Action creation = () => new NumberValidator(precision, scale, onlyPositive);
@@ -22,7 +21,7 @@ namespace HomeExercises
 		}
 
 		[Test]
-		[TestCase(1, 0, true, TestName = "Creation_PositivePrecision_ShouldNotThrowException")]
+		[TestCase(1, 0, true, TestName = "PositivePrecision")]
 		public void Creation_ShouldNotThrowException(int precision, int scale, bool onlyPositive)
 		{
 			Action creation = () => new NumberValidator(precision, scale, onlyPositive);
@@ -30,19 +29,14 @@ namespace HomeExercises
 		}
 
 		[Test]
-		[TestCase(17, 2, true, null, TestName = "IsValidNumber_NullString_ShouldBeFalse")]
-		[TestCase(17, 2, true, "", TestName = "IsValidNumber_EmptyString_ShouldBeFalse")]
-		[TestCase(3, 2, true, "a.sd", TestName = "IsValidNumber_NotNumber_ShouldBeFalse")]
-		[TestCase(17, 2, true, ".0", TestName = "IsValidNumber_WithoutIntPart_ShouldBeFalse")]
-		[TestCase(3, 2, true, "00.00",
-			TestName = "IsValidNumber_NumberPrecisionGreaterThanValidatorPrecision_ShouldBeFalse")]
-		[TestCase(3, 2, true, "+1.23",
-			TestName = "IsValidNumber_NumberPrecisionGreaterThanValidatorPrecision_ShouldBeFalse")]
-		[TestCase(17, 2, true, "0.000",
-			TestName = "IsValidNumber_NumberScaleGreaterThanValidatorScale_ShouldBeFalse")]
-		[TestCase(10, 5, true, "-1.23",
-			TestName = "IsValidNumber_NegativeNumberWithOnlyPositiveValidator_ShouldBeFalse")]
-		
+		[TestCase(17, 2, true, null, TestName = "NullString")]
+		[TestCase(17, 2, true, "", TestName = "EmptyString")]
+		[TestCase(3, 2, true, "a.sd", TestName = "NotNumber")]
+		[TestCase(17, 2, true, ".0", TestName = "WithoutIntPart")]
+		[TestCase(3, 2, true, "00.00", TestName = "NumberPrecisionGreaterThanValidatorPrecision")]
+		[TestCase(3, 2, true, "+1.23", TestName = "NumberPrecisionGreaterThanValidatorPrecision")]
+		[TestCase(17, 2, true, "0.000", TestName = "NumberScaleGreaterThanValidatorScale")]
+		[TestCase(10, 5, true, "-1.23", TestName = "NegativeNumberWithOnlyPositiveValidator")]
 		public void IsValidNumber_ShouldBeFalse(int precision, int scale, bool onlyPositive, string numberString)
 		{
 			NumberValidator validator = new NumberValidator(precision, scale,onlyPositive);
@@ -50,11 +44,9 @@ namespace HomeExercises
 		}
 		
 		[Test]
-		[TestCase(17, 2, true, "0.0", TestName = "IsValidNumber_ValidNumber_ShouldBeTrue")]
-		[TestCase(17, 2, true, "0", TestName = "IsValidNumber_WithoutFractionPart_ShouldBeTrue")]
-		[TestCase(4, 2, true, "00.00",
-			TestName = "IsValidNumber_NumberPrecisionEqualValidatorPrecision_ShouldBeTrue")]
-		
+		[TestCase(17, 2, true, "0.0", TestName = "ValidNumber_")]
+		[TestCase(17, 2, true, "0", TestName = "WithoutFractionPart")]
+		[TestCase(4, 2, true, "00.00", TestName = "NumberPrecisionEqualValidatorPrecision")]
 		public void IsValidNumber_ShouldBeTrue(int precision, int scale, bool onlyPositive, string numberString)
 		{
 			NumberValidator validator = new NumberValidator(precision, scale, onlyPositive);
