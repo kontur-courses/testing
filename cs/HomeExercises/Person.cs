@@ -6,11 +6,13 @@ namespace HomeExercises
 {
 	public class Person
 	{
-		public static int IdCounter = 0;
-		public int Age, Height, Weight;
-		public string Name;
-		public Person? Parent;
-		public int Id;
+		public static int IdCounter { get; private set; }
+		public int Age { get; }
+		public int Height { get; }
+		public int Weight { get; }
+		public string Name { get; }
+		public Person? Parent { get; }
+		public int Id { get; }
 
 		public Person(string name, int age, int height, int weight, Person? parent)
 		{

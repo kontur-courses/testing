@@ -26,26 +26,15 @@ namespace HomeExercises
 		[Description("Проверка инкрементирования счетчика персон")]
 		public void PersonField_IdCounter_IsIncrementable()
 		{
-			Person.IdCounter = 5;
-
-			new Person("", 0, 0, 0, null);
-
-			Person.IdCounter.Should().Be(6);
-		}
-
-		[Test]
-		[Category(nameof(Person.IdCounter))]
-		[Description("Проверка инкрементирования счетчика персон")]
-		public void PersonField_IdCounter_AreIncrementedAfterNewPerson()
-		{
-			Person.IdCounter = 7;
+			int currentPersonIdCounterValue = Person.IdCounter;
 
 			var person = new Person("", 0, 0, 0, null);
 
-			person.Id.Should().Be(7);
+			person.Id.Should().Be(currentPersonIdCounterValue);
+			Person.IdCounter.Should().Be(currentPersonIdCounterValue + 1);
 		}
-
-		[Test]
+		
+		[Test, Explicit]
 		[Description("Альтернативное решение. Какие у него недостатки?")]
 		public void CheckCurrentTsar_WithCustomEquality()
 		{
