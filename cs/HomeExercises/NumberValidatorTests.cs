@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using FluentAssertions;
 using NUnit.Framework;
@@ -8,113 +9,242 @@ namespace HomeExercises
     [TestFixture]
 	public class NumberValidatorTests
 	{
-        #region Instance Tests
-        [Test, Category("Instance")]
-        [TestCase(true)]
-        [TestCase(false)]
-		public void Instance_NegativePrecisionAnySign_ShouldThrowException(bool onlyPositive)
+        #region TestCases
+		private static IEnumerable<TestCaseData> NonPositivePrecisionCases
+		{
+            get
+            {
+				yield return new TestCaseData(-1, 2, true);
+				yield return new TestCaseData(-1, 2, false);
+				yield return new TestCaseData(0, 1, true);
+				yield return new TestCaseData(0, 1, false);
+				yield return new TestCaseData(-2, 1, true);
+				yield return new TestCaseData(-2, 1, false);
+			}
+        }
+
+		private static IEnumerable<TestCaseData> PositivePrecisionCases
+		{
+			get
+			{
+				yield return new TestCaseData(10, 5, true);
+				yield return new TestCaseData(10, 5, false);
+				yield return new TestCaseData(2, 1, true);
+				yield return new TestCaseData(2, 1, false);
+			}
+		}
+
+		private static IEnumerable<TestCaseData> ScaleGreaterOrEqualToPrecisionCases
+		{
+			get
+			{
+				yield return new TestCaseData(5, 10, true);
+				yield return new TestCaseData(5, 10, false);
+				yield return new TestCaseData(1, 2, true);
+				yield return new TestCaseData(1, 2, false);				
+				yield return new TestCaseData(1, 1, true);
+				yield return new TestCaseData(1, 1, false);
+			}
+		}
+
+		private static IEnumerable<TestCaseData> NegativeScaleCases
+		{
+			get
+			{
+				yield return new TestCaseData(5, -10, true);
+				yield return new TestCaseData(5, -10, false);
+				yield return new TestCaseData(1, -2, true);
+				yield return new TestCaseData(1, -2, false);
+				yield return new TestCaseData(1, -1, true);
+				yield return new TestCaseData(1, -1, false);
+			}
+		}
+
+		private static IEnumerable<TestCaseData> NonDigitCharsCases
+		{
+			get
+			{
+				yield return new TestCaseData(10, 5, "a");
+				yield return new TestCaseData(10, 5, "a.55");
+				yield return new TestCaseData(10, 5, "a.");
+				yield return new TestCaseData(10, 5, "5.bc");
+				yield return new TestCaseData(10, 5, ".bc");
+				yield return new TestCaseData(10, 5, "a.bc");
+				yield return new TestCaseData(10, 5, "+a.bc");
+				yield return new TestCaseData(10, 5, "-a.bc");
+			}
+		}
+
+		private static IEnumerable<TestCaseData> OnlyIntegerPartCases
+		{
+            get
+            {
+				yield return new TestCaseData(10, 5, "1234");
+				yield return new TestCaseData(10, 5, "01234");
+				yield return new TestCaseData(10, 5, "+1234");
+				yield return new TestCaseData(10, 5, "-1234");
+            }
+        }		
+		
+		private static IEnumerable<TestCaseData> IntegerPartAndFractionalPartCases
+		{
+            get
+            {
+				yield return new TestCaseData(10, 5, "0.0");
+				yield return new TestCaseData(10, 5, "0.000");
+				yield return new TestCaseData(10, 5, "1234.123");
+				yield return new TestCaseData(10, 5, "01234.123");
+				yield return new TestCaseData(10, 5, "+1234.123");
+				yield return new TestCaseData(10, 5, "-1234.123");
+            }
+        }
+
+		private static IEnumerable<TestCaseData> PrecisionGreaterThanValidatorPrecisionCases
+		{
+            get
+            {
+				yield return new TestCaseData(5, 2, "123123");
+				yield return new TestCaseData(5, 2, "+12312");
+				yield return new TestCaseData(5, 2, "-12312");
+				yield return new TestCaseData(5, 4, "123.123");
+				yield return new TestCaseData(3, 2, "123123");
+				yield return new TestCaseData(1, 0, "123123");
+				yield return new TestCaseData(1, 0, "12");
+            }
+        }		
+		
+		private static IEnumerable<TestCaseData> ScaleGreaterThanValidatorScaleCases
+		{
+            get
+            {
+				yield return new TestCaseData(15, 5, "123.123456");
+				yield return new TestCaseData(15, 5, "0.123456789");
+				yield return new TestCaseData(15, 5, "+123.1234561");
+				yield return new TestCaseData(15, 5, "-123.1234561");
+            }
+        }			
+		
+		private static IEnumerable<TestCaseData> NegativeNumberWithValidatorOnlyPositiveAttributeCases
+		{
+            get
+            {
+				yield return new TestCaseData(10, 5, "-123");
+				yield return new TestCaseData(10, 5, "-123.123456");
+				yield return new TestCaseData(10, 5, "-0.123456");
+				yield return new TestCaseData(10, 5, "-0");
+            }
+        }		
+		
+		private static IEnumerable<TestCaseData> OnlyFractionPartCases
+		{
+            get
+            {
+				yield return new TestCaseData(15, 10, ".123456");
+				yield return new TestCaseData(15, 10, ".123");
+				yield return new TestCaseData(15, 10, "+.123456");
+				yield return new TestCaseData(15, 10, "-.123456");
+            }
+        }		
+		
+		private static IEnumerable<TestCaseData> IntegerPartWithPointButWithoutFractionPart
+		{
+            get
+            {
+				yield return new TestCaseData(15, 10, "1.");
+				yield return new TestCaseData(15, 10, "12.");
+				yield return new TestCaseData(15, 10, "+123.");
+				yield return new TestCaseData(15, 10, "-123.");
+            }
+        }
+
+
+		#endregion
+
+		#region Instance Tests
+		[Test, Category("Instance"), TestCaseSource(nameof(NonPositivePrecisionCases))]
+		public void Instance_NonPositivePrecision_ShouldThrowException(int precision, int scale, bool onlyPositive)
         {
-			Action action = () => new NumberValidator(-1, 2, onlyPositive);
+			Action action = () => new NumberValidator(precision, scale, onlyPositive);
 			action.Should().Throw<ArgumentException>();
 		}
 
-		[Test, Category("Instance")]
-		[TestCase(true)]
-		[TestCase(false)]
-		public void Instance_PositivePrecisionSuitableScaleAnySign_ShouldNotThrowException(bool onlyPositive)
+		[Test, Category("Instance"), TestCaseSource(nameof(PositivePrecisionCases))]
+		public void Instance_PositivePrecision_ShouldNotThrowException(int precision, int scale, bool onlyPositive)
 		{
-			Action action = () => new NumberValidator(1, 0, onlyPositive);
+			Action action = () => new NumberValidator(precision, scale, onlyPositive);
 			action.Should().NotThrow<ArgumentException>();
 		}
 
-		[Test, Category("Instance")]
-		[TestCase(true)]
-		[TestCase(false)]
-		public void Instance_PositivePrecisionScaleGreaterThanPrecisionAnySign_ShouldThrowException(bool onlyPositive)
+		[Test, Category("Instance"), TestCaseSource(nameof(ScaleGreaterOrEqualToPrecisionCases))]
+		public void Instance_ScaleGreaterOrEqualToPrecision_ShouldThrowException(int precision, int scale, bool onlyPositive)
 		{
 			Action action = () => new NumberValidator(1, 2, onlyPositive);
 			action.Should().Throw<ArgumentException>();
 		}
 
-		[Test, Category("Instance")]
-		[TestCase(true)]
-		[TestCase(false)]
-		public void Instance_PositivePrecisionNegativeScaleAnySign_ShouldThrowException(bool onlyPositive)
+		[Test, Category("Instance"), TestCaseSource(nameof(NegativeScaleCases))]
+		public void Instance_NegativeScale_ShouldThrowException(int precision, int scale, bool onlyPositive)
 		{
-			Action action = () => new NumberValidator(1, -1, onlyPositive);
+			Action action = () => new NumberValidator(precision, scale, onlyPositive);
 			action.Should().Throw<ArgumentException>();
 		}
         #endregion
 
         #region IsValidNumber Tests
-        [Test, Category("IsValidNumber")]
-		public void IsValidNumber_NonDigitChars_ShouldBeFalse()
+        [Test, Category("IsValidNumber"), TestCaseSource(nameof(NonDigitCharsCases))]
+		public void IsValidNumber_NonDigitChars_ShouldBeFalse(int precision, int scale, string number)
         {
-			NumberValidator numberValidator = new NumberValidator(3, 2, true);
-			numberValidator.IsValidNumber("a.sd").Should().BeFalse();
+			NumberValidator numberValidator = new NumberValidator(precision, scale, false);
+			numberValidator.IsValidNumber(number).Should().BeFalse();
         }
 
-		[Test, Category("IsValidNumber")]
-		public void IsValidNumber_NumberWithoutDigitsAfterPoint_ShouldBeTrue()
+		[Test, Category("IsValidNumber"), TestCaseSource(nameof(OnlyIntegerPartCases))]
+		public void IsValidNumber_OnlyIntegerPart_ShouldBeTrue(int precision, int scale, string number)
         {
-			NumberValidator numberValidator = new NumberValidator(17, 2, true);
-			numberValidator.IsValidNumber("0").Should().BeTrue();
+			NumberValidator numberValidator = new NumberValidator(precision, scale, false);
+			numberValidator.IsValidNumber(number).Should().BeTrue();
 		}
 
-		[Test, Category("IsValidNumber")]
-		public void IsValidNumber_NumberWithDigitAfterPoint_ShouldBeTrue()
+		[Test, Category("IsValidNumber"), TestCaseSource(nameof(OnlyFractionPartCases))]
+		public void IsValidNumber_OnlyFractionPart_ShouldBeFalse(int precision, int scale, string number)
 		{
-			NumberValidator numberValidator = new NumberValidator(17, 2, true);
-			numberValidator.IsValidNumber("0.0").Should().BeTrue();
+			NumberValidator numberValidator = new NumberValidator(precision, scale, false);
+			numberValidator.IsValidNumber(number).Should().BeFalse();
 		}
 
-		[Test, Category("IsValidNumber")]
-		public void IsValidNumber_NumberWithPrecisionGreaterThanValidatorPrecision_ShouldBeFalse()
+		[Test, Category("IsValidNumber"), TestCaseSource(nameof(IntegerPartAndFractionalPartCases))]
+		public void IsValidNumber_IntegerPartAndFractionalPart_ShouldBeTrue(int precision, int scale, string number)
 		{
-			NumberValidator numberValidator = new NumberValidator(3, 2, true);
-			numberValidator.IsValidNumber("00.00").Should().BeFalse();
+			NumberValidator numberValidator = new NumberValidator(precision, scale, false);
+			numberValidator.IsValidNumber(number).Should().BeTrue();
 		}
 
-		[Test, Category("IsValidNumber")]
-		public void IsValidNumber_NumberWithScaleGreaterThanValidatorScale_ShouldBeFalse()
+		[Test, Category("IsValidNumber"), TestCaseSource(nameof(IntegerPartWithPointButWithoutFractionPart))]
+		public void IsValidNumber_IntegerPartWithPointButWithoutFractionPart_ShouldBeFalse(int precision, int scale, string number)
 		{
-			NumberValidator numberValidator = new NumberValidator(17, 2, true);
-			numberValidator.IsValidNumber("0.000").Should().BeFalse();
+			NumberValidator numberValidator = new NumberValidator(precision, scale, false);
+			numberValidator.IsValidNumber(number).Should().BeFalse();
 		}
 
-		[Test, Category("IsValidNumber")]
-		public void IsValidNumber_SignedNumberWithPrecisionGreaterThanValidatorPrecision_ShouldBeFalse()
+		[Test, Category("IsValidNumber"), TestCaseSource(nameof(PrecisionGreaterThanValidatorPrecisionCases))]
+		public void IsValidNumber_PrecisionGreaterThanValidatorPrecision_ShouldBeFalse(int precision, int scale, string number)
+		{
+			NumberValidator numberValidator = new NumberValidator(precision, scale, false);
+			numberValidator.IsValidNumber(number).Should().BeFalse();
+		}
+
+		[Test, Category("IsValidNumber"), TestCaseSource(nameof(ScaleGreaterThanValidatorScaleCases))]
+		public void IsValidNumber_ScaleGreaterThanValidatorScale_ShouldBeFalse(int precision, int scale, string number)
+		{
+			NumberValidator numberValidator = new NumberValidator(precision, scale, false);
+			numberValidator.IsValidNumber(number).Should().BeFalse();
+		}
+
+		[Test, Category("IsValidNumber"), TestCaseSource(nameof(NegativeNumberWithValidatorOnlyPositiveAttributeCases))]
+		public void IsValidNumber_NegativeNumberWithValidatorOnlyPositiveAttribute_ShouldBeFalse(int precision, int scale, string number)
         {
-			NumberValidator numberValidator = new NumberValidator(3, 2, true);
-			numberValidator.IsValidNumber("+1.23").Should().BeFalse();
-		}
-
-		[Test, Category("IsValidNumber")]
-		public void IsValidNumber_SignedNumberWithPrecisionEqualToValidatorPrecision_ShouldBeTrue()
-		{
-			NumberValidator numberValidator = new NumberValidator(4, 2, true);
-			numberValidator.IsValidNumber("+1.23").Should().BeTrue();
-		}
-
-		[Test, Category("IsValidNumber")]
-		public void IsValidNumber_NegativeNumberWithValidatorOnlyPositiveAttribute_ShouldBeFalse()
-        {
-			NumberValidator numberValidator = new NumberValidator(10, 5, true);
-			numberValidator.IsValidNumber("-1.23").Should().BeFalse();
-		}
-
-		[Test, Category("IsValidNumber")]
-		public void IsValidNumber_NumberWithoutIntegerPart_ShouldBeFalse()
-		{
-			NumberValidator numberValidator = new NumberValidator(10, 5, true);
-			numberValidator.IsValidNumber(".23").Should().BeFalse();
-		}
-
-		[Test, Category("IsValidNumber")]
-		public void IsValidNumber_NumberWithPointButWithoutFractionPart_ShouldBeFalse()
-		{
-			NumberValidator numberValidator = new NumberValidator(10, 5, true);
-			numberValidator.IsValidNumber("1.").Should().BeFalse();
+			NumberValidator numberValidator = new NumberValidator(precision, scale, true);
+			numberValidator.IsValidNumber(number).Should().BeFalse();
 		}
 		#endregion
 	}
