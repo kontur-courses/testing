@@ -14,7 +14,6 @@ namespace HomeExercises
 			Assert.DoesNotThrow(() => new NumberValidator(1, 0, true));
 			Assert.Throws<ArgumentException>(() => new NumberValidator(1, 2, false));
 			Assert.Throws<ArgumentException>(() => new NumberValidator(1, -1, false));
-
 			Assert.IsTrue(new NumberValidator(17, 2, true).IsValidNumber("0.0"));
 			Assert.IsTrue(new NumberValidator(17, 2, true).IsValidNumber("0"));
 			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("00.00"));
@@ -30,14 +29,12 @@ namespace HomeExercises
 			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("1.."));
 		}
 	}
-
 	public class NumberValidator
 	{
 		private readonly Regex numberRegex;
 		private readonly bool onlyPositive;
 		private readonly int precision;
 		private readonly int scale;
-
 		public NumberValidator(int precision, int scale = 0, bool onlyPositive = false)
 		{
 			this.precision = precision;
@@ -57,22 +54,17 @@ namespace HomeExercises
 			// Формат числового значения указывается в виде N(m.к), где m – максимальное количество знаков в числе, включая знак (для отрицательного числа), 
 			// целую и дробную часть числа без разделяющей десятичной точки, k – максимальное число знаков дробной части числа. 
 			// Если число знаков дробной части числа равно 0 (т.е. число целое), то формат числового значения имеет вид N(m).
-
 			if (string.IsNullOrEmpty(value))
 				return false;
-
 			var match = numberRegex.Match(value);
 			if (!match.Success)
 				return false;
-
 			// Знак и целая часть
 			var intPart = match.Groups[1].Value.Length + match.Groups[2].Value.Length;
 			// Дробная часть
 			var fracPart = match.Groups[4].Value.Length;
-
 			if (intPart + fracPart > precision || fracPart > scale)
 				return false;
-
 			if (onlyPositive && match.Groups[1].Value == "-")
 				return false;
 			return true;

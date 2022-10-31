@@ -1,4 +1,5 @@
 ﻿using FluentAssertions;
+using FluentAssertions.Equivalency;
 using NUnit.Framework;
 
 namespace HomeExercises
@@ -11,21 +12,12 @@ namespace HomeExercises
 		public void CheckCurrentTsar()
 		{
 			var actualTsar = TsarRegistry.GetCurrentTsar();
-			
 			var expectedTsar = new Person("Ivan IV The Terrible", 54, 170, 70,
 				new Person("Vasili III of Russia", 28, 170, 60, null));
 			// Перепишите код на использование Fluent Assertions.
-			actualTsar.Name.Should().Be(expectedTsar.Name);
-			actualTsar.Age.Should().Be(expectedTsar.Age);
-			actualTsar.Height.Should().Be(expectedTsar.Height);
-			actualTsar.Weight.Should().Be(expectedTsar.Weight);
-
-			actualTsar.Parent!.Name.Should().Be(expectedTsar.Parent!.Name);
-			actualTsar.Parent.Age.Should().Be(expectedTsar.Parent.Age);
-			actualTsar.Parent.Height.Should().Be(expectedTsar.Parent.Height);
-			actualTsar.Parent.Weight.Should().Be(expectedTsar.Parent.Weight);
+			actualTsar.Should().BeEquivalentTo(expectedTsar, options =>
+				options.Excluding(o => o.SelectedMemberInfo.Name.Equals(nameof(Person.Id))));
 		}
-
 		[Test]
 		[Description("Альтернативное решение. Какие у него недостатки?")]
 		public void CheckCurrentTsar_WithCustomEquality()
@@ -40,7 +32,6 @@ namespace HomeExercises
 			
 			Assert.True(AreEqual(actualTsar, expectedTsar));
 		}
-
 		private bool AreEqual(Person? actual, Person? expected)
 		{
 			if (actual == expected) return true;
