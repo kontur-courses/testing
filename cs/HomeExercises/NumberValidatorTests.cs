@@ -120,6 +120,7 @@ namespace HomeExercises
 		#endregion
 
 		[TestCaseSource(nameof(CorrectParamsForNumberValidator)), Category("Correct params for number validator")]
+		[Parallelizable(scope: ParallelScope.All)]
 		public void Instance_ShouldNotThrowException(int precision, int scale, bool onlyPositive)
 		{
 			Action instantiatingNumberValidator = () =>
@@ -128,6 +129,7 @@ namespace HomeExercises
 		}
 
 		[TestCaseSource(nameof(IncorrectParamsForNumberValidator)), Category("Incorrect params for number validator")]
+		[Parallelizable(scope: ParallelScope.All)]
 		public void Instance_ShouldThrowException(int precision, int scale, bool onlyPositive)
         {
 			Action instantiatingNumberValidator = () =>
@@ -136,6 +138,7 @@ namespace HomeExercises
 		}
 
 		[TestCaseSource(nameof(NumbersForValidation)), Category("Number validation")]
+		[Parallelizable(scope: ParallelScope.All)]
 		public bool IsValidNumber(int precision, int scale, bool onlyPositive, string number)
         {
 			NumberValidator numberValidator = new NumberValidator(precision, scale, onlyPositive);
