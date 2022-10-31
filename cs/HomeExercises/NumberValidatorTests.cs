@@ -7,6 +7,10 @@ namespace HomeExercises
 {
 	public class NumberValidatorTests
 	{
+		[TestCase(17, 2, true, "1.2.3", Description = "number is three digits separated by dots")]
+		[TestCase(17, 2, true, "1,2,3", Description = "number is three digits separated by commas")]
+		[TestCase(17, 2, true, "1,", Description = "there aren`t digits after integer part and comma")]
+		[TestCase(17, 2, false, "+-1", Description = "number contains two signs")]
 		[TestCase(17, 2, true, " 0.00", Description = "number contains valid number and starting space")]
 		[TestCase(17, 2, true, "0.00 ", Description = "number contains valid number and ending space")]
 		[TestCase(17, 2, false, "- 0.00", Description = "number contains valid number and space between minus sign and number")]
