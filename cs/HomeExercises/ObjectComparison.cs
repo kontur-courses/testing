@@ -30,6 +30,10 @@ namespace HomeExercises
 				new Person("Vasili III of Russia", 28, 170, 60, null));
 
 			// Какие недостатки у такого подхода? 
+			/*
+			 * 1) При ошибке не узнаем какие поля не совпали, т.к. вернётся только сообщение, что объекты не одинаковы
+			 * 2) При добавлении/удалении полей придётся менять метод AreEqual
+			 */
 			Assert.True(AreEqual(actualTsar, expectedTsar));
 		}
 
