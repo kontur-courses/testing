@@ -15,10 +15,9 @@ namespace HomeExercises
 
 			var expectedTsar = new Person("Ivan IV The Terrible", 54, 170, 70,
 				new Person("Vasili III of Russia", 28, 170, 60, null));
-			
+
 			actualTsar.Should().BeEquivalentTo(expectedTsar, options => options
-				.Excluding(person => Regex
-					.IsMatch(person.SelectedMemberPath, @"^(Parent\.)*Id$")));
+				.Excluding(person => person.SelectedMemberInfo.Name == nameof(Person.Id)));
 		}
 
 		[Test]
