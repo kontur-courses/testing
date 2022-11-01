@@ -70,8 +70,10 @@ namespace HomeExercises
 		{
 			new TestCaseData("12").SetName("Integer"),
 			new TestCaseData("12345").SetName("Max length integer"),
-			new TestCaseData("0.1").SetName("Float"),
-			new TestCaseData("123.45").SetName("Max length float"),
+			new TestCaseData("0.1").SetName("Float with dot"),
+			new TestCaseData("0,1").SetName("Float with comma"),
+			new TestCaseData("123.45").SetName("Max length float with dot"),
+			new TestCaseData("123,45").SetName("Max length float with comma"),
 			new TestCaseData("+1234").SetName("Max length integer with plus"),
 			new TestCaseData("+12.45").SetName("Max length float with plus"),
 			new TestCaseData("00000").SetName("Only zeros"),
