@@ -52,7 +52,7 @@ namespace HomeExercises
 		[Test]
 		public void IsValidNumber_IntAndFracPartBiggerThenPrecision_False()
 		{
-			var numberValidator = new NumberValidator(4, 2, true);
+			var numberValidator = new NumberValidator(3, 2, true);
 			var validatingResult = numberValidator.IsValidNumber("00.00");
 			Assert.IsFalse(validatingResult);
 		}
