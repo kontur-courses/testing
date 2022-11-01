@@ -1,11 +1,13 @@
-﻿using FluentAssertions;
+﻿using System.Configuration;
+using System.Text.RegularExpressions;
+using FluentAssertions;
+using FluentAssertions.Equivalency;
 using NUnit.Framework;
 
 namespace HomeExercises
 {
 	public class ObjectComparison
 	{
-		//try сделать pull request
 		[Test]
 		[Description("Проверка текущего царя")]
 		[Category("ToRefactor")]
@@ -17,7 +19,7 @@ namespace HomeExercises
 				new Person("Vasili III of Russia", 28, 170, 60, null));
 			
 			actualTsar.Should().BeEquivalentTo(expectedTsar,options => 
-				options.Excluding(x => x.Path.EndsWith("Id")));
+				options.Excluding((IMemberInfo info) => info.Name.Equals("Id")));
 		}
 
 
