@@ -11,15 +11,12 @@ namespace HomeExercises
 		[Category("ToRefactor")]
 		public void CheckCurrentTsar()
 		{
-			//Arrange
 			var expectedTsar = new Person(
 				"Ivan IV The Terrible", 54, 170, 70, new DateTime(1530, 08, 25),
 				new Person("Vasili III of Russia", 28, 170, 60, new DateTime(1479, 03, 25), null));
 
-			//Act
 			var actualTsar = TsarRegistry.GetCurrentTsar();
 
-			//Assert
 			actualTsar.Should().BeEquivalentTo(expectedTsar,
 				options => options.Excluding(memberInfo =>
 						memberInfo.SelectedMemberInfo.DeclaringType == typeof(Person)

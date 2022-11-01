@@ -32,10 +32,8 @@ namespace HomeExercises
 		[Category("Benchmark")]
 		public void IsValidNumber_RunsLessThan800Nanoseconds_Benchmark()
 		{
-			//Arrange & Act 
 			var summary = BenchmarkRunner.Run<NumberValidatorIsValidNumberBenchmark>();
-			
-			//Assert
+
 			var actual = summary.Reports.First().AllMeasurements
 				.Where(x => x.IterationMode == IterationMode.Workload && x.IterationStage == IterationStage.Actual)
 				.Average(x => x.GetAverageTime().Nanoseconds);
@@ -63,13 +61,10 @@ namespace HomeExercises
 		public void IsValidNumber_ShouldReturnsFalse_WhenCallingWithTheseParameters(int precision, int scale,
 			bool onlyPositive, string number)
 		{
-			//Arrange
 			var numberValidator = new NumberValidator(precision, scale, onlyPositive);
 
-			//Act
 			var actual = numberValidator.IsValidNumber(number);
 
-			//Assert
 			actual.Should().BeFalse();
 		}
 
@@ -83,13 +78,10 @@ namespace HomeExercises
 		public void IsValidNumber_ShouldReturnsTrue_WhenCallingWithTheseParameters(int precision, int scale,
 			bool onlyPositive, string number)
 		{
-			//Arrange
 			var numberValidator = new NumberValidator(precision, scale, onlyPositive);
 
-			//Act
 			var actual = numberValidator.IsValidNumber(number);
 
-			//Assert
 			actual.Should().BeTrue();
 		}
 
@@ -100,10 +92,8 @@ namespace HomeExercises
 		[TestCase(0, 0, false, Description = "precision is zero")]
 		public void Constructor_ShouldThrows_WhenCallingWithTheseParameters(int precision, int scale, bool onlyPositive)
 		{
-			//Arrange
 			Action action = () => _ = new NumberValidator(precision, scale, onlyPositive);
 
-			//Act & Assert
 			action.Should().Throw<ArgumentException>();
 		}
 	}
