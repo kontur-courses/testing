@@ -1,4 +1,6 @@
-﻿using FluentAssertions;
+﻿using System.Linq;
+using FluentAssertions;
+using FluentAssertions.Common;
 using NUnit.Framework;
 
 namespace HomeExercises
@@ -14,17 +16,10 @@ namespace HomeExercises
 
 			var expectedTsar = new Person("Ivan IV The Terrible", 54, 170, 70,
 				new Person("Vasili III of Russia", 28, 170, 60, null));
-
-			// Перепишите код на использование Fluent Assertions.
-			Assert.AreEqual(actualTsar.Name, expectedTsar.Name);
-			Assert.AreEqual(actualTsar.Age, expectedTsar.Age);
-			Assert.AreEqual(actualTsar.Height, expectedTsar.Height);
-			Assert.AreEqual(actualTsar.Weight, expectedTsar.Weight);
-
-			Assert.AreEqual(expectedTsar.Parent!.Name, actualTsar.Parent!.Name);
-			Assert.AreEqual(expectedTsar.Parent.Age, actualTsar.Parent.Age);
-			Assert.AreEqual(expectedTsar.Parent.Height, actualTsar.Parent.Height);
-			Assert.AreEqual(expectedTsar.Parent.Parent, actualTsar.Parent.Parent);
+			actualTsar
+				.Should()
+				.BeEquivalentTo(expectedTsar, opt =>
+					opt.AllowingInfiniteRecursion() );
 		}
 
 		[Test]
@@ -36,6 +31,10 @@ namespace HomeExercises
 				new Person("Vasili III of Russia", 28, 170, 60, null));
 
 			// Какие недостатки у такого подхода? 
+			
+			// 1)Не будет известно, какой именно параметр не подошёл,
+			// а учитывая, что, в нашей модели, у родителей также могут быть родители это тест становится малоинформативным
+			// 2) Расширяемость, при добавлении новый свойств придётся переписывать метод AreEqual
 			Assert.True(AreEqual(actualTsar, expectedTsar));
 		}
 
