@@ -8,14 +8,15 @@ namespace HomeExercises
 	public class NumberValidatorTests
 	{
       #region Creation Tests
-		[TestCase(-1, 0, false, TestName = "ShouldThrowArgumentException_DuringCreationWithNegativePrecision")]
-		[TestCase(0, 0, false, TestName = "ShouldThrowArgumentException_DuringCreationWithZeroPrecision")]
-		[TestCase(1, 1, true, TestName = "ShouldThrowArgumentException_DuringCreation_WhenScaleEqualToPrecision")]
-		[TestCase(1, 2, true, TestName = "ShouldThrowArgumentException_DuringCreation_WhenScaleGreaterThanPrecision")]
-		[TestCase(1, -1, true, TestName = "houldThrowArgumentException_DuringCreationWithNegativeScale")]
-		public void CreationThrowsArgumentExceptionTest(int precision, int scale, bool onlyPositive)
+		[TestCase(-1, 0, false, "precision must be a positive number", TestName = "{m}_DuringCreationWithNegativePrecision")]
+		[TestCase(0, 0, false, "precision must be a positive number", TestName = "{m}_DuringCreationWithZeroPrecision")]
+		[TestCase(1, 1, true, "precision must be a non-negative number less or equal than precision", TestName = "{m}_DuringCreation_WhenScaleEqualToPrecision")]
+		[TestCase(1, 2, true, "precision must be a non-negative number less or equal than precision", TestName = "{m}_DuringCreation_WhenScaleGreaterThanPrecision")]
+		[TestCase(1, -1, true, "precision must be a non-negative number less or equal than precision", TestName = "{m}_DuringCreationWithNegativeScale")]
+		public void Should_ThrowArgumentException(int precision, int scale, bool onlyPositive, string message)
 		{
-         FluentActions.Invoking(() => new NumberValidator(precision, scale, onlyPositive)).Should().Throw<ArgumentException>();
+         FluentActions.Invoking(() => new NumberValidator(precision, scale, onlyPositive)).Should().Throw<ArgumentException>()
+																																	.WithMessage(message);
       }
 
 		[TestCase(1, 0, true, TestName = "NumberValidator_ShouldBeCreated_WhenPrecisionIsGreatenThenZero")]
