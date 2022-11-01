@@ -19,11 +19,9 @@ namespace HomeExercises
 
 			actualTsar.Should().BeEquivalentTo(expectedTsar,
 				options => options.Excluding(memberInfo =>
-						memberInfo.SelectedMemberInfo.DeclaringType == typeof(Person)
-						&& memberInfo.SelectedMemberInfo.Name == nameof(Person.Id)
-						&& memberInfo.SelectedMemberInfo.MemberType == typeof(int))
-					.Excluding(memberInfo =>
-						memberInfo.SelectedMemberPath.StartsWith("Parent.Parent")));
+					memberInfo.SelectedMemberInfo.DeclaringType == typeof(Person)
+					&& memberInfo.SelectedMemberInfo.Name == nameof(Person.Id)
+					|| memberInfo.SelectedMemberPath.StartsWith("Parent.Parent")));
 		}
 
 		[Test]
