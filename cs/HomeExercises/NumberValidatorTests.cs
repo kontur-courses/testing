@@ -8,117 +8,88 @@ namespace HomeExercises
 	public class NumberValidatorTests
 	{
 		[Test]
-		public void IsValidNumber_CountMinus_False()
+		[TestCase(4, 2, true, "-0.00",
+			TestName = "NegativeNumberWhenPositiveValidator")]
+		[TestCase(3, 2, false, "+0.00",
+			TestName = "CharacterCountInDoubleValueMoreThenPrecisionBecauseOfSign")]
+		[TestCase(17, 2, true, "0.000",
+			TestName = "FracPartMoreThanScale")]
+		[TestCase(3, 2, true, "00.00",
+			TestName = "DoubleAllLenghtMoreThanPrecision")]
+		[TestCase(3, 0, true, "0000",
+			TestName = "IntegerAllLenghtMoreThanPrecision")]
+		[TestCase(2, 1, true, "00.00",
+			TestName = "AllLenghtMoreThanPrecisionFracPartMoreThanScale")]
+		[TestCase(3, 2, true, "",
+			TestName = "EmptyString")]
+		[TestCase(3, 2, true, null,
+			TestName = "NullInput")]
+		[TestCase(3, 2, true, "a.sd",
+			TestName = "EnglishLettersAreNotDoubleRegexPattern")]
+		[TestCase(3, 2, true, "asd",
+			TestName = "EnglishLettersAreNotIntegerRegexPattern")]
+		[TestCase(3, 2, true, "и.пр",
+			TestName = "RussianLettersAreNotDoubleRegexPattern")]
+		[TestCase(3, 2, true, "ипр",
+			TestName = "RussianLettersAreNotIntegerRegexPattern")]
+		[TestCase(3, 2, true, "&^:;($)#@!~`*_-[]{}",
+			TestName = "StrangeSymbols")]
+		public void IsValidNumber_False(int precision, int scale, bool onlyPositive,
+			string value)
 		{
-			new NumberValidator(3, 2, true).IsValidNumber("-0.00")
-				.Should().BeFalse("валидатор суммирует - к длине ");
-		}
-		[Test]
-		public void IsValidNumber_CountPlus_False()
-		{
-			new NumberValidator(3, 2, true).IsValidNumber("+0.00")
-				.Should().BeFalse("валидатор суммирует + к длине ");
-		}
-		[Test]
-		public void IsValidNumber_NegativeNumWhenPositiveValidator_False()
-		{
-			new NumberValidator(4, 2, true).IsValidNumber("-0.00")
-				.Should().BeFalse("валидатор принимает положительные числа");
-		}
-		
-		[Test]
-		public void IsValidNumber_NumberWithMinus_True()
-		{
-			new NumberValidator(4, 2).IsValidNumber("-1.23")
-				.Should().BeTrue("число с минусом, общая длина без точки равна precision");
-		}
-		[Test]
-		public void IsValidNumber_NumberWithPlus_True()
-		{
-			new NumberValidator(4, 2, true).IsValidNumber("+1.23")
-				.Should().BeTrue("число с плюсом, общая длина без точки равна precision");
-		}
-		
-		[Test]
-		public void IsValidNumber_IntegerNumber_True()
-		{
-			new NumberValidator(17, 2, true).IsValidNumber("0")
-				.Should().BeTrue("целое число, общая длина < precision");
-		}
-		[Test]
-		public void IsValidNumber_ThereIsFracPart_True()
-		{
-			new NumberValidator(17, 2, true).IsValidNumber("0.0")
-				.Should().BeTrue("общая длина без точки < precision, дробная часть < scale");
-
-		}
-		[Test]
-		public void IsValidNumber_FracPartMoreThanScale_False()
-		{
-			new NumberValidator(17, 2, true).IsValidNumber("0.000")
-				.Should().BeFalse("длина дробной части больше scale");
-
-		}
-		[Test]
-		public void IsValidNumber_NotRegexPattern_False()
-		{
-			new NumberValidator(3, 2, true).IsValidNumber("a.sd")
-				.Should().BeFalse("не соответствует формату числа");
-
-		}
-		
-		[Test]
-		public void IsValidNumber_AllLenghtMoreThanPrecision_False()
-		{
-			new NumberValidator(3, 2, true).IsValidNumber("00.00")
-				.Should().BeFalse("общая длина без точки больше precision");
-
-		}
-		
-		[Test]
-		public void IsValidNumber_EmptyString_False()
-		{
-			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber(""));
-			
-		}
-		
-		[Test]
-		public void IsValidNumber_NullString_False()
-		{
-			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber(null));
-			
-		}
-		
-
-		[Test]
-		public void CreateNV_NegativePrecision_ArgumentException()
-		{
-			Assert.Throws<ArgumentException>(() => new NumberValidator(-1, 2, true));
-		}
-		
-		[Test]
-		public void CreateNV_PrecisionIsZero_ArgumentException()
-		{
-			Assert.Throws<ArgumentException>(() => new NumberValidator(0, 2, true));
-		}
-		
-		[Test]
-		public void CreateNV_NegativeScale_ArgumentException()
-		{
-			Assert.Throws<ArgumentException>(() => new NumberValidator(5, -1, true)); 
-		}
-		
-		[Test]
-		public void CreateNV_ScaleMoreThanPrecision_ArgumentException()
-		{
-			Assert.Throws<ArgumentException>(() => new NumberValidator(1, 2, true));
-			
+			new NumberValidator(precision, scale, onlyPositive).IsValidNumber(value)
+				.Should().BeFalse();
 		}
 
 		[Test]
-		public void CreateNV_DoesNotThrowException()
+		[TestCase(4, 2, false, "-1.23",
+			TestName = "DoubleWithMinus")]
+		[TestCase(4, 2, false, "+1.23",
+			TestName = "DoubleWithPlus")]
+		[TestCase(4, 2, false, "1.23",
+			TestName = "DoubleWithoutSign")]
+		[TestCase(4, 2, true, "0",
+			TestName = "IntegerWithoutSign")]
+		[TestCase(4, 2, false, "-0",
+			TestName = "IntegerWithMinus")]
+		[TestCase(4, 2, false, "+0",
+			TestName = "IntegerWithPlus")]
+		[TestCase(4, 2, true, "0.0",
+			TestName = "PointInDouble")]
+		[TestCase(4, 2, true, "0,0",
+			TestName = "CommaInDouble")]
+		public void IsValidNumber_True(int precision, int scale, bool onlyPositive,
+			string value)
 		{
-			Assert.DoesNotThrow(() => new NumberValidator(1, 0, true));
+			new NumberValidator(precision, scale, onlyPositive).IsValidNumber(value)
+				.Should().BeTrue();
+		}
+
+		[Test]
+		[TestCase(-1, 2, true, TestName = "NegativePrecision")]
+		[TestCase(0, 2, true, TestName = "PrecisionIsZero")]
+		[TestCase(5, -1, true, TestName = "NegativeScale")]
+		[TestCase(1, 2, true, TestName = "ScaleMoreThanPrecision")]
+		[TestCase(1, 1, true, TestName = "ScaleEqualsPrecision")]
+		public void CreateNumberValidator_ArgumentException(int precision, int scale, bool onlyPositive)
+		{
+			Action act = () => new NumberValidator(precision, scale, onlyPositive);
+			act.Should().Throw<ArgumentException>();
+		}
+
+		[Test]
+		[TestCase(1, 0, true,
+			TestName = "PositiveIntegerValidatorPrecisionMoreThanScale")]
+		[TestCase(1, 0, false,
+			TestName = "ValidatorIntegerPrecisionMoreThanScale")]
+		[TestCase(2, 1, true,
+			TestName = "PositiveDoubleValidatorPrecisionMoreThanScale")]
+		[TestCase(2, 1, false,
+			TestName = "ValidatorDoublePrecisionMoreThanScale")]
+		public void CreateNumberValidator_NotThrow(int precision, int scale, bool onlyPositive)
+		{
+			Action act = () => new NumberValidator(precision, scale, onlyPositive);
+			act.Should().NotThrow();
 		}
 	}
 
