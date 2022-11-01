@@ -7,26 +7,26 @@ namespace HomeExercises
 {
 	public class NumberValidatorTests
 	{
-		[Test]
-		public void Test()
+		[TestCase(2, TestName = "precision is positive")]
+		[TestCase(2, 0, TestName = "scale is zero")]
+		[TestCase(2, 1, TestName = "scale is positive and less then precision")]
+		[TestCase(2, 1, true, TestName = "onlyPositive is true")]
+		[TestCase(2, 1, false, TestName = "onlyPositive is false")]
+		public void Constructor_OnValidParameters_DoesNotThrowException(int precision, int scale = 0, bool onlyPositive = true)
 		{
-			Assert.Throws<ArgumentException>(() => new NumberValidator(-1, 2, true));
-			Assert.DoesNotThrow(() => new NumberValidator(1, 0, true));
-			Assert.Throws<ArgumentException>(() => new NumberValidator(-1, 2, false));
-			Assert.DoesNotThrow(() => new NumberValidator(1, 0, true));
+			Action creation = () => new NumberValidator(precision, scale, onlyPositive);
+			creation.Should().NotThrow();
+		}
 
-			Assert.IsTrue(new NumberValidator(17, 2, true).IsValidNumber("0.0"));
-			Assert.IsTrue(new NumberValidator(17, 2, true).IsValidNumber("0"));
-			Assert.IsTrue(new NumberValidator(17, 2, true).IsValidNumber("0.0"));
-			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("00.00"));
-			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("-0.00"));
-			Assert.IsTrue(new NumberValidator(17, 2, true).IsValidNumber("0.0"));
-			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("+0.00"));
-			Assert.IsTrue(new NumberValidator(4, 2, true).IsValidNumber("+1.23"));
-			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("+1.23"));
-			Assert.IsFalse(new NumberValidator(17, 2, true).IsValidNumber("0.000"));
-			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("-1.23"));
-			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("a.sd"));
+		[TestCase(-1, TestName = "precision is negative")]
+		[TestCase(0, TestName = "precision is zero")]
+		[TestCase(1, -1, TestName = "scale is negative")]
+		[TestCase(1, 1, TestName = "scale is equal to precision")]
+		[TestCase(1, 2, TestName = "scale is greater then precision")]
+		public void Constructor_OnInvalidParameters_ThrowsArgumentException(int precision, int scale = 0, bool onlyPositive = false)
+		{
+			Action creation = () => new NumberValidator(precision, scale, onlyPositive);
+			creation.Should().Throw<ArgumentException>();
 		}
 	}
 
