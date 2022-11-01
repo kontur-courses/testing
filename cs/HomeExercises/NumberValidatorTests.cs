@@ -7,7 +7,6 @@ namespace HomeExercises
 {
 	public class NumberValidatorTests
 	{
-
 		[TestCase(-1, TestName = "Pprecision < 0")]
 		[TestCase(0, TestName = "Precision == 0")]
 		public void Construct_WithIncorrectPrecision_ShouldThrow_ArgumentException(int precision)
@@ -86,7 +85,7 @@ namespace HomeExercises
 		[TestCase(3, 0, true, "1,.1", TestName = "Decimal with different double separators")]
 		[TestCase(3, 2, true, "a.sd", TestName = "Non digital Decimal")]
 		[TestCase(3, 2, true, "1.sd", TestName = "Non digital fractional part")]
-        [TestCase(3, 0, true, "asd", TestName = "Non digital Integer")]
+		[TestCase(3, 0, true, "asd", TestName = "Non digital Integer")]
 		[TestCase(4, 0, false, "-asd", TestName = "Non digital integer with sign")]
 		[TestCase(2, 1, true, ".1", TestName = "Decimal without integer")]
 		[TestCase(1, 0, true, "+.", TestName = "Only sign and separator in input")]
