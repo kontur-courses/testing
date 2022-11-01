@@ -7,95 +7,59 @@ namespace HomeExercises
 {
 	public class NumberValidatorTests
 	{
-		[Test]
-		public void NegativePrecision()
+		[TestCase(-1, 2)]
+		[TestCase(1, 2)]
+		[TestCase(1, -1)]
+		public void UnCorrectInitial_Exception(int precision, int scale)
 		{
-			Assert.Throws<ArgumentException>(() => new NumberValidator(-1, 2, true));
+			Assert.Throws<ArgumentException>(() => new NumberValidator(precision, scale, true));
 		}
 		[Test]
 		public void CorrectInitial()
 		{			
 			Assert.DoesNotThrow(() => new NumberValidator(1, 0, true));
 		}
-		[Test]
-		public void ScaleBiggerThanPrecision()
-		{
-			Assert.Throws<ArgumentException>(() => new NumberValidator(1, 2, false));
-		}
-		[Test]
-		public void NegativeScale()
-		{
-			Assert.Throws<ArgumentException>(() => new NumberValidator(1, -1, false));
-		}
-		[Test]
-		public void ZeroValue()
+		
+		[TestCase("0", true)]
+		[TestCase("0.0", true)]
+		[TestCase("-1.23", false)]
+		[TestCase("1.23", false)]
+		[TestCase("-1", false)]
+		[TestCase("+1.23", true)]
+		public void CorrectStringValue_True(string value, bool onlyPositive)
 		{			
-			Assert.IsTrue(new NumberValidator(17, 2, true).IsValidNumber("0"));
+			var numberValidator = new NumberValidator(17, 4, onlyPositive);
+			var validatingResult = numberValidator.IsValidNumber(value);
+			Assert.IsTrue(validatingResult);
 		}
-		[Test]
-		public void ZeroWithFrac()
+		[TestCase("-+1", false)]
+		[TestCase("a.sd", true)]
+		[TestCase("1.", true)]
+		[TestCase("1..1", true)]
+		[TestCase(".", true)]
+		public void UncorrectValueTests_False(string value, bool onlyPositive)
 		{
-			Assert.IsTrue(new NumberValidator(17, 2, true).IsValidNumber("0.0"));
+			Assert.IsFalse(new NumberValidator(4, 2, onlyPositive).IsValidNumber(value));
 		}
 		[Test]
-		public void IntAndFracPartBiggerThenPrecision()
+		public void IntAndFracPartBiggerThenPrecision_False()
 		{
 			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("00.00"));
 		}
 		[Test]
-		public void NegativeIntAndFracPathBiggerThanPrecision()
+		public void NegativeIntAndFracPathBiggerThanPrecision_False()
 		{
-			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("-0.00"));
+			Assert.IsFalse(new NumberValidator(3, 2, false).IsValidNumber("-0.00"));
 		}
 		[Test]
-		public void CorrectNegative()
+		public void NegativeValueWithOnlyPositive_False()
 		{
-			Assert.IsTrue(new NumberValidator(4, 2).IsValidNumber("-1.23"));
+			Assert.IsFalse(new NumberValidator(17, 2, true).IsValidNumber("-0.00"));
 		}
 		[Test]
-		public void CorrectValue()
-		{
-			Assert.IsTrue(new NumberValidator(4, 2).IsValidNumber("1.23"));
-		}
-		[Test]
-		public void CorrectNegativeWithoutFrac()
-		{
-			Assert.IsTrue(new NumberValidator(4, 2).IsValidNumber("-1"));
-		}
-		[Test]
-		public void UncorrectValue()
-		{
-			Assert.IsFalse(new NumberValidator(4, 2).IsValidNumber("-+1"));
-		}
-		[Test]
-		public void CorrectValueWithPlus()
-		{
-			Assert.IsTrue(new NumberValidator(4, 2, true).IsValidNumber("+1.23"));
-		}
-		[Test]
-		public void FracPathBiggerThanScale()
+		public void FracPathBiggerThanScale_False()
 		{
 			Assert.IsFalse(new NumberValidator(17, 2, true).IsValidNumber("0.000"));
-		}
-		[Test]
-		public void UncorrectValueWithLetters()
-		{
-			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("a.sd"));
-		}
-		[Test]
-		public void WithoutFracPathAfterDot()
-		{
-			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("1."));
-		}
-		[Test]
-		public void WithFracPathAfterTwoDot()
-		{
-			Assert.IsFalse(new NumberValidator(4, 2, true).IsValidNumber("1..1"));
-		}
-		[Test]
-		public void OnlyDot()
-		{
-			Assert.IsFalse(new NumberValidator(4, 2, true).IsValidNumber("."));
 		}
 	}
 	public class NumberValidator
