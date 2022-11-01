@@ -2,6 +2,7 @@
 using System.Text.RegularExpressions;
 using FluentAssertions;
 using NUnit.Framework;
+using static FluentAssertions.FluentActions;
 
 namespace HomeExercises
 {
@@ -14,8 +15,7 @@ namespace HomeExercises
 		[TestCase(1, 2, TestName = "Scale is greater than precision")]
 		public void Constructor_ThrowExceptions_OnIncorrectArguments(int precision, int scale)
 		{
-			Action action = () => new NumberValidator(precision, scale);
-			action.Should().Throw<ArgumentException>();
+			Invoking(() => new NumberValidator(precision, scale)).Should().Throw<ArgumentException>();
 		}
 
 
@@ -24,8 +24,7 @@ namespace HomeExercises
 		[TestCase(int.MaxValue, int.MaxValue - 1, TestName = "Big precision and scale values")]
 		public void Constructor_ThrowNoExceptions_OnCorrectArguments(int precision, int scale)
 		{
-			Action action = () => new NumberValidator(precision, scale);
-			action.Should().NotThrow();
+			Invoking(() => new NumberValidator(precision, scale)).Should().NotThrow();
 		}
 
 		[TestCase(null, TestName = "Null value")]
