@@ -95,14 +95,19 @@ namespace HomeExercises
 		}
 
 		[Test]
-		public void IsValidNumber_ReturnTrue_WithCorrectBigNumbers()
+		public void IsValidNumber_ReturnTrue_WithCorrectBigIntNumbers()
 		{
-			var bigInteger = new string('5', 10000);
-			var bigFloat = new string('1', 5000) + "." + new string('2', 5000);
-			var validator = new NumberValidator(int.MaxValue, int.MaxValue - 1);
+			var bigNumber = new string('5', 10000);
+			new NumberValidator(int.MaxValue, int.MaxValue - 1)
+				.IsValidNumber(bigNumber).Should().BeTrue();
+		}
 
-			validator.IsValidNumber(bigInteger).Should().BeTrue();
-			validator.IsValidNumber(bigFloat).Should().BeTrue();
+		[Test]
+		public void IsValidNumber_ReturnTrue_WithCorrectBigFloatNumbers()
+		{
+			var bigNumber = new string('1', 5000) + "." + new string('2', 5000);
+			new NumberValidator(int.MaxValue, int.MaxValue - 1)
+				.IsValidNumber(bigNumber).Should().BeTrue();
 		}
 
 
