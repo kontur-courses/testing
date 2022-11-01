@@ -28,6 +28,25 @@ namespace HomeExercises
 			Action creation = () => new NumberValidator(precision, scale, onlyPositive);
 			creation.Should().Throw<ArgumentException>();
 		}
+		
+		[TestCase("1234", 4, 2, true, TestName = "integer with max lenght")]
+		[TestCase("123.4", 4, 2, true, TestName = "fractional with max lenght")]
+		[TestCase("1.23", 4, 2, true, TestName = "fractional with max fractional part lenght")]
+		[TestCase("1.0", 4, 2, true, TestName = "positive value when onlyPositive is true")]
+		[TestCase("+1.0", 4, 2, true, TestName = "positive value with sign when onlyPositive is true")]
+		[TestCase("1.0", 4, 2, false, TestName = "positive value when onlyPositive is false")]
+		[TestCase("+1.0", 4, 2, false, TestName = "positive value with sign when onlyPositive is false")]
+		[TestCase("-1.0", 4, 2, false, TestName = "negative value when onlyPositive is false")]
+		[TestCase("1,0", 4, 2, true, TestName = "value with coma")]
+		public void IsValidNumber_OnValidParameters_ReturnsTrue(
+			string value, 
+			int precision, 
+			int scale = 0,
+			bool onlyPositive = true)
+		{
+			var numberValidator = new NumberValidator(precision, scale, onlyPositive);
+			numberValidator.IsValidNumber(value).Should().BeTrue();
+		}
 	}
 
 	public class NumberValidator
