@@ -7,7 +7,6 @@ namespace HomeExercises
 	{
 		[Test]
 		[Description("Проверка текущего царя")]
-		[Category("ToRefactor")]
 		public void CheckCurrentTsar()
 		{
 			var actualTsar = TsarRegistry.GetCurrentTsar();
@@ -19,6 +18,7 @@ namespace HomeExercises
 				options =>
 				{
 					options.AllowingInfiniteRecursion();
+					options.IgnoringCyclicReferences();
 					options.Excluding(ctx =>
 						ctx.DeclaringType == typeof(Person) &&
 						ctx.Name == nameof(Person.Id)); 
@@ -42,6 +42,7 @@ namespace HomeExercises
 			//метод AreEqual с учетом уктуальных полей, также легко пропустить важные 
 			//изменения в классе  
 			//2)В этом подходе тяжело понять, на каких именно сравнениях не проходит тест
+			//3)Зацикливание если Parent будет ссылаться на тот же Person, что его хранит 
 		}
 
 		private bool AreEqual(Person? actual, Person? expected)
