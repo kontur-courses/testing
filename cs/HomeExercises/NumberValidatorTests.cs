@@ -75,29 +75,29 @@ namespace HomeExercises
 			numberValidator.IsValidNumber(value).Should().BeFalse();
 		}
 		
-		[TestCase("1234", TestName = "integer number")]
-		[TestCase("123.4", TestName = "fractional number")]
-		[TestCase("-123", TestName = "minus counts in precision")]
-		[TestCase("+123", TestName = "plus counts in precision")]
-		public void IsValidNumber_OnExceedingPrecision_ReturnsFalse(string value)
+		[TestCase("1234", 3, 0, TestName = "integer number")]
+		[TestCase("123.4", 3, 1, TestName = "fractional number")]
+		[TestCase("-123", 3, 0, TestName = "minus counts in precision")]
+		[TestCase("+123", 3, 0, TestName = "plus counts in precision")]
+		public void IsValidNumber_OnExceedingPrecision_ReturnsFalse(string value, int precision, int scale)
 		{
-			var numberValidator = new NumberValidator(3, 1);
+			var numberValidator = new NumberValidator(precision, scale);
 			numberValidator.IsValidNumber(value).Should().BeFalse();
 		}
 
-		[TestCase("1.234", TestName = "fractional number with dot")]
-		[TestCase("1,234", TestName = "fractional number with coma")]
-		public void IsValidNumber_OnExceedingScale_ReturnsFalse(string value)
+		[TestCase("1.234", 10, 2, TestName = "fractional number with dot")]
+		[TestCase("1,234", 10, 2, TestName = "fractional number with coma")]
+		public void IsValidNumber_OnExceedingScale_ReturnsFalse(string value, int precision, int scale)
 		{
-			var numberValidator = new NumberValidator(15, 2);
+			var numberValidator = new NumberValidator(precision, scale);
 			numberValidator.IsValidNumber(value).Should().BeFalse();
 		}
 
-		[TestCase("-123", TestName = "integer number")]
-		[TestCase("-1.23", TestName = "fractional number")]
-		public void IsValidNumber_OnNegativeValue_WhenDeclaredOnlyPositive_ReturnsFalse(string value)
+		[TestCase("-123", 10, 5, TestName = "integer number")]
+		[TestCase("-1.23", 10, 5, TestName = "fractional number")]
+		public void IsValidNumber_OnNegativeValue_WhenDeclaredOnlyPositive_ReturnsFalse(string value, int precision, int scale)
 		{
-			var numberValidator = new NumberValidator(15, 5, true);
+			var numberValidator = new NumberValidator(precision, scale, true);
 			numberValidator.IsValidNumber(value).Should().BeFalse();
 		}
 	}
