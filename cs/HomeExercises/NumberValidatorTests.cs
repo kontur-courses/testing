@@ -55,6 +55,7 @@ namespace HomeExercises
 			Description = "specified digit after dot when scale is 0")]
 		[TestCase(17, 2, true, "-1", Description = "number is negative when accepted only positive numbers")]
 		[TestCase(17, 2, true, "одна целая и пять десятых", Description = "number is not match regular number format")]
+		[TestCase(17, 2, true, null, Description = "number is null")]
 		[TestCase(17, 2, true, "", Description = "number is empty string")]
 		[TestCase(17, 2, true, "                   ", Description = "number contains only white spaces")]
 		[TestCase(17, 2, true, "\0\0\0\0\0\0\0\0\0", Description = "number contains only zero symbols")]
