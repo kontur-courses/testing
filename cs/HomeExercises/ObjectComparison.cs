@@ -1,4 +1,8 @@
-﻿using FluentAssertions;
+﻿using System;
+using System.Collections.Generic;
+using System.Text.RegularExpressions;
+using FluentAssertions;
+using FluentAssertions.Equivalency;
 using NUnit.Framework;
 
 namespace HomeExercises
@@ -8,34 +12,35 @@ namespace HomeExercises
 		[Test]
 		[Description("Проверка текущего царя")]
 		[Category("ToRefactor")]
-		public void CheckCurrentTsar()
+		public void CheckCurrentTsar_TwoIdenticalTsars_ShouldBeEqual()
 		{
-			var actualTsar = TsarRegistry.GetCurrentTsar();
+            var actualTsar = TsarRegistry.GetCurrentTsar();
 
-			var expectedTsar = new Person("Ivan IV The Terrible", 54, 170, 70,
-				new Person("Vasili III of Russia", 28, 170, 60, null));
+            var expectedTsar = new Person("Ivan IV The Terrible", 54, 170, 70,
+	            new Person("Vasili III of Russia", 28, 170, 60, null));
 
-			// Перепишите код на использование Fluent Assertions.
-			Assert.AreEqual(actualTsar.Name, expectedTsar.Name);
-			Assert.AreEqual(actualTsar.Age, expectedTsar.Age);
-			Assert.AreEqual(actualTsar.Height, expectedTsar.Height);
-			Assert.AreEqual(actualTsar.Weight, expectedTsar.Weight);
-
-			Assert.AreEqual(expectedTsar.Parent!.Name, actualTsar.Parent!.Name);
-			Assert.AreEqual(expectedTsar.Parent.Age, actualTsar.Parent.Age);
-			Assert.AreEqual(expectedTsar.Parent.Height, actualTsar.Parent.Height);
-			Assert.AreEqual(expectedTsar.Parent.Parent, actualTsar.Parent.Parent);
-		}
+            //.AllowingInfiniteRecursion() будет иметь в случае, если у человека (царя) > 10 предков
+            actualTsar.Should().BeEquivalentTo(expectedTsar, options =>
+	            options.AllowingInfiniteRecursion()
+		            .Excluding(o => Regex.IsMatch(o.SelectedMemberPath, @"(Id)$")));
+        }
 
 		[Test]
 		[Description("Альтернативное решение. Какие у него недостатки?")]
+		//Недостатки такого подхода:
+		// 1) Неинформативно (в результате падения теста в логгере мы увидим лишь Expected: "True But was:  False".
+		//	В предложенном варианте видим очень наглядно, на каких данных тест проваливается;
+		// 2) Низкая читаемость. В дереве тестов не будет видно, каким должен быть результат теста.
+		//	В предложенном варианте имя метода переименовано в соответствии со стандартом названия тестов (в виде спецификации);
+		// 3) Тест тяжело масштабировать. При добавлении новых свойств в класс Person нужно добавлять их в метод AreEqual вручную.
+		//	В предложенном решении все добавляемые свойста автоматически добавляются в список для сравнения.
 		public void CheckCurrentTsar_WithCustomEquality()
 		{
 			var actualTsar = TsarRegistry.GetCurrentTsar();
 			var expectedTsar = new Person("Ivan IV The Terrible", 54, 170, 70,
 				new Person("Vasili III of Russia", 28, 170, 60, null));
 
-			// Какие недостатки у такого подхода? 
+		
 			Assert.True(AreEqual(actualTsar, expectedTsar));
 		}
 
@@ -51,14 +56,13 @@ namespace HomeExercises
 				&& AreEqual(actual.Parent, expected.Parent);
 		}
 	}
-
-	public class TsarRegistry
+	
+    public class TsarRegistry
 	{
 		public static Person GetCurrentTsar()
 		{
-			return new Person(
-				"Ivan IV The Terrible", 54, 170, 70,
-				new Person("Vasili III of Russia", 28, 170, 60, null));
+			return new Person("Ivan IV The Terrible", 54, 170, 70,
+				new Person("Vasili III of Russia", 28, 170, 60, null)); ;
 		}
 	}
 
