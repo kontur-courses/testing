@@ -7,15 +7,22 @@ namespace HomeExercises
 {
 	public class NumberValidatorTests
 	{
-		[TestCase(-1, 2)]
 		[TestCase(1, 2)]
 		[TestCase(1, -1)]
-		public void UnCorrectInitial_Exception(int precision, int scale)
+		public void UncorrectScale_InitialNumberValidator_ArgumentException(int precision, int scale)
 		{
-			Assert.Throws<ArgumentException>(() => new NumberValidator(precision, scale, true));
+			var e = Assert.Throws<ArgumentException>(() => new NumberValidator(precision, scale, true));
+			Assert.IsTrue(e.Message.Equals("precision must be a non-negative number less or equal than precision"));
+		}
+
+		[Test]
+		public void UnccorectPrecision_InitialNumberValidator_ArgumentException()
+		{
+			var e = Assert.Throws<ArgumentException>(() => new NumberValidator(-1, 3, true));
+			Assert.IsTrue(e.Message.Equals("precision must be a positive number"));
 		}
 		[Test]
-		public void CorrectInitial()
+		public void CorrectInput_InitialNumberValidator_WithoutException()
 		{			
 			Assert.DoesNotThrow(() => new NumberValidator(1, 0, true));
 		}
@@ -26,7 +33,7 @@ namespace HomeExercises
 		[TestCase("1.23", false)]
 		[TestCase("-1", false)]
 		[TestCase("+1.23", true)]
-		public void CorrectStringValue_True(string value, bool onlyPositive)
+		public void CorrectInputData_IsValidNumber_True(string value, bool onlyPositive)
 		{			
 			var numberValidator = new NumberValidator(17, 4, onlyPositive);
 			var validatingResult = numberValidator.IsValidNumber(value);
@@ -37,27 +44,27 @@ namespace HomeExercises
 		[TestCase("1.", true)]
 		[TestCase("1..1", true)]
 		[TestCase(".", true)]
-		public void UncorrectValueTests_False(string value, bool onlyPositive)
+		public void UncorrectValue_IsValidNumber_False(string value, bool onlyPositive)
 		{
 			Assert.IsFalse(new NumberValidator(4, 2, onlyPositive).IsValidNumber(value));
 		}
 		[Test]
-		public void IntAndFracPartBiggerThenPrecision_False()
+		public void IntAndFracPartBiggerThenPrecision_IsValidNumber_False()
 		{
 			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("00.00"));
 		}
 		[Test]
-		public void NegativeIntAndFracPathBiggerThanPrecision_False()
+		public void NegativeIntAndFracPathBiggerThanPrecision_IsValidNumber_False()
 		{
 			Assert.IsFalse(new NumberValidator(3, 2, false).IsValidNumber("-0.00"));
 		}
 		[Test]
-		public void NegativeValueWithOnlyPositive_False()
+		public void NegativeValueWithOnlyPositive_IsValidNumber_False()
 		{
 			Assert.IsFalse(new NumberValidator(17, 2, true).IsValidNumber("-0.00"));
 		}
 		[Test]
-		public void FracPathBiggerThanScale_False()
+		public void FracPathBiggerThanScale_IsValidNumber_False()
 		{
 			Assert.IsFalse(new NumberValidator(17, 2, true).IsValidNumber("0.000"));
 		}
