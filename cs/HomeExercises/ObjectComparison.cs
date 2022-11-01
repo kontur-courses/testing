@@ -17,12 +17,11 @@ namespace HomeExercises
 			
 
 			actualTsar.Should().BeEquivalentTo(expectedTsar, options => options
-				.Excluding(p => p.Id)
-				.Excluding(p => p.Parent));
+				.Excluding(p => p.SelectedMemberPath.EndsWith("Id"))
+				.AllowingInfiniteRecursion()
+				.IgnoringCyclicReferences()
+				);
 
-
-			actualTsar.Parent!.Should().BeEquivalentTo(expectedTsar.Parent, options => options
-				.Excluding(p => p!.Id));
 
 		}
 
