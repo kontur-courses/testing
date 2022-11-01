@@ -15,14 +15,27 @@ namespace HomeExercises
 
 			act.Should().Throw<ArgumentException>().WithMessage("precision must be a positive number");
 		}
-		
-		[TestCase(2)]
-		[TestCase(-1)]
+
+		[TestCase(2, TestName = "Scale is greater than precision")]
+		[TestCase(-1, TestName = "Negative scale")]
+		[TestCase(1, TestName = "Scale is equal a precision")]
 		public void Constructor_ThrowsArgumentException_OnWrongScale(int scale)
 		{
 			Action act = () => new NumberValidator(1, scale, true);
 
-			act.Should().Throw<ArgumentException>().WithMessage("scale must be a non-negative number less than precision");
+			act.Should().Throw<ArgumentException>()
+				.WithMessage("scale must be a non-negative number less than precision");
+		}
+
+		[TestCase(1, 0)]
+		[TestCase(3, 2, false)]
+		[TestCase(3, 2, true)]
+		public void Constructor_DoesNotThrowArgumentException_OnCorrectParameters(int precision, int scale,
+			bool onlyPositive = false)
+		{
+			Action act = () => new NumberValidator(2, 1, true);
+
+			act.Should().NotThrow<ArgumentException>();
 		}
 
 		[TestCase("")]
@@ -32,58 +45,60 @@ namespace HomeExercises
 			var sut = new NumberValidator(2);
 			sut.IsValidNumber(value).Should().BeFalse();
 		}
-		
+
 		[TestCase("abc")]
 		[TestCase("!@#")]
 		[TestCase("1.")]
 		[TestCase("-1.")]
 		[TestCase("1.0!")]
 		[TestCase("+1,")]
+		[TestCase("++1")]
+		[TestCase("1..0")]
 		public void IsValidNumber_ReturnFalse_OnWrongValueFormat(string value)
 		{
-			var sut = new NumberValidator(2,1);
+			var sut = new NumberValidator(2, 1);
 			sut.IsValidNumber(value).Should().BeFalse();
 		}
-		
-		
+
+
 		[TestCase("12.34")]
 		[TestCase("+12.3")]
 		[TestCase("-1234")]
 		public void IsValidNumber_ReturnFalse_WhenValuePrecisionMoreThanNumberValidatorPrecision(string value)
 		{
-			var sut = new NumberValidator(3,2);
+			var sut = new NumberValidator(3, 2);
 			sut.IsValidNumber(value).Should().BeFalse();
 		}
-		
+
 		[TestCase("12.34")]
 		[TestCase("+1.23")]
 		public void IsValidNumber_ReturnFalse_WhenValueScaleMoreThanNumberValidatorScale(string value)
 		{
-			var sut = new NumberValidator(3,1);
+			var sut = new NumberValidator(3, 1);
 			sut.IsValidNumber(value).Should().BeFalse();
 		}
-		
-		[TestCase("1.23",true)]
-		[TestCase("+1.2",true)]
-		[TestCase("1.23",false)]
-		[TestCase("-1.2",false)]
+
+		[TestCase("1.23", true)]
+		[TestCase("+1.2", true)]
+		[TestCase("1.23", false)]
+		[TestCase("-1.2", false)]
 		public void IsValidNumber_ReturnTrue_OnCorrectValue(string value, bool onlyPositive)
 		{
-			var sut = new NumberValidator(3,2,onlyPositive);
+			var sut = new NumberValidator(3, 2, onlyPositive);
 			sut.IsValidNumber(value).Should().BeTrue();
 		}
 
 		[Test]
-		public void IsValidNumber_ReturnFalse_WhenDeclaredAsOnlyPositive()
+		public void IsValidNumber_ReturnFalse_ForNegativeNumber_WhenOnlyPositive()
 		{
-			var sut = new NumberValidator(2,1,true);
+			var sut = new NumberValidator(2, 1, true);
 			sut.IsValidNumber("-1.0").Should().BeFalse();
 		}
 	}
 
 	public class NumberValidator
 	{
-		private readonly Regex numberRegex;
+		private static readonly Regex NumberRegex = new Regex(@"^([+-]?)(\d+)([.,](\d+))?$", RegexOptions.IgnoreCase);
 		private readonly bool onlyPositive;
 		private readonly int precision;
 		private readonly int scale;
@@ -97,7 +112,6 @@ namespace HomeExercises
 				throw new ArgumentException("precision must be a positive number");
 			if (scale < 0 || scale >= precision)
 				throw new ArgumentException("scale must be a non-negative number less than precision");
-			numberRegex = new Regex(@"^([+-]?)(\d+)([.,](\d+))?$", RegexOptions.IgnoreCase);
 		}
 
 		public bool IsValidNumber(string value)
@@ -111,7 +125,7 @@ namespace HomeExercises
 			if (string.IsNullOrEmpty(value))
 				return false;
 
-			var match = numberRegex.Match(value);
+			var match = NumberRegex.Match(value);
 			if (!match.Success)
 				return false;
 
