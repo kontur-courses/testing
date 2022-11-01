@@ -16,15 +16,8 @@ namespace HomeExercises
 				new Person("Vasili III of Russia", 28, 170, 60, null));
 
 			// Перепишите код на использование Fluent Assertions.
-			Assert.AreEqual(actualTsar.Name, expectedTsar.Name);
-			Assert.AreEqual(actualTsar.Age, expectedTsar.Age);
-			Assert.AreEqual(actualTsar.Height, expectedTsar.Height);
-			Assert.AreEqual(actualTsar.Weight, expectedTsar.Weight);
-
-			Assert.AreEqual(expectedTsar.Parent!.Name, actualTsar.Parent!.Name);
-			Assert.AreEqual(expectedTsar.Parent.Age, actualTsar.Parent.Age);
-			Assert.AreEqual(expectedTsar.Parent.Height, actualTsar.Parent.Height);
-			Assert.AreEqual(expectedTsar.Parent.Parent, actualTsar.Parent.Parent);
+			//  Не требует создания дополнительного приватного метода для сравнения двух объектов класса Person
+			expectedTsar.Should().BeEquivalentTo(actualTsar, options => options.Excluding(o => o.Id).Excluding(o => o.Parent!.Id));
 		}
 
 		[Test]
@@ -36,6 +29,7 @@ namespace HomeExercises
 				new Person("Vasili III of Russia", 28, 170, 60, null));
 
 			// Какие недостатки у такого подхода? 
+			//Нужен дополнительный приватный метод для сравнения двух объектов класса Person
 			Assert.True(AreEqual(actualTsar, expectedTsar));
 		}
 
