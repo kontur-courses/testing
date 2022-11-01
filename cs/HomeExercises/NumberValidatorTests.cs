@@ -74,6 +74,32 @@ namespace HomeExercises
 			var numberValidator = new NumberValidator(10, 5);
 			numberValidator.IsValidNumber(value).Should().BeFalse();
 		}
+		
+		[TestCase("1234", TestName = "integer number")]
+		[TestCase("123.4", TestName = "fractional number")]
+		[TestCase("-123", TestName = "minus counts in precision")]
+		[TestCase("+123", TestName = "plus counts in precision")]
+		public void IsValidNumber_OnExceedingPrecision_ReturnsFalse(string value)
+		{
+			var numberValidator = new NumberValidator(3, 1);
+			numberValidator.IsValidNumber(value).Should().BeFalse();
+		}
+
+		[TestCase("1.234", TestName = "fractional number with dot")]
+		[TestCase("1,234", TestName = "fractional number with coma")]
+		public void IsValidNumber_OnExceedingScale_ReturnsFalse(string value)
+		{
+			var numberValidator = new NumberValidator(15, 2);
+			numberValidator.IsValidNumber(value).Should().BeFalse();
+		}
+
+		[TestCase("-123", TestName = "integer number")]
+		[TestCase("-1.23", TestName = "fractional number")]
+		public void IsValidNumber_OnNegativeValue_WhenDeclaredOnlyPositive_ReturnsFalse(string value)
+		{
+			var numberValidator = new NumberValidator(15, 5, true);
+			numberValidator.IsValidNumber(value).Should().BeFalse();
+		}
 	}
 
 	public class NumberValidator
