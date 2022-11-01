@@ -47,6 +47,33 @@ namespace HomeExercises
 			var numberValidator = new NumberValidator(precision, scale, onlyPositive);
 			numberValidator.IsValidNumber(value).Should().BeTrue();
 		}
+		
+		[TestCase("ab.cd", TestName = "value includes letters")]
+		[TestCase("@#.$*", TestName = "value includes special symbols")]
+		[TestCase(".1", TestName = "fractional part without integer part")]
+		[TestCase("1.", TestName = "integer part with dot, but without fractional part")]
+		[TestCase("1+", TestName = "sign in wrong place")]
+		[TestCase("+", TestName = "plus without integer part")]
+		[TestCase("-", TestName = "minus without integer part")]
+		[TestCase("++1", TestName = "more then one plus")]
+		[TestCase("--1", TestName = "more then one minus")]
+		[TestCase("+-1", TestName = "plus and minus in one value")]
+		[TestCase("1.2.3", TestName = "more then one dot")]
+		[TestCase("1.2,3", TestName = "dot and coma in one value")]
+		public void IsValidNumber_OnMismatchingValueFormat_ReturnsFalse(string value)
+		{
+			var numberValidator = new NumberValidator(10, 5);
+			numberValidator.IsValidNumber(value).Should().BeFalse();
+		}
+
+		[TestCase("", TestName = "empty value")]
+		[TestCase("  ", TestName = "whitespace value")]
+		[TestCase(null, TestName = "null value")]
+		public void isValidNumber_OnEmptyOrNullValue_ReturnsFalse(string value)
+		{
+			var numberValidator = new NumberValidator(10, 5);
+			numberValidator.IsValidNumber(value).Should().BeFalse();
+		}
 	}
 
 	public class NumberValidator
