@@ -7,23 +7,80 @@ namespace HomeExercises
 {
 	public class NumberValidatorTests
 	{
-		[Test]
-		[TestCase(4, 2, true, "-0.00",
+		[TestCase(4, 2, true, "-1.23",
 			TestName = "NegativeNumberWhenPositiveValidator")]
-		[TestCase(3, 2, false, "+0.00",
-			TestName = "CharacterCountInDoubleValueMoreThenPrecisionBecauseOfSign")]
-		[TestCase(17, 2, true, "0.000",
-			TestName = "FracPartMoreThanScale")]
-		[TestCase(3, 2, true, "00.00",
-			TestName = "DoubleAllLenghtMoreThanPrecision")]
-		[TestCase(3, 0, true, "0000",
-			TestName = "IntegerAllLenghtMoreThanPrecision")]
-		[TestCase(2, 1, true, "00.00",
+		[TestCase(3, 0, true, "1234",
+			TestName = "LenghtIntegerMoreThanPrecisionPositiveValidator")]
+		[TestCase(3, 0, false, "1234",
+			TestName = "LenghtIntegerMoreThanPrecision")]
+		[TestCase(3, 0, true, "+123",
+			TestName = "LenghtIntegerWithSignMoreThanPrecisionPositiveValidator")]
+		[TestCase(3, 0, false, "+123",
+			TestName = "LenghtIntegerWithSignMoreThanPrecisionPositiveValidator")]
+		[TestCase(3, 2, true, "10.23",
+			TestName = "LenghtDoubleMoreThanPrecisionPositiveValidator")]
+		[TestCase(3, 2, false, "10.23",
+			TestName = "LenghtDoubleMoreThanPrecision")]
+		[TestCase(3, 2, true, "+1.23",
+			TestName = "LenghtDoubleWithSignMoreThanPrecisionPositiveValidator")]
+		[TestCase(3, 2, false, "+1.23",
+			TestName = "LenghtDoubleWithSignMoreThanPrecision")]
+		[TestCase(1, 0, false, "-0",
+			TestName = "NegativeZeroIntegerLenghtMoreThanPrecision")]
+		[TestCase(2, 1, false, "-0.0",
+			TestName = "NegativeZeroDoubleLenghtMoreThanPrecision")]
+		[TestCase(1, 0, false, "00",
+			TestName = "PositiveZeroIntegerLenghtMoreThanPrecision")]
+		[TestCase(3, 2, false, "00.00",
+			TestName = "PositiveZeroDoubleLenghtMoreThanPrecision")]
+		[TestCase(1, 0, true, "00",
+			TestName = "PositiveZeroIntegerLenghtMoreThanPrecisionPositiveValidator")]
+		[TestCase(2, 1, true, "00.0",
+			TestName = "PositiveZeroDoubleLenghtMoreThanPrecisionPositiveValidator")]
+		[TestCase(3, 2, false, "-123",
+			TestName = "LenghtNegativeIntegerMoreThanPrecision")]
+		[TestCase(3, 2, false, "-12.3",
+			TestName = "LenghtNegativeDoubleMoreThanPrecision")]
+		[TestCase(4, 1, true, "10.23",
+			TestName = "PositiveDoubleFractionalPartMoreThanScalePositiveValidator")]
+		[TestCase(4, 1, false, "10.23",
+			TestName = "PositiveDoubleFractionalPartMoreThanScale")]
+		[TestCase(4, 1, true, "+1.23",
+			TestName = "PositiveDoubleWithSignFractionalPartMoreThanScalePositiveValidator")]
+		[TestCase(4, 1, false, "+1.23",
+			TestName = "PositiveDoubleWithSignFractionalPartMoreThanScale")]
+		[TestCase(3, 0, false, "-0.0",
+			TestName = "NegativeZeroDoubleFractionalPartMoreThanScale")]
+		[TestCase(3, 1, false, "0.00",
+			TestName = "PositiveZeroDoubleFractionalPartMoreThanScale")]
+		[TestCase(3, 0, true, "00.0",
+			TestName = "PositiveZeroDoubleFractionalPartMoreThanScalePositiveValidator")]
+		[TestCase(2, 1, true, "12.34",
 			TestName = "AllLenghtMoreThanPrecisionFracPartMoreThanScale")]
+		[TestCase(3, 1, true, "10.23",
+			TestName = "PositiveDoubleLenghtMoreThanPrecisionFractionalPartMoreThanScalePositiveValidator")]
+		[TestCase(3, 1, false, "10.23",
+			TestName = "PositiveDoubleLenghtMoreThanPrecisionFractionalPartMoreThanScale")]
+		[TestCase(3, 1, true, "+1.23",
+			TestName = "PositiveDoubleWithSignLenghtMoreThanPrecisionFractionalPartMoreThanScalePositiveValidator")]
+		[TestCase(3, 1, false, "+1.23",
+			TestName = "PositiveDoubleWithSignLenghtMoreThanPrecisionFractionalPartMoreThanScale")]
+		[TestCase(2, 0, false, "-0.0",
+			TestName = "NegativeZeroDoubleLenghtMoreThanPrecisionFractionalPartMoreThanScale")]
+		[TestCase(2, 0, false, "0.00",
+			TestName = "PositiveZeroDoubleLenghtMoreThanPrecisionFractionalPartMoreThanScale")]
+		[TestCase(2, 0, true, "00.0",
+			TestName = "PositiveZeroDoubleLenghtMoreThanPrecisionFractionalPartMoreThanScalePositiveValidator")]
+		[TestCase(3, 0, false, "-12.3",
+			TestName = "NegativeDoubleFractionalPartMoreThanScale")]
 		[TestCase(3, 2, true, "",
 			TestName = "EmptyString")]
 		[TestCase(3, 2, true, null,
 			TestName = "NullInput")]
+		[TestCase(3, 2, true, "ㅤ",
+			TestName = "InvisibleCharacter")]
+		[TestCase(3, 2, true, "ㅤ",
+			TestName = "Space")]
 		[TestCase(3, 2, true, "a.sd",
 			TestName = "EnglishLettersAreNotDoubleRegexPattern")]
 		[TestCase(3, 2, true, "asd",
@@ -32,52 +89,129 @@ namespace HomeExercises
 			TestName = "RussianLettersAreNotDoubleRegexPattern")]
 		[TestCase(3, 2, true, "ипр",
 			TestName = "RussianLettersAreNotIntegerRegexPattern")]
-		[TestCase(3, 2, true, "&^:;($)#@!~`*_-[]{}",
+		[TestCase(30, 2, true, "&^:;($)#@!~`*_-[]{}",
 			TestName = "StrangeSymbols")]
-		public void IsValidNumber_False(int precision, int scale, bool onlyPositive,
+		[TestCase(3, 2, true, ",1",
+			TestName = "StartsWithComma")]
+		[TestCase(3, 2, true, ".1",
+			TestName = "StartsWithDot")]
+		[TestCase(10, 5, true, ".1.1",
+			TestName = "NumberHasTwoDots")]
+		[TestCase(10, 5, false, "--1.2",
+			TestName = "StartsWithTwoMinuses")]
+		[TestCase(10, 5, false, "~1.2",
+			TestName = "StartsWithTilda")]
+		[TestCase(10, 5, false, "#1.2",
+			TestName = "StartsWithLattice")]
+		[TestCase(10, 5, false, "*1.2",
+			TestName = "StartsWithAsterisk")]
+		[TestCase(10, 5, false, "¾",
+			TestName = "fractions")]
+		[TestCase(10, 5, false, "XVI",
+			TestName = "roman")]
+		[TestCase(10, 5, false, "εʹ",
+			TestName = "greek")]
+		public void IsValidNumber_ShouldBeFalse(int precision, int scale, bool onlyPositive,
 			string value)
 		{
 			new NumberValidator(precision, scale, onlyPositive).IsValidNumber(value)
 				.Should().BeFalse();
 		}
-
-		[Test]
-		[TestCase(4, 2, false, "-1.23",
-			TestName = "DoubleWithMinus")]
+		
+		
 		[TestCase(4, 2, false, "+1.23",
 			TestName = "DoubleWithPlus")]
 		[TestCase(4, 2, false, "1.23",
 			TestName = "DoubleWithoutSign")]
-		[TestCase(4, 2, true, "0",
-			TestName = "IntegerWithoutSign")]
-		[TestCase(4, 2, false, "-0",
-			TestName = "IntegerWithMinus")]
-		[TestCase(4, 2, false, "+0",
+		[TestCase(4, 2, true, "+1.23",
+			TestName = "DoubleWithPlusPositiveValidator")]
+		[TestCase(4, 2, true, "1.23",
+			TestName = "DoubleWithoutSignPositiveValidator")]
+		[TestCase(4, 2, false, "+1,23",
+			TestName = "DoubleWithPlusAndComma")]
+		[TestCase(4, 2, false, "1,23",
+			TestName = "DoubleWithoutSignAndWithComma")]
+		[TestCase(4, 2, true, "+1,23",
+			TestName = "DoubleWithPlusAndCommaPositiveValidator")]
+		[TestCase(4, 2, true, "1,23",
+			TestName = "DoubleWithoutSignAndWithCommaPositiveValidator")]
+		[TestCase(4, 0, false, "+123",
 			TestName = "IntegerWithPlus")]
+		[TestCase(4, 0, false, "123",
+			TestName = "IntegerWithoutSign")]
+		[TestCase(4, 0, true, "+123",
+			TestName = "IntegerWithPlusPositiveValidator")]
+		[TestCase(4, 0, true, "123",
+			TestName = "IntegerWithoutSignPositiveValidator")]
+		[TestCase(4, 2, true, "0",
+			TestName = "ZeroWithoutSignPositiveValidator")]
+		[TestCase(4, 2, false, "0",
+			TestName = "ZeroWithoutSign")]
+		[TestCase(4, 2, false, "-0",
+			TestName = "ZeroWithMinus")]
+		[TestCase(4, 2, false, "+0",
+			TestName = "ZeroWithPlus")]
+		[TestCase(4, 2, true, "+0",
+			TestName = "ZeroWithPlusPositiveValidator")]
 		[TestCase(4, 2, true, "0.0",
-			TestName = "PointInDouble")]
+			TestName = "ZeroWithDotPositiveValidator")]
+		[TestCase(4, 2, false, "0.0",
+			TestName = "ZeroWithDot")]
 		[TestCase(4, 2, true, "0,0",
-			TestName = "CommaInDouble")]
-		public void IsValidNumber_True(int precision, int scale, bool onlyPositive,
+			TestName = "ZeroWithCommaPositiveValidator")]
+		[TestCase(4, 2, false, "0,0",
+			TestName = "ZeroWithComma")]
+		[TestCase(4, 2, false, "-0.0",
+			TestName = "NegativeZeroWithDot")]
+		[TestCase(4, 2, false, "-0,0",
+			TestName = "NegativeZeroWithComma")]
+		[TestCase(4, 2, false, "-1.23",
+			TestName = "NegativeDoubleAndDot")]
+		[TestCase(4, 2, false, "-1,23",
+			TestName = "NegativeDoubleAndComma")]
+		[TestCase(4, 0, false, "-123",
+			TestName = "NegativeInteger")]
+		[TestCase(100, 0, false, "1234567891234556789867578793567456456323245",
+			TestName = "VeryBigInteger")]
+		[TestCase(100, 0, true, "1234567891234556789867578793567456456323245",
+			TestName = "VeryBigIntegerPositiveValidator")]
+		[TestCase(101, 100, false, 
+			"1234567891234556789867578793567456456323245.1234567891234556789867578793567456456323245",
+			TestName = "VeryBigDouble")]
+		[TestCase(101, 100, true, 
+			"1234567891234556789867578793567456456323245.1234567891234556789867578793567456456323245",
+			TestName = "VeryBigDoublePositiveValidator")]
+		[TestCase(4, 0, false, "010",
+			TestName = "IntegerStartsWithZero")]
+		[TestCase(4, 0, false, "-010",
+			TestName = "NegativeIntegerStartsWithZero")]
+		[TestCase(4, 1, false, "01.0",
+			TestName = "IntegerPartOfDoubleStartsWithZero")]
+		[TestCase(4, 1, false, "-01.0",
+			TestName = "IntegerPartOfNegativeDoubleStartsWithZero")]
+		
+		//010
+		//01,0
+		//01,0
+		//-01.0
+		public void IsValidNumber_ShouldBeTrue(int precision, int scale, bool onlyPositive,
 			string value)
 		{
 			new NumberValidator(precision, scale, onlyPositive).IsValidNumber(value)
 				.Should().BeTrue();
 		}
 
-		[Test]
 		[TestCase(-1, 2, true, TestName = "NegativePrecision")]
 		[TestCase(0, 2, true, TestName = "PrecisionIsZero")]
 		[TestCase(5, -1, true, TestName = "NegativeScale")]
 		[TestCase(1, 2, true, TestName = "ScaleMoreThanPrecision")]
 		[TestCase(1, 1, true, TestName = "ScaleEqualsPrecision")]
-		public void CreateNumberValidator_ArgumentException(int precision, int scale, bool onlyPositive)
+		public void CreateNumberValidator_ShouldThrowArgumentException(int precision, int scale, bool onlyPositive)
 		{
 			Action act = () => new NumberValidator(precision, scale, onlyPositive);
 			act.Should().Throw<ArgumentException>();
 		}
 
-		[Test]
 		[TestCase(1, 0, true,
 			TestName = "PositiveIntegerValidatorPrecisionMoreThanScale")]
 		[TestCase(1, 0, false,
@@ -86,7 +220,7 @@ namespace HomeExercises
 			TestName = "PositiveDoubleValidatorPrecisionMoreThanScale")]
 		[TestCase(2, 1, false,
 			TestName = "ValidatorDoublePrecisionMoreThanScale")]
-		public void CreateNumberValidator_NotThrow(int precision, int scale, bool onlyPositive)
+		public void CreateNumberValidator_ShouldCreate(int precision, int scale, bool onlyPositive)
 		{
 			Action act = () => new NumberValidator(precision, scale, onlyPositive);
 			act.Should().NotThrow();
