@@ -14,16 +14,16 @@ namespace HomeExercises
 		[Category("ToRefactor")]
 		public void CheckCurrentTsar_TwoIdenticalTsars_ShouldBeEqual()
 		{
-            var actualTsar = TsarRegistry.GetCurrentTsar();
+			var actualTsar = TsarRegistry.GetCurrentTsar();
 
-            var expectedTsar = new Person("Ivan IV The Terrible", 54, 170, 70,
-	            new Person("Vasili III of Russia", 28, 170, 60, null));
+			var expectedTsar = new Person("Ivan IV The Terrible", 54, 170, 70,
+				new Person("Vasili III of Russia", 28, 170, 60, null));
 
-            //.AllowingInfiniteRecursion() будет иметь в случае, если у человека (царя) > 10 предков
-            actualTsar.Should().BeEquivalentTo(expectedTsar, options =>
-	            options.AllowingInfiniteRecursion()
-		            .Excluding(o => Regex.IsMatch(o.SelectedMemberPath, @"(Id)$")));
-        }
+			//.AllowingInfiniteRecursion() будет иметь в случае, если у человека (царя) > 10 предков
+			actualTsar.Should().BeEquivalentTo(expectedTsar, options =>
+				options.AllowingInfiniteRecursion()
+					.Excluding(o => Regex.IsMatch(o.SelectedMemberPath, @"(Id)$")));
+		}
 
 		[Test]
 		[Description("Альтернативное решение. Какие у него недостатки?")]
@@ -57,7 +57,7 @@ namespace HomeExercises
 		}
 	}
 	
-    public class TsarRegistry
+	public class TsarRegistry
 	{
 		public static Person GetCurrentTsar()
 		{
