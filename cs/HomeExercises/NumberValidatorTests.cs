@@ -19,8 +19,9 @@ namespace HomeExercises
 																																	.WithMessage(message);
       }
 
-		[TestCase(1, 0, true, TestName = "NumberValidator_ShouldBeCreated_WhenPrecisionIsGreatenThenZero")]
-		public void CreationNotThrowExceptions(int precision, int scale, bool onlyPositive)
+		[TestCase(1, 0, true, TestName = "{m}_WhenPrecisionIsGreatenThenZero")]
+		[TestCase(17, 2, true, TestName = "{m}_WhenPrecisionAndScaleAreGreaterThenZero_AndScaleIsLowerThenPrecision")]
+		public void Should_BeCreated(int precision, int scale, bool onlyPositive)
 		{
          FluentActions.Invoking(() => new NumberValidator(precision, scale, onlyPositive)).Should().NotThrow();
       }
