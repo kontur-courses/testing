@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Text.RegularExpressions;
 using FluentAssertions;
+using Microsoft.VisualStudio.TestPlatform.ObjectModel;
 using NUnit.Framework;
 
 namespace HomeExercises
@@ -40,6 +41,9 @@ namespace HomeExercises
          [TestCase(2, 1, false, "17.1", ExpectedResult = false, TestName = "Should_BeFalse_WhenBothIntegerAndFractionalPartLengthAreGreaterThanPrecision")]
          [TestCase(4, 1, false, "1.11", ExpectedResult = false, TestName = "Should_BeFalse_WhenFractionalPartLengthIsGreaterThanScale")]
          [TestCase(3, 2, true, "a.bc", ExpectedResult = false, TestName = "Should_IgnoreNonNumericStrings")]
+			[TestCase(3, 2, true, "1.23", ExpectedResult = true, TestName = "Should_BeTrue_WhenPrecisionIs3_ScaleIs2_OnlyPositive_AndValueIsMatch")]
+			[TestCase(4, 2, false, "12.34", ExpectedResult = true, TestName = "Should_BeTrue_WhenPecisionIs4_ScaleIs2_ValueIsMatchAndPositive")]
+			[TestCase(4, 2, false, "-1.23", ExpectedResult = true, TestName = "Should_BeTrue_WhenPrecisionIs4_ScaleIs2_ValueIsMatchAndNegative")]
          public bool IsValidNumberTest(int precision, int scale, bool onlyPositive, string value)
          {
             return new NumberValidator(precision, scale, onlyPositive).IsValidNumber(value);
