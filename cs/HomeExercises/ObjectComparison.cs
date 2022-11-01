@@ -7,7 +7,6 @@ namespace HomeExercises
 	{
 		[Test]
 		[Description("Проверка текущего царя")]
-		[Category("ToRefactor")]
 		public void CheckCurrentTsar()
 		{
 			var actualTsar = TsarRegistry.GetCurrentTsar();
@@ -15,17 +14,7 @@ namespace HomeExercises
 			var expectedTsar = new Person("Ivan IV The Terrible", 54, 170, 70,
 				new Person("Vasili III of Russia", 28, 170, 60, null));
 
-			AreEquivalent(actualTsar, expectedTsar);
-			AreEquivalent(actualTsar.Parent!, expectedTsar.Parent!);
-			actualTsar.Parent!.Parent.Should().Be(expectedTsar.Parent!.Parent);
-		}
-
-		private void AreEquivalent(Person actual, Person expected)
-		{
-			actual.Should().BeEquivalentTo(expected, options => options.Including(p => p.Name)
-																						  .Including(p => p.Age)
-																						  .Including(p => p.Height)
-																						  .Including(p => p.Weight));
+			actualTsar.Should().BeEquivalentTo(expectedTsar, options => options.Excluding(ctx => ctx.SelectedMemberInfo.Name.Equals(nameof(Person.Id))));
 		}
 
 		[Test]
