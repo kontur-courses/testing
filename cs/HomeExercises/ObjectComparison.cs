@@ -15,16 +15,17 @@ namespace HomeExercises
 			var expectedTsar = new Person("Ivan IV The Terrible", 54, 170, 70,
 				new Person("Vasili III of Russia", 28, 170, 60, null));
 
-			// Перепишите код на использование Fluent Assertions.
-			Assert.AreEqual(actualTsar.Name, expectedTsar.Name);
-			Assert.AreEqual(actualTsar.Age, expectedTsar.Age);
-			Assert.AreEqual(actualTsar.Height, expectedTsar.Height);
-			Assert.AreEqual(actualTsar.Weight, expectedTsar.Weight);
+			AreEquivalent(actualTsar, expectedTsar);
+			AreEquivalent(actualTsar.Parent!, expectedTsar.Parent!);
+			actualTsar.Parent!.Parent.Should().Be(expectedTsar.Parent!.Parent);
+		}
 
-			Assert.AreEqual(expectedTsar.Parent!.Name, actualTsar.Parent!.Name);
-			Assert.AreEqual(expectedTsar.Parent.Age, actualTsar.Parent.Age);
-			Assert.AreEqual(expectedTsar.Parent.Height, actualTsar.Parent.Height);
-			Assert.AreEqual(expectedTsar.Parent.Parent, actualTsar.Parent.Parent);
+		private void AreEquivalent(Person actual, Person expected)
+		{
+			actual.Should().BeEquivalentTo(expected, options => options.Including(p => p.Name)
+																						  .Including(p => p.Age)
+																						  .Including(p => p.Height)
+																						  .Including(p => p.Weight));
 		}
 
 		[Test]
@@ -38,6 +39,10 @@ namespace HomeExercises
 			// Какие недостатки у такого подхода? 
 			Assert.True(AreEqual(actualTsar, expectedTsar));
 		}
+
+		// Недостаток: при не выполнении условия равенства,
+		// не будет выведено сообщение о том, значения каких полей не совпали,
+		// что осложняет понимание того, почему тест падает.
 
 		private bool AreEqual(Person? actual, Person? expected)
 		{
