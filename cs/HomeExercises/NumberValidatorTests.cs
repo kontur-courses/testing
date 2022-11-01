@@ -7,30 +7,46 @@ namespace HomeExercises
 {
 	public class NumberValidatorTests
 	{
-		[Test]
-		public void Test()
+      #region Creation Tests
+		[TestCase(-1, 0, false, TestName = "ShouldThrowArgumentException_DuringCreationWithNegativePrecision")]
+		[TestCase(0, 0, false, TestName = "ShouldThrowArgumentException_DuringCreationWithZeroPrecision")]
+		[TestCase(1, 1, true, TestName = "ShouldThrowArgumentException_DuringCreation_WhenScaleEqualToPrecision")]
+		[TestCase(1, 2, true, TestName = "ShouldThrowArgumentException_DuringCreation_WhenScaleGreaterThanPrecision")]
+		[TestCase(1, -1, true, TestName = "houldThrowArgumentException_DuringCreationWithNegativeScale")]
+		public void CreationThrowsArgumentExceptionTest(int precision, int scale, bool onlyPositive)
 		{
-			Assert.Throws<ArgumentException>(() => new NumberValidator(-1, 2, true));
-			Assert.DoesNotThrow(() => new NumberValidator(1, 0, true));
-			Assert.Throws<ArgumentException>(() => new NumberValidator(-1, 2, false));
-			Assert.DoesNotThrow(() => new NumberValidator(1, 0, true));
+         FluentActions.Invoking(() => new NumberValidator(precision, scale, onlyPositive)).Should().Throw<ArgumentException>();
+      }
 
-			Assert.IsTrue(new NumberValidator(17, 2, true).IsValidNumber("0.0"));
-			Assert.IsTrue(new NumberValidator(17, 2, true).IsValidNumber("0"));
-			Assert.IsTrue(new NumberValidator(17, 2, true).IsValidNumber("0.0"));
-			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("00.00"));
-			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("-0.00"));
-			Assert.IsTrue(new NumberValidator(17, 2, true).IsValidNumber("0.0"));
-			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("+0.00"));
-			Assert.IsTrue(new NumberValidator(4, 2, true).IsValidNumber("+1.23"));
-			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("+1.23"));
-			Assert.IsFalse(new NumberValidator(17, 2, true).IsValidNumber("0.000"));
-			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("-1.23"));
-			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("a.sd"));
+		[TestCase(1, 0, true, TestName = "NumberValidator_ShouldBeCreated_WhenPrecisionIsGreatenThenZero")]
+		public void CreationNotThrowExceptions(int precision, int scale, bool onlyPositive)
+		{
+         FluentActions.Invoking(() => new NumberValidator(precision, scale, onlyPositive)).Should().NotThrow();
+      }
+      #endregion
+
+      #region 'IsValidNumber' method tests
+      public class IsValidNumberTests
+		{
+         [TestCase(1, 0, false, null, ExpectedResult = false, TestName = "Should_BeFalse_WhenInputValueIsNull")]
+         [TestCase(1, 0, false, "", ExpectedResult = false, TestName = "Should_BeFalse_WhenInputValueIsEmptyString")]
+         [TestCase(1, 0, false, " ", ExpectedResult = false, TestName = "Should_BeFalse_WhenInputValueIsWhitespace")]
+         [TestCase(1, 0, false, "1.", ExpectedResult = false, TestName = "Should_IgnoreIntegerValueWithDot_WhenItsLengthIsLessThanPrecision")]
+         [TestCase(1, 0, true, "+1", ExpectedResult = false, TestName = "Should_IgnoreValueWithPositiveSign_WhenPrecisionLengthIsLess")]
+         [TestCase(1, 0, false, "-1", ExpectedResult = false, TestName = "Should_IgnoreValueWithNegativeSign_WhenPrecisionLengthIsLess")]
+         [TestCase(2, 0, true, "-1", ExpectedResult = false, TestName = "Should_BeFalse_WhenInputsNegativeNumberStringInOnlyPositiveValidator")]
+         [TestCase(2, 1, false, "17.1", ExpectedResult = false, TestName = "Should_BeFalse_WhenBothIntegerAndFractionalPartLengthAreGreaterThanPrecision")]
+         [TestCase(4, 1, false, "1.11", ExpectedResult = false, TestName = "Should_BeFalse_WhenFractionalPartLengthIsGreaterThanScale")]
+         [TestCase(3, 2, true, "a.bc", ExpectedResult = false, TestName = "Should_IgnoreNonNumericStrings")]
+         public bool IsValidNumberTest(int precision, int scale, bool onlyPositive, string value)
+         {
+            return new NumberValidator(precision, scale, onlyPositive).IsValidNumber(value);
+         }
 		}
-	}
+		#endregion
+   }
 
-	public class NumberValidator
+   public class NumberValidator
 	{
 		private readonly Regex numberRegex;
 		private readonly bool onlyPositive;
