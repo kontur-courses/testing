@@ -31,14 +31,13 @@ namespace HomeExercises
 		public void CheckCurrentTsarAlternative()
 		{
 			var actualTsar = TsarRegistry.GetCurrentTsar();
-			var idField = new Regex(@"(^|Parent\.)+Id$");
 
-            var expectedTsar = new Person("Ivan IV The Terrible", 54, 170, 70,
+			var expectedTsar = new Person("Ivan IV The Terrible", 54, 170, 70,
 				new Person("Vasili III of Russia", 28, 170, 60, null));
 
-            actualTsar.Should().BeEquivalentTo(expectedTsar, options => options
-	            .Excluding(p => idField.IsMatch(p.Path)));
-        }
+			actualTsar.Should().BeEquivalentTo(expectedTsar, options => options
+				.Excluding(p => Regex.IsMatch(p.SelectedMemberPath, @"(^|Parent\.)Id$")));
+		}
 
 		[Test]
 		[Description("Альтернативное решение. Какие у него недостатки?")]
