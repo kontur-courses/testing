@@ -1,4 +1,5 @@
 ﻿using FluentAssertions;
+using FluentAssertions.Equivalency;
 using HomeExercises;
 using NUnit.Framework;
 
@@ -17,7 +18,7 @@ public class ObjectComparisonTests
 			new Person("Vasili III of Russia", 28, 170, 60, null));
 
 		actualTsar.Should().BeEquivalentTo(expectedTsar, options => options
-			.Excluding(ctx => ctx.Path.EndsWith("Id")));
+			.Excluding((IMemberInfo ctx) => ctx.Name == "Id"));
 	}
 
 	[Test]
