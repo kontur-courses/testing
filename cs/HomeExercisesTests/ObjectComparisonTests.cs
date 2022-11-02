@@ -1,5 +1,4 @@
 ﻿using FluentAssertions;
-using FluentAssertions.Equivalency;
 using HomeExercises;
 using NUnit.Framework;
 
@@ -18,7 +17,9 @@ public class ObjectComparisonTests
 			new Person("Vasili III of Russia", 28, 170, 60, null));
 
 		actualTsar.Should().BeEquivalentTo(expectedTsar, options => options
-			.Excluding((IMemberInfo ctx) => ctx.Name == "Id"));
+			.Excluding(ctx => ctx.DeclaringType == typeof(Person) && ctx.Name == "Id")
+			.IgnoringCyclicReferences()
+			.AllowingInfiniteRecursion());
 	}
 
 	[Test]
@@ -35,6 +36,8 @@ public class ObjectComparisonTests
 		// - При добавлении в класс новых полей необходимо корректировать тест
 		// - Читаемость теста и легкость в проверке теста ниже, чем у теста с FluentAssertions
 		// - Для того, чтобы понять логику работы теста придется искать и спускаться до AreEqual
+		// - Если одна из Person будет ссылаться на Person, который уже есть выше по цепочке,
+		//	 этот тест уйдет в бесконечную рекурсию и упадет на StackOverflowException
 		Assert.True(AreEqual(actualTsar, expectedTsar));
 	}
 
