@@ -9,7 +9,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HomeExercises", "HomeExerci
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Challenge", "Challenge\Challenge.csproj", "{BB8C2EFB-6AE9-45BD-8468-829D5AB79DCB}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NumberValidatorTests", "NumberValidatorTests\NumberValidatorTests.csproj", "{2397A563-7D02-4FF6-A735-C578BF769BE1}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HomeExercisesTests", "HomeExercisesTests\HomeExercisesTests.csproj", "{2397A563-7D02-4FF6-A735-C578BF769BE1}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

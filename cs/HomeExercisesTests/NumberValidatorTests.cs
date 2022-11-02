@@ -2,9 +2,9 @@ using FluentAssertions;
 using HomeExercises;
 using NUnit.Framework;
 
-namespace NumberValidatorTests;
+namespace HomeExercisesTests;
 
-public class NumberValidator_Should
+public class NumberValidatorTests
 {
 	[TestCase(-1, 0, TestName = "{m}IsNegative")]
 	[TestCase(0, 0, TestName = "{m}IsZero")]
