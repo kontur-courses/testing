@@ -9,6 +9,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HomeExercises", "HomeExerci
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Challenge", "Challenge\Challenge.csproj", "{BB8C2EFB-6AE9-45BD-8468-829D5AB79DCB}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NumberValidatorTests", "NumberValidatorTests\NumberValidatorTests.csproj", "{2397A563-7D02-4FF6-A735-C578BF769BE1}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -27,6 +29,10 @@ Global
 		{BB8C2EFB-6AE9-45BD-8468-829D5AB79DCB}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{BB8C2EFB-6AE9-45BD-8468-829D5AB79DCB}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{BB8C2EFB-6AE9-45BD-8468-829D5AB79DCB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2397A563-7D02-4FF6-A735-C578BF769BE1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2397A563-7D02-4FF6-A735-C578BF769BE1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2397A563-7D02-4FF6-A735-C578BF769BE1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2397A563-7D02-4FF6-A735-C578BF769BE1}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
