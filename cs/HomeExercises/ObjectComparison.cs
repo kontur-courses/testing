@@ -36,7 +36,7 @@ namespace HomeExercises
 				new Person("Vasili III of Russia", 28, 170, 60, null));
 
 			actualTsar.Should().BeEquivalentTo(expectedTsar, options => options
-				.Excluding(p => Regex.IsMatch(p.SelectedMemberPath, @"(^|Parent\.)Id$")));
+				.Excluding(p => Regex.IsMatch(p.SelectedMemberPath, @"(^|(\.|^)Parent\.)Id$")));
 		}
 
 		[Test]
