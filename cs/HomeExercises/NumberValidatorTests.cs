@@ -7,29 +7,35 @@ namespace HomeExercises
 {
 	public class NumberValidatorTests
 	{
-		[TestCase(3, 0, true, "123", true, TestName = "number without fractional part")]
-		[TestCase(3, 2, true, "00.00", false, TestName = "precision cannot be less than fractionPart + intPart")]
-		[TestCase(3, 2, true, null, false, TestName = "Null value")]
-		[TestCase(3, 2, true,  " ", false, TestName = "Empty string")]
-		[TestCase(4, 2, true, "ab.cs", false, TestName = "string does not match Regex")]
-		[TestCase(4, 2, true, "0.000", false, TestName = "scale cannot be less than fractionPart")]
-		[TestCase(3, 1, true, "-1.0", false, TestName = "value cannot be negative if onlyPositive = true")]
-		[TestCase(3, 1, false, "-1.0", true, TestName = "symbol - are part of precision")]
-		[TestCase(3, 1, false, "+1.0", true, TestName = "symbol + are part of precision")]
-		[TestCase(5, 3, true, "11.03", true, TestName = "validation test with correct parameters")]
-		[TestCase(5, 3, true, "11,03" , true, TestName = "we can use a comma to separate fraction and integer parts")]
+		[TestCase(3, 0, true, "123",ExpectedResult = true, TestName = "number without fractional part")]
+		[TestCase(3, 2, true, "00.00", ExpectedResult = false, TestName = "precision cannot be less than fractionPart + intPart")]
+		[TestCase(3, 2, true, null, ExpectedResult = false, TestName = "Null value")]
+		[TestCase(3, 2, true,  "", ExpectedResult = false, TestName = "Empty string")]
+		[TestCase(3, 2, true, " ", ExpectedResult = false, TestName = "WhiteSpace")]
+		[TestCase(4, 2, true, "ab.cs", ExpectedResult = false, TestName = "string does not match Regex")]
+		[TestCase(4, 2, true, "0.000", ExpectedResult = false, TestName = "scale cannot be less than fractionPart")]
+		[TestCase(3, 1, true, "-1.0", ExpectedResult = false, TestName = "value cannot be negative if onlyPositive = true")]
+		[TestCase(3, 1, false, "-1.0", ExpectedResult = true, TestName = "symbol - are part of precision")]
+		[TestCase(3, 1, false, "+1.0", ExpectedResult = true, TestName = "symbol + are part of precision")]
+		[TestCase(5, 3, true, "11.03", ExpectedResult = true, TestName = "validation test with correct parameters")]
+		[TestCase(5, 3, true, "11,03" , ExpectedResult = true, TestName = "we can use a comma to separate fraction and integer parts")]
 
-		public void isValidNumber_Test(int precision, int scale, bool onlyPositive, string value, bool expectedResult)
+		public bool isValidNumber_Test(int precision, int scale, bool onlyPositive, string value)
 		{
-			new NumberValidator(precision, scale, onlyPositive).IsValidNumber(value).Should().Be(expectedResult);
+			var numberValidator = new NumberValidator(precision, scale, onlyPositive);
+
+			return numberValidator.IsValidNumber(value);
 		}
 
 		[TestCase(-1, 0, TestName = "throws when precision is negative")]
+		[TestCase(0, 0, TestName = "throws when precision is zero")]
 		[TestCase(2, 3, TestName = "throws when scale greater than precision")]
 		[TestCase(2, -1, TestName = "throws when scale is non - positive")]
 		public void NumberValidatorConstructor_Fail(int precision, int scale)
 		{
-			Assert.Throws<ArgumentException>(() => new NumberValidator(precision, scale));
+			Action action = () => new NumberValidator(precision, scale);
+
+			action.Should().Throw<ArgumentException>();
 		}
 	}
 
