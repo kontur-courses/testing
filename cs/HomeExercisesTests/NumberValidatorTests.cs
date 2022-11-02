@@ -33,8 +33,7 @@ public class NumberValidatorTests
 	[TestCase(1, 0, false, TestName = "{m}NotOnlyPositive")]
 	[TestCase(int.MaxValue, 0, TestName = "{m}MaxValuePrecision")]
 	[TestCase(int.MaxValue, int.MaxValue - 1, TestName = "{m}MaxValueScale")]
-	public void Constructor_NotThrowArgumentException_On(int precision,
-		int scale, bool onlyPositive = false)
+	public void Constructor_NotThrowArgumentException_On(int precision, int scale, bool onlyPositive = false)
 	{
 		Action constructor = () => new NumberValidator(precision, scale, onlyPositive);
 		constructor.Should()
