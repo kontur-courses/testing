@@ -8,7 +8,6 @@ namespace HomeExercises
 {
 	public class NumberValidatorTests
 	{
-		// Проверяем все возможные ошибки, которые вызывает конструктор при вводе неверных данных
 		[TestCase(-1, 2, "precision must be a positive number")]
 		[TestCase(0, 2, "precision must be a positive number")]
 		[TestCase(2, -2, "precision must be a non-negative number less or equal than precision")]
@@ -20,7 +19,6 @@ namespace HomeExercises
 			act.Should().Throw<ArgumentException>(exeptionMessage);
 		}
 		
-		// Проверяем нормальную работу конструктора без ошибок
 		[Test]
 		public void NumberRegistry_NormalInput_ShouldNotThrowExceptions()
 		{
@@ -29,10 +27,11 @@ namespace HomeExercises
 			act.Should().NotThrow();
 		}
 
-		// Проверяем метод на числах, соответствующих шаблону
-		[TestCase(17, 2, true, "0.0")]
-		[TestCase(17, 2, true, "0")]
-		public void IsValidNumber_ValidValue_ShouldReturnTrue(int precision, int scale, bool onlyPositive, string value)
+		[TestCase(17, 2, true, "0.00", TestName = "Num without sign")]
+		[TestCase(4, 2, true, "+1.23", TestName = "Common input")]
+		[TestCase(17, 2, true, "0", TestName = "Single zero value")]
+		[TestCase(17, 2, true, "0.0", TestName = "Zero with an empty fractional part")]
+		public void IsValidNumber_CorrectValuePattern_ShouldReturnTrue(int precision, int scale, bool onlyPositive, string value)
 		{
 			var numberValidator = NumberRegistry.GetCurrentNumber(precision, scale, onlyPositive);
 
@@ -41,83 +40,20 @@ namespace HomeExercises
 			validFlag.Should().BeTrue();
 		}
 
-		// Проверяем метод на ввод отрицательного числа валидатору, у которого стоит флаг "только положительные числа"
-		[Test]
-		public void IsValidNumber_NegativeInputWithOnlyPositiveValidator_ShouldReturnFalse()
-		{
-			var numberValidator = NumberRegistry.GetCurrentNumber(3, 2, true);
-
-			var validFlag = numberValidator.IsValidNumber("-0.00");
-
-			validFlag.Should().BeFalse();
-		}
-		
-		// Проверяем метод на вход строки, не соответствующей шаблону
-		[Test]
-		public void IsValidNumber_InputWithIncorrectPattern_ShouldReturnFalse()
-		{
-			var numberValidator = NumberRegistry.GetCurrentNumber(3, 2, true);
-
-			var validFlag = numberValidator.IsValidNumber("a.sd");
-
-			validFlag.Should().BeFalse();
-		}
-
-		// Проеряем метод на исключение числа, у которого дробная часть не соответствует предельному scale
-		[Test]
-		public void IsValidNumber_FractionalPartLongerThanScale_ShouldReturnFalse()
-		{
-			var numberValidator = NumberRegistry.GetCurrentNumber(17, 2, true);
-
-			var validFlag = numberValidator.IsValidNumber("0.000");
-
-			validFlag.Should().BeFalse();
-		}
-
-		// Проеряем метод на исключение числа, у которого общая длина не соответствует предельному precision
-		[TestCase(3, 2, true, "+0.00")]
-		[TestCase(3, 2, true, "00.00")]
-		public void IsValidNumber_NumLengthLongerThanPrecision_ShouldReturnFalse(int precision, int scale, bool onlyPositive, string value)
+		[TestCase(3, 2, true, "-0.00", TestName = "Negative input with only positive validator")]
+		[TestCase(3, 2, true, "a.sd", TestName = "Input with letters")]
+		[TestCase(17, 2, true, "0.000", TestName = "Fractional part longer than scale")]
+		[TestCase(3, 2, true, "+0.00", TestName = "Num length longer than precision")]
+		[TestCase(3, 2, true, "00.00", TestName = "Num length longer than precision")]
+		[TestCase(3, 2, true, null, TestName = "Null value")]
+		[TestCase(3, 2, true, "", TestName = "Empty string value")]
+		public void IsValidNumber_IncorrectValuePattern_ShouldReturnFalse(int precision, int scale, bool onlyPositive, string value)
 		{
 			var numberValidator = NumberRegistry.GetCurrentNumber(precision, scale, onlyPositive);
 
 			var validFlag = numberValidator.IsValidNumber(value);
 
 			validFlag.Should().BeFalse();
-		}
-
-		// Проеряем метод на исключение пустой строки или нулевой ссылки
-		[TestCase(3, 2, true, null)]
-		[TestCase(3, 2, true, "")]
-		public void IsValidNumber_NullOrEmptyValue_ShouldReturnFalse(int precision, int scale, bool onlyPositive, string value)
-		{
-			var numberValidator = NumberRegistry.GetCurrentNumber(precision, scale, onlyPositive);
-
-			var validFlag = numberValidator.IsValidNumber(value);
-
-			validFlag.Should().BeFalse();
-		}
-
-		// Проверка метода на то, что при отсутствии знака перед числом мы его считаем положительным
-		[Test]
-		public void IsValidNumber_NumWithoutSign_ShouldReturnTrue()
-		{
-			var numberValidator = NumberRegistry.GetCurrentNumber(17, 2, true);
-
-			var validFlag = numberValidator.IsValidNumber("0.00");
-
-			validFlag.Should().BeTrue();
-		}
-
-		// Проверка корректной работы метода при верном аргументе
-		[Test]
-		public void IsValidNumber_CommonInput_ShouldReturnTrue()
-		{
-			var numberValidator = NumberRegistry.GetCurrentNumber(4, 2, true);
-
-			var validFlag = numberValidator.IsValidNumber("+1.23");
-
-			validFlag.Should().BeTrue();
 		}
 	}
 }
