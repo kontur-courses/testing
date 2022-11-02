@@ -16,7 +16,7 @@ public class ObjectComparisonTests
 			new Person("Vasili III of Russia", 28, 170, 60, null));
 
 		actualTsar.Should().BeEquivalentTo(expectedTsar,
-			options => options.Excluding(memberInfo =>
+			options => options.AllowingInfiniteRecursion().Excluding(memberInfo =>
 				memberInfo.SelectedMemberInfo.Name == nameof(Person.Id)
 				&& memberInfo.SelectedMemberInfo.DeclaringType == typeof(Person)));
 	}
@@ -34,7 +34,8 @@ public class ObjectComparisonTests
 		 2. Легко совершить ошибку в методе AreEqual или забыть дописать какую-либо проверку
 		 3. Сложнее читается из-за метода AreEqual
 		 4. При проверке с помощью FluentAssertions будет показано какое поле не прошло проверку, здесь не будет
-		 5. Ппроверка с помощью FLuentAssertion выглядит более лаконично
+		 5. Проверка с помощью FLuentAssertion выглядит более лаконично
+		 6. С помощью FluentAssertions проще реализовать рекурсивную проверку свойства, в данном случае придется писать более сложный алгоритм проверки
 		 */
 		Assert.True(AreEqual(actualTsar, expectedTsar));
 	}
