@@ -15,8 +15,6 @@ namespace HomeExercises
 			var expectedTsar = new Person("Ivan IV The Terrible", 54, 170, 70,
 				new Person("Vasili III of Russia", 28, 170, 60, null));
 
-			// Перепишите код на использование Fluent Assertions.
-			//  Не требует создания дополнительного приватного метода для сравнения двух объектов класса Person
 			expectedTsar.Should().BeEquivalentTo(actualTsar, options => options.Excluding(o => o.Id).Excluding(o => o.Parent!.Id));
 		}
 
@@ -29,7 +27,9 @@ namespace HomeExercises
 				new Person("Vasili III of Russia", 28, 170, 60, null));
 
 			// Какие недостатки у такого подхода? 
-			//Нужен дополнительный приватный метод для сравнения двух объектов класса Person
+			//В Assert.True вызывается приватный метод AreEqual, который возвращает результат сравнения двух объектов класса Person
+			//Мне кажется, что вместо этого метода можно использовать готовый BeEquivalentTo() из FluentAssertions.
+			//Это избавит нас от лишнего приватного метода в классе тем самым сократит количество строк и улучшит читаемость
 			Assert.True(AreEqual(actualTsar, expectedTsar));
 		}
 
