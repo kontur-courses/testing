@@ -1,5 +1,6 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
+using System.Linq;
 using System.Reflection;
 using System.Text.RegularExpressions;
 using FluentAssertions;
@@ -10,57 +11,70 @@ namespace HomeExercises
 	[TestFixture]
 	public class NumberValidatorTests
 	{
-		[Test]
-		[TestCase("0.0", true, 17, 2, true)]
-		[TestCase("0", true, 17, 2, true)]
-		[TestCase("0.000", false, 17, 2, true)]
-		[TestCase("+1.23", true, 4, 2, true)]
-		[TestCase("+1.23", false, 3, 2, true)]
-		[TestCase("-1.23", false, 3, 2, true)]
-		[TestCase("00.00", false, 3, 2, true)]
-		[TestCase("-0.00", false, 3, 2, true)]
-		[TestCase("+0.00", false, 3, 2, true)]
-		[TestCase("a.sd", false, 3, 2, true)]
-		[TestCase(".0", false, 3, 2, true)]
-		[TestCase("0.", false, 3, 2, true)]
-		public void Test(
-			string validatingNumber, 
-			bool isValid, 
-			int precision, 
-			int scale = 0, 
-			bool onlyPositive = false)
+		[TestCase("0.0", 17, 2)]
+		[TestCase("0", 17, 2)]
+		[TestCase("+1.23", 4, 2)]
+		[TestCase("-1.23", 4, 2, false)]
+		[TestCase("0", 4, 2, false)]
+		public void Number_Is_Valid_Test(
+			string validatingNumber,
+			int precision,
+			int scale,
+			bool onlyPositive = true)
 		{
-			Assert.AreEqual(isValid, new NumberValidator(precision, scale, onlyPositive).IsValidNumber(validatingNumber));
+			new NumberValidator(precision, scale, onlyPositive)
+				.IsValidNumber(validatingNumber)
+				.Should()
+				.BeTrue();
 		}
 
-		[Test]
-		[TestCase(-1, 2, false)]
-		[TestCase(1, -2, false)]
-		[TestCase(-1, -2, false)]
+		[TestCase("0.000", 17, 2)]
+		[TestCase("-1.23", 3, 2)]
+		[TestCase("00.00", 3, 2)]
+		[TestCase("-0.00", 3, 2)]
+		[TestCase("a.sd", 3, 2)]
+		[TestCase(".0", 3, 2)]
+		[TestCase("0.", 3, 2)]
+		[TestCase("+1.23", 3, 2, false)]
+		[TestCase("+0.00", 3, 2, false)]
+		public void Number_Is_Not_Valid_Test(
+			string validatingNumber,
+			int precision,
+			int scale,
+			bool onlyPositive = true)
+		{
+			new NumberValidator(precision, scale, onlyPositive)
+				.IsValidNumber(validatingNumber)
+				.Should()
+				.BeFalse();
+		}
+
+		[TestCase(-1, 2)]
+		[TestCase(1, -2)]
+		[TestCase(-1, -2)]
 		[TestCase(1, 1, true)]
 		[TestCase(1, 2, true)]
 		public void Should_Throw_ArgumentException(
-			int precision, 
-			int scale = 0, 
+			int precision,
+			int scale,
 			bool onlyPositive = false)
 		{
-			new Action(() => 
-				new NumberValidator(precision, scale, onlyPositive)
+			new Action(() =>
+					new NumberValidator(precision, scale, onlyPositive)
 				)
 				.Should()
 				.Throw<ArgumentException>();
 		}
-		
-		[Test]
-		[TestCase(1, 0, true)]
+
+		[TestCase(3, 2)]
+		[TestCase(1, 0)]
 		[TestCase(1, 0, false)]
-		[TestCase(3, 2, true)]
 		public void Should_Not_Throw_ArgumentException(
-			int precision, 
-			int scale = 0, 
-			bool onlyPositive = false)
+			int precision,
+			int scale,
+			bool onlyPositive = true)
 		{
-			new Action(() => 
+			new Action(() =>
 					new NumberValidator(precision, scale, onlyPositive)
 				)
 				.Should()
