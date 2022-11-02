@@ -36,13 +36,13 @@ namespace HomeExercises
 		};
 		
 		[Test, TestCaseSource(nameof(_validTestObjects))]
-		public void IsValidNumber(int prec, int scale, bool pos, string num)
+		public void IsValidNumber_WithRightArgs_IsTrue(int prec, int scale, bool pos, string num)
 		{
 			Assert.IsTrue(new NumberValidator(prec, scale, pos).IsValidNumber(num));
 		}
 		
 		[Test, TestCaseSource(nameof(_invalidTestObjects))]
-		public void IsInvalidNumber(int prec, int scale, bool pos, string num)
+		public void IsValidNumber_WithWrongArgs_IsFalse(int prec, int scale, bool pos, string num)
 		{
 			Assert.IsFalse(new NumberValidator(prec, scale, pos).IsValidNumber(num));
 		}
