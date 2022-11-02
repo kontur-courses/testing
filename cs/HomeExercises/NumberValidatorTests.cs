@@ -27,11 +27,13 @@ namespace HomeExercises
 			act.Should().NotThrow();
 		}
 
-		[TestCase(17, 2, true, "0.00", TestName = "Num without sign")]
-		[TestCase(4, 2, true, "+1.23", TestName = "Common input")]
-		[TestCase(17, 2, true, "0", TestName = "Single zero value")]
-		[TestCase(17, 2, true, "0.0", TestName = "Zero with an empty fractional part")]
-		public void IsValidNumber_CorrectValuePattern_ShouldReturnTrue(int precision, int scale, bool onlyPositive, string value)
+		//"Num without sign"
+		
+		[TestCase(17, 2, true, "0.00", TestName = "{m}_OnNumWithoutSign")]
+		[TestCase(4, 2, true, "+1.23", TestName = "{m}_OnCommonInput")]
+		[TestCase(17, 2, true, "0", TestName = "{m}_OnSingleZero")]
+		[TestCase(17, 2, true, "0.0", TestName = "{m}_OnZeroWithAnEmptyFractionalPart")]
+		public void IsValidNumber_ShouldReturnTrue(int precision, int scale, bool onlyPositive, string value)
 		{
 			var numberValidator = NumberRegistry.GetCurrentNumber(precision, scale, onlyPositive);
 
@@ -40,14 +42,14 @@ namespace HomeExercises
 			validFlag.Should().BeTrue();
 		}
 
-		[TestCase(3, 2, true, "-0.00", TestName = "Negative input with only positive validator")]
-		[TestCase(3, 2, true, "a.sd", TestName = "Input with letters")]
-		[TestCase(17, 2, true, "0.000", TestName = "Fractional part longer than scale")]
-		[TestCase(3, 2, true, "+0.00", TestName = "Num length longer than precision")]
-		[TestCase(3, 2, true, "00.00", TestName = "Num length longer than precision")]
-		[TestCase(3, 2, true, null, TestName = "Null value")]
-		[TestCase(3, 2, true, "", TestName = "Empty string value")]
-		public void IsValidNumber_IncorrectValuePattern_ShouldReturnFalse(int precision, int scale, bool onlyPositive, string value)
+		[TestCase(3, 2, true, "-0.00", TestName = "{m}_OnNegativeInputWithOnlyPositiveValidator")]
+		[TestCase(3, 2, true, "a.sd", TestName = "{m}_OnInputWithLetters")]
+		[TestCase(17, 2, true, "0.000", TestName = "{m}_OnFractionalPartLongerThanScale")]
+		[TestCase(3, 2, true, "+0.00", TestName = "{m}_OnNumLengthLongerThanPrecision")]
+		[TestCase(3, 2, true, "00.00", TestName = "{m}_OnNumLengthLongerThanPrecision")]
+		[TestCase(3, 2, true, null, TestName = "{m}_OnNullValue")]
+		[TestCase(3, 2, true, "", TestName = "{m}_OnEmptyStringValue")]
+		public void IsValidNumber_ShouldReturnFalse(int precision, int scale, bool onlyPositive, string value)
 		{
 			var numberValidator = NumberRegistry.GetCurrentNumber(precision, scale, onlyPositive);
 
