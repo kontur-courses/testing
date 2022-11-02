@@ -63,7 +63,7 @@ namespace HomeExercises
 
 	public class Person
 	{
-		public static int IdCounter = 0;
+		public int IdCounter = 0;
 		public int Age, Height, Weight;
 		public string Name;
 		public Person? Parent;
