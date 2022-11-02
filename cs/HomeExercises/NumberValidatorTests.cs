@@ -7,20 +7,20 @@ namespace HomeExercises
 {
 	public class NumberValidatorTests
 	{
-		[TestCase(5, 0, TestName = "Precision is pos, scale = 0")]
-		[TestCase(5, 1, TestName = "Precision is pos, scale < precision")]
-		public void Constructor_WhenCorrectArgs_ShouldNoThrowEx(int precision, int scale)
+		[TestCase(5, 0, TestName = "Precision > 0, scale = 0")]
+		[TestCase(5, 1, TestName = "Precision > 0, scale < precision")]
+		public void Constructor_WhenCorrectArgs_ShouldNotThrow(int precision, int scale)
 		{
 			Assert.DoesNotThrow(() => new NumberValidator(precision, scale));
 		}
 
 		[TestCase(0, 0, TestName = "Precision = 0, Scale = 0")]
-		[TestCase(-5, 0, TestName = "Precision is neg, Scale = 0")]
-		[TestCase(-5, 5, TestName = "Precision is neg, Scale is pos")]
+		[TestCase(-5, 0, TestName = "Precision < 0, Scale = 0")]
+		[TestCase(-5, 5, TestName = "Precision < 0, Scale > 0")]
         [TestCase(5, 5, TestName = "Precision = Scale")]
 		[TestCase(5, 6, TestName = "Precision < Scale")]
-		[TestCase(5, -5, TestName = "Precision is pos, Scale < 0")]
-		public void Constructor_WhenIncorrectArgs_ShouldThrowEx(int precision, int scale)
+		[TestCase(5, -5, TestName = "Precision > 0, Scale < 0")]
+		public void Constructor_WhenIncorrectArgs_ShouldThrow(int precision, int scale)
 		{
 			Assert.Throws<ArgumentException>(() => new NumberValidator(precision, scale));
 		}
@@ -33,7 +33,7 @@ namespace HomeExercises
 				.IsValidNumber(value).Should().BeTrue();
 		}
 
-		[TestCase("555555.88", TestName = "When INT and DEC parts is corresponds")]
+		[TestCase("555555.88", TestName = "When INT and DEC parts corresponds")]
 		[TestCase("5555555.8", TestName = "When INT is correspond, DEC is less")]
 		[TestCase("88888888", TestName = "When only INT")]
 		[TestCase("55.88", TestName = "When INT less, DEC is correspond")]
@@ -71,8 +71,8 @@ namespace HomeExercises
 				.IsValidNumber(value).Should().BeFalse();
         }
 
-		[TestCase("-1.11", TestName = "When float is negative")]
-		[TestCase("-1", TestName = "When INT is negative")]
+		[TestCase("-1.11", TestName = "When float < 0")]
+		[TestCase("-1", TestName = "When INT < 0")]
 		public void IsValidNumber_WhenIsOnlyPositive_ShouldBeFalse(string value)
 		{
 			new NumberValidator(8, 2, onlyPositive: true)

@@ -6,7 +6,13 @@ namespace HomeExercises
 {
 	public class ObjectComparison
 	{
-		[Test]
+		[SetUp]
+		public void SetUp()
+		{
+			AssertionOptions.FormattingOptions.MaxDepth = 5;
+		}
+
+        [Test]
 		[Description("Проверка текущего царя")]
 		[Category("ToRefactor")]
 		public void CheckCurrentTsar()
@@ -18,8 +24,8 @@ namespace HomeExercises
 
 			actualTsar.Should()
 				.BeEquivalentTo(expectedTsar, opt => 
-					opt.Excluding(p => p.SelectedMemberInfo.Name == nameof(Person.Id) &&
-					                   p.SelectedMemberInfo.DeclaringType == typeof(Person)));
+					opt.Excluding(p => p.Name == nameof(Person.Id) &&
+					                   p.DeclaringType == typeof(Person)));
 		}
 
 		[Test]
