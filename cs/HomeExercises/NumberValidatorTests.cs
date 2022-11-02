@@ -11,7 +11,7 @@ namespace HomeExercises
 		[TestCase(1, 0, TestName = "Minimum value of precision and scale")]
 		[TestCase(20, 10, TestName = "Simple value of precision and scale")]
 		[TestCase(int.MaxValue, int.MaxValue - 1, TestName = "Maximum value of precision and scale")]
-		public void NumberValidator_CorrectCreation_DoesNotThrowException(int precision, int scale)
+		public void Constructor_CorrectCreation_DoesNotThrow(int precision, int scale)
 		{
 			Action validatorCreation = () => new NumberValidator(precision, scale, false);
 			Action positiveNumberValidatorCreation = () => new NumberValidator(precision, scale, true);
@@ -23,17 +23,16 @@ namespace HomeExercises
 				positiveNumberValidatorCreation.Should().NotThrow(message);
 			}
 		}
-
-		[TestCase(-1, 0, TestName = "NegativePrecision")]
-		[TestCase(0, 0, TestName = "ZeroPrecision")]
-		[TestCase(2, -1, TestName = "NegativeScale")]
-		[TestCase(10, 10, TestName = "ScaleEqualPrecision")]
-		[TestCase(15, 16, TestName = "ScaleGreaterThanPrecision")]
-		public void NumberValidator_IncorrectCreation_ShouldThrowException(int precision, int scale)
+		
+		[TestCase(-1, 0, TestName = "Negative precision")]
+		[TestCase(0, 0, TestName = "Zero precision")]
+		[TestCase(2, -1, TestName = "Negative scale")]
+		[TestCase(10, 10, TestName = "Scale equals precision")]
+		[TestCase(15, 16, TestName = "Scale greater than precision")]
+		public void Constructor_IncorrectCreation_ShouldThrowArgumentException(int precision, int scale)
 		{
 			Action validatorCreation = () => new NumberValidator(precision, scale, false);
 			Action positiveNumberValidatorCreation = () => new NumberValidator(precision, scale, true);
-
 			using (new AssertionScope())
 			{
 				var message = $"Precision = {precision} or scale = {scale} is incorrect";
@@ -43,12 +42,12 @@ namespace HomeExercises
 		}
 
 		[TestCase(null, TestName = "Null")]
-		[TestCase("", TestName = "EmptyString")]
+		[TestCase("", TestName = "Empty string")]
 		[TestCase("       ", TestName = "Spaces")]
-		[TestCase("\r\n", TestName = "NewLineWindows")]
-		[TestCase("\n", TestName = "NewLineLinux")]
+		[TestCase("\r\n", TestName = "New line windows")]
+		[TestCase("\n", TestName = "New line linux")]
 		[TestCase("qwerty", TestName = "Text")]
-		[TestCase("FF.AA", TestName = "HexNumber")]
+		[TestCase("FF.AA", TestName = "Hex number")]
 		public void IsValidNumber_IncorrectValueFormat_ShouldBeFalse(string value)
 		{
 			var validator = new NumberValidator(2, 1, true);
@@ -56,8 +55,8 @@ namespace HomeExercises
 			validator.IsValidNumber(value).Should().BeFalse($"Value = '{value}' has wrong format ");
 		}
 
-		[TestCase("-0.00", TestName = "NegativeSign")]
-		[TestCase("+0.00", TestName = "PositiveSign")]
+		[TestCase("-0.00", TestName = "Negative sign")]
+		[TestCase("+0.00", TestName = "Positives sign")]
 		public void IsValidNumber_NumberWithSignGreaterThanPrecision_ShouldBeFalse(string value)
 		{
 			const int precision = 3;
@@ -74,8 +73,8 @@ namespace HomeExercises
 			}
 		}
 
-		[TestCase(2, 1, "1.1", TestName = "PointSeparator")]
-		[TestCase(2, 1, "1,1", TestName = "CommaSeparator")]
+		[TestCase(2, 1, "1.1", TestName = "Point separator")]
+		[TestCase(2, 1, "1,1", TestName = "Comma separator")]
 		public void IsValidNumber_CorrectSeparator_ShouldBeTrue(int precision, int scale, string value)
 		{
 			var validator = new NumberValidator(precision, scale, true);
@@ -90,10 +89,10 @@ namespace HomeExercises
 			}
 		}
 
-		[TestCase(4, 2, "0.", TestName = "WithoutFracPartButContainsPoint")]
-		[TestCase(4, 2, "0,", TestName = "WithoutFracPartButContainsComma")]
-		[TestCase(20, 10, "1,1.1", TestName = "TwoDifferentSeparators")]
-		[TestCase(20, 10, "1.1.1", TestName = "TwoSameSeparators")]
+		[TestCase(4, 2, "0.", TestName = "Without a fractional part, but contains a point")]
+		[TestCase(4, 2, "0,", TestName = "Without a fractional part, but contains a comma")]
+		[TestCase(20, 10, "1,1.1", TestName = "Two different separators")]
+		[TestCase(20, 10, "1.1.1", TestName = "Two same separators")]
 		public void IsValidNumber_IncorrectSeparator_ShouldBeFalse(int precision, int scale, string value)
 		{
 			var validator = new NumberValidator(precision, scale, true);
@@ -108,12 +107,12 @@ namespace HomeExercises
 			}
 		}
 
-		[TestCase(4, 2, true, "0", TestName = "WithoutFracPart")]
-		[TestCase(4, 2, true, "000.0", TestName = "FracPartLessThanScale")]
-		[TestCase(40, 1, true, "111.1", TestName = "NumberLessThanPrecision")]
-		[TestCase(4, 2, false, "+1.23", TestName = "PositiveNumberWithoutOnlyPositiveFlag")]
-		[TestCase(5, 2, true, "12.34", TestName = "FracPartEqualsScale")]
-		[TestCase(4, 2, true, "123.4", TestName = "NumberEqualsPrecision")]
+		[TestCase(4, 2, true, "0", TestName = "Without a fractional part")]
+		[TestCase(4, 2, true, "000.0", TestName = "Fractional part less than scale")]
+		[TestCase(40, 1, true, "111.1", TestName = "Number less than precision")]
+		[TestCase(4, 2, false, "+1.23", TestName = "Positive number without onlyPositive flag")]
+		[TestCase(5, 2, true, "12.34", TestName = "Fractional part equals scale")]
+		[TestCase(4, 2, true, "123.4", TestName = "Number equals precision")]
 		public void IsValidNumber_CorrectValues_ShouldBeTrue(int precision, int scale, bool onlyPositive, string value)
 		{
 			var validator = new NumberValidator(precision, scale, onlyPositive);
@@ -122,10 +121,10 @@ namespace HomeExercises
 				.Should().BeTrue($"Value = '{value}' satisfies precision = {precision} and scale = {scale}");
 		}
 
-		[TestCase(4, 2, true, ".0", TestName = "WithoutIntPart")]
-		[TestCase(4, 2, true, "0.000", TestName = "FracPartGreaterThanScale")]
-		[TestCase(3, 0, true, "1111", TestName = "NumberLengthGreaterThanPrecision")]
-		[TestCase(4, 2, true, "-1.23", TestName = "NegativeNumberWithOnlyPositiveFlag")]
+		[TestCase(4, 2, true, ".0", TestName = "Without an integer part")]
+		[TestCase(4, 2, true, "0.000", TestName = "Fractional part greater than scale")]
+		[TestCase(3, 0, true, "1111", TestName = "Number length greater than precision")]
+		[TestCase(4, 2, true, "-1.23", TestName = "Negative number with onlyPositive flag")]
 		public void IsValidNumber_IncorrectValues_ShouldBeFalse(int precision, int scale, bool onlyPositive, string value)
 		{
 			var validator = new NumberValidator(precision, scale, onlyPositive);
