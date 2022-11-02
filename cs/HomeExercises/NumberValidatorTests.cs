@@ -38,11 +38,7 @@ namespace HomeExercises
 		[TestCase("+1.0", 4, 2, false, TestName = "positive value with sign when onlyPositive is false")]
 		[TestCase("-1.0", 4, 2, false, TestName = "negative value when onlyPositive is false")]
 		[TestCase("1,0", 4, 2, true, TestName = "value with coma")]
-		public void IsValidNumber_OnValidParameters_ReturnsTrue(
-			string value, 
-			int precision, 
-			int scale = 0,
-			bool onlyPositive = true)
+		public void IsValidNumber_OnValidParameters_ReturnsTrue(string value, int precision, int scale, bool onlyPositive)
 		{
 			var numberValidator = new NumberValidator(precision, scale, onlyPositive);
 			numberValidator.IsValidNumber(value).Should().BeTrue();
@@ -85,19 +81,19 @@ namespace HomeExercises
 			numberValidator.IsValidNumber(value).Should().BeFalse();
 		}
 
-		[TestCase("1.234", 10, 2, TestName = "fractional number with dot")]
-		[TestCase("1,234", 10, 2, TestName = "fractional number with coma")]
-		public void IsValidNumber_OnExceedingScale_ReturnsFalse(string value, int precision, int scale)
+		[TestCase("1.234", TestName = "fractional number with dot")]
+		[TestCase("1,234", TestName = "fractional number with coma")]
+		public void IsValidNumber_OnExceedingScale_ReturnsFalse(string value)
 		{
-			var numberValidator = new NumberValidator(precision, scale);
+			var numberValidator = new NumberValidator(10, 2);
 			numberValidator.IsValidNumber(value).Should().BeFalse();
 		}
 
-		[TestCase("-123", 10, 5, TestName = "integer number")]
-		[TestCase("-1.23", 10, 5, TestName = "fractional number")]
-		public void IsValidNumber_OnNegativeValue_WhenDeclaredOnlyPositive_ReturnsFalse(string value, int precision, int scale)
+		[TestCase("-123", TestName = "integer number")]
+		[TestCase("-1.23", TestName = "fractional number")]
+		public void IsValidNumber_OnNegativeValue_WhenDeclaredOnlyPositive_ReturnsFalse(string value)
 		{
-			var numberValidator = new NumberValidator(precision, scale, true);
+			var numberValidator = new NumberValidator(10, 5,true);
 			numberValidator.IsValidNumber(value).Should().BeFalse();
 		}
 	}
