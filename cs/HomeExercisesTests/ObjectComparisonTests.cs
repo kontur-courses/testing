@@ -17,9 +17,9 @@ public class ObjectComparisonTests
 			new Person("Vasili III of Russia", 28, 170, 60, null));
 
 		actualTsar.Should().BeEquivalentTo(expectedTsar, options => options
-			.Excluding(ctx => ctx.DeclaringType == typeof(Person) && ctx.Name == "Id")
-			.IgnoringCyclicReferences()
-			.AllowingInfiniteRecursion());
+			.Excluding(ctx => ctx.DeclaringType == typeof(Person) && ctx.Name == nameof(Person.Id))
+			.AllowingInfiniteRecursion()
+			.IgnoringCyclicReferences());
 	}
 
 	[Test]
