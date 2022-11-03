@@ -36,17 +36,15 @@ namespace HomeExercises
         [TestCase(-1, 2, false, TestName = "Negative precision with onlyPositive = false")]
         [TestCase(5, -2, TestName = "Scale is negative")]
         [TestCase(5, 5, TestName = "Scale greater or equal precision")]
-        public void NumberValidator_ShouldTrowArgumentException(int precision, int scale, bool onlyPositive = false)
+        public void NumberValidator_ShouldThrowArgumentException(int precision, int scale, bool onlyPositive = false)
         {
-            Action _ = () => new NumberValidator(precision, scale, onlyPositive);
-            _.Should().Throw<ArgumentException>();
+	        new Action (() => new NumberValidator(precision, scale, onlyPositive)).Should().Throw<ArgumentException>();
         }
 
         [TestCase(1, 0, true, TestName = "Precision > 0, scale >= 0, precision > scale")]
-        public void NumberValidator_ShouldNotTrow(int precision, int scale, bool onlyPositive)
+        public void NumberValidator_ShouldNotThrow(int precision, int scale, bool onlyPositive)
         {
-            Action _ = () => new NumberValidator(precision, scale, onlyPositive);
-            _.Should().NotThrow();
+            new Action(() => new NumberValidator(precision, scale, onlyPositive)).Should().NotThrow();
         }
 
         [TestCase(17, 2, "0.0", TestName = "With value \"0.0\"")]
