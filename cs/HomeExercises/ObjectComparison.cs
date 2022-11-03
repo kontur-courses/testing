@@ -16,19 +16,6 @@ namespace HomeExercises
             var expectedTsar = new Person("Ivan IV The Terrible", 54, 170, 70,
                 new Person("Vasili III of Russia", 28, 170, 60, null));
 
-            #region BeforeRefactor
-            // Перепишите код на использование Fluent Assertions.
-            /*Assert.AreEqual(actualTsar.Name, expectedTsar.Name);
-			Assert.AreEqual(actualTsar.Age, expectedTsar.Age);
-			Assert.AreEqual(actualTsar.Height, expectedTsar.Height);
-			Assert.AreEqual(actualTsar.Weight, expectedTsar.Weight);
-
-			Assert.AreEqual(expectedTsar.Parent!.Name, actualTsar.Parent!.Name);
-			Assert.AreEqual(expectedTsar.Parent.Age, actualTsar.Parent.Age);
-			Assert.AreEqual(expectedTsar.Parent.Height, actualTsar.Parent.Height);
-			Assert.AreEqual(expectedTsar.Parent.Parent, actualTsar.Parent.Parent);*/
-            #endregion
-            
             // Вариант теста с возможностью изменения структуры класса Person
             // реализован в тесте CurrentTsar_ShouldBeEquivalent_WhenExpectedTsarTheSame
             #region Вариант N1. Через AssertionScope, но без возможности расширения класса Person
@@ -62,6 +49,8 @@ namespace HomeExercises
 
         // Основной недостаток, что мы не видим, на каком значении поля падает тест, возвращается только False;
         // Также есть жесткая связь между структурой класса Person и данным тестом.
+        // Метод AreEqual yt выполняет глубокое сравнение классов и соответственно при каждом изменении класса Person
+        // необходимо модифицировать этот метод в отличие от метода BeEquivalentTo
         [Test]
         [Description("Альтернативное решение. Какие у него недостатки?")]
         public void CheckCurrentTsar_WithCustomEquality()
