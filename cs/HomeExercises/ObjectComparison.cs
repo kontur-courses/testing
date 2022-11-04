@@ -36,7 +36,7 @@ namespace HomeExercises
 			var actualTsar = TsarRegistry.GetCurrentTsar();
 			var expectedTsar = new Person("Ivan IV The Terrible", 54, 170, 70,
 				new Person("Vasili III of Russia", 28, 170, 60, null));
-			
+
 			// Какие недостатки у такого подхода?
 			// Нужно расширять метод AreEqual на каждое новое поле. Уйдёт в бесконечную рекурсию при циклических ссылках Parent.
 			Assert.True(AreEqual(actualTsar, expectedTsar));

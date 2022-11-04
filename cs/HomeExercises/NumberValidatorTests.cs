@@ -15,16 +15,16 @@ namespace HomeExercises
 			NewValidatorAction(precision, scale, false).Should().Throw<ArgumentException>();
 		}
 
-		[TestCase(2, 0, true, "100", ExpectedResult = false, 
+		[TestCase(2, 0, true, "100", ExpectedResult = false,
 			TestName = "Ints are invalid when exceeding precision")]
-		[TestCase(2, 1, true, "10.0", ExpectedResult = false, 
+		[TestCase(2, 1, true, "10.0", ExpectedResult = false,
 			TestName = "Floats are invalid when exceeding precision")]
-		[TestCase(1, 0, true, "-0", ExpectedResult = false, 
+		[TestCase(1, 0, true, "-0", ExpectedResult = false,
 			TestName = "Precision takes sign into account")]
 		public bool PrecisionTestCases(int precision, int scale, bool onlyPositive, string value)
-        {
+		{
 			return new NumberValidator(precision, scale, onlyPositive).IsValidNumber(value);
-        }
+		}
 
 		[TestCase(4, 0, false, "+100", ExpectedResult = true,
 			TestName = "Plus sign is allowed")]
@@ -76,7 +76,7 @@ namespace HomeExercises
 			return new NumberValidator(precision, scale, onlyPositive).IsValidNumber(value);
 		}
 
-		public Func<NumberValidator> NewValidatorAction(int precision, int scale, bool onlyPositive) 
+		public Func<NumberValidator> NewValidatorAction(int precision, int scale, bool onlyPositive)
 		{
 			return () => new NumberValidator(precision, scale, onlyPositive);
 		}
