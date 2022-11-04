@@ -1,5 +1,6 @@
 ﻿using FluentAssertions;
 using NUnit.Framework;
+using System.Text.RegularExpressions;
 
 namespace HomeExercises
 {
@@ -16,12 +17,16 @@ namespace HomeExercises
 				new Person("Vasili III of Russia", 28, 170, 60, null));
 
 
-			CheckThatPeopleAreEqual(actualTsar, expectedTsar);
+			actualTsar.Should().BeEquivalentTo(expectedTsar, options => options
+				.Excluding(ctx => Regex.IsMatch(ctx.SelectedMemberPath, @"^(Parent\.)*Id$"))
+				.IgnoringCyclicReferences());
 
 			// Преимущества перед CheckCurrentTsar_WithCustomEquality:
-			// - При добавлении новых значимых для сравнения нерекурсивных полей не нужно менять тест и метод CheckThatPeopleAreEqual.
+			// - При добавлении новых значимых для сравнения нерекурсивных полей не нужно менять тест.
 			// - Это особенно важно, когда появляются поля непримитивных типов. Не придётся писать компаратор на каждый новый тип.
 			// - Не нужно задумываться о наличии у классов полей переопределения Equals. BeEquivalentTo() делает это за нас.
+			// - При добавлении нерекурсивных полей, которые надо игнорировать, нужно только дополнить регулярку.
+			// - Циклические ссылки обработаны.
 		}
 
 		[Test]
@@ -35,16 +40,6 @@ namespace HomeExercises
 			// Какие недостатки у такого подхода?
 			// Нужно расширять метод AreEqual на каждое новое поле. Уйдёт в бесконечную рекурсию при циклических ссылках Parent.
 			Assert.True(AreEqual(actualTsar, expectedTsar));
-		}
-
-		private void CheckThatPeopleAreEqual(Person? actual, Person? expected)
-		{
-			actual.Should().BeEquivalentTo(expected,
-				options => options.Excluding(p => p.Id)
-					.Excluding(p => p.Parent));
-			if (actual is null || expected is null)
-				return;
-			CheckThatPeopleAreEqual(actual.Parent, expected.Parent);
 		}
 
 		private bool AreEqual(Person? actual, Person? expected)
