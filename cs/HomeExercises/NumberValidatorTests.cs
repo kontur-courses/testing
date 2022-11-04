@@ -7,22 +7,12 @@ namespace HomeExercises
 {
 	public class NumberValidatorTests
 	{
-		[Test]
-		public void NewNumberValidator_ShouldThrow_WhenNegativePrecision()
+		[TestCase(-1, -2, TestName = "Precision must be positive")]
+		[TestCase(2, 2, TestName = "Scale must be less than precision")]
+		[TestCase(1, -1, TestName = "Scale must be non-negative")]
+		public void NewNumberValidator_ShouldThrow(int precision, int scale)
 		{
-			NewValidatorAction(-1, 2, true).Should().Throw<ArgumentException>("precision can't be negative or less than scale");
-		}
-
-		[Test]
-		public void NewNumberValidator_ShouldThrow_WhenPrecisionLessThanScale()
-		{
-			NewValidatorAction(1, 2, true).Should().Throw<ArgumentException>("precision can't be less than scale");
-		}
-
-		[Test]
-		public void NewNumberValidator_ShouldThrow_WhenScaleIsNegative()
-		{
-			NewValidatorAction(1, -1, true).Should().Throw<ArgumentException>("Scale can't be negative");
+			NewValidatorAction(precision, scale, false).Should().Throw<ArgumentException>();
 		}
 
 		[TestCase(2, 0, true, "100", ExpectedResult = false, 
