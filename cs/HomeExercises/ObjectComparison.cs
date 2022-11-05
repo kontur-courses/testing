@@ -1,6 +1,8 @@
 ﻿using System.Linq;
+using System.Reflection;
 using FluentAssertions;
 using FluentAssertions.Common;
+using FluentAssertions.Equivalency;
 using NUnit.Framework;
 
 namespace HomeExercises
@@ -15,11 +17,14 @@ namespace HomeExercises
 			var actualTsar = TsarRegistry.GetCurrentTsar();
 
 			var expectedTsar = new Person("Ivan IV The Terrible", 54, 170, 70,
-				new Person("Vasili III of Russia", 28, 170, 60, null));
+				new Person("Vasili III of Russia", 28, 170, 60,
+					new Person("a", 28, 2, 2, null)));
 			actualTsar
 				.Should()
-				.BeEquivalentTo(expectedTsar, opt =>
-					opt.AllowingInfiniteRecursion() );
+				.BeEquivalentTo(expectedTsar, opt => opt
+					.AllowingInfiniteRecursion()
+					.Excluding((IMemberInfo info) => info.Path.EndsWith("Id"))
+				);
 		}
 
 		[Test]
@@ -31,7 +36,7 @@ namespace HomeExercises
 				new Person("Vasili III of Russia", 28, 170, 60, null));
 
 			// Какие недостатки у такого подхода? 
-			
+
 			// 1)Не будет известно, какой именно параметр не подошёл,
 			// а учитывая, что, в нашей модели, у родителей также могут быть родители это тест становится малоинформативным
 			// 2) Расширяемость, при добавлении новый свойств придётся переписывать метод AreEqual
@@ -57,13 +62,14 @@ namespace HomeExercises
 		{
 			return new Person(
 				"Ivan IV The Terrible", 54, 170, 70,
-				new Person("Vasili III of Russia", 28, 170, 60, null));
+				new Person("Vasili III of Russia", 28, 170, 60,
+					new Person("a", 28, 2, 2, null)));
 		}
 	}
 
 	public class Person
 	{
-		public int IdCounter = 0;
+		public static int IdCounter = 0;
 		public int Age, Height, Weight;
 		public string Name;
 		public Person? Parent;
