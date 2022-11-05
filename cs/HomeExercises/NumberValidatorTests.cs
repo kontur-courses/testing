@@ -11,11 +11,11 @@ namespace HomeExercises
 	[TestFixture]
 	public class NumberValidatorTests
 	{
-		[TestCase("0.0", 17, 2)]
-		[TestCase("0", 17, 2)]
-		[TestCase("+1.23", 4, 2)]
-		[TestCase("-1.23", 4, 2, false)]
-		[TestCase("0", 4, 2, false)]
+		[TestCase("0.0", 17, 2, TestName = "0 with 1 digit agter sepatator")]
+		[TestCase("0", 4, 2, TestName = "0 without sepatator")]
+		[TestCase("0", 4, 2, false, TestName = "0 as neutral element")]
+		[TestCase("+1.23", 4, 2, TestName = "number with unary plus")]
+		[TestCase("-1.23", 4, 2, false, TestName = "number with unary minus")]
 		public void Number_Is_Valid_Test(
 			string validatingNumber,
 			int precision,
@@ -28,15 +28,14 @@ namespace HomeExercises
 				.BeTrue();
 		}
 
-		[TestCase("0.000", 17, 2)]
-		[TestCase("-1.23", 3, 2)]
-		[TestCase("00.00", 3, 2)]
-		[TestCase("-0.00", 3, 2)]
-		[TestCase("a.sd", 3, 2)]
-		[TestCase(".0", 3, 2)]
-		[TestCase("0.", 3, 2)]
-		[TestCase("+1.23", 3, 2, false)]
-		[TestCase("+0.00", 3, 2, false)]
+		[TestCase("0.000", 17, 2, TestName = "number with wrong number of digit after separator")]
+		[TestCase("-0.00", 3, 2, TestName = "negative number with wrong number of digit after separator")]
+		[TestCase("00.00", 3, 2, TestName = "number with wrong number of digit before and after separator")]
+		[TestCase(".0", 3, 2, TestName = "number without digits before separator")]
+		[TestCase("0.", 3, 2, TestName = "number without digits after separator")]
+		[TestCase("-1.23", 3, 2, TestName = "negative with onlyPositive flag")]
+		[TestCase("a.sd", 3, 2, TestName = "contains not digit elements")]
+		[TestCase("+1.23", 3, 2, false, TestName = "sign counts as precision")]
 		public void Number_Is_Not_Valid_Test(
 			string validatingNumber,
 			int precision,
@@ -49,11 +48,11 @@ namespace HomeExercises
 				.BeFalse();
 		}
 
-		[TestCase(-1, 2)]
-		[TestCase(1, -2)]
-		[TestCase(-1, -2)]
-		[TestCase(1, 1, true)]
-		[TestCase(1, 2, true)]
+		[TestCase(-1, 2, TestName = "negative precision")]
+		[TestCase(1, -2, TestName = "negative scale")]
+		[TestCase(-1, -2, TestName = "negative precision and scale")]
+		[TestCase(1, 1, TestName = "precision equal scale")]
+		[TestCase(1, 2, TestName = "precision lesser than scale")]
 		public void Should_Throw_ArgumentException(
 			int precision,
 			int scale,
