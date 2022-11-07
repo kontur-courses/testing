@@ -16,24 +16,20 @@ namespace HomeExercises
             new Action(() => new NumberValidator(precision, scale, onlyPositive)).Should().Throw<ArgumentException>();
         }
 
-        [TestCase(17, 2, "0.0", TestName = "With format value \"x.x\"")]
-        [TestCase(17, 2, "0", TestName = "With format value \"x\"")]
-        [TestCase(4, 2, "+1.23", TestName = "With format value \"x.xx\"")]
-        public void IsValidNumber_ShouldBeTrue(int precision, int scale, string value)
+        [TestCase(17, 2, "0.0", ExpectedResult = true, TestName = "With format value \"x.x\"")]
+        [TestCase(17, 2, "0", ExpectedResult = true, TestName = "With format value \"x\"")]
+        [TestCase(4, 2, "+1.23", ExpectedResult = true, TestName = "With format value \"x.xx\"")]
+        [TestCase(3, 2, null, ExpectedResult = false, TestName = "Value is null")]
+        [TestCase(3, 2, "", ExpectedResult = false, TestName = "Value is empty")]
+        [TestCase(3, 2, "00.00", ExpectedResult = false, TestName = "With format value \"0x.xx\"")]
+        [TestCase(3, 2, "-0.00", ExpectedResult = false, TestName = "With format value \"-x.xx\" and precision = 3")]
+        [TestCase(3, 2, "+1.23", ExpectedResult = false, TestName = "With format value \"+x.xx\" and precision = 3")]
+        [TestCase(3, 2, "a.sd", ExpectedResult = false, TestName = "With uncountable value")]
+        [TestCase(17, 2, "0.000", ExpectedResult = false, TestName = "With format value \"x.xxx\" and scale = 2")]
+        [TestCase(3, 2, "-1.23", ExpectedResult = false, TestName = "With format value \"-x.xx\" and precision = 3")]
+        public bool IsValidNumber(int precision, int scale, string value)
         {
-            new NumberValidator(precision, scale, true).IsValidNumber(value).Should().BeTrue();
-        }
-
-        [TestCase(3, 2, null, TestName = "Value is null")]
-        [TestCase(3, 2, "", TestName = "Value is empty")]
-        [TestCase(3, 2, "00.00", TestName = "With format value \"0x.xx\"")]
-        [TestCase(3, 2, "-0.00", TestName = "With format value \"-x.xx\" and precision = 3")]
-        [TestCase(3, 2, "+1.23", TestName = "With format value \"+x.xx\" and precision = 3")]
-        [TestCase(3, 2, "a.sd", TestName = "With uncountable value")]
-        [TestCase(17, 2, "0.000", TestName = "With format value \"x.xxx\" and scale = 2")]
-        public void IsValidNumber_ShouldBeFalse(int precision, int scale, string value)
-        {
-            new NumberValidator(precision, scale, true).IsValidNumber(value).Should().BeFalse();
+            return new NumberValidator(precision, scale, true).IsValidNumber(value);
         }
     }
 
