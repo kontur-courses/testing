@@ -5,7 +5,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 public class WordStatisticImpl implements WordStatistics {
-    private final Map<String, Integer> statistics = new HashMap<>();
+    protected final Map<String, Integer> statistics = new HashMap<>();
 
     @Override
     public void addWord(String word) {
