@@ -3,10 +3,7 @@ package ru.kontur.courses.donotopen;
 import ru.kontur.courses.WordCount;
 import ru.kontur.courses.WordStatistics;
 
-import java.util.Arrays;
 import java.util.Comparator;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
