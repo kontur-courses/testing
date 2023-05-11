@@ -9,7 +9,7 @@ public class WordStatisticsEN2 extends WordStatisticImpl {
     private List<WordCount> result;
 
     @Override
-    public Iterable<WordCount> getStatistics() {
+    public List<WordCount> getStatistics() {
         return result != null ? result : super.getStatistics();
     }
 }

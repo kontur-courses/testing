@@ -4,6 +4,7 @@ import ru.kontur.courses.WordCount;
 import ru.kontur.courses.WordStatistics;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
@@ -23,7 +24,7 @@ public class WordStatisticsCR implements WordStatistics {
     }
 
     @Override
-    public Iterable<WordCount> getStatistics() {
+    public List<WordCount> getStatistics() {
         return statistics.entrySet().stream().map(it -> new WordCount(it.getKey(), it.getValue())).sorted((left, right) -> {
             if (left.getCount() < right.getCount()) {
                 return 1;

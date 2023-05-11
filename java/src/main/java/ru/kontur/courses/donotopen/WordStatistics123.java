@@ -4,6 +4,7 @@ import ru.kontur.courses.WordCount;
 import ru.kontur.courses.WordStatistics;
 
 import java.util.Comparator;
+import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
@@ -27,7 +28,7 @@ public class WordStatistics123 implements WordStatistics {
     }
 
     @Override
-    public Iterable<WordCount> getStatistics() {
+    public List<WordCount> getStatistics() {
         return IntStream.range(0, Math.min(words.length, statistics.length))
                 .mapToObj(it -> new WordCount(words[it], statistics[it]))
                 .filter(it -> it.getCount() > 0)

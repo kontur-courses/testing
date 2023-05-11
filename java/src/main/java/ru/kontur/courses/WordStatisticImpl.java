@@ -2,6 +2,7 @@ package ru.kontur.courses;
 
 import java.util.Comparator;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
@@ -21,7 +22,7 @@ public class WordStatisticImpl implements WordStatistics {
     }
 
     @Override
-    public Iterable<WordCount> getStatistics() {
+    public List<WordCount> getStatistics() {
         return statistics.entrySet().stream().map(it -> new WordCount(it.getKey(), it.getValue()))
                 .sorted((left, right) -> Integer.compare(right.getCount(), left.getCount()))
                 .sorted(Comparator.comparing(WordCount::getWord)).collect(Collectors.toList());
