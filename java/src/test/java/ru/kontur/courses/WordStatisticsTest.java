@@ -6,17 +6,12 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-interface WordStatisticFactory {
-    public WordStatistics create();
-}
 
 public class WordStatisticsTest {
     /**
      * Подставляются разные имплементации при прогоне IncorrectImplementation, по умолчанию reference
      */
-    static WordStatisticFactory wordStatisticFactory = () -> {
-        return new WordStatisticImpl();
-    };
+    static WordStatisticFactory wordStatisticFactory = WordStatisticImpl::new;
 
     private WordStatistics wordStatistic;
 
@@ -27,8 +22,6 @@ public class WordStatisticsTest {
 
     @Test
     public void getStatisticsIsEmptyAfterCreation() {
-
-
         assertTrue(wordStatistic.getStatistics().isEmpty());
     }
 

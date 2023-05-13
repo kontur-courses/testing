@@ -7,6 +7,7 @@ import org.junit.platform.launcher.core.LauncherDiscoveryRequestBuilder;
 import org.junit.platform.launcher.core.LauncherFactory;
 import org.junit.platform.launcher.listeners.SummaryGeneratingListener;
 import ru.kontur.courses.donotopen.*;
+import ru.kontur.courses.solved.WordStatisticsSolved;
 
 import java.util.stream.Stream;
 
@@ -51,7 +52,7 @@ public class IncorrectImplementationTest {
 
                 launcher.execute(request);
                 var summary = listener.getSummary();
-                if (summary.getContainersFailedCount() == 0) {
+                if (summary.getTestsFailedCount() == 0) {
                     throw new RuntimeException("Некорректная имплементация прошла, не хватает тестов");
                 }
             }
