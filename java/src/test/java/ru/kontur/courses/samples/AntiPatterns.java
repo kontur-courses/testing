@@ -31,7 +31,7 @@ public class AntiPatterns {
      * @throws IOException
      */
     @Test
-    public void LocalHeroTest() throws IOException {
+    public void localHeroTest() throws IOException {
         var file = new File("C:\\work\\edu\\\\testing-course\\Patterns\\\\bin\\Debug\\data.txt");
         var stream = new FileInputStream(file);
         stream.close();
@@ -60,7 +60,7 @@ public class AntiPatterns {
      * Вместо вывода на консоль, используйте Assert-ы.
      */
     @Test
-    public void LoudMouth() {
+    public void loudMouth() {
         var stack = new Stack<Integer>();
         stack.push(10);
         stack.push(20);
@@ -87,7 +87,7 @@ public class AntiPatterns {
      * Если вы не можете придумать название теста, у вас Free Ride!
      */
     @Test
-    public void FreeRide() {
+    public void freeRide() {
         var stack = new Stack<Integer>();
         assertTrue(stack.isEmpty());
         stack.push(1);
@@ -127,7 +127,7 @@ public class AntiPatterns {
      * Признак возможной проблемы — более одного Assert на метод.
      */
     @Test
-    public void OverSpecification() {
+    public void overSpecification() {
         var stack = new Stack<Integer>();
         stack.add(1);
         stack.add(2);
