@@ -33,6 +33,6 @@ public class WordStatisticsCR implements WordStatistics {
             } else {
                 return left.getWord().compareTo(right.getWord());
             }
-        }).collect(Collectors.toList());
+        }).toList();
     }
 }

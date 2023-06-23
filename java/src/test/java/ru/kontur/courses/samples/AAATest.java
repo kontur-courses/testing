@@ -80,6 +80,6 @@ public class AAATest {
 
     public static List<Map.Entry<Integer, Integer>> zipJava9(int[] as, int[] bs) {
         return IntStream.range(0, Math.min(as.length, bs.length))
-                .mapToObj(i -> Map.entry(as[i], bs[i])).collect(Collectors.toList());
+                .mapToObj(i -> Map.entry(as[i], bs[i])).toList();
     }
 }

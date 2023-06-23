@@ -29,6 +29,6 @@ public class WordStatistics998 implements WordStatistics {
 
     @Override
     public List<WordCount> getStatistics() {
-        return statistics.stream().map(it -> new WordCount(it.getWord(), -it.getCount())).collect(Collectors.toList());
+        return statistics.stream().map(it -> new WordCount(it.getWord(), -it.getCount())).toList();
     }
 }
