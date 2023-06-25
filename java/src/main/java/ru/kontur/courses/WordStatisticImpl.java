@@ -23,15 +23,13 @@ public class WordStatisticImpl implements WordStatistics {
 
     @Override
     public List<WordCount> getStatistics() {
-        return statistics.entrySet().stream().map(it -> new WordCount(it.getKey(), it.getValue()))
-                .sorted((left, right) -> {
-                    var compared = Integer.compare(right.getCount(), left.getCount());
-                    if (compared == 0) {
-                        return left.getWord().compareTo(right.getWord());
-                    } else {
-                        return compared;
-                    }
-                })
-                .collect(Collectors.toList());
+        return statistics.entrySet().stream()
+                .map(it -> new WordCount(it.getKey(), it.getValue()))
+                .sorted(Comparator
+                        .comparing(WordCount::getCount)
+                        .reversed()
+                        .thenComparing(WordCount::getWord)
+                )
+                .toList();
     }
 }

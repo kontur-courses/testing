@@ -36,6 +36,6 @@ public class WordStatisticsEN1 implements WordStatistics {
             } else {
                 return left.getWord().compareTo(right.getWord());
             }
-        }).collect(Collectors.toList());
+        }).toList();
     }
 }

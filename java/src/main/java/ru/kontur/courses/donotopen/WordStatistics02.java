@@ -11,6 +11,6 @@ public class WordStatistics02 extends WordStatisticImpl {
     @Override
     public List<WordCount> getStatistics() {
         return statistics.entrySet().stream().map(it -> new WordCount(it.getKey(), it.getValue()))
-                .sorted(Comparator.comparingInt(WordCount::getCount)).collect(Collectors.toList());
+                .sorted(Comparator.comparingInt(WordCount::getCount)).toList();
     }
 }

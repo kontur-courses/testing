@@ -34,7 +34,7 @@ public class WordStatisticsQWE implements WordStatistics {
             } else {
                 return left.getWord().compareTo(right.getWord());
             }
-        }).collect(Collectors.toList());
+        }).toList();
     }
 
     private char toLower(char c) {

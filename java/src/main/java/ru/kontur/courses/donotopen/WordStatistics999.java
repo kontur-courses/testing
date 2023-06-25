@@ -31,6 +31,6 @@ public class WordStatistics999 implements WordStatistics {
     @Override
     public List<WordCount> getStatistics() {
         return statistics.stream().sorted((left, right) -> Integer.compare(right.getCount(), left.getCount()))
-                .sorted(Comparator.comparing(WordCount::getWord)).collect(Collectors.toList());
+                .sorted(Comparator.comparing(WordCount::getWord)).toList();
     }
 }

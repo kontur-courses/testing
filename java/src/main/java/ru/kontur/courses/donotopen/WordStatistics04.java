@@ -14,6 +14,6 @@ public class WordStatistics04 extends WordStatisticImpl {
         var statistics = super.getStatistics();
         return StreamSupport.stream(statistics.spliterator(), false)
                 .sorted((left, right) -> Integer.compare(right.getCount(), left.getCount()))
-                .sorted(Comparator.comparing(WordCount::getWord)).collect(Collectors.toList());
+                .sorted(Comparator.comparing(WordCount::getWord)).toList();
     }
 }

@@ -17,7 +17,7 @@ public class AntiPatterns {
      * ## Антипаттерн Local Hero
      * <p>
      * Тест не будет работать на машине другого человека или на Build-сервере.
-     * Да и у того же самого человека после Clean Solution / переустановки ОС / повторного Clone репозитория / ...
+     * Да и у того же самого человека после сборки проекта / переустановки ОС / повторного Clone репозитория / ...
      * <p>
      * ## Решение
      * <p>
@@ -32,12 +32,12 @@ public class AntiPatterns {
      */
     @Test
     public void localHeroTest() throws IOException {
-        var file = new File("C:\\work\\edu\\\\testing-course\\Patterns\\\\bin\\Debug\\data.txt");
+        var file = new File("C:\\work\\edu\\\\testing-course\\Patterns\\\\build\\data.txt");
         var stream = new FileInputStream(file);
         stream.close();
         var byteArray = stream.readAllBytes();
         var textFile = new String(byteArray);
-        var lines = Arrays.stream(textFile.split("\n")).map(it -> it.split(" ")).collect(Collectors.toList());
+        var lines = Arrays.stream(textFile.split("\n")).map(it -> it.split(" ")).toList();
 
         var stack = new Stack<>();
         for (String[] line : lines) {

@@ -33,6 +33,6 @@ public class WordStatistics123 implements WordStatistics {
                 .mapToObj(it -> new WordCount(words[it], statistics[it]))
                 .filter(it -> it.getCount() > 0)
                 .sorted((left, right) -> Integer.compare(right.getCount(), left.getCount()))
-                .sorted(Comparator.comparing(WordCount::getWord)).collect(Collectors.toList());
+                .sorted(Comparator.comparing(WordCount::getWord)).toList();
     }
 }
