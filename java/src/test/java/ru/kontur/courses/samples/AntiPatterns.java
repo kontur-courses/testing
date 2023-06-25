@@ -22,11 +22,12 @@ public class AntiPatterns {
      * ## Решение
      * <p>
      * Тест не должен зависеть от особенностей локальной среды.
-     * Если нужна работа с файлами, то либо включите файл в проект и настройте в свойствах его копирование в OutputDir,
-     * либо поместите его в ресурсы.
+     * Если нужна работа с файлами, то поместите его в ресурсы.
      * <p>
-     * var lines = File.ReadAllLines(@"data.txt")
-     * var lines = Resources.data.Split(new []{"\r\n"}, StringSplitOptions.RemoveEmptyEntries)
+     * var file = new File("data.txt");
+     * var stream = new FileInputStream(file);
+     * var byteArray = stream.readAllBytes();
+     * var textFile = new String(byteArray);
      *
      * @throws IOException
      */
@@ -34,8 +35,8 @@ public class AntiPatterns {
     public void localHeroTest() throws IOException {
         var file = new File("C:\\work\\edu\\\\testing-course\\Patterns\\\\build\\data.txt");
         var stream = new FileInputStream(file);
-        stream.close();
         var byteArray = stream.readAllBytes();
+        stream.close();
         var textFile = new String(byteArray);
         var lines = Arrays.stream(textFile.split("\n")).map(it -> it.split(" ")).toList();
 
@@ -140,6 +141,6 @@ public class AntiPatterns {
         assertFalse(stack.isEmpty());
         assertEquals(4, stack.size());
         assertEquals(4, stack.peek());
-        assertTrue(Arrays.equals(new int[]{1, 2, 3, 4}, Arrays.stream(stack.toArray()).mapToInt(it -> (int)it).toArray()));
+        assertTrue(Arrays.equals(new int[]{1, 2, 3, 4}, Arrays.stream(stack.toArray()).mapToInt(it -> (int) it).toArray()));
     }
 }
