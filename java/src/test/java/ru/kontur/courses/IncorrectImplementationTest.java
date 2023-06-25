@@ -7,8 +7,7 @@ import org.junit.platform.launcher.core.LauncherDiscoveryRequestBuilder;
 import org.junit.platform.launcher.core.LauncherFactory;
 import org.junit.platform.launcher.listeners.SummaryGeneratingListener;
 import ru.kontur.courses.donotopen.*;
-import ru.kontur.courses.solved.WordStatisticsSolved;
-
+import java.lang.reflect.InvocationTargetException;
 import java.util.stream.Stream;
 
 import static org.junit.platform.engine.discovery.DiscoverySelectors.selectClass;
@@ -43,7 +42,19 @@ public class IncorrectImplementationTest {
                 new WordStatisticsQWE(),
                 new WordStatisticsSTA()
         ).map(it -> DynamicTest.dynamicTest(it.getClass().getSimpleName(), () -> {
-            WordStatisticsTest.wordStatisticFactory = () -> it;
+            WordStatisticsTest.wordStatisticFactory = () -> {
+                try {
+                    return it.getClass().getConstructor().newInstance();
+                } catch (InstantiationException e) {
+                    throw new RuntimeException(e);
+                } catch (IllegalAccessException e) {
+                    throw new RuntimeException(e);
+                } catch (InvocationTargetException e) {
+                    throw new RuntimeException(e);
+                } catch (NoSuchMethodException e) {
+                    throw new RuntimeException(e);
+                }
+            };
 
             try (LauncherSession session = LauncherFactory.openSession()) {
                 var launcher = session.getLauncher();
