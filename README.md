@@ -15,7 +15,7 @@
 
 ## Необходимые знания
 
-Понадобится знание C# или JS
+Понадобится знание C#, JS или Java
 
 
 ## Самостоятельная подготовка
@@ -33,6 +33,11 @@
 3. Научись запускать тесты в терминале (`npm test` или `yarn test`), из WebStorm по [инструкции](https://www.jetbrains.com/help/webstorm/testing.html) или другой любимой JavaScript IDE
 4. Если пока плохо знаком с Node.js и ES6, то начни с Шага 1 этого [туторила](https://github.com/kontur-courses/frontend-starter-tutorial)
 
+### Java
+1. Познакомься с Junit, если ещё не знаком, научись его подключать через gradle.
+2. Изучи возможности синтаксиса [документация](https://junit.org/junit5/docs/5.0.1/api/org/junit/jupiter/api/Assertions.html)
+3. Научись запускать тесты junit5 в ide.
+4. Изучи возможности синтаксиса [assertJ](https://assertj.github.io/doc/)
 
 ## Очная встреча
 
