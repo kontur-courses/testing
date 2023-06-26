@@ -26,6 +26,7 @@ class WordsStatisticsL3(WordsStatistics):
             word = word[:10]
         elif len(word) > 5:
             word = word[:len(word) - 2]
+        word = word.lower()
         self.statistics[word] = self.statistics.get(word, 0) + 1
 
 
@@ -87,7 +88,7 @@ class WordsStatisticsE3(WordsStatistics):
         if not word.strip():
             return
         word = word.lower()
-        self.statistics[word] += 1
+        self.statistics[word] = self.statistics.get(word, 0) + 1
 
 
 class WordsStatisticsE4(WordsStatistics):
@@ -107,7 +108,7 @@ class WordsStatisticsO1(WordsStatistics):
 
 class WordsStatisticsO2(WordsStatistics):
     def get_statistics(self) -> List[WordCount]:
-        return [WordCount.create(item) for item in sorted(super().get_statistics(), key=lambda x: x[1])]
+        return [WordCount.create(item) for item in sorted(self.statistics.items(), key=lambda x: x[1])]
 
 
 class WordsStatisticsO3(WordsStatistics):
@@ -182,12 +183,7 @@ class WordsStatisticsQWE(WordsStatistics):
         if len(word) > 10:
             word = word[:10]
         word = self._to_lower(word)
-        count = self.statistics[word]
-        self.statistics[word] = count + 1
-
-    def get_statistics(self) -> List[WordCount]:
-        return [WordCount.create(item) for item in
-                sorted(self.statistics.items(), key=attrgetter('count', 'word'), reverse=True)]
+        self.statistics[word] = self.statistics.get(word, 0) + 1
 
     def _to_lower(self, s: str) -> str:
         return s.translate(str.maketrans('QWERTYUIOPLJKHGFDSAZXCVBNMЙЦУКЕНГШЩЗФЫВАПРОЛДЯЧСМИТЬ',
@@ -215,7 +211,7 @@ class WordsStatistics998(WordsStatistics):
         self.statistics.sort(key=attrgetter('count', 'word'))
 
     def get_statistics(self) -> List[WordCount]:
-        return [WordCount(w.word, -w.count) for w in super().get_statistics()]
+        return [WordCount(w.word, -w.count) for w in self.statistics]
 
 
 class WordsStatistics999(WordsStatistics):
@@ -241,7 +237,7 @@ class WordsStatistics999(WordsStatistics):
             self.used_words.add(word)
 
     def get_statistics(self) -> List[WordCount]:
-        return sorted(super().get_statistics(), key=attrgetter('count', 'word'), reverse=True)
+        return list(sorted(self.statistics, key=lambda x: (-x.count, x.word)))
 
 
 class WordsStatisticsEN1(WordsStatistics):
@@ -259,8 +255,7 @@ class WordsStatisticsEN1(WordsStatistics):
         self.statistics[word] = self.statistics.get(word, 0) + 1
 
     def get_statistics(self) -> List[WordCount]:
-        result = [WordCount.create(item) for item in
-                  sorted(self.statistics.items(), key=lambda x: (x[1], x[0]), reverse=True)]
+        result = [WordCount.create(item) for item in sorted(self.statistics.items(), key=lambda x: (-x[1], x[0]))]
         self.statistics.clear()
         return result
 
