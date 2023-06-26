@@ -9,8 +9,8 @@ class WordsStatisticsL2(WordsStatistics):
     def add_word(self, word: str) -> None:
         if word is None:
             raise ValueError("Word cannot be None")
-        if word.isspace():
-            return 
+        if not word.strip():
+            return
         word = word.lower()
         self.statistics[word] = self.statistics.get(word, 0) + 1
 
@@ -20,7 +20,7 @@ class WordsStatisticsL3(WordsStatistics):
     def add_word(self, word: str) -> None:
         if word is None:
             raise ValueError("Word cannot be None")
-        if word.isspace():
+        if not word.strip():
             return
         if len(word) > 10:
             word = word[:10]
@@ -34,8 +34,8 @@ class WordsStatisticsL4(WordsStatistics):
     def add_word(self, word: str) -> None:
         if word is None:
             raise ValueError("Word cannot be None")
-        if word.isspace():
-            return 
+        if not word.strip():
+            return
         if len(word) - 1 > 10:
             word = word[:10]
         word = word.lower()
@@ -47,12 +47,11 @@ class WordsStatisticsC(WordsStatistics):
     def add_word(self, word: str) -> None:
         if word is None:
             raise ValueError("Word cannot be None")
-        if word.isspace():
-            return 
+        if not word.strip():
+            return
         if len(word) > 10:
             word = word[:10]
-        word = word.lower()
-        if word not in self.statistics:
+        if word.lower() not in self.statistics:
             self.statistics[word] = 0
         self.statistics[word] += 1
 
@@ -120,7 +119,34 @@ class WordsStatisticsO3(WordsStatistics):
 
 class WordsStatisticsO4(WordsStatistics):
     def get_statistics(self) -> List[WordCount]:
-        return [WordCount.create(item) for item in sorted(self.statistics.items(), key=lambda x: (x[0], -x[1]))]
+        return [
+            WordCount.create(item)
+            for item in sorted(self.statistics.items(), key=lambda x: (-x[1], *(-ord(item) for item in x[0])))
+        ]
+
+
+class WordsStatisticsCR(WordsStatistics):
+    def add_word(self, word: str) -> None:
+        if word is None:
+            raise ValueError("Word cannot be None")
+        if not word:
+            return
+        if len(word) > 10:
+            word = word[:10]
+        word = word.lower()
+        self.statistics[word] = self.statistics.get(word, 0) + 1
+
+
+class WordsStatisticsSTA(WordsStatistics):
+    def add_word(self, word: str) -> None:
+        if word is None:
+            raise ValueError("Word cannot be None")
+        if not word.strip():
+            return
+        if len(word) > 10:
+            word = word[:10]
+        word = word.lower()
+        self.statistics[word] = self.statistics.get(word, 0) + 1
 
 
 class WordsStatistics123:
@@ -133,8 +159,8 @@ class WordsStatistics123:
     def add_word(self, word: str) -> None:
         if word is None:
             raise ValueError("Word cannot be None")
-        if word.isspace():
-            return 
+        if not word.strip():
+            return
         if len(word) > 10:
             word = word[:10]
         index = abs(hash(word.lower())) % WordsStatistics123.MAX_SIZE
@@ -151,8 +177,8 @@ class WordsStatisticsQWE(WordsStatistics):
     def add_word(self, word: str) -> None:
         if word is None:
             raise ValueError("Word cannot be None")
-        if word.isspace():
-            return 
+        if not word.strip():
+            return
         if len(word) > 10:
             word = word[:10]
         word = self._to_lower(word)
@@ -175,8 +201,8 @@ class WordsStatistics998(WordsStatistics):
     def add_word(self, word: str) -> None:
         if word is None:
             raise ValueError("Word cannot be None")
-        if word.isspace():
-            return 
+        if not word.strip():
+            return
         if len(word) > 10:
             word = word[:10]
         lower_case_word = word.lower()
@@ -200,8 +226,8 @@ class WordsStatistics999(WordsStatistics):
     def add_word(self, word: str) -> None:
         if word is None:
             raise ValueError("Word cannot be None")
-        if word.isspace():
-            return 
+        if not word.strip():
+            return
         if len(word) > 10:
             word = word[:10]
         word = word.lower()
@@ -225,8 +251,8 @@ class WordsStatisticsEN1(WordsStatistics):
     def add_word(self, word: str) -> None:
         if word is None:
             raise ValueError("Word cannot be None")
-        if word.isspace():
-            return 
+        if not word.strip():
+            return
         if len(word) > 10:
             word = word[:10]
         word = word.lower()
