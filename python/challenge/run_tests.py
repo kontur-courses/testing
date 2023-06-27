@@ -17,6 +17,7 @@ def run_tests_for_correct_implementation():
     r = subprocess.run([f"pytest {get_path_to_correct_tests()}"], shell=True, stdout=subprocess.DEVNULL)
     result = "ПРОЙДЕНЫ" if not r.returncode else "НЕ ПРОЙДЕНЫ"
     print(f"Тесты на правильную имплементацию: {result}")
+    return True if not r.returncode else False
 
 
 def run_tests_for_incorrect_implementation():
@@ -35,5 +36,5 @@ def run_tests_for_incorrect_implementation():
     print(f"Тесты на неправильную имплементацию: КОРРЕКТНО {correct_passed} из {total_count}")
 
 
-run_tests_for_correct_implementation()
-run_tests_for_incorrect_implementation()
+if run_tests_for_correct_implementation():
+    run_tests_for_incorrect_implementation()
