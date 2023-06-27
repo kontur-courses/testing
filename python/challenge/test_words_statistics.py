@@ -3,12 +3,12 @@ import pytest
 from python.challenge.word_statistics import WordCount, WordsStatistics
 
 
+@pytest.fixture
+def words_statistics():
+    return WordsStatistics()
+
+
 class TestWordsStatistics:
-
-    @pytest.fixture
-    def words_statistics(self):
-        return WordsStatistics()
-
     def test_get_statistics_is_empty_after_creation(self, words_statistics):
         assert words_statistics.get_statistics() == []
 
