@@ -139,6 +139,11 @@ class WordsStatisticsCR(WordsStatistics):
 
 
 class WordsStatisticsSTA(WordsStatistics):
+    statistics = {}
+
+    def __init__(self):
+        self.statistics.clear()
+
     def add_word(self, word: str) -> None:
         if word is None:
             raise ValueError("Word cannot be None")

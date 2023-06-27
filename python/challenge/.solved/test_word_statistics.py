@@ -117,3 +117,11 @@ class TestWordsStatistics:
         assert words_statistics.get_statistics() == [WordCount("abc", 1)]
         words_statistics.add_word("def")
         assert words_statistics.get_statistics() == [WordCount("abc", 1), WordCount("def", 1)]
+
+    def test_get_statistics_several_instances(self):
+        ws1 = WordsStatistics()
+        ws1.add_word("abc")
+        ws2 = WordsStatistics()
+        ws2.add_word("cba")
+        assert ws1.get_statistics() == [WordCount("abc", 1)]
+        assert ws2.get_statistics() == [WordCount("cba", 1)]
