@@ -1,1 +1,1 @@
-AUTHORS = ''  # Ваши фамилии через пробел. Например, "Egorov Shagalina"
+AUTHORS = "Python Student"  # Ваши фамилии через пробел. Например, "Egorov Shagalina"

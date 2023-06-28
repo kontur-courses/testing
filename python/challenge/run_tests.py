@@ -1,6 +1,8 @@
 import subprocess
 import os
+import fb
 from glob import iglob
+from your_name import AUTHORS
 
 
 def get_folder_with_incorrect_tests():
@@ -21,6 +23,7 @@ def run_tests_for_correct_implementation():
 
 
 def run_tests_for_incorrect_implementation():
+    firebase_data = {}
     total_count = 0
     correct_passed = 0
     tests_folder = get_folder_with_incorrect_tests()
@@ -32,9 +35,15 @@ def run_tests_for_incorrect_implementation():
                     stdout=subprocess.DEVNULL
             )
             total_count += 1
-            correct_passed += 1 if r.returncode else 0
+            passed = 1 if r.returncode else 0
+            correct_passed += passed
+            firebase_data[fb.get_firebase_key_from_filename(filename)] = passed
     print(f"Тесты на неправильную имплементацию: КОРРЕКТНО {correct_passed} из {total_count}")
+    fb.send_to_firebase(AUTHORS, firebase_data)
 
 
-if run_tests_for_correct_implementation():
-    run_tests_for_incorrect_implementation()
+if __name__ == "__main__":
+    if not AUTHORS:
+        raise ValueError("Укажите фамилии учеников в файл /python/challenge/your_name.py")
+    if run_tests_for_correct_implementation():
+        run_tests_for_incorrect_implementation()
