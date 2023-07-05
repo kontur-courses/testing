@@ -43,7 +43,7 @@
 1. Познакомься c pytest, если еще не знаком ([документация](https://docs.pytest.org/en/7.3.x/))
 2. Научись запускать тесты из PyCharm по [инструкции](https://www.jetbrains.com/help/pycharm/performing-tests.html#run-tests-in-parallel)
 3. Почитай о том, что такое фикстуры в pytest (например, на [хабре](https://habr.com/ru/articles/448786/))
-4. Установи с помощью pip в окружение библиотеки из python/requirements.txt
+4. Установи с помощью pip в окружение библиотеки из python/requirements.txt - используй команду `pip install -r python/requirements.txt`
 
 ## Очная встреча
 
