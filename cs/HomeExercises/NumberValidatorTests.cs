@@ -8,19 +8,29 @@ namespace HomeExercises
 	public class NumberValidatorTests
 	{
 		[Test]
+		public void Fails_NegativePrecision()
+		{
+			var action1 = new Func<NumberValidator>(() => new NumberValidator(-1, 2, true));
+			action1.Should().Throw<ArgumentException>();
+
+			var action2 = new Func<NumberValidator>(() => new NumberValidator(-1, 2));
+			action2.Should().Throw<ArgumentException>();
+		}
+		
+		[Test]
+		public void NotFails_WhenFine()
+		{
+			var action = new Func<NumberValidator>(() => new NumberValidator(1, 0));
+			action.Should().NotThrow();
+		}
+		
+		[Test]
 		public void Test()
 		{
-			Assert.Throws<ArgumentException>(() => new NumberValidator(-1, 2, true));
-			Assert.DoesNotThrow(() => new NumberValidator(1, 0, true));
-			Assert.Throws<ArgumentException>(() => new NumberValidator(-1, 2, false));
-			Assert.DoesNotThrow(() => new NumberValidator(1, 0, true));
-
 			Assert.IsTrue(new NumberValidator(17, 2, true).IsValidNumber("0.0"));
 			Assert.IsTrue(new NumberValidator(17, 2, true).IsValidNumber("0"));
-			Assert.IsTrue(new NumberValidator(17, 2, true).IsValidNumber("0.0"));
 			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("00.00"));
 			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("-0.00"));
-			Assert.IsTrue(new NumberValidator(17, 2, true).IsValidNumber("0.0"));
 			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("+0.00"));
 			Assert.IsTrue(new NumberValidator(4, 2, true).IsValidNumber("+1.23"));
 			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("+1.23"));
