@@ -7,26 +7,46 @@ namespace HomeExercises
 {
 	public class NumberValidatorTests
 	{
-		[Test]
-		public void Test()
+		[TestCase(1, 0,"0", TestName = "int zero")]
+		[TestCase(2, 0,"+0", TestName = "positive int zero")]
+		[TestCase(2, 0,"-0", false , TestName = "negative int zero")]
+		[TestCase(2, 1,"0.0", TestName = "zero with fractional part")]
+		[TestCase(3, 2,"1.23", TestName = "positive non zero without sign with fractional part")]
+		[TestCase(4, 2,"+1.23", TestName = "positive non zero with sign and fractional part")]
+		[TestCase(4, 2,"-1.23", false, TestName = "negative non zero with sign and fractional part")]
+		public void IsValid(int precision, int scale, string validatingString, bool onlyPositive = true)
 		{
-			Assert.Throws<ArgumentException>(() => new NumberValidator(-1, 2, true));
-			Assert.DoesNotThrow(() => new NumberValidator(1, 0, true));
-			Assert.Throws<ArgumentException>(() => new NumberValidator(-1, 2, false));
-			Assert.DoesNotThrow(() => new NumberValidator(1, 0, true));
+			new NumberValidator(precision, scale, onlyPositive)
+				.IsValidNumber(validatingString)
+				.Should()
+				.BeTrue();
+		}
+		
+		[TestCase(2, 1,"0.00", TestName = "zero intPart + fracPart should be less than precesion")]
+		[TestCase(3, 2, "+0.00", TestName = "zero intPart + fracPart + \"+\" should be less than precesion")]
+		[TestCase(3, 2, "-0.00", false, TestName = "zero intPart + fracPart + \"-\" should be less than precesion")]
+		[TestCase(3, 2,"+1.23", TestName = "positive non zero intPart + fracPart + \"+\" should be less than precesion")]
+		[TestCase(3, 2,"-1.23", false, TestName = "negative non zero intPart + fracPart + \"+\" should be less than precesion")]
+		[TestCase(3, 2, "a.sd", TestName = "non digit symbols")]
+		[TestCase(2, 1, ".0", TestName = "must have digits before point")]
+		[TestCase(1, 0, "0.", TestName = "must have digits after point (if exist)")]
+		public void IsNotValid(int precision, int scale, string validatingString, bool onlyPositive = true)
+		{
+			new NumberValidator(precision, scale, onlyPositive)
+				.IsValidNumber(validatingString)
+				.Should()
+				.BeFalse();
+		}
 
-			Assert.IsTrue(new NumberValidator(17, 2, true).IsValidNumber("0.0"));
-			Assert.IsTrue(new NumberValidator(17, 2, true).IsValidNumber("0"));
-			Assert.IsTrue(new NumberValidator(17, 2, true).IsValidNumber("0.0"));
-			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("00.00"));
-			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("-0.00"));
-			Assert.IsTrue(new NumberValidator(17, 2, true).IsValidNumber("0.0"));
-			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("+0.00"));
-			Assert.IsTrue(new NumberValidator(4, 2, true).IsValidNumber("+1.23"));
-			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("+1.23"));
-			Assert.IsFalse(new NumberValidator(17, 2, true).IsValidNumber("0.000"));
-			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("-1.23"));
-			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("a.sd"));
+		[TestCase(-1, 1, TestName = "negative precision")]
+		[TestCase(1, -1, TestName = "negative scale")]
+		[TestCase(-1, -1, TestName = "negative precision and scale")]
+		[TestCase(1, 1, TestName = "precision equals scale")]
+		[TestCase(1, 2, TestName = "precision less than scale")]
+		public void ShouldThrow(int precision, int scale, bool onlyPositive = true)
+		{
+			Action act = () => new NumberValidator(precision, scale, onlyPositive);
+			act.Should().Throw<ArgumentException>();
 		}
 	}
 
