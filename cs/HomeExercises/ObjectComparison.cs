@@ -18,29 +18,13 @@ namespace HomeExercises
 				new Person("Vasili III of Russia", 28, 170, 60, null));
 
 			// Перепишите код на использование Fluent Assertions.
-			
-			// 1 вариант, эквивалентен тесту CheckCurrentTsar
 			actualTsar.Should().BeEquivalentTo(expectedTsar, options => 
 				options
-					.Excluding(p => p.Id)
-					.Excluding(p => p.Parent!.Id)
-			);
-			// 2 вариант, эквивалентен тесту CheckCurrentTsar_WithCustomEquality
-			actualTsar.Should().BeEquivalentTo(expectedTsar, options => 
-				options
+					.IgnoringCyclicReferences()
 					.Excluding((IMemberInfo info) => 
 						info.SelectedMemberInfo.DeclaringType == typeof(Person)
 						&& info.SelectedMemberInfo.Name == nameof(Person.Id))
 			);
-			// Assert.AreEqual(actualTsar.Name, expectedTsar.Name);
-			// Assert.AreEqual(actualTsar.Age, expectedTsar.Age);
-			// Assert.AreEqual(actualTsar.Height, expectedTsar.Height);
-			// Assert.AreEqual(actualTsar.Weight, expectedTsar.Weight);
-			//
-			// Assert.AreEqual(expectedTsar.Parent!.Name, actualTsar.Parent!.Name);
-			// Assert.AreEqual(expectedTsar.Parent.Age, actualTsar.Parent.Age);
-			// Assert.AreEqual(expectedTsar.Parent.Height, actualTsar.Parent.Height);
-			// Assert.AreEqual(expectedTsar.Parent.Parent, actualTsar.Parent.Parent);
 		}
 
 		[Test]
@@ -53,6 +37,11 @@ namespace HomeExercises
 
 			
 			// Какие недостатки у такого подхода? 
+			
+			// 1. Вероятность StackOverflow из-за бесконечной рекурсии
+			// 2. При каждом изменении свойств или добавлении новых функцию придётся переписывать
+			// 3. Данный код не выполняет никакой полезной функции кроме сравнения полей двух объектов
+			// 4. Нарушение SRP, ответственность за сравнение объетов должна быть инкапсулирована в класс
 			Assert.True(AreEqual(actualTsar, expectedTsar));
 		}
 
