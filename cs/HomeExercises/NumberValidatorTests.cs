@@ -10,23 +10,76 @@ namespace HomeExercises
 		[Test]
 		public void Test()
 		{
-			Assert.Throws<ArgumentException>(() => new NumberValidator(-1, 2, true));
-			Assert.DoesNotThrow(() => new NumberValidator(1, 0, true));
-			Assert.Throws<ArgumentException>(() => new NumberValidator(-1, 2, false));
-			Assert.DoesNotThrow(() => new NumberValidator(1, 0, true));
-
-			Assert.IsTrue(new NumberValidator(17, 2, true).IsValidNumber("0.0"));
-			Assert.IsTrue(new NumberValidator(17, 2, true).IsValidNumber("0"));
-			Assert.IsTrue(new NumberValidator(17, 2, true).IsValidNumber("0.0"));
-			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("00.00"));
 			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("-0.00"));
-			Assert.IsTrue(new NumberValidator(17, 2, true).IsValidNumber("0.0"));
 			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("+0.00"));
 			Assert.IsTrue(new NumberValidator(4, 2, true).IsValidNumber("+1.23"));
 			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("+1.23"));
-			Assert.IsFalse(new NumberValidator(17, 2, true).IsValidNumber("0.000"));
 			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("-1.23"));
 			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("a.sd"));
+		}
+
+		[Test]
+		public void CreatesWithNoExceptions()
+		{
+			var creationOfValidator = new Action(() => { new NumberValidator(1, 0, true); });
+			creationOfValidator.Should().NotThrow();
+		}
+
+		[Test]
+		public void ShouldThrowException_WhenNegativePrecision()
+		{
+			const int precision = -1;
+			var creationOfValidatorOnlyPositive = new Action(() => { new NumberValidator(precision, -1, true); });
+			creationOfValidatorOnlyPositive.Should().Throw<ArgumentException>($"precision = {precision} is less than 0");
+
+			var creationOfValidator = new Action(() => { new NumberValidator(precision, 2, false); });
+			creationOfValidator.Should().Throw<ArgumentException>($"precision = {precision} is less than 0");
+		}
+
+		[Test]
+		public void ShouldThrowException_WhenScaleIsNegative()
+		{
+			const int scale = -1;
+			var creationOfValidatorOnlyPositive = new Action(() => { new NumberValidator(5, scale, true); });
+			creationOfValidatorOnlyPositive.Should().Throw<ArgumentException>($"scale = {scale} is less than 0");
+
+			var creationOfValidator = new Action(() => { new NumberValidator(5, scale, false); });
+			creationOfValidator.Should().Throw<ArgumentException>($"scale = {scale} is less than 0");
+		}
+
+		[TestCase(5, 6)]
+		[TestCase(5, 5)]
+		public void ShouldThrowException_WhenScaleIsNotLessThanPrecision(int precision, int scale)
+		{
+			var creationOfValidatorOnlyPositive = new Action(() => { new NumberValidator(precision, scale, true); });
+			creationOfValidatorOnlyPositive.Should().Throw<ArgumentException>($"scale = {scale} is bigger or equal to precision = {precision}");
+
+			var creationOfValidator = new Action(() => { new NumberValidator(precision, scale, false); });
+			creationOfValidator.Should().Throw<ArgumentException>($"scale = {scale} is bigger or equal to precision = {precision}");
+		}
+
+		[TestCase("12.34", true)]
+		[TestCase("12", true)]
+		[TestCase("1.000", false)]
+		[TestCase("123.000", false)]
+		public void ShouldValidateNumbersWithoutSign(string inputValue, bool expected)
+		{
+			var validator = new NumberValidator(5, 2, true);
+			validator.IsValidNumber(inputValue).Should().Be(expected, $"number {inputValue} is {(expected ? "correct" : "incorrect")}");
+		}
+
+		[Test]
+		public void ShouldNotValidateNull()
+		{
+			var validator = new NumberValidator(5, 2, true);
+			validator.IsValidNumber(null!).Should().Be(false, "null should be false");
+		}		
+		
+		[Test]
+		public void ShouldNotValidateEmpty()
+		{
+			var validator = new NumberValidator(5, 2, true);
+			validator.IsValidNumber("").Should().Be(false, "empty should be false");
 		}
 	}
 
