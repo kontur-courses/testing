@@ -3,76 +3,79 @@ using NUnit.Framework;
 
 namespace HomeExercises
 {
-	public class ObjectComparison
-	{
-		[Test]
-		[Description("Проверка текущего царя")]
-		[Category("ToRefactor")]
-		public void CheckCurrentTsar()
-		{
-			var actualTsar = TsarRegistry.GetCurrentTsar();
+    public class ObjectComparison
+    {
+        [Test]
+        [Description("Проверка текущего царя")]
+        [Category("ToRefactor")]
+        public void CheckCurrentTsar()
+        {
+            var actualTsar = TsarRegistry.GetCurrentTsar();
 
-			var expectedTsar = new Person("Ivan IV The Terrible", 54, 170, 70,
-				new Person("Vasili III of Russia", 28, 170, 60, null));
+            var expectedTsar = new Person("Ivan IV The Terrible", 54, 170, 70,
+                new Person("Vasili III of Russia", 28, 170, 60, null));
 
-			actualTsar.Should().BeEquivalentTo(expectedTsar, options =>
-				options.Excluding(tsar => tsar.SelectedMemberPath.EndsWith("Id")));
-		}
+            actualTsar.Should().BeEquivalentTo(expectedTsar, options =>
+                options.Excluding(tsar => tsar.SelectedMemberPath.EndsWith("Id")));
+        }
 
-		// Недостаток в том, что нужно будет переписывать тест при любом исправлении в классе Person.
-		// Возможно нужно добавить какое-то поле, или изменить название уже существующего,
-		// придется изменять каждый раз метод AreEqual, так же снижается читаемость теста
-		[Test]
-		[Description("Альтернативное решение. Какие у него недостатки?")]
-		public void CheckCurrentTsar_WithCustomEquality()
-		{
-			var actualTsar = TsarRegistry.GetCurrentTsar();
-			var expectedTsar = new Person("Ivan IV The Terrible", 54, 170, 70,
-				new Person("Vasili III of Russia", 28, 170, 60, null));
+        // Недостаток в том, что нужно будет переписывать тест при любом исправлении в классе Person.
+        // Возможно нужно добавить какое-то поле, или изменить название уже существующего,
+        // придется изменять каждый раз метод AreEqual, так же снижается читаемость теста,
+        // так как приходится разбираться еще в методе AreEqual
+        // Мое решение же лучше, потому что при добавлении новых полей нужно добавлять только те,
+        // которые необходимо игнорировать при сравнении классов, плюс гораздо локаничнее и читаемее
+        [Test]
+        [Description("Альтернативное решение. Какие у него недостатки?")]
+        public void CheckCurrentTsar_WithCustomEquality()
+        {
+            var actualTsar = TsarRegistry.GetCurrentTsar();
+            var expectedTsar = new Person("Ivan IV The Terrible", 54, 170, 70,
+                new Person("Vasili III of Russia", 28, 170, 60, null));
 
-			// Какие недостатки у такого подхода? 
-			Assert.True(AreEqual(actualTsar, expectedTsar));
-		}
+            // Какие недостатки у такого подхода? 
+            Assert.True(AreEqual(actualTsar, expectedTsar));
+        }
 
-		private bool AreEqual(Person? actual, Person? expected)
-		{
-			if (actual == expected) return true;
-			if (actual == null || expected == null) return false;
-			return
-				actual.Name == expected.Name
-				&& actual.Age == expected.Age
-				&& actual.Height == expected.Height
-				&& actual.Weight == expected.Weight
-				&& AreEqual(actual.Parent, expected.Parent);
-		}
-	}
+        private bool AreEqual(Person? actual, Person? expected)
+        {
+            if (actual == expected) return true;
+            if (actual == null || expected == null) return false;
+            return
+                actual.Name == expected.Name
+                && actual.Age == expected.Age
+                && actual.Height == expected.Height
+                && actual.Weight == expected.Weight
+                && AreEqual(actual.Parent, expected.Parent);
+        }
+    }
 
-	public class TsarRegistry
-	{
-		public static Person GetCurrentTsar()
-		{
-			return new Person(
-				"Ivan IV The Terrible", 54, 170, 70,
-				new Person("Vasili III of Russia", 28, 170, 60, null));
-		}
-	}
+    public class TsarRegistry
+    {
+        public static Person GetCurrentTsar()
+        {
+            return new Person(
+                "Ivan IV The Terrible", 54, 170, 70,
+                new Person("Vasili III of Russia", 28, 170, 60, null));
+        }
+    }
 
-	public class Person
-	{
-		public static int IdCounter = 0;
-		public int Age, Height, Weight;
-		public string Name;
-		public Person? Parent;
-		public int Id;
+    public class Person
+    {
+        public static int IdCounter = 0;
+        public int Age, Height, Weight;
+        public string Name;
+        public Person? Parent;
+        public int Id;
 
-		public Person(string name, int age, int height, int weight, Person? parent)
-		{
-			Id = IdCounter++;
-			Name = name;
-			Age = age;
-			Height = height;
-			Weight = weight;
-			Parent = parent;
-		}
-	}
+        public Person(string name, int age, int height, int weight, Person? parent)
+        {
+            Id = IdCounter++;
+            Name = name;
+            Age = age;
+            Height = height;
+            Weight = weight;
+            Parent = parent;
+        }
+    }
 }
