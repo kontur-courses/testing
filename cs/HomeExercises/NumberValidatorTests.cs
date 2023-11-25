@@ -8,27 +8,98 @@ namespace HomeExercises
 	public class NumberValidatorTests
 	{
 		[Test]
-		public void Test()
-		{
-			Assert.Throws<ArgumentException>(() => new NumberValidator(-1, 2, true));
-			Assert.DoesNotThrow(() => new NumberValidator(1, 0, true));
-			Assert.Throws<ArgumentException>(() => new NumberValidator(-1, 2, false));
-			Assert.DoesNotThrow(() => new NumberValidator(1, 0, true));
+        public void Throws_WhenPrecisionNotPositive()
+        {
+            Action action = () => new NumberValidator(-1, 2, true);
+            action.Should().Throw<ArgumentException>();
+        }
 
-			Assert.IsTrue(new NumberValidator(17, 2, true).IsValidNumber("0.0"));
-			Assert.IsTrue(new NumberValidator(17, 2, true).IsValidNumber("0"));
-			Assert.IsTrue(new NumberValidator(17, 2, true).IsValidNumber("0.0"));
-			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("00.00"));
-			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("-0.00"));
-			Assert.IsTrue(new NumberValidator(17, 2, true).IsValidNumber("0.0"));
-			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("+0.00"));
-			Assert.IsTrue(new NumberValidator(4, 2, true).IsValidNumber("+1.23"));
-			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("+1.23"));
-			Assert.IsFalse(new NumberValidator(17, 2, true).IsValidNumber("0.000"));
-			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("-1.23"));
-			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("a.sd"));
-		}
-	}
+		[Test]
+		public void Throws_WhenScaleNegative()
+		{
+			Action action = () => new NumberValidator(1, -1, true);
+			action.Should().Throw<ArgumentException>();
+        }
+
+        [Test]
+        public void Throws_WhenScaleBiggerPrecision()
+        {
+            Action action = () => new NumberValidator(1, 2, true);
+            action.Should().Throw<ArgumentException>();
+        }
+
+        [Test]
+        public void Fails_WhenNumberEmpty()
+        {
+            var validator = new NumberValidator(17, 2, true);
+            var result = validator.IsValidNumber(" ");
+            result.Should().BeFalse();
+        }
+
+		[Test]
+        public void Fails_WhenNumberNotMatch()
+        {
+            var validator = new NumberValidator(8, 2, true);
+            var result = validator.IsValidNumber("1/43");
+            result.Should().BeFalse();
+        }
+
+        [Test]
+		public void Success_WhenIntAndFractPartLessWhenPrecision()
+		{
+			var validator = new NumberValidator(17, 2, true);
+			var result = validator.IsValidNumber("0");
+			result.Should().BeTrue();
+        }
+
+        [Test]
+        public void Fails_WhenPrecisionLessCountNumbers()
+        {
+			var validator = new NumberValidator(3, 2, true);
+            var result = validator.IsValidNumber("00.00");
+            result.Should().BeFalse();
+        }
+
+        [Test]
+        public void Fails_WhenPrecisionLessCountNumbersAndMinus()
+        {
+            var validator = new NumberValidator(3, 2, true);
+            var result = validator.IsValidNumber("-0.00");
+            result.Should().BeFalse();
+        }
+
+		[Test]
+		public void Success_WhenPrecisionEqualsCountNumbersAndSign()
+		{
+            var validator = new NumberValidator(4, 2, true);
+            var result = validator.IsValidNumber("+1.23");
+            result.Should().BeTrue();
+        }
+
+        [Test]
+        public void Fails_WhenScaleLessFractPartLength()
+        {
+            var validator = new NumberValidator(17, 2, true);
+            var result = validator.IsValidNumber("0.000");
+            result.Should().BeFalse();
+        }
+
+		[Test]
+		public void Fails_WhenLetters()
+		{
+            var validator = new NumberValidator(3, 2, true);
+            var result = validator.IsValidNumber("a.sd");
+            result.Should().BeFalse();
+        }
+
+		[Test]
+        public void Fails_WhenOnlyPositiveAndNegativeNumber()
+        {
+            var validator = new NumberValidator(3, 2, true);
+            var result = validator.IsValidNumber("-1.2");
+            result.Should().BeFalse();
+        }
+    }
 
 	public class NumberValidator
 	{
