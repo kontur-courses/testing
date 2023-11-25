@@ -1,4 +1,7 @@
-﻿using FluentAssertions;
+﻿using System;
+using System.Text.RegularExpressions;
+using FluentAssertions;
+using FluentAssertions.Equivalency;
 using NUnit.Framework;
 
 namespace HomeExercises
@@ -8,23 +11,15 @@ namespace HomeExercises
 		[Test]
 		[Description("Проверка текущего царя")]
 		[Category("ToRefactor")]
-		public void CheckCurrentTsar()
+		public void GetCurrentTsar_CurrentTsarEqualsHistoricalTsar()
 		{
 			var actualTsar = TsarRegistry.GetCurrentTsar();
 
 			var expectedTsar = new Person("Ivan IV The Terrible", 54, 170, 70,
 				new Person("Vasili III of Russia", 28, 170, 60, null));
-
-			// Перепишите код на использование Fluent Assertions.
-			Assert.AreEqual(actualTsar.Name, expectedTsar.Name);
-			Assert.AreEqual(actualTsar.Age, expectedTsar.Age);
-			Assert.AreEqual(actualTsar.Height, expectedTsar.Height);
-			Assert.AreEqual(actualTsar.Weight, expectedTsar.Weight);
-
-			Assert.AreEqual(expectedTsar.Parent!.Name, actualTsar.Parent!.Name);
-			Assert.AreEqual(expectedTsar.Parent.Age, actualTsar.Parent.Age);
-			Assert.AreEqual(expectedTsar.Parent.Height, actualTsar.Parent.Height);
-			Assert.AreEqual(expectedTsar.Parent.Parent, actualTsar.Parent.Parent);
+			
+			actualTsar.Should().BeEquivalentTo(expectedTsar, 
+				options => options.Excluding(property => property.SelectedMemberPath.EndsWith("Id")));
 		}
 
 		[Test]
@@ -36,6 +31,12 @@ namespace HomeExercises
 				new Person("Vasili III of Russia", 28, 170, 60, null));
 
 			// Какие недостатки у такого подхода? 
+			/*
+			 * 1) Если тест не прошел, не будет возможности понять, какие именно поля не равны - тест просто вернет false
+			 * 2) При изменении класса Person необходимо будет изменять тест
+			 * 3) Название теста не раскрывает смысла теста, не работает как спецификация
+			 * 4) Проверку объектов на равенство лучше внести в класс
+			 */
 			Assert.True(AreEqual(actualTsar, expectedTsar));
 		}
 
