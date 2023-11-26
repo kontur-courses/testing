@@ -28,7 +28,7 @@ namespace HomeExercises
 		public void IsValidNumber_CheckSameNumberTwoTimes_ResultsAreEqual()
 		{
 			var validator = new NumberValidator(17, 2, true);
-            var numberToCheck = "0.0";
+			var numberToCheck = "0.0";
 
 			var firstTimeCheck = validator.IsValidNumber(numberToCheck);
 			var secondTimeCheck = validator.IsValidNumber(numberToCheck);
@@ -42,12 +42,12 @@ namespace HomeExercises
 		[TestCase("a.sd", TestName = "value has letters")]
 		[TestCase("1.5.9", TestName = "more than one separator")]
 		[TestCase("3^2", TestName = "value has special symbols")]
-        public void IsValidNumber_CheckNonNumberValue_ReturnsFalse(string value)
+		public void IsValidNumber_CheckNonNumberValue_ReturnsFalse(string value)
 		{
 			var result = new NumberValidator(17, 2, true).IsValidNumber(value);
 
 			result.Should().BeFalse();
-        }
+		}
 
 		[TestCase("1234", 3, 2, true, TestName = "integer and length > precision")]
 		[TestCase("-1.3", 3, 2, true, TestName = "negative number and onlyPositive = true")]
@@ -55,27 +55,29 @@ namespace HomeExercises
 		[TestCase("1.234", 3, 2, true, TestName = "total length > precision")]
 		[TestCase("1.23", 3, 1, true, TestName = "decimal part length > scale")]
 		[TestCase("+1.23", 3, 2, true, TestName = "has + and total length > precision")]
-        public void IsValidNumber_CheckNotValidNumber_ReturnsFalse(string value, int precision, int scale, bool onlyPositive)
-        {
-	        var result = new NumberValidator(precision, scale, onlyPositive).IsValidNumber(value);
+		public void IsValidNumber_CheckNotValidNumber_ReturnsFalse(string value, int precision, int scale,
+			bool onlyPositive)
+		{
+			var result = new NumberValidator(precision, scale, onlyPositive).IsValidNumber(value);
 
-            result.Should().BeFalse();
-        }
+			result.Should().BeFalse();
+		}
 
 		[TestCase("123", 3, 2, true, TestName = "integer and length = precision")]
-		[TestCase("123", 4, 2,true, TestName = "integer and length < precision")]
+		[TestCase("123", 4, 2, true, TestName = "integer and length < precision")]
 		[TestCase("0.1", 3, 1, true, TestName = "only decimal part and length < precision")]
 		[TestCase("0.12", 3, 2, true, TestName = "only decimal part and length = precision")]
 		[TestCase("1.23", 4, 3, true, TestName = "decimal part length < scale")]
-        [TestCase("1.23", 3, 2, true, TestName = "decimal part length = scale")]
+		[TestCase("1.23", 3, 2, true, TestName = "decimal part length = scale")]
 		[TestCase("-1.23", 4, 2, false, TestName = "negative and onlyPositive = false")]
-        public void IsValidNumber_CheckValidNumber_ReturnsTrue(string value, int precision, int scale, bool onlyPositive)
-        {
-	        var result = new NumberValidator(precision, scale, onlyPositive).IsValidNumber(value);
+		public void IsValidNumber_CheckValidNumber_ReturnsTrue(string value, int precision, int scale,
+			bool onlyPositive)
+		{
+			var result = new NumberValidator(precision, scale, onlyPositive).IsValidNumber(value);
 
-	        result.Should().BeTrue();
-        }
-    }
+			result.Should().BeTrue();
+		}
+	}
 
 	public class NumberValidator
 	{
