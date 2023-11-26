@@ -1,4 +1,5 @@
 ﻿using FluentAssertions;
+using FluentAssertions.Equivalency;
 using NUnit.Framework;
 
 namespace HomeExercises
@@ -14,15 +15,9 @@ namespace HomeExercises
 			var expectedTsar = new Person("Ivan IV The Terrible", 54, 170, 70,
 				new Person("Vasili III of Russia", 28, 170, 60, null));
 
-			actualTsar.Name.Should().Be(expectedTsar.Name);
-			actualTsar.Age.Should().Be(expectedTsar.Age);
-			actualTsar.Height.Should().Be(expectedTsar.Height);
-			actualTsar.Weight.Should().Be(expectedTsar.Weight);
-
-			actualTsar.Parent!.Name.Should().Be(expectedTsar.Parent!.Name);
-			actualTsar.Parent!.Age.Should().Be(expectedTsar.Parent!.Age);
-			actualTsar.Parent!.Height.Should().Be(expectedTsar.Parent!.Height);
-			actualTsar.Parent!.Parent.Should().Be(expectedTsar.Parent!.Parent);
+			actualTsar.Should().BeEquivalentTo(expectedTsar, options => options
+				.IncludingFields()
+				.Excluding(info => info.SelectedMemberPath.EndsWith("Id")));
 		}
 
 		[Test]
@@ -34,6 +29,15 @@ namespace HomeExercises
 				new Person("Vasili III of Russia", 28, 170, 60, null));
 
 			// Какие недостатки у такого подхода? 
+			/*
+			 * Недостатками такого подхода являются:
+			 * 1. Если тест падает то единственное, что можно из этого понять, что цари не одинаковые
+			 * Никакой информации об их различиях он не выводит
+			 * 2. Из названия теста тоже никак не получится понять что именно тестируется
+			 * 3. При любом расширении класса Person придется дописывать/переписывать компаратор
+			 * 4. Еще ужаснее будет если нововведение в Person будет необязательным и нам придется
+			 * В компараторе поддерживать это опциональное сравнение, а учитывая еще и первый пункт...
+			 */
 			Assert.True(AreEqual(actualTsar, expectedTsar));
 		}
 
