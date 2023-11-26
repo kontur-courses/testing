@@ -16,18 +16,17 @@ namespace HomeExercises
 				new Person("Vasili III of Russia", 28, 170, 60, null));
 
 			// Перепишите код на использование Fluent Assertions.
-			Assert.AreEqual(actualTsar.Name, expectedTsar.Name);
-			Assert.AreEqual(actualTsar.Age, expectedTsar.Age);
-			Assert.AreEqual(actualTsar.Height, expectedTsar.Height);
-			Assert.AreEqual(actualTsar.Weight, expectedTsar.Weight);
 
-			Assert.AreEqual(expectedTsar.Parent!.Name, actualTsar.Parent!.Name);
-			Assert.AreEqual(expectedTsar.Parent.Age, actualTsar.Parent.Age);
-			Assert.AreEqual(expectedTsar.Parent.Height, actualTsar.Parent.Height);
-			Assert.AreEqual(expectedTsar.Parent.Parent, actualTsar.Parent.Parent);
-		}
+			// Cравниваем все свойства, кроме исключенных
+			actualTsar.Should().BeEquivalentTo(expectedTsar,options => options.Excluding(x=>x.Id).Excluding((x=>x.Parent!.Id)));
 
-		[Test]
+			// Тесты описываются более естественным языком
+			// Сообщения об ошибках более информативны
+			// При добавлении новых полей для сравнения не нужно изменять тест
+
+        }
+
+        [Test]
 		[Description("Альтернативное решение. Какие у него недостатки?")]
 		public void CheckCurrentTsar_WithCustomEquality()
 		{
@@ -35,9 +34,11 @@ namespace HomeExercises
 			var expectedTsar = new Person("Ivan IV The Terrible", 54, 170, 70,
 				new Person("Vasili III of Russia", 28, 170, 60, null));
 
-			// Какие недостатки у такого подхода? 
-			Assert.True(AreEqual(actualTsar, expectedTsar));
-		}
+            // Какие недостатки у такого подхода? 
+            //При добавлении свойств нужно изменять метод AreEquals
+            //Неинформативное сообщение об ошибке - не понятно, в чем именно различаются объекты
+            Assert.True(AreEqual(actualTsar, expectedTsar));
+        }
 
 		private bool AreEqual(Person? actual, Person? expected)
 		{
