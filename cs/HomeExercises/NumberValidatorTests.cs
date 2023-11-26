@@ -8,25 +8,89 @@ namespace HomeExercises
 	public class NumberValidatorTests
 	{
 		[Test]
-		public void Test()
+		public void CreatesWithNoExceptions()
 		{
-			Assert.Throws<ArgumentException>(() => new NumberValidator(-1, 2, true));
-			Assert.DoesNotThrow(() => new NumberValidator(1, 0, true));
-			Assert.Throws<ArgumentException>(() => new NumberValidator(-1, 2, false));
-			Assert.DoesNotThrow(() => new NumberValidator(1, 0, true));
+			var creationOfValidator = new Action(() => { new NumberValidator(2, 1, true); });
+			creationOfValidator.Should().NotThrow();
+		}
 
-			Assert.IsTrue(new NumberValidator(17, 2, true).IsValidNumber("0.0"));
-			Assert.IsTrue(new NumberValidator(17, 2, true).IsValidNumber("0"));
-			Assert.IsTrue(new NumberValidator(17, 2, true).IsValidNumber("0.0"));
-			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("00.00"));
-			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("-0.00"));
-			Assert.IsTrue(new NumberValidator(17, 2, true).IsValidNumber("0.0"));
-			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("+0.00"));
-			Assert.IsTrue(new NumberValidator(4, 2, true).IsValidNumber("+1.23"));
-			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("+1.23"));
-			Assert.IsFalse(new NumberValidator(17, 2, true).IsValidNumber("0.000"));
-			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("-1.23"));
-			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("a.sd"));
+		[TestCase(-1, 2, false, TestName = "Precision < 0")]
+		[TestCase(3, -1, false, TestName = "Scale < 0")]
+		[TestCase(3, 4, false, TestName = "Precision < Scale")]
+		public void ShouldThrowException_WhenInitWithIncorrectData(int precision, int scale, bool onlyPositive)
+		{
+			var creationOfValidatorOnlyPositive = new Action(() => { new NumberValidator(precision, scale, onlyPositive); });
+			creationOfValidatorOnlyPositive.Should().Throw<ArgumentException>();
+		}
+
+		[Test]
+		public void ShouldNotValidate_Null()
+		{
+			string number = null!;
+			var validator = new NumberValidator(5, 2);
+			validator.IsValidNumber(number).Should().BeFalse("null should be false");
+		}
+
+		[Test]
+		public void ShouldNotValidate_Empty()
+		{
+			const string number = "";
+			var validator = new NumberValidator(5, 2);
+			validator.IsValidNumber(number).Should().BeFalse("empty should be false");
+		}
+
+		[Test]
+		public void ShouldNotValidate_NonNumeric()
+		{
+			const string notNumber = "a.bc";
+			var validator = new NumberValidator(5, 2);
+			validator.IsValidNumber(notNumber).Should().BeFalse($"{notNumber} is not a number");
+		}
+
+		[TestCase("12.34", true)]
+		[TestCase("12", true)]
+		[TestCase("1.000", false)]
+		[TestCase("123.000", false)]
+		public void ShouldValidate_NumbersWithoutSign(string inputValue, bool expected)
+		{
+			var validator = new NumberValidator(5, 2, true);
+			validator.IsValidNumber(inputValue).Should().Be(expected, $"number {inputValue} is {(expected ? "correct" : "incorrect")}");
+		}
+
+		[TestCase("+1.23", true)]
+		[TestCase("+1", true)]
+		[TestCase("+0.5", true)]
+		[TestCase("+0.567", false)]
+		[TestCase("+123.45", false)]
+		public void ShouldValidate_NumbersWithPositiveSign(string inputValue, bool expected)
+		{
+			var validator = new NumberValidator(5, 2, true);
+			validator.IsValidNumber(inputValue).Should().Be(expected, $"number {inputValue} is {(expected ? "correct" : "incorrect")}");
+		}
+
+		[TestCase("-1.23", true)]
+		[TestCase("-1", true)]
+		[TestCase("-0.5", true)]
+		[TestCase("-0.567", false)]
+		[TestCase("-123.45", false)]
+		public void ShouldValidate_NumbersWithNegativeSign(string inputValue, bool expected)
+		{
+			var positiveValidator = new NumberValidator(5, 2, true);
+			positiveValidator.IsValidNumber(inputValue).Should().Be(false, "only positive validator should not validate negatives");
+
+			var validator = new NumberValidator(5, 2);
+			validator.IsValidNumber(inputValue).Should().Be(expected, $"number {inputValue} is {(expected ? "correct" : "incorrect")}");
+		}
+
+		[TestCase("1,23", true)]
+		[TestCase("+1,23", true)]
+		[TestCase("-1,23", true)]
+		[TestCase("-123,45", false)]
+		[TestCase("0,456", false)]
+		public void ShouldValidate_DifferentDelimiter(string inputValue, bool expected)
+		{
+			var validator = new NumberValidator(5, 2);
+			validator.IsValidNumber(inputValue).Should().Be(expected, $"{expected} should validate comma");
 		}
 	}
 
