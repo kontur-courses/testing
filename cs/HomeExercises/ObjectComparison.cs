@@ -18,10 +18,10 @@ namespace HomeExercises
 				new Person("Vasili III of Russia", 28, 170, 60, null));
 
 			// Перепишите код на использование Fluent Assertions.
-			actualTsar.Should().BeEquivalentTo(expectedTsar, options => 
+			actualTsar.Should().BeEquivalentTo(expectedTsar, options =>
 				options
 					.IgnoringCyclicReferences()
-					.Excluding((IMemberInfo info) => 
+					.Excluding((IMemberInfo info) =>
 						info.SelectedMemberInfo.DeclaringType == typeof(Person)
 						&& info.SelectedMemberInfo.Name == nameof(Person.Id))
 			);
@@ -35,13 +35,15 @@ namespace HomeExercises
 			var expectedTsar = new Person("Ivan IV The Terrible", 54, 170, 70,
 				new Person("Vasili III of Russia", 28, 170, 60, null));
 
-			
+
 			// Какие недостатки у такого подхода? 
-			
+
 			// 1. Вероятность StackOverflow из-за бесконечной рекурсии
 			// 2. При каждом изменении свойств или добавлении новых функцию придётся переписывать
-			// 3. Данный код не выполняет никакой полезной функции кроме сравнения полей двух объектов
-			// 4. Нарушение SRP, ответственность за сравнение объетов должна быть инкапсулирована в класс
+			// 3. Нарушение SRP, ответственность за сравнение объетов должна быть инкапсулирована в класс
+			// 4. Тест не показывает, по каким критериям различаются два объекта
+			// 5. Название теста не говорит о конкрутных различиях этого теста с предыдущим
+
 			Assert.True(AreEqual(actualTsar, expectedTsar));
 		}
 
