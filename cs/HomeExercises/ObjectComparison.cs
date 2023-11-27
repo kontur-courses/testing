@@ -7,7 +7,7 @@ namespace HomeExercises
 	public class ObjectComparison
 	{
 		[Test]
-		[Description("Проверка текущего царя")]
+		[Description("Проверка текущего царя. Информативная реализация")]
 		[Category("ToRefactor")]
 		public void CheckCurrentTsar()
 		{
@@ -17,10 +17,12 @@ namespace HomeExercises
 			var expectedTsar = new Person("Ivan IV The Terrible", 54, 170, 70,
 				new Person("Vasili III of Russia", 28, 170, 60, null));
 
-			actualTsar.Parent.Should().NotBe(null, "Должен быть минимум один родитель");
+			// В начальном наборе тестов был сделан акцент на то, что у объекта класса Person 
+			// должнен быть родитель первого поколения.
+			actualTsar.Parent.Should().NotBe(null, "Должен быть родитель 1-го поколения");
 			
 			// Полностью повторяем логику проверки до рефакторинга. 
-			// Проверяем только родителей первого поколения, причём не сравниваем у них вес.
+			// Из родителей проверяем только первое поколение, причём не сравниваем у них вес.
 			
 			actualTsar.Should().BeEquivalentTo(expectedTsar, config =>
 			{
@@ -68,6 +70,7 @@ namespace HomeExercises
 			 * 3. В методе типа AreEqual(...) легко забыть о каком-либо свойстве, т.е. допустить ошибку в сравнении.
 			 * 4. Если у проверяемого объекта много свойств, то AreEqual(...) тяжело читать.
 			 * 5. Возможно переполнение стека из-за рекурсивных вызовов AreEqual(...) внутри самого себя.
+			 * 6. Для любого другого класса придётся писать новую версию метода AreEqual(...).
 			 */
 			Assert.True(AreEqual(actualTsar, expectedTsar));
 		}
