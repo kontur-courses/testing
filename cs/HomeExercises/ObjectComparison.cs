@@ -1,4 +1,5 @@
-﻿using FluentAssertions;
+﻿using System.Text.RegularExpressions;
+using FluentAssertions;
 using NUnit.Framework;
 
 namespace HomeExercises
@@ -10,21 +11,45 @@ namespace HomeExercises
 		[Category("ToRefactor")]
 		public void CheckCurrentTsar()
 		{
+			// Эта реализация теста будет выводить информативные сообщения!
+			
 			var actualTsar = TsarRegistry.GetCurrentTsar();
-
 			var expectedTsar = new Person("Ivan IV The Terrible", 54, 170, 70,
 				new Person("Vasili III of Russia", 28, 170, 60, null));
 
-			// Перепишите код на использование Fluent Assertions.
-			Assert.AreEqual(actualTsar.Name, expectedTsar.Name);
-			Assert.AreEqual(actualTsar.Age, expectedTsar.Age);
-			Assert.AreEqual(actualTsar.Height, expectedTsar.Height);
-			Assert.AreEqual(actualTsar.Weight, expectedTsar.Weight);
+			actualTsar.Parent.Should().NotBe(null, "Должен быть минимум один родитель");
+			
+			// Полностью повторяем логику проверки до рефакторинга. 
+			// Проверяем только родителей первого поколения, причём не сравниваем у них вес.
+			
+			actualTsar.Should().BeEquivalentTo(expectedTsar, config =>
+			{
+				return config.Excluding(person => person.Id)
+					.Excluding(person => person.Parent!.Parent)
+					.Excluding(person => person.Parent!.Weight)
+					.Excluding(person => person.Parent!.Id);
+			});
+		}
+		
+		[Test]
+		[Description("Проверка текущего царя и всех его родителей")]
+		[Category("AlternativeTest")]
+		public void CheckCurrentTsar_WithCustomEquality_Informative()
+		{
+			// Этим шаблоном мы исключаем все идентификаторы из проверки.
+			// То есть исключаем Id у 1-го, 2-го, ..., n - 1, n родителя.
+			const string excludingPattern = @"^(Parent\.)*Id$";
+			
+			var actualTsar = TsarRegistry.GetCurrentTsar();
+			var expectedTsar = new Person("Ivan IV The Terrible", 54, 170, 70,
+				new Person("Vasili III of Russia", 28, 170, 60, null));
 
-			Assert.AreEqual(expectedTsar.Parent!.Name, actualTsar.Parent!.Name);
-			Assert.AreEqual(expectedTsar.Parent.Age, actualTsar.Parent.Age);
-			Assert.AreEqual(expectedTsar.Parent.Height, actualTsar.Parent.Height);
-			Assert.AreEqual(expectedTsar.Parent.Parent, actualTsar.Parent.Parent);
+			// Эта версия теста является информативным аналогом метода CheckCurrentTsar_WithCustomEquality(...)
+			// До сих пор возможна глубокая рекурсия!
+			actualTsar.Should().BeEquivalentTo(expectedTsar, config =>
+			{
+				return config.Excluding(ctx => Regex.IsMatch(ctx.SelectedMemberPath, excludingPattern));
+			});
 		}
 
 		[Test]
@@ -35,7 +60,15 @@ namespace HomeExercises
 			var expectedTsar = new Person("Ivan IV The Terrible", 54, 170, 70,
 				new Person("Vasili III of Russia", 28, 170, 60, null));
 
-			// Какие недостатки у такого подхода? 
+			/* Недостатки этого подхода:
+			 * 1. AreEqual(...) сильно связан со структурой класса Person:
+			 *	  любая модификация этого класса может потребовать изменения проверяющего метода.
+			 * 2. AreEqual(...) включает в себя слишком много проверок. Из-за этого мы получим
+			 *    неинформативное сообщение об ошибке в случае разности проверяемых объектов.
+			 * 3. В методе типа AreEqual(...) легко забыть о каком-либо свойстве, т.е. допустить ошибку в сравнении.
+			 * 4. Если у проверяемого объекта много свойств, то AreEqual(...) тяжело читать.
+			 * 5. Возможно переполнение стека из-за рекурсивных вызовов AreEqual(...) внутри самого себя.
+			 */
 			Assert.True(AreEqual(actualTsar, expectedTsar));
 		}
 
