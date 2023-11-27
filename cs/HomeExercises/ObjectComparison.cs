@@ -12,7 +12,6 @@ namespace HomeExercises
 		public void CheckCurrentTsar()
 		{
 			// Эта реализация теста будет выводить информативные сообщения!
-			
 			var actualTsar = TsarRegistry.GetCurrentTsar();
 			var expectedTsar = new Person("Ivan IV The Terrible", 54, 170, 70,
 				new Person("Vasili III of Russia", 28, 170, 60, null));
@@ -23,7 +22,6 @@ namespace HomeExercises
 			
 			// Полностью повторяем логику проверки до рефакторинга. 
 			// Из родителей проверяем только первое поколение, причём не сравниваем у них вес.
-			
 			actualTsar.Should().BeEquivalentTo(expectedTsar, config =>
 			{
 				return config.Excluding(person => person.Id)
