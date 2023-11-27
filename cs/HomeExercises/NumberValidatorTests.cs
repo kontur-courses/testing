@@ -10,7 +10,10 @@ namespace HomeExercises
 		[Test]
 		public void CreatesWithNoExceptions()
 		{
-			var creationOfValidator = new Action(() => { new NumberValidator(2, 1, true); });
+			var creationOfPositiveValidator = new Action(() => { new NumberValidator(2, 1, true); });
+			creationOfPositiveValidator.Should().NotThrow();
+
+			var creationOfValidator = new Action(() => { new NumberValidator(2, 1, false); });
 			creationOfValidator.Should().NotThrow();
 		}
 
@@ -23,26 +26,25 @@ namespace HomeExercises
 			creationOfValidatorOnlyPositive.Should().Throw<ArgumentException>();
 		}
 
-		[Test]
-		public void ShouldNotValidate_Null()
+		[TestCase(null!, TestName = "Number is null")]
+		[TestCase("", TestName = "Number is \"\"")]
+		[TestCase("   ", TestName = "Number is \"   \"")]
+		[TestCase("\n", TestName = "Number is \"\\n\"")]
+		public void ShouldNotValidate_NonCorrectData(string number)
 		{
-			string number = null!;
 			var validator = new NumberValidator(5, 2);
-			validator.IsValidNumber(number).Should().BeFalse("null should be false");
+			validator.IsValidNumber(number).Should().BeFalse($"{number} is not correct data");
 		}
 
-		[Test]
-		public void ShouldNotValidate_Empty()
+		[TestCase("abc")]
+		[TestCase("a.bc")]
+		[TestCase(".2")]
+		[TestCase("1.2,3")]
+		[TestCase(",")]
+		[TestCase("-.2")]
+		[TestCase("-1;2")]
+		public void ShouldNotValidate_NonNumeric(string notNumber)
 		{
-			const string number = "";
-			var validator = new NumberValidator(5, 2);
-			validator.IsValidNumber(number).Should().BeFalse("empty should be false");
-		}
-
-		[Test]
-		public void ShouldNotValidate_NonNumeric()
-		{
-			const string notNumber = "a.bc";
 			var validator = new NumberValidator(5, 2);
 			validator.IsValidNumber(notNumber).Should().BeFalse($"{notNumber} is not a number");
 		}
@@ -50,7 +52,7 @@ namespace HomeExercises
 		[TestCase("12.34", true)]
 		[TestCase("12", true)]
 		[TestCase("1.000", false)]
-		[TestCase("123.000", false)]
+		[TestCase("1234.00", false)]
 		public void ShouldValidate_NumbersWithoutSign(string inputValue, bool expected)
 		{
 			var validator = new NumberValidator(5, 2, true);
@@ -90,7 +92,7 @@ namespace HomeExercises
 		public void ShouldValidate_DifferentDelimiter(string inputValue, bool expected)
 		{
 			var validator = new NumberValidator(5, 2);
-			validator.IsValidNumber(inputValue).Should().Be(expected, $"{expected} should validate comma");
+			validator.IsValidNumber(inputValue).Should().Be(expected, $"{inputValue} should validate comma");
 		}
 	}
 
