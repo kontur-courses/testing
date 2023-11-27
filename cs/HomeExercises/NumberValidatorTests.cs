@@ -8,27 +8,127 @@ namespace HomeExercises
 	public class NumberValidatorTests
 	{
 		[Test]
-		public void Test()
+		public void NumberValidator_WhenPassNegativePrecision_ShouldThrowsArgumentException()
 		{
-			Assert.Throws<ArgumentException>(() => new NumberValidator(-1, 2, true));
-			Assert.DoesNotThrow(() => new NumberValidator(1, 0, true));
-			Assert.Throws<ArgumentException>(() => new NumberValidator(-1, 2, false));
-			Assert.DoesNotThrow(() => new NumberValidator(1, 0, true));
+			TestDelegate testDelegate = () => new NumberValidator(-1, 2, true);
 
-			Assert.IsTrue(new NumberValidator(17, 2, true).IsValidNumber("0.0"));
-			Assert.IsTrue(new NumberValidator(17, 2, true).IsValidNumber("0"));
-			Assert.IsTrue(new NumberValidator(17, 2, true).IsValidNumber("0.0"));
-			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("00.00"));
-			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("-0.00"));
-			Assert.IsTrue(new NumberValidator(17, 2, true).IsValidNumber("0.0"));
-			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("+0.00"));
-			Assert.IsTrue(new NumberValidator(4, 2, true).IsValidNumber("+1.23"));
-			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("+1.23"));
-			Assert.IsFalse(new NumberValidator(17, 2, true).IsValidNumber("0.000"));
-			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("-1.23"));
-			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("a.sd"));
+			Assert.Throws<ArgumentException>(testDelegate);
 		}
-	}
+
+		[Test]
+		public void NumberValidator_WhenPassNegativeScale_ShouldThrowsArgumentException()
+		{
+			TestDelegate testDelegate = () => new NumberValidator(1, -2);
+
+			Assert.Throws<ArgumentException>(testDelegate);
+		}
+
+		[Test]
+		public void NumberValidator_WhenPassValidArguments_ShouldDoesNotThrows()
+		{
+			TestDelegate testDelegate = () => new NumberValidator(1, 0, true);
+
+			Assert.DoesNotThrow(testDelegate);
+		}
+
+		[Test]
+		public void NumberValidator_WhenPrecisionIsEqualToTheScale_ShouldReturnFalse()
+		{
+			TestDelegate testDelegate = () => new NumberValidator(2, 2, true);
+
+			Assert.Throws<ArgumentException>(testDelegate);
+		}
+
+		[Test]
+		public void IsValidNumber_WhenPassOnlyPositiveIsFalseButNumbersDoesNotHaveNegativeSign_ShouldReturnTrue()
+		{
+			var validator = new NumberValidator(17, 2);
+
+			var numberIsValid = validator.IsValidNumber("1.0");
+
+			Assert.True(numberIsValid);
+		}
+
+		[Test]
+		public void IsValidNumber_WhenLettersInsteadOfNumber_ShouldReturnFalse()
+		{
+			var validator = new NumberValidator(3, 2, true);
+
+			var numberIsValid = validator.IsValidNumber("a.sd");
+
+			Assert.IsFalse(numberIsValid);
+		}
+
+		[Test]
+		public void IsValidNumber_WhenSymbolsInsteadOfNumber_ShouldReturnFalse()
+		{
+			var validator = new NumberValidator(3, 2, true);
+
+			var numberIsValid = validator.IsValidNumber("2.!");
+
+			Assert.IsFalse(numberIsValid);
+		}
+
+		[Test]
+		public void IsValidNumber_WhenFractionalPartIsMissing_ShouldReturnTrue()
+		{
+			var validator = new NumberValidator(17, 2, true);
+
+			var numberIsValid = validator.IsValidNumber("0");
+
+			Assert.IsTrue(numberIsValid);
+		}
+
+		[Test]
+		public void IsValidNumber_WhenNumberIsNull_ShouldReturnFalse()
+		{
+			var validator = new NumberValidator(17, 2, true);
+
+			var numberIsValid = validator.IsValidNumber(null!);
+
+			Assert.IsFalse(numberIsValid);
+		}
+
+		[Test]
+		public void IsValidNumber_WhenPassNumberIsEmpty_ShouldReturnFalse()
+		{
+			var validator = new NumberValidator(3, 2, true);
+
+			var numberIsValid = validator.IsValidNumber("");
+
+			Assert.IsFalse(numberIsValid);
+		}
+
+		[Test]
+		public void IsValidNumber_WhenIntPartWithNegativeSignMoreThanPrecision_ShouldReturnFalse()
+		{
+			var validator = new NumberValidator(3, 2, true);
+
+			var numberIsValid = validator.IsValidNumber("-0.00");
+
+			Assert.IsFalse(numberIsValid);
+		}
+
+		[Test]
+		public void IsValidNumber_WhenIntPartWithPositiveSignMoreThanPrecision_ShouldReturnFalse()
+		{
+			var validator = new NumberValidator(3, 2, true);
+
+			var numberIsValid = validator.IsValidNumber("+1.23");
+
+			Assert.IsFalse(numberIsValid);
+		}
+
+		[Test]
+		public void IsValidNumber_WhenFractionalPartMoreThanScale_ShouldReturnFalse()
+		{
+			var validator = new NumberValidator(17, 2, true);
+
+			var numberIsValid = validator.IsValidNumber("0.000");
+
+			Assert.IsFalse(numberIsValid);
+		}
+    }
 
 	public class NumberValidator
 	{
