@@ -8,9 +8,9 @@ namespace HomeExercises
 	public class NumberValidatorTests
 	{
 		[Test]
-		public void CreatesWithNoExceptions([Values(2)] int precision, [Values(1)] int scale, [Values(true, false)] bool onlyPositive)
+		public void CreatesWithNoExceptions([Values] bool onlyPositive)
 		{
-			var creationOfPositiveValidator = new Action(() => { new NumberValidator(precision, scale, onlyPositive); });
+			var creationOfPositiveValidator = new Action(() => { new NumberValidator(2, 1, onlyPositive); });
 			creationOfPositiveValidator.Should().NotThrow();
 		}
 
