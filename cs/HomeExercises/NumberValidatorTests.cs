@@ -5,28 +5,77 @@ using NUnit.Framework;
 
 namespace HomeExercises
 {
+	[TestFixture]
 	public class NumberValidatorTests
 	{
-		[Test]
-		public void Test()
-		{
-			Assert.Throws<ArgumentException>(() => new NumberValidator(-1, 2, true));
-			Assert.DoesNotThrow(() => new NumberValidator(1, 0, true));
-			Assert.Throws<ArgumentException>(() => new NumberValidator(-1, 2, false));
-			Assert.DoesNotThrow(() => new NumberValidator(1, 0, true));
+		private static NumberValidator numberValidatorOnlyPositive = null!;
+		private static NumberValidator numberValidatorNegative = null!;
 
-			Assert.IsTrue(new NumberValidator(17, 2, true).IsValidNumber("0.0"));
-			Assert.IsTrue(new NumberValidator(17, 2, true).IsValidNumber("0"));
-			Assert.IsTrue(new NumberValidator(17, 2, true).IsValidNumber("0.0"));
-			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("00.00"));
-			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("-0.00"));
-			Assert.IsTrue(new NumberValidator(17, 2, true).IsValidNumber("0.0"));
-			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("+0.00"));
-			Assert.IsTrue(new NumberValidator(4, 2, true).IsValidNumber("+1.23"));
-			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("+1.23"));
-			Assert.IsFalse(new NumberValidator(17, 2, true).IsValidNumber("0.000"));
-			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("-1.23"));
-			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("a.sd"));
+		[SetUp]
+		public void CreateNumberValidators()
+		{
+			numberValidatorOnlyPositive = new NumberValidator(3, 2, true);
+			numberValidatorNegative = new NumberValidator(3, 2);
+		}
+		[TestCase(1,0, null)]
+		[TestCase(1,0, false)]
+		[TestCase(1,0, true)]
+		[TestCase(1000,54, null)]
+		[TestCase(9999,8768, false)]
+		[TestCase(112312,2, true)]
+		public void NumberValidatorCreatesCorrectly_WithValidArguments(int precision, int scale, bool? onlyPositive)
+		{
+			Action action;
+			if (onlyPositive is null)
+				action = () => new NumberValidator(precision, scale);
+			else
+				action = () => new NumberValidator(precision, scale, (bool)onlyPositive);
+			action.Should().NotThrow();
+		}
+		
+		[TestCase(-1, 2, TestName = "Negative precision")]
+		[TestCase(1, -1, TestName = "Negative scale")]
+		[TestCase(2, 3, TestName = "Scale grater than precision")]
+		public void ThrowException_WithInvalidArguments(int precision, int scale)
+		{
+			var action = new Action(() => new NumberValidator(precision, scale, true));
+			action.Should().Throw<ArgumentException>();
+		}
+		
+		[TestCase("1.0", true)]
+		[TestCase("0.15", true)]
+		[TestCase("+0.2", true)]
+		[TestCase("-0.04", false)]
+		[TestCase("+1.2", true)]
+		[TestCase("-1.2", false)]
+		public void ValidatesCorrectly_WithOnlyPositive(string number, bool expected)
+		{
+			numberValidatorOnlyPositive.IsValidNumber(number).Should().Be(expected);
+		}
+		
+		[TestCase("1.0", true)]
+		[TestCase("-0.1", true)]
+		[TestCase("+0.2", true)]
+		[TestCase("-0.04", false)]
+		[TestCase("+1.2", true)]
+		[TestCase("-1.2", true)]
+		public void ValidatesCorrectly_WithNegative(string number, bool expected)
+		{
+			numberValidatorNegative.IsValidNumber(number).Should().Be(expected);
+		}
+		
+		[TestCase("a.sd")]
+		[TestCase("")]
+		[TestCase(null)]
+		[TestCase("?0.1")]
+		[TestCase("10.")]
+		[TestCase(".12")]
+		[TestCase(" 0")]
+		[TestCase("0 ")]
+		public void ReturnsFalse_WithNotNumbers(string number)
+		{
+			numberValidatorOnlyPositive.IsValidNumber(number).Should().Be(false);
+			numberValidatorNegative.IsValidNumber(number).Should().Be(false);
 		}
 	}
 
@@ -45,7 +94,7 @@ namespace HomeExercises
 			if (precision <= 0)
 				throw new ArgumentException("precision must be a positive number");
 			if (scale < 0 || scale >= precision)
-				throw new ArgumentException("precision must be a non-negative number less or equal than precision");
+				throw new ArgumentException("scale must be a non-negative number less or equal than precision");
 			numberRegex = new Regex(@"^([+-]?)(\d+)([.,](\d+))?$", RegexOptions.IgnoreCase);
 		}
 
