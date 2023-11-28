@@ -11,86 +11,50 @@ namespace HomeExercises
     [TestFixture]
     public class NumberValidatorTests
     {
-        private static IEnumerable<TestCaseData> IsValidNumberPrecisionTests
+        private static IEnumerable<TestCaseData> IsValidNumberPrecisionTests = new TestCaseData[]
         {
-            get
-            {
-                return new List<TestCaseData>()
-                {
-                    new TestCaseData(3, 2, true, "+0.00").Returns(false)
-                    .SetName("False_WhenSymbolWithNumberLengthGreaterThanPrecision"),
+            new TestCaseData(3, 2, true, "+0.00").Returns(false)
+            .SetName("False_WhenSymbolWithNumberLengthGreaterThanPrecision"),
+            new TestCaseData(3, 2, true, "00.00").Returns(false)
+            .SetName("False_WhenIntPartWithFracPartGreaterThanPrecision"),
 
-                    new TestCaseData(3, 2, true, "00.00").Returns(false)
-                    .SetName("False_WhenIntPartWithFracPartGreaterThanPrecision"),
+            new TestCaseData(17, 2, true, "0").Returns(true)
+            .SetName("True_WhenNumberLengthNotGreaterThanPrecision"),
+            new TestCaseData(4, 2, true, "+1.23").Returns(true)
+            .SetName("True_WhenPositiveSymbolWithNumberLengthNotGreaterThanPrecision"),
+            new TestCaseData(4, 2, false, "-1.23").Returns(true)
+            .SetName("True_WhenNegativeSymbolWithNumberLengthNotGreaterThanPrecision")
+        };
 
-
-                    new TestCaseData(17, 2, true, "0").Returns(true)
-                    .SetName("True_WhenNumberLengthNotGreaterThanPrecision"),
-                    
-                    new TestCaseData(4, 2, true, "+1.23").Returns(true)
-                    .SetName("True_WhenPositiveSymbolWithNumberLengthNotGreaterThanPrecision"),
-                    
-                    new TestCaseData(4, 2, false, "-1.23").Returns(true)
-                    .SetName("True_WhenNegativeSymbolWithNumberLengthNotGreaterThanPrecision")
-                };
-            }
-        }
-        private static IEnumerable<TestCaseData> IsValidNumberScaleTests
+        private static IEnumerable<TestCaseData> IsValidNumberScaleTests = new TestCaseData[]
         {
-            get
-            {
-                return new List<TestCaseData>()
-                {
-                    new TestCaseData(17, 2, true, "0.000").Returns(false)
-                    .SetName("False_WhenFracPartGreaterThanScale"),
+            new TestCaseData(17, 2, true, "0.000").Returns(false)
+            .SetName("False_WhenFracPartGreaterThanScale"),
+            new TestCaseData(17, 2, true, "0.0").Returns(true)
+            .SetName("True_WhenFracPartNotGreaterThanScale")
+        };
 
-                    new TestCaseData(17, 2, true, "0.0").Returns(true)
-                    .SetName("True_WhenFracPartNotGreaterThanScale")
-                };
-            }
-        }
-        private static IEnumerable<TestCaseData> IsValidNumberPositivityTests
+        private static IEnumerable<TestCaseData> IsValidNumberPositivityTests = new TestCaseData[]
         {
-            get
-            {
-                return new List<TestCaseData>()
-                {
-                    new TestCaseData(3, 2, true, "-0.00").Returns(false)
-                    .SetName("False_WhenAcceptsOnlyPositiveButGivenNegativeNumber"),
+            new TestCaseData(3, 2, true, "-0.00").Returns(false)
+            .SetName("False_WhenAcceptsOnlyPositiveButGivenNegativeNumber"),
+            new TestCaseData(3, 2, false, "-0.0").Returns(true)
+            .SetName("True_WhenAcceptsAnyAndGivenNegativeNumber")
+        };
 
-                    new TestCaseData(3, 2, false, "-0.0").Returns(true)
-                    .SetName("True_WhenAcceptsAnyAndGivenNegativeNumber")
-                };
-            }
-        }
-        private static IEnumerable<TestCaseData> IsValidNumberSymbolsTests
+        private static IEnumerable<TestCaseData> IsValidNumberSymbolsTests = new TestCaseData[]
         {
-            get
-            {
-                return new List<TestCaseData>()
-                {
-                    new TestCaseData(3, 2, true, "a.sd").Returns(false).SetName("False_WhenGivenNotDigits"),
+            new TestCaseData(3, 2, true, "a.sd").Returns(false).SetName("False_WhenGivenNotDigits"),
+            new TestCaseData(17, 2, true, "").Returns(false).SetName("False_WhenEmptyStringGiven")
+        };
 
-                    new TestCaseData(17, 2, true, "").Returns(false).SetName("False_WhenEmptyStringGiven")
-                };
-            }
-        }
-        private static IEnumerable<TestCaseData> ConstructorArgumentExceptions
+        private static IEnumerable<TestCaseData> ConstructorArgumentExceptions = new TestCaseData[]
         {
-            get
-            {
-                return new List<TestCaseData>()
-                    {
-                        new TestCaseData(-1, 2, true).SetName("WhenPercisionNotPositive"),
-
-                        new TestCaseData(1, 2, true).SetName("WhenScaleGreaterThanPercision"),
-
-                        new TestCaseData(1, -1, true).SetName("WhenScaleNotPositive"),
-
-                        new TestCaseData(1, 1, true).SetName("WhenScaleEqualsPerci  sion")
-                    };
-            }
-        }
+            new TestCaseData(-1, 2, true).SetName("WhenPercisionNotPositive"),
+            new TestCaseData(1, 2, true).SetName("WhenScaleGreaterThanPercision"),
+            new TestCaseData(1, -1, true).SetName("WhenScaleNotPositive"),
+            new TestCaseData(1, 1, true).SetName("WhenScaleEqualsPerci  sion")
+        };
 
         [TestCaseSource(nameof(IsValidNumberPositivityTests))]
         [TestCaseSource(nameof(IsValidNumberPrecisionTests))]
@@ -102,8 +66,7 @@ namespace HomeExercises
 
         [TestCaseSource(nameof(ConstructorArgumentExceptions))]
         public void Constructor_ThrowsArgumentException(int precision, int scale, bool onlyPositive) =>
-            FluentActions.Invoking(() => new NumberValidator(precision, scale, onlyPositive))
-            .Should().Throw<ArgumentException>();
+            Assert.Throws<ArgumentException>(() => new NumberValidator(precision, scale, onlyPositive));
     }
 
     public class NumberValidator
