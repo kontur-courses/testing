@@ -104,7 +104,8 @@ namespace HomeExercises.Tests
 		{
 			new Func<NumberValidator>(() => new NumberValidator(precision, scale, onlyPositive))
 				.Should()
-				.ThrowExactly<ArgumentException>();
+				.ThrowExactly<ArgumentException>()
+				.Where(e => e.Message.Contains("precision"));
 		}
 
 		[TestCaseSource(nameof(CorrectConstructorParamsTests))]
