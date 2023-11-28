@@ -8,8 +8,8 @@ namespace HomeExercises
 {
 	public class NumberValidatorTests
 	{
-		private static IEnumerable<TestCaseData> ArgExcCaseTestData
-		{
+		private static IEnumerable<TestCaseData> ArgumentExceptionTestCases
+        {
 			get
 			{
 				yield return new TestCaseData(-1, 2, true).SetName("WhenPassNegativePrecision");
@@ -18,8 +18,7 @@ namespace HomeExercises
 			}
 		}
 
-		[Test]
-        [TestCaseSource(nameof(ArgExcCaseTestData))]
+        [TestCaseSource(nameof(ArgumentExceptionTestCases))]
         public void NumberValidatorCtor_WhenPassInvalidArguments_ShouldThrowArgumentException(int precision,
 	        int scale, bool onlyPositive)
 		{
@@ -36,8 +35,8 @@ namespace HomeExercises
 			Assert.DoesNotThrow(testDelegate);
 		}
 
-		private static IEnumerable<TestCaseData> InvalidArgumentCasesTestData
-		{
+		private static IEnumerable<TestCaseData> InvalidArgumentTestCases
+        {
 			get
 			{
 				yield return new TestCaseData("a.sd", false).SetName("WhenLettersInsteadOfNumber");
@@ -49,7 +48,7 @@ namespace HomeExercises
 				yield return new TestCaseData("0.000", false).SetName("WhenFractionalPartMoreThanScale");
             }
 		}
-		private static IEnumerable<TestCaseData> ValidArgumentCasesTestData
+		private static IEnumerable<TestCaseData> ValidArgumentTestCases
 		{
 			get
 			{
@@ -58,19 +57,20 @@ namespace HomeExercises
 			}
 		}
 
-        private NumberValidator validator;
+		private NumberValidator numberValidator;
 
 		[SetUp]
 		public void SetUp()
 		{
-			validator = new NumberValidator(3, 2, true);
+			numberValidator = new NumberValidator(3, 2, true);
 		}
 
-		[TestCaseSource(nameof(ValidArgumentCasesTestData))]
-		[TestCaseSource(nameof(InvalidArgumentCasesTestData))]
-		public void WhenPassInvalidArguments_ShouldReturnFalse(string number, bool expectedResult)
+		[TestOf(nameof(NumberValidator.IsValidNumber))]
+        [TestCaseSource(nameof(ValidArgumentTestCases))]
+		[TestCaseSource(nameof(InvalidArgumentTestCases))]
+        public void WhenPassInvalidArguments_ShouldReturnFalse(string number, bool expectedResult)
 		{
-			var actualResult = validator.IsValidNumber(number);
+			var actualResult = numberValidator.IsValidNumber(number);
 
 			Assert.AreEqual(expectedResult, actualResult);
 		}
