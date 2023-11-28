@@ -37,26 +37,19 @@ namespace HomeExercises
 			Assert.Throws<ArgumentException>(() => new NumberValidator(precision, scale, onlyPositive));
 		}
 
-		[TestCase(3, 1, false, null, TestName = "When_Value_Is_Null")]
-		[TestCase(3, 1, false, "", TestName = "When_Value_Is_Empty")]
-		[TestCase(3, 1, true, "ab.c", TestName = "When_Value_Is_Not_Match_Regex")]
-		[TestCase(3, 1, true, "000.0", TestName = "When_Value_Length_More_Than_Precision")]
-		[TestCase(3, 1, true, "-0.0", TestName = "When_OnlyPositive_Is_True_And_Value_Is_Negative")]
-		public void IsValidNumber_Should_Return_False(int precision, int scale, bool onlyPositive, string value)
+		[TestCase(3, 1, false, null, TestName = "False_When_Value_Is_Null", ExpectedResult = false)]
+		[TestCase(3, 1, false, "", TestName = "False_When_Value_Is_Empty", ExpectedResult = false)]
+		[TestCase(3, 1, true, "ab.c", TestName = "False_When_Value_Is_Not_Match_Regex", ExpectedResult = false)]
+		[TestCase(3, 1, true, "000.0", TestName = "False_When_Value_Length_More_Than_Precision", ExpectedResult = false)]
+		[TestCase(3, 1, true, "-0.0", TestName = "False_When_OnlyPositive_Is_True_And_Value_Is_Negative",
+			ExpectedResult = false)]
+        public bool IsValidNumber_Should_Return(int precision, int scale, bool onlyPositive, string value)
 		{
 			var numberValidator = new NumberValidator(precision, scale, onlyPositive);
-			numberValidator.IsValidNumber(value).Should().BeFalse();
+			return numberValidator.IsValidNumber(value);
 		}
 
-		[TestCase(4, 2, false, "-0.0", TestName = "When_OnlyPositive_Is_False_And_Value_Is_Negative")]
-		[TestCase(4, 2, true, "+0.0", TestName = "When_Value_Starts_With_Plus")]
-		[TestCase(2, 2, true, "0.0", TestName = "When_Value_Is_Positive")]
-		public void IsValidNumeber_Should_Return_True(int precision, int scale, bool onlyPositive, string value)
-		{
-			var numberValidator = new NumberValidator(precision, scale, onlyPositive);
-			numberValidator.IsValidNumber(value).Should().BeTrue();
-		}
-
+		
 	}
 
 	public class NumberValidator

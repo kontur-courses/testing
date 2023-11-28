@@ -25,7 +25,7 @@ namespace HomeExercises
 			 *  Изменения нужно будет вносить только в случае если мы хотим убрать какие-то поля из проверки.
 			 */
 			actualTsar.Should().BeEquivalentTo(expectedTsar, options =>
-				options.Excluding((IMemberInfo o) => o.SelectedMemberInfo.Name == "Id" &&
+				options.Excluding((IMemberInfo o) => o.SelectedMemberInfo.Name == nameof(Person.Id) &&
 				                                     o.SelectedMemberInfo.DeclaringType == typeof(Person)));
 		}
 
