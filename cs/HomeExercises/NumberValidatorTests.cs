@@ -11,7 +11,7 @@ namespace HomeExercises
     [TestFixture]
     public class NumberValidatorTests
     {
-        private static IEnumerable<TestCaseData> IsValidNumberPrecisionTests = new TestCaseData[]
+        private static IEnumerable<TestCaseData> IsValidNumberPrecisionTests = new []
         {
             new TestCaseData(3, 2, true, "+0.00").Returns(false)
             .SetName("False_WhenSymbolWithNumberLengthGreaterThanPrecision"),
@@ -26,7 +26,7 @@ namespace HomeExercises
             .SetName("True_WhenNegativeSymbolWithNumberLengthNotGreaterThanPrecision")
         };
 
-        private static IEnumerable<TestCaseData> IsValidNumberScaleTests = new TestCaseData[]
+        private static IEnumerable<TestCaseData> IsValidNumberScaleTests = new []
         {
             new TestCaseData(17, 2, true, "0.000").Returns(false)
             .SetName("False_WhenFracPartGreaterThanScale"),
@@ -34,7 +34,7 @@ namespace HomeExercises
             .SetName("True_WhenFracPartNotGreaterThanScale")
         };
 
-        private static IEnumerable<TestCaseData> IsValidNumberPositivityTests = new TestCaseData[]
+        private static IEnumerable<TestCaseData> IsValidNumberPositivityTests = new []
         {
             new TestCaseData(3, 2, true, "-0.00").Returns(false)
             .SetName("False_WhenAcceptsOnlyPositiveButGivenNegativeNumber"),
@@ -42,18 +42,10 @@ namespace HomeExercises
             .SetName("True_WhenAcceptsAnyAndGivenNegativeNumber")
         };
 
-        private static IEnumerable<TestCaseData> IsValidNumberSymbolsTests = new TestCaseData[]
+        private static IEnumerable<TestCaseData> IsValidNumberSymbolsTests = new []
         {
             new TestCaseData(3, 2, true, "a.sd").Returns(false).SetName("False_WhenGivenNotDigits"),
             new TestCaseData(17, 2, true, "").Returns(false).SetName("False_WhenEmptyStringGiven")
-        };
-
-        private static IEnumerable<TestCaseData> ConstructorArgumentExceptions = new TestCaseData[]
-        {
-            new TestCaseData(-1, 2, true).SetName("WhenPercisionNotPositive"),
-            new TestCaseData(1, 2, true).SetName("WhenScaleGreaterThanPercision"),
-            new TestCaseData(1, -1, true).SetName("WhenScaleNotPositive"),
-            new TestCaseData(1, 1, true).SetName("WhenScaleEqualsPerci  sion")
         };
 
         [TestCaseSource(nameof(IsValidNumberPositivityTests))]
@@ -63,6 +55,14 @@ namespace HomeExercises
         public bool IsValidNumber_Returns(int precision, int scale, bool onlyPositive, string number) =>
             new NumberValidator(precision, scale, onlyPositive).IsValidNumber(number);
 
+
+        private static IEnumerable<TestCaseData> ConstructorArgumentExceptions = new[]
+        {
+            new TestCaseData(-1, 2, true).SetName("WhenPercisionNotPositive"),
+            new TestCaseData(1, 2, true).SetName("WhenScaleGreaterThanPercision"),
+            new TestCaseData(1, -1, true).SetName("WhenScaleNotPositive"),
+            new TestCaseData(1, 1, true).SetName("WhenScaleEqualsPerci  sion")
+        };
 
         [TestCaseSource(nameof(ConstructorArgumentExceptions))]
         public void Constructor_ThrowsArgumentException(int precision, int scale, bool onlyPositive) =>
