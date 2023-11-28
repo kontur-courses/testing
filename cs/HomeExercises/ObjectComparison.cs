@@ -26,7 +26,7 @@ namespace HomeExercises
 			 */
 			actualTsar.Should().BeEquivalentTo(expectedTsar, options =>
 				options.Excluding((IMemberInfo o) => o.SelectedMemberInfo.Name == nameof(Person.Id) &&
-				                                     o.SelectedMemberInfo.DeclaringType == typeof(Person)));
+				                                     o.SelectedMemberInfo.DeclaringType == typeof(Person)).IgnoringCyclicReferences());
 		}
 
 		[Test]
