@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using System.Text.RegularExpressions;
 using NUnit.Framework;
 
@@ -6,102 +8,71 @@ namespace HomeExercises
 {
 	public class NumberValidatorTests
 	{
-		[Test]
-		public void NumberValidatorCtor_WhenPassNegativePrecision_ShouldThrowsArgumentException()
+		private static IEnumerable<TestCaseData> ArgExcCaseTestData
 		{
-			TestDelegate testDelegate = () => new NumberValidator(-1, 2, true);
+			get
+			{
+				yield return new TestCaseData(-1, 2, true).SetName("WhenPassNegativePrecision");
+				yield return new TestCaseData(1, -2, true).SetName("WhenPassNegativeScale");
+				yield return new TestCaseData(2, 2, true).SetName("WhenPrecisionIsEqualToTheScale");
+			}
+		}
+
+		[Test]
+        [TestCaseSource(nameof(ArgExcCaseTestData))]
+        public void NumberValidatorCtor_WhenPassInvalidArguments_ShouldThrowArgumentException(int precision,
+	        int scale, bool onlyPositive)
+		{
+			TestDelegate testDelegate = () => new NumberValidator(precision, scale, onlyPositive);
 
 			Assert.Throws<ArgumentException>(testDelegate);
 		}
 
 		[Test]
-		public void NumberValidatorCtor_WhenPassNegativeScale_ShouldThrowsArgumentException()
-		{
-			TestDelegate testDelegate = () => new NumberValidator(1, -2);
-
-			Assert.Throws<ArgumentException>(testDelegate);
-		}
-
-		[Test]
-		public void NumberValidatorCtor_WhenPassValidArguments_ShouldDoesNotThrows()
+		public void NumberValidatorCtor_WhenPassValidArguments_ShouldNotThrows()
 		{
 			TestDelegate testDelegate = () => new NumberValidator(1, 0, true);
 
 			Assert.DoesNotThrow(testDelegate);
 		}
 
-		[Test]
-		public void NumberValidatorCtor_WhenPrecisionIsEqualToTheScale_ShouldThrowsArgumentException()
+		private static IEnumerable<TestCaseData> InvalidArgumentCasesTestData
 		{
-			TestDelegate testDelegate = () => new NumberValidator(2, 2, true);
-
-			Assert.Throws<ArgumentException>(testDelegate);
+			get
+			{
+				yield return new TestCaseData("a.sd", false).SetName("WhenLettersInsteadOfNumber");
+				yield return new TestCaseData("2.!", false).SetName("WhenSymbolsInsteadOfNumber");
+				yield return new TestCaseData(null!, false).SetName("WhenPassNumberIsNull");
+				yield return new TestCaseData("", false).SetName("WhenPassNumberIsEmpty");
+				yield return new TestCaseData("-0.00", false).SetName("WhenIntPartWithNegativeSignMoreThanPrecision");
+				yield return new TestCaseData("+1.23", false).SetName("WhenIntPartWithPositiveSignMoreThanPrecision");
+				yield return new TestCaseData("0.000", false).SetName("WhenFractionalPartMoreThanScale");
+            }
+		}
+		private static IEnumerable<TestCaseData> ValidArgumentCasesTestData
+		{
+			get
+			{
+				yield return new TestCaseData("0", true).SetName("WhenFractionalPartIsMissing");
+				yield return new TestCaseData("0.0", true).SetName("WhenNumberIsValid");
+			}
 		}
 
-		public void IsValidNumberTest(int precision, int scale, bool onlyPositive,
-			string number, bool expectedResult)
-		{
-			var validator = new NumberValidator(precision, scale, onlyPositive);
+        private NumberValidator validator;
 
+		[SetUp]
+		public void SetUp()
+		{
+			validator = new NumberValidator(3, 2, true);
+		}
+
+		[TestCaseSource(nameof(ValidArgumentCasesTestData))]
+		[TestCaseSource(nameof(InvalidArgumentCasesTestData))]
+		public void WhenPassInvalidArguments_ShouldReturnFalse(string number, bool expectedResult)
+		{
 			var actualResult = validator.IsValidNumber(number);
 
 			Assert.AreEqual(expectedResult, actualResult);
-		}
-
-		[Test]
-		[TestOf(nameof(NumberValidator.IsValidNumber))]
-		public void WhenFractionalPartIsMissing_ShouldReturnTrue()
-		{
-			IsValidNumberTest(17,2,true,"0", true);
-		}
-
-        [Test]
-		[TestOf(nameof(NumberValidator.IsValidNumber))]
-        public void WhenLettersInsteadOfNumber_ShouldReturnFalse()
-        {
-	        IsValidNumberTest(3, 2, true, "a.sd", false);
-		}
-
-		[Test]
-		[TestOf(nameof(NumberValidator.IsValidNumber))]
-        public void WhenSymbolsInsteadOfNumber_ShouldReturnFalse()
-		{
-			IsValidNumberTest(3, 2, true, "2.!", false);
-		}
-
-		[Test]
-		[TestOf(nameof(NumberValidator.IsValidNumber))]
-        public void WhenNumberIsNull_ShouldReturnFalse()
-		{
-			IsValidNumberTest(17,2,true, null!, false);
-		}
-
-		[Test]
-		[TestOf(nameof(NumberValidator.IsValidNumber))]
-        public void WhenPassNumberIsEmpty_ShouldReturnFalse()
-		{
-			IsValidNumberTest(3,2,true,"", false);
-		}
-
-		[Test]
-		[TestOf(nameof(NumberValidator.IsValidNumber))]
-        public void WhenIntPartWithNegativeSignMoreThanPrecision_ShouldReturnFalse()
-		{
-			IsValidNumberTest(3,2,true,"-0.00", false);
-		}
-
-		[Test]
-		[TestOf(nameof(NumberValidator.IsValidNumber))]
-        public void WhenIntPartWithPositiveSignMoreThanPrecision_ShouldReturnFalse()
-		{
-			IsValidNumberTest(3,2,true,"+1.23", false);
-		}
-
-		[Test]
-		[TestOf(nameof(NumberValidator.IsValidNumber))]
-        public void WhenFractionalPartMoreThanScale_ShouldReturnFalse()
-		{
-			IsValidNumberTest(17,2,true, "0.000", false);
 		}
     }
 
