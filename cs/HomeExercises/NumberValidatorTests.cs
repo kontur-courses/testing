@@ -12,7 +12,7 @@ namespace HomeExercises
 		{
 			Assert.Throws<ArgumentException>(() => new NumberValidator(-1, 2, true));
 			Assert.DoesNotThrow(() => new NumberValidator(1, 0, true));
-			Assert.Throws<ArgumentException>(() => new NumberValidator(-1, 2, false));
+			Assert.Throws<ArgumentException>(() => new NumberValidator(-1, 2));
 			Assert.DoesNotThrow(() => new NumberValidator(1, 0, true));
 
 			Assert.IsTrue(new NumberValidator(17, 2, true).IsValidNumber("0.0"));
@@ -29,86 +29,31 @@ namespace HomeExercises
 			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("a.sd"));
 		}
 
-		[Test]
-		public void NumberValidator_Should_Throw_ArgumentException_When_Precision_Is_Not_Positive()
+		[TestCase(-1, 2, true, TestName = "When_Precision_Is_Not_Positive")]
+		[TestCase(1, -2, true, TestName = "When_Scale_Is_Negative(")]
+		[TestCase(12, 14, true, TestName = "When_Scale_More_Than_Precision")]
+		public void NumberValidator_Should_Throw_ArgumentException(int precision, int scale, bool onlyPositive)
 		{
-			Assert.Throws<ArgumentException>(() => new NumberValidator(-1, 2, true));
-        }
-
-		[Test]
-		public void NumberValidator_Should_Throw_ArgumentException_When_Scale_Is_Negative()
-		{
-			Assert.Throws<ArgumentException>(() => new NumberValidator(3, -2, true));
+			Assert.Throws<ArgumentException>(() => new NumberValidator(precision, scale, onlyPositive));
 		}
 
-		[Test]
-		public void NumberValidator_Should_Throw_ArgumentException_When_Scale_More_Than_Precision()
+		[TestCase(3, 1, false, null, TestName = "When_Value_Is_Null")]
+		[TestCase(3, 1, false, "", TestName = "When_Value_Is_Empty")]
+		[TestCase(3, 1, true, "ab.c", TestName = "When_Value_Is_Not_Match_Regex")]
+		[TestCase(3, 1, true, "000.0", TestName = "When_Value_Length_More_Than_Precision")]
+		[TestCase(3, 1, true, "-0.0", TestName = "When_OnlyPositive_Is_True_And_Value_Is_Negative")]
+		public void IsValidNumber_Should_Return_False(int precision, int scale, bool onlyPositive, string value)
 		{
-			Assert.Throws<ArgumentException>(() => new NumberValidator(12, 14, true));
+			var numberValidator = new NumberValidator(precision, scale, onlyPositive);
+			numberValidator.IsValidNumber(value).Should().BeFalse();
 		}
 
-		[Test]
-		public void NumberValidator_Should_Does_Not_Throw_When_Params_Is_Correct()
+		[TestCase(4, 2, false, "-0.0", TestName = "When_OnlyPositive_Is_False_And_Value_Is_Negative")]
+		[TestCase(4, 2, true, "+0.0", TestName = "When_Value_Starts_With_Plus")]
+		[TestCase(2, 2, true, "0.0", TestName = "When_Value_Is_Positive")]
+		public void IsValidNumeber_Should_Return_True(int precision, int scale, bool onlyPositive, string value)
 		{
-			Assert.DoesNotThrow(()=> new NumberValidator(1,0,true));
-		}
-
-		[Test]
-		public void IsValidNumber_Should_Return_False_When_Value_Is_Null()
-		{
-			var numberValidator = new NumberValidator(17, 3, true);
-
-			numberValidator.IsValidNumber(null).Should().BeFalse();
-		}
-
-		[Test]
-		public void IsValidNumber_Should_Return_False_When_Value_Is_Empty()
-		{
-			var numberValidator = new NumberValidator(17, 3, true);
-
-			numberValidator.IsValidNumber("").Should().BeFalse();
-		}
-
-		[Test]
-		public void IsValidNumber_Should_Return_False_When_Value_Has_Incorrect_Form()
-		{
-			var numberValidatior = new NumberValidator(17, 3, true);
-			numberValidatior.IsValidNumber("ab.c").Should().BeFalse();
-		}
-
-		[Test]
-		public void IsValidNumber_Should_Return_False_When_Value_Length_More_Than_Precision()
-		{
-			var numberValidator = new NumberValidator(3, 1, true);
-			numberValidator.IsValidNumber("000.0").Should().BeFalse();
-		}
-		
-		[Test]
-		public void IsValidNumber_Should_Return_False_When_Value_FracPart_Length_More_Than_Scale()
-		{
-			var numberValidator = new NumberValidator(3, 1, true);
-			numberValidator.IsValidNumber("+0.00").Should().BeFalse();
-		}
-
-		[Test]
-		public void IsValidNumber_Should_Return_False_When_OnlyPositive_Is_True_And_Value_Is_Negative()
-		{
-			var numberValidator = new NumberValidator(3, 1, true);
-			numberValidator.IsValidNumber("-0.0").Should().BeFalse();
-		}
-		[Test]
-		public void IsValidNumber_Should_Return_False_When_OnlyPositive_Is_False_And_Value_Is_Negative()
-		{
-			var numberValidator = new NumberValidator(3, 1, false);
-			numberValidator.IsValidNumber("-0.0").Should().BeTrue();
-		}
-
-		[TestCase("0.0")]
-		[TestCase("+0.0")]
-		[TestCase("-0.0")]
-		public void IsValidNumeber_Should_Return_True_When_Value_IsCorrect(string value)
-		{
-			var numberValidator = new NumberValidator(3, 1, false);
+			var numberValidator = new NumberValidator(precision, scale, onlyPositive);
 			numberValidator.IsValidNumber(value).Should().BeTrue();
 		}
 

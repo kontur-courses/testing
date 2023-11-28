@@ -1,5 +1,6 @@
 ﻿using System;
 using FluentAssertions;
+using FluentAssertions.Equivalency;
 using NUnit.Framework;
 
 namespace HomeExercises
@@ -16,15 +17,16 @@ namespace HomeExercises
 			var expectedTsar = new Person("Ivan IV The Terrible", 54, 170, 70,
 				new Person("Vasili III of Russia", 28, 170, 60, null));
 
-            /*
+			/*
 			 *  Данный тест рекурсивно пройдется по всем полям объекта и сравнит их по значению рекурсивно
 			 *  По умолчанию рекурсия проходит на глубину 10, для того чтобы снять ограничение
-             *  используется опция AllowingInfiniteRecursion, но она может стать бесконечной, если цепь проверки замкнется.
-             *  Мой способ лучше тем, что в случае добавления новых полей в объект Person, будут проверяться все поля без изменения теста.
-             *  Изменения нужно будет вносить только в случае если мы хотим убрать какие-то поля из проверки.
+			 *  используется опция AllowingInfiniteRecursion, но она может стать бесконечной, если цепь проверки замкнется.
+			 *  Мой способ лучше тем, что в случае добавления новых полей в объект Person, будут проверяться все поля без изменения теста.
+			 *  Изменения нужно будет вносить только в случае если мы хотим убрать какие-то поля из проверки.
 			 */
-            expectedTsar.Should().BeEquivalentTo(actualTsar,options=> options.Excluding(p=>p.Id).Excluding(p=>p.Parent.Id));
-			
+			actualTsar.Should().BeEquivalentTo(expectedTsar, options =>
+				options.Excluding((IMemberInfo o) => o.SelectedMemberInfo.Name == "Id" &&
+				                                     o.SelectedMemberInfo.DeclaringType == typeof(Person)));
 		}
 
 		[Test]
@@ -35,9 +37,11 @@ namespace HomeExercises
 			var expectedTsar = new Person("Ivan IV The Terrible", 54, 170, 70,
 				new Person("Vasili III of Russia", 28, 170, 60, null));
 			/*
-			 * Какие недостатки у такого подхода? 
+			 * Какие недостатки у такого подхода?
 			 * 1. Придется менять метод AreEqual, если в объект добавятся еще поля.
 			 * 2. Рекурсия может стать бесконечной, если в каком-то Person Parent будет равен Person, который уже был в цепи проверки
+			 * 3. Имя теста никак не сигнализирует о том какой особый случай оно проверяет
+			 * 4. Тест никак не показывает в чем проблема, тест просто становится красным
 			 */
 			Assert.True(AreEqual(actualTsar, expectedTsar));
 		}
