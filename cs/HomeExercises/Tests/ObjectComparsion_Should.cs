@@ -25,7 +25,7 @@ namespace HomeExercises.Tests
 			actualTsar.Should().BeEquivalentTo(expectedTsar, options => 
 				options
 					.IncludingFields()
-					.Excluding(memberInfo => memberInfo.SelectedMemberInfo.Name == "Id")
+					.Excluding(memberInfo => memberInfo.SelectedMemberInfo.Name == nameof(Person.Id))
 				);
 		}
 
