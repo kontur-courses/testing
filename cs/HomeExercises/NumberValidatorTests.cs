@@ -20,7 +20,7 @@ namespace HomeExercises
         [TestCase(3, 2, true, "a.sd", false)]
         [TestCase(3, 2, true, "", false)]
         [TestCase(3, 2, true, null, false)]
-        public void ValidateNumb(int precision, int scale, bool onlyPositive, string value, bool expectedResult)
+        public void ValidateNumberCorrect(int precision, int scale, bool onlyPositive, string value, bool expectedResult)
         {
             var validator = new NumberValidator(precision, scale, onlyPositive);
             var result = validator.IsValidNumber(value);
