@@ -11,13 +11,15 @@ namespace HomeExercises.Tests
 
 		private static IEnumerable IncorrectConstructorParamsTests()
 		{
-			yield return new TestCaseData(-1, 2, true)
+			yield return new TestCaseData(-1, 2, true, "precision must be a positive number")
 				.SetName("Constructor_ThrowsArgumentExceptionOnNegativePrecision");
-			yield return new TestCaseData(1, 2, true)
+			yield return new TestCaseData(0, 2, true, "precision must be a positive number")
+				.SetName("Constructor_ThrowsArgumentExceptionOnZeroPrecision");
+			yield return new TestCaseData(1, 2, true, "precision must be a non-negative number less or equal than precision")
 				.SetName("Constructor_ThrowsArgumentExceptionOnPrecisionLessThanScale");
-			yield return new TestCaseData(1, 1, true)
+			yield return new TestCaseData(1, 1, true, "precision must be a non-negative number less or equal than precision")
 				.SetName("Constructor_ThrowsArgumentExceptionSamePrecisionAndScale");
-			yield return new TestCaseData(1, -1, true)
+			yield return new TestCaseData(1, -1, true, "precision must be a non-negative number less or equal than precision")
 				.SetName("Constructor_ThrowsArgumentExceptionOnNegativeScale");
 		}
 
@@ -100,12 +102,12 @@ namespace HomeExercises.Tests
 		#endregion
 
 		[TestCaseSource(nameof(IncorrectConstructorParamsTests))]
-		public void FailsWithIncorrectConstructorArguments(int precision, int scale, bool onlyPositive)
+		public void FailsWithIncorrectConstructorArguments(int precision, int scale, bool onlyPositive, string message)
 		{
 			new Func<NumberValidator>(() => new NumberValidator(precision, scale, onlyPositive))
 				.Should()
 				.ThrowExactly<ArgumentException>()
-				.Where(e => e.Message.Contains("precision"));
+				.Where(e => e.Message.Equals(message, StringComparison.OrdinalIgnoreCase));
 		}
 
 		[TestCaseSource(nameof(CorrectConstructorParamsTests))]

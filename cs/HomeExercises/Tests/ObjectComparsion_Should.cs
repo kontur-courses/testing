@@ -1,4 +1,5 @@
 using FluentAssertions;
+using FluentAssertions.Equivalency;
 using NUnit.Framework;
 
 namespace HomeExercises.Tests
@@ -24,10 +25,7 @@ namespace HomeExercises.Tests
 			actualTsar.Should().BeEquivalentTo(expectedTsar, options => 
 				options
 					.IncludingFields()
-					.Excluding(p => p.Id)
-					.Excluding(p => p.Parent!.Id)
-					.Excluding(p => p.Parent!.Weight)
-					.Excluding(p => p.Parent!.Parent)
+					.Excluding(memberInfo => memberInfo.SelectedMemberInfo.Name == "Id")
 				);
 		}
 
