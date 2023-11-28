@@ -1,7 +1,4 @@
-﻿using System;
-using System.Text.RegularExpressions;
-using FluentAssertions;
-using FluentAssertions.Equivalency;
+﻿using FluentAssertions;
 using NUnit.Framework;
 
 namespace HomeExercises
@@ -9,17 +6,19 @@ namespace HomeExercises
 	public class ObjectComparison
 	{
 		[Test]
-		[Description("Проверка текущего царя")]
-		[Category("ToRefactor")]
 		public void GetCurrentTsar_CurrentTsarEqualsHistoricalTsar()
 		{
 			var actualTsar = TsarRegistry.GetCurrentTsar();
 
 			var expectedTsar = new Person("Ivan IV The Terrible", 54, 170, 70,
 				new Person("Vasili III of Russia", 28, 170, 60, null));
-			
-			actualTsar.Should().BeEquivalentTo(expectedTsar, 
-				options => options.Excluding(property => property.SelectedMemberPath.EndsWith("Id")));
+
+			actualTsar
+				.Should()
+				.BeEquivalentTo(expectedTsar, options =>
+					options.Excluding(property =>
+						property.SelectedMemberInfo.DeclaringType == typeof(Person) &&
+						property.SelectedMemberInfo.Name.Equals(nameof(Person.Id))));
 		}
 
 		[Test]
@@ -36,6 +35,8 @@ namespace HomeExercises
 			 * 2) При изменении класса Person необходимо будет изменять тест
 			 * 3) Название теста не раскрывает смысла теста, не работает как спецификация
 			 * 4) Проверку объектов на равенство лучше внести в класс
+			 * 5) При наличии кольцевой ссылки кастомный тест уйдет в бесконечную рекурсию,
+			 *		а тест на FluentAssertions вернет false и укажет на наличие цикла
 			 */
 			Assert.True(AreEqual(actualTsar, expectedTsar));
 		}
