@@ -5,41 +5,46 @@ namespace HomeExercises
 {
 	public class ObjectComparison
 	{
-		[Test]
-		[Description("Проверка текущего царя")]
-		[Category("ToRefactor")]
-		public void CheckCurrentTsar()
-		{
-			var actualTsar = TsarRegistry.GetCurrentTsar();
+        [Test]
+        [Description("Проверка текущего царя")]
+        [Category("ToRefactor")]
+        public void CheckCurrentTsar()
+        {
+            var actualTsar = TsarRegistry.GetCurrentTsar();
 
-			var expectedTsar = new Person("Ivan IV The Terrible", 54, 170, 70,
-				new Person("Vasili III of Russia", 28, 170, 60, null));
+            var expectedTsar = new Person("Ivan IV The Terrible", 54, 170, 70,
+                new Person("Vasili III of Russia", 28, 170, 60, null));
 
-			// Перепишите код на использование Fluent Assertions.
-			Assert.AreEqual(actualTsar.Name, expectedTsar.Name);
-			Assert.AreEqual(actualTsar.Age, expectedTsar.Age);
-			Assert.AreEqual(actualTsar.Height, expectedTsar.Height);
-			Assert.AreEqual(actualTsar.Weight, expectedTsar.Weight);
+            actualTsar.Should().BeEquivalentTo(expectedTsar, options =>
+                options.Excluding(option => option.Id)
+                    .Excluding(option => option.Parent.Id));
+        }
+        /* Преимущества подхода:
+			1. Хорошая информативность. При непрохождении теста ясно показывается, какие поля не совпали.
+			2. Хорошая расширяемость. При добавлении или удалении полей в классе, нужно внести минимум изменений в тесте.
+			3. Хорошая читаемость. Из-за меньшего объема кода и понятного названия методов улучшается читаемость кода.
+			*/
 
-			Assert.AreEqual(expectedTsar.Parent!.Name, actualTsar.Parent!.Name);
-			Assert.AreEqual(expectedTsar.Parent.Age, actualTsar.Parent.Age);
-			Assert.AreEqual(expectedTsar.Parent.Height, actualTsar.Parent.Height);
-			Assert.AreEqual(expectedTsar.Parent.Parent, actualTsar.Parent.Parent);
-		}
+        [Test]
+        [Description("Альтернативное решение. Какие у него недостатки?")]
+        public void CheckCurrentTsar_WithCustomEquality()
+        {
+            var actualTsar = TsarRegistry.GetCurrentTsar();
+            var expectedTsar = new Person("Ivan IV The Terrible", 54, 170, 70,
+                new Person("Vasili III of Russia", 28, 170, 60, null));
 
-		[Test]
-		[Description("Альтернативное решение. Какие у него недостатки?")]
-		public void CheckCurrentTsar_WithCustomEquality()
-		{
-			var actualTsar = TsarRegistry.GetCurrentTsar();
-			var expectedTsar = new Person("Ivan IV The Terrible", 54, 170, 70,
-				new Person("Vasili III of Russia", 28, 170, 60, null));
+            Assert.True(AreEqual(actualTsar, expectedTsar));
+        }
+        /* Недостаки подхода:
+			1. Плохая информативность. При непрохождении теста выводится "Ожидалось True, но было False", из-за
+			чего непонятно, какие поля не совпадают.
+			2. Плохая расширяемость. При добавлении или удалении поля, придется изменять метод AreEqual, что можно
+			забыть сделать.
+			3. Функция сравнения не должна быть определена в классе тестов. Лучше, что бы она была определена в классе 
+			Person или специальном классе для сравнения.
+			*/
 
-			// Какие недостатки у такого подхода? 
-			Assert.True(AreEqual(actualTsar, expectedTsar));
-		}
-
-		private bool AreEqual(Person? actual, Person? expected)
+        private bool AreEqual(Person? actual, Person? expected)
 		{
 			if (actual == expected) return true;
 			if (actual == null || expected == null) return false;
