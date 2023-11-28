@@ -20,7 +20,7 @@ namespace HomeExercises
         [TestCase(3, 2, true, "a.sd", false)]
         [TestCase(3, 2, true, "", false)]
         [TestCase(3, 2, true, null, false)]
-        public void ValidateNumberCorrect(int precision, int scale, bool onlyPositive, string value, bool expectedResult)
+        public void ValidateNumberCorrect_When_DaraCorrect(int precision, int scale, bool onlyPositive, string value, bool expectedResult)
         {
             var validator = new NumberValidator(precision, scale, onlyPositive);
             var result = validator.IsValidNumber(value);
@@ -32,7 +32,7 @@ namespace HomeExercises
         [TestCase(1, -2, false)]
         [TestCase(1, 2, true)]
         [TestCase(1, 1, false)]
-        public void ThrowArgumentException(int precision, int scale, bool onlyPositive)
+        public void Should_ThrowArgumentException_When_InitIncorrectData(int precision, int scale, bool onlyPositive)
         {
             Action action = () => new NumberValidator(precision, scale, onlyPositive);
             action.Should().Throw<ArgumentException>();
@@ -41,7 +41,7 @@ namespace HomeExercises
         [Test]
         [TestCase(1, 0, true)]
         [TestCase(2, 1, true)]
-        public void DoesNotThrowArgumentException(int precision, int scale, bool onlyPositive)
+        public void Should_DoesNotThrowArgumentException_When_InitCorrectData(int precision, int scale, bool onlyPositive)
         {
             Action action = () => new NumberValidator(precision, scale, onlyPositive);
             action.Should().NotThrow();
