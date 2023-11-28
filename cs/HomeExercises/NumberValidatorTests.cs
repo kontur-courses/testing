@@ -1,32 +1,59 @@
 ﻿using System;
+using System.Diagnostics.SymbolStore;
 using System.Text.RegularExpressions;
 using FluentAssertions;
 using NUnit.Framework;
+using NUnit.Framework.Internal;
 
 namespace HomeExercises
 {
 	public class NumberValidatorTests
 	{
 		[Test]
-		public void Test()
+		[TestCase(-1, 2, true, TestName = "Creation_ShouldThrowArgumentException_WhenNegativePrecision")]
+		[TestCase(0,0,true, TestName = "Creation_ShouldThrowArgumentException_WhenPrecisionIsZero")]
+		[TestCase(3,-1,true, TestName = "Creation_ShouldThrowArgumentException_WhenNegativeScale")]
+		[TestCase(1,2,true, TestName = "Creation_ShouldThrowArgumentException_WhenScaleIsGreaterThanPrecision")]
+		public void Creation_ShouldThrowArgumentException(int precision, int scale, bool onlyPositive)
 		{
-			Assert.Throws<ArgumentException>(() => new NumberValidator(-1, 2, true));
-			Assert.DoesNotThrow(() => new NumberValidator(1, 0, true));
-			Assert.Throws<ArgumentException>(() => new NumberValidator(-1, 2, false));
-			Assert.DoesNotThrow(() => new NumberValidator(1, 0, true));
+			Action creation = () => new NumberValidator(precision, scale, onlyPositive);
+			creation.Should().Throw<ArgumentException>();
+		}
 
-			Assert.IsTrue(new NumberValidator(17, 2, true).IsValidNumber("0.0"));
-			Assert.IsTrue(new NumberValidator(17, 2, true).IsValidNumber("0"));
-			Assert.IsTrue(new NumberValidator(17, 2, true).IsValidNumber("0.0"));
-			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("00.00"));
-			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("-0.00"));
-			Assert.IsTrue(new NumberValidator(17, 2, true).IsValidNumber("0.0"));
-			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("+0.00"));
-			Assert.IsTrue(new NumberValidator(4, 2, true).IsValidNumber("+1.23"));
-			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("+1.23"));
-			Assert.IsFalse(new NumberValidator(17, 2, true).IsValidNumber("0.000"));
-			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("-1.23"));
-			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("a.sd"));
+		[Test]
+		[TestCase(1, 0, true, TestName = "Creation_ShouldDoesNotThrow_WhenCorrectValue")]
+		public void Creation_ShouldDoesNotThrow(int precision, int scale, bool onlyPositive)
+		{
+			Action creation = () => new NumberValidator(precision, scale, onlyPositive);
+			creation.Should().NotThrow<ArgumentException>();
+		}
+
+		[Test]
+		[TestCase(3,2,true, "-+0.0", TestName = "IsValidNumber_ReturnsFalseWhenTwoSigns")]
+		[TestCase(3,2,true, " -0.0", TestName = "IsValidNumber_ReturnsFalseWhenSpaceFirstDigitInNumber")]
+		[TestCase(3,2,true, "0,", TestName ="IsValidNumber_ReturnsFalseWhenAren'tDigitsAfterCommas")]
+		[TestCase(3,2,true, "0.0.0", TestName = "IsValidNumber_ReturnsFalseWhenThreeDigitsInNumberByTwoDots")]
+		[TestCase(3,2,true, "0,0,0", TestName = "IsValidNumber_ReturnsFalseWhenThreeDigitsInNumberByTwoCommas")]
+		[TestCase(3, 2, true, "00.00", TestName = "IsValidNumber_ReturnsFalseWhenNumberPrecisionGreaterThanValidatorPrecision")]
+		[TestCase(3, 2, true, null, TestName = "IsValidNumber_ReturnsFalseWhenNumberNull")]
+		[TestCase(3, 2, true, "", TestName = "IsValidNumber_ReturnsFalseWhenNumberEmpty")]
+		[TestCase(3, 2, true, "+1.23", TestName = "IsValidNumber_ReturnsFalseWhenNumberPrecisionGreaterThanValidatorPrecision")]
+		[TestCase(3, 2, true, "-1.23", TestName = "IsValidNumber_ReturnsFalseWhenNumberNegativeInNumberOnlyPositive")]
+		[TestCase(17, 2, true, "0.000", TestName = "IsValidNumber_ReturnsFalseWhenNumberScaleGreaterThanValidatorScale")]
+		[TestCase(17, 2, true, "a.sd", TestName = "IsValidNumber_ReturnsFalseWhenIncorrectNumberFormatBecauseLettersArePresent")]
+		public void IsValidNumber_False(int precision, int scale, bool onlyPositive, string number)
+		{
+			NumberValidator validator = new NumberValidator(precision, scale, onlyPositive);
+			validator.IsValidNumber(number).Should().BeFalse();
+		}
+		[Test]
+		[TestCase(17, 2, true, "0.0", TestName = "IsValidNumber_ReturnTrueWhenNumberWithFractionalPart")]
+		[TestCase(17, 2, true, "0", TestName = "IsValidNumber_ReturnTrueWhenOnlyInteger")]
+		[TestCase(4, 2, true, "+1.23", TestName = "IsValidNumber_ReturnTrueWhenNumberWithSign")]
+		public void IsValidNumber_True(int precision, int scale, bool onlyPositive, string number)
+		{
+			NumberValidator validator = new NumberValidator(precision, scale, onlyPositive);
+			validator.IsValidNumber(number).Should().BeTrue();
 		}
 	}
 
@@ -51,22 +78,14 @@ namespace HomeExercises
 
 		public bool IsValidNumber(string value)
 		{
-			// Проверяем соответствие входного значения формату N(m,k), в соответствии с правилом, 
-			// описанным в Формате описи документов, направляемых в налоговый орган в электронном виде по телекоммуникационным каналам связи:
-			// Формат числового значения указывается в виде N(m.к), где m – максимальное количество знаков в числе, включая знак (для отрицательного числа), 
-			// целую и дробную часть числа без разделяющей десятичной точки, k – максимальное число знаков дробной части числа. 
-			// Если число знаков дробной части числа равно 0 (т.е. число целое), то формат числового значения имеет вид N(m).
-
 			if (string.IsNullOrEmpty(value))
 				return false;
 
 			var match = numberRegex.Match(value);
 			if (!match.Success)
 				return false;
-
-			// Знак и целая часть
+			
 			var intPart = match.Groups[1].Value.Length + match.Groups[2].Value.Length;
-			// Дробная часть
 			var fracPart = match.Groups[4].Value.Length;
 
 			if (intPart + fracPart > precision || fracPart > scale)
