@@ -1,13 +1,13 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.26430.13
+# Visual Studio Version 17
+VisualStudioVersion = 17.7.34024.191
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Samples", "Samples\Samples.csproj", "{E7A56C48-8E36-465B-9F8E-67BC8525CFE5}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Samples", "Samples\Samples.csproj", "{E7A56C48-8E36-465B-9F8E-67BC8525CFE5}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HomeExercises", "HomeExercises\HomeExercises.csproj", "{4F9FBCCA-43E0-431B-944D-834D16AD18F9}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "HomeExercises", "HomeExercises\HomeExercises.csproj", "{4F9FBCCA-43E0-431B-944D-834D16AD18F9}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Challenge", "Challenge\Challenge.csproj", "{BB8C2EFB-6AE9-45BD-8468-829D5AB79DCB}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Challenge", "Challenge\Challenge.csproj", "{BB8C2EFB-6AE9-45BD-8468-829D5AB79DCB}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -30,5 +30,8 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {E4A3E5B6-B75B-4770-81B7-1EA62A1DF3F0}
 	EndGlobalSection
 EndGlobal
