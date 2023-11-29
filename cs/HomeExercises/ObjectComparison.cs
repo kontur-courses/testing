@@ -14,13 +14,13 @@ namespace HomeExercises
 
 			var expectedTsar = new Person("Ivan IV The Terrible", 54, 170, 70,
 				new Person("Vasili III of Russia", 28, 170, 60, null));
-			
+
 			// Код, который не нужно менять при добавлении новых свойств, при проверке исключаем поле Id
-			actualTsar.Should().BeEquivalentTo(expectedTsar, config => config
-				.Excluding(person => person.Id)
-				.Excluding(person => person.Parent!.Id)
+			actualTsar.Should().BeEquivalentTo(
+				expectedTsar, config => config
+					.Excluding(person => person.SelectedMemberPath.EndsWith("Id"))
 			);
-			
+
 			/*
 			 * Этот тест лучше CheckCurrentTsar_WithCustomEquality(), потому что код:
 			 * - более читаемый
@@ -37,17 +37,21 @@ namespace HomeExercises
 			var actualTsar = TsarRegistry.GetCurrentTsar();
 			var expectedTsar = new Person("Ivan IV The Terrible", 54, 170, 70,
 				new Person("Vasili III of Russia", 28, 170, 60, null));
-			
+
 			// Какие недостатки у такого подхода? 
-			
+
 			/*
 			 * 1. Функция сравнения находится вне теста,
 			 * это увеличивает вероятность ситуации,
 			 * что при изменении класса Person мы забыли обновить AreEqual
 			 *
 			 * 2. Лишний структурный код - сигнатура метода, scope метода
+			 *
+			 * 3. При изменении Person нужно вручную обновлять метод
+			 *
+			 * 4. Рекурсия, возможно переполнение стека вызовов
 			 */
-			
+
 			Assert.True(AreEqual(actualTsar, expectedTsar));
 		}
 
@@ -76,7 +80,7 @@ namespace HomeExercises
 
 	public class Person
 	{
-		public static int IdCounter = 0;
+		public static int IdCounter;
 		public int Age, Height, Weight;
 		public string Name;
 		public Person? Parent;
