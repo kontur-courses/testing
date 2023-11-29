@@ -1,6 +1,4 @@
-﻿using System;
-using FluentAssertions;
-using FluentAssertions.Equivalency;
+﻿using FluentAssertions;
 using NUnit.Framework;
 
 namespace HomeExercises
@@ -24,9 +22,11 @@ namespace HomeExercises
 			 *  Мой способ лучше тем, что в случае добавления новых полей в объект Person, будут проверяться все поля без изменения теста.
 			 *  Изменения нужно будет вносить только в случае если мы хотим убрать какие-то поля из проверки.
 			 */
+
 			actualTsar.Should().BeEquivalentTo(expectedTsar, options =>
-				options.Excluding((IMemberInfo o) => o.SelectedMemberInfo.Name == nameof(Person.Id) &&
-				                                     o.SelectedMemberInfo.DeclaringType == typeof(Person)).IgnoringCyclicReferences());
+				options.Excluding(o => o.SelectedMemberInfo.Name == nameof(Person.Id) &&
+				                       o.SelectedMemberInfo.DeclaringType == typeof(Person))
+					.IgnoringCyclicReferences());
 		}
 
 		[Test]
@@ -71,11 +71,11 @@ namespace HomeExercises
 
 	public class Person
 	{
-		public static int IdCounter = 0;
+		public static int IdCounter;
 		public int Age, Height, Weight;
+		public int Id;
 		public string Name;
 		public Person? Parent;
-		public int Id;
 
 		public Person(string name, int age, int height, int weight, Person? parent)
 		{
