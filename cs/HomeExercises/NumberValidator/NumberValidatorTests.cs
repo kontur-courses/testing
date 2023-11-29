@@ -6,29 +6,15 @@ namespace HomeExercises.NumberValidator
 {
 	public class NumberValidatorTests
 	{
-		[TestCase(0, 2, false, TestName = "precision is zero")]
-		[TestCase(-1, 2, false, TestName = "precision is negative")]
-		[TestCase(1, -1, false, TestName = "scale is negative")]
-		[TestCase(1, 2, false, TestName = "scale is greater than precision")]
-		[TestCase(1, 1, false, TestName = "scale is equals precision")]
-		public void Constructor_Fails_OnIncorrectArguments(int precision, int scale, bool onlyPositive)
+		[TestCase(0, 2, TestName = "precision is zero")]
+		[TestCase(-1, 2, TestName = "precision is negative")]
+		[TestCase(1, -1, TestName = "scale is negative")]
+		[TestCase(1, 2, TestName = "scale is greater than precision")]
+		[TestCase(1, 1, TestName = "scale is equals precision")]
+		public void Constructor_Fails_OnIncorrectArguments(int precision, int scale)
 		{
-			Action a = () => { new NumberValidator(precision, scale, onlyPositive); };
+			Action a = () => { new NumberValidator(precision, scale); };
 			a.Should().Throw<ArgumentException>();
-		}
-		
-		[Test]
-		public void Constructor_Success_WithThreeArguments()
-		{
-			Action a = () => { new NumberValidator(1, 0, false); };
-			a.Should().NotThrow();
-		}
-		
-		[Test]
-		public void Constructor_Success_WithTwoArguments()
-		{
-			Action a = () => { new NumberValidator(1, 0); };
-			a.Should().NotThrow();
 		}
 		
 		[Test]
