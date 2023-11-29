@@ -4,11 +4,10 @@ using NUnit.Framework;
 
 namespace HomeExercises.NumberValidator
 {
-	[TestFixture]
 	public class NumberValidatorTests
 	{
-		[TestCase(0, 2, true, TestName = "precision is zero")]
-		[TestCase(-1, 2, true, TestName = "precision is negative")]
+		[TestCase(0, 2, false, TestName = "precision is zero")]
+		[TestCase(-1, 2, false, TestName = "precision is negative")]
 		[TestCase(1, -1, false, TestName = "scale is negative")]
 		[TestCase(1, 2, false, TestName = "scale is greater than precision")]
 		[TestCase(1, 1, false, TestName = "scale is equals precision")]
@@ -18,16 +17,39 @@ namespace HomeExercises.NumberValidator
 			a.Should().Throw<ArgumentException>();
 		}
 		
-		[TestCase(1, 0, true, TestName = "with all arguments")]
-		public void Constructor_Success_OnCorrectArguments(int precision, int scale, bool onlyPositive)
+		[Test]
+		public void Constructor_Success_WithThreeArguments()
 		{
-			Action a = () => { new NumberValidator(precision, scale, onlyPositive); };
+			Action a = () => { new NumberValidator(1, 0, false); };
 			a.Should().NotThrow();
 		}
-
+		
+		[Test]
+		public void Constructor_Success_WithTwoArguments()
+		{
+			Action a = () => { new NumberValidator(1, 0); };
+			a.Should().NotThrow();
+		}
+		
+		[Test]
+		public void Constructor_Success_WithOneArgument()
+		{
+			Action a = () => { new NumberValidator(1); };
+			a.Should().NotThrow();
+		}
+		
 		[TestCase(3, 2, true, null, TestName = "value is null")]
 		[TestCase(3, 2, true, "", TestName = "value is empty")]
-		[TestCase(3, 2, true, "+1..23", TestName = "value has incorrect format")]
+		[TestCase(3, 2, true, " ", TestName = "value is space")]
+		[TestCase(3, 2, true, "+1..23", TestName = "value contains two separators")]
+		[TestCase(3, 2, true, "++0", TestName = "value contains two signs")]
+		[TestCase(3, 2, true, "1.2a", TestName = "value contains letters")]
+		[TestCase(3, 2, true, "+", TestName = "value only contains sign")]
+		[TestCase(3, 2, true, "0?0", TestName = "value separated by other symbol than dot or comma")]
+		[TestCase(3, 2, true, " 0", TestName = "value contains spaces before number")]
+		[TestCase(3, 2, true, "0 ", TestName = "value contains spaces after number")]
+		[TestCase(3, 2, true, "0.", TestName = "value hasn't contains numbers after separator")]
+		[TestCase(3, 2, true, ".0", TestName = "value hasn't contains numbers before separator")]
 		[TestCase(17, 2, true, "0.000", TestName = "value's fraction part length is greater than scale")]
 		[TestCase(5, 2, true, "-0.00", TestName = "negative sign when onlyPositive is true")]
 		[TestCase(3, 2, true, "+0.00", TestName = "intPart and fractPart together is greater than precision")]
@@ -54,5 +76,4 @@ namespace HomeExercises.NumberValidator
 				.BeTrue();
 		}
 	}
-
 }
