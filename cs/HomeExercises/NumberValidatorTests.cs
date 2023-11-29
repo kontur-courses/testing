@@ -11,6 +11,9 @@ namespace HomeExercises
 		public void Test()
 		{
 			Assert.Throws<ArgumentException>(() => new NumberValidator(-1, 2, true));
+			Assert.Throws<ArgumentException>(() => new NumberValidator(10, -2, true));
+			Assert.Throws<ArgumentException>(() => new NumberValidator(10, 10, true));
+			Assert.Throws<ArgumentException>(() => new NumberValidator(10, 11, true));
 			Assert.DoesNotThrow(() => new NumberValidator(1, 0, true));
 			
 			Assert.IsTrue(new NumberValidator(17, 2, true).IsValidNumber("0.0"));
@@ -21,6 +24,11 @@ namespace HomeExercises
 			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("+1.23"));
 			Assert.IsFalse(new NumberValidator(17, 2, true).IsValidNumber("0.000"));
 			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("a.sd"));
+			
+			Assert.IsFalse(new NumberValidator(10, 2, true).IsValidNumber("-0.00"));
+			Assert.IsFalse(new NumberValidator(10, 2, true).IsValidNumber(string.Empty));
+			Assert.IsTrue(new NumberValidator(10, 2, false).IsValidNumber("-0.00"));
+			Assert.IsTrue(new NumberValidator(10, 2, false).IsValidNumber("0.00"));
 		}
 	}
 
