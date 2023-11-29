@@ -14,17 +14,10 @@ namespace HomeExercises
 
 			var expectedTsar = new Person("Ivan IV The Terrible", 54, 170, 70,
 				new Person("Vasili III of Russia", 28, 170, 60, null));
+			
+			actualTsar.Should().BeEquivalentTo(expectedTsar, options => options
+				.Excluding(member => member.SelectedMemberInfo.Name.ToLower().Contains("id")));
 
-			// Перепишите код на использование Fluent Assertions.
-			Assert.AreEqual(actualTsar.Name, expectedTsar.Name);
-			Assert.AreEqual(actualTsar.Age, expectedTsar.Age);
-			Assert.AreEqual(actualTsar.Height, expectedTsar.Height);
-			Assert.AreEqual(actualTsar.Weight, expectedTsar.Weight);
-
-			Assert.AreEqual(expectedTsar.Parent!.Name, actualTsar.Parent!.Name);
-			Assert.AreEqual(expectedTsar.Parent.Age, actualTsar.Parent.Age);
-			Assert.AreEqual(expectedTsar.Parent.Height, actualTsar.Parent.Height);
-			Assert.AreEqual(expectedTsar.Parent.Parent, actualTsar.Parent.Parent);
 		}
 
 		[Test]
@@ -37,6 +30,15 @@ namespace HomeExercises
 
 			// Какие недостатки у такого подхода? 
 			Assert.True(AreEqual(actualTsar, expectedTsar));
+
+
+            			 /*1. При любых изменениях в структуре класса Person, мне придется это менять в методе AreEqual
+            			 2. Если тест не пройдет, он мне не скажет какие атрибуты или свойства не эквивалентны
+            			 3. Код становится более сложный и менее читаемый. Возможно такой подход необходим если стандартных
+            			 возможностей сравнения недостаточно и необходимы более глубокие настройки. Но, не в этом случае.
+						 4. По названию теста не понять область моего тестирования */
+ 
+
 		}
 
 		private bool AreEqual(Person? actual, Person? expected)
