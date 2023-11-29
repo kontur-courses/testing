@@ -28,7 +28,7 @@ namespace HomeExercises
 		}
 
 		[Test]
-		public void ShouldReturn_False_MinusValue_And_OnlyPositive()
+		public void Return_False_MinusValue_And_OnlyPositive()
 		{
 			NumberValidator.Create(17, 2, true).IsValidNumber("-0.0").Should().BeFalse();
 		}
@@ -45,13 +45,14 @@ namespace HomeExercises
 			NumberValidator.Create(precision, scale).IsValidNumber(value).Should().BeFalse();
 		}
 
-		[Test]
-		public void CorrectValidation()
+		[Category("correct validation")]
+		[TestCase(17, 2, "0.0", TestName = "WithScale")]
+		[TestCase(17, 2, "0", TestName = "WithoutScale")]
+		[TestCase(4, 2, "+1.23", TestName = "WithPlusSign")]
+		[TestCase(5, 3, "-1.234", TestName = "WithMinusSign")]
+		public void ShouldReturn_True_When_CorrectValidation(int precision, int scale, string value)
 		{
-			NumberValidator.Create(17, 2, true).IsValidNumber("0.0").Should().BeTrue();
-			NumberValidator.Create(17, 2, true).IsValidNumber("0.0").Should().BeTrue();
-			NumberValidator.Create(17, 2, true).IsValidNumber("0").Should().BeTrue();
-			NumberValidator.Create(4, 2, true).IsValidNumber("+1.23").Should().BeTrue();
+			NumberValidator.Create(precision, scale).IsValidNumber(value).Should().BeTrue();
 		}
 	}
 }
