@@ -22,7 +22,6 @@ namespace HomeExercises
 			Assert.DoesNotThrow(() => new NumberValidator(prescision, scale, onlyPositive));
 		}
 		
-		
 		[TestCase(3, 2, true, "00.00")]
 		[TestCase(3, 2, true, "-0.00")]
 		[TestCase(3, 2, true, "+1.23")]
