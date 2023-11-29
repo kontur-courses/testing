@@ -1,8 +1,8 @@
 ﻿using FluentAssertions;
+using HomeExercises;
 using NUnit.Framework;
-using System;
 
-namespace HomeExercises
+namespace HomeExercisesTests
 {
     public class NumberValidatorTests
     {
@@ -48,7 +48,7 @@ namespace HomeExercises
         [TestCase(17, 2, true, "0.23", TestName = "IsValidNumber_ScaleEqualsFractPart_Success")]
         [TestCase(17, 3, true, "0.12", TestName = "IsValidNumber_ScaleBiggerFractPart_Success")]
         [TestCase(4, 3, true, "1,1", TestName = "IsValidNumber_SeparatorIsComma_Success")]
-        [TestCase(5, 4, false, "-1.5", TestName = "IsValidNumber_NumberIsNegativeAndOnlyPositiveIsFalse_Fails")]
+        [TestCase(5, 4, false, "-1.5", TestName = "IsValidNumber_NumberIsNegativeAndOnlyPositiveIsFalse_Success")]
         public void Success(int precision, int scale, bool onlyPostive, string value)
         {
             var validator = new NumberValidator(precision, scale, onlyPostive);

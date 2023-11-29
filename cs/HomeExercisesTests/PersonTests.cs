@@ -1,7 +1,8 @@
 ﻿using FluentAssertions;
+using HomeExercises;
 using NUnit.Framework;
 
-namespace HomeExercises
+namespace HomeExercisesTests
 {
     public class ObjectComparison
     {
@@ -18,7 +19,8 @@ namespace HomeExercises
                 options
                 .Excluding(tsar => tsar.SelectedMemberInfo.Name == nameof(Person.Id) &&
                 tsar.SelectedMemberInfo.DeclaringType == typeof(Person))
-                .AllowingInfiniteRecursion());
+                .AllowingInfiniteRecursion()
+                .IgnoringCyclicReferences());
         }
 
         // Недостаток в том, что нужно будет переписывать тест при любом исправлении в классе Person.
