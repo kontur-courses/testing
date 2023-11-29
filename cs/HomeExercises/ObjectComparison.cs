@@ -16,8 +16,8 @@ namespace HomeExercises
                 new Person("Vasili III of Russia", 28, 170, 60, null));
 
             actualTsar.Should().BeEquivalentTo(expectedTsar, options =>
-                options.Excluding(option => option.Id)
-                    .Excluding(option => option.Parent.Id));
+                options.Excluding(person => person.Id)
+                    .Excluding(person => person.Parent.Id));
         }
         /* Преимущества подхода:
 			1. Хорошая информативность. При непрохождении теста ясно показывается, какие поля не совпали.

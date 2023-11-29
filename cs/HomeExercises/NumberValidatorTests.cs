@@ -7,41 +7,62 @@ namespace HomeExercises
 {
 	public class NumberValidatorTests
 	{
-        [Test]
-        [TestCase(17, 2, true, "0.0", true)]
-        [TestCase(17, 2, true, "0", true)]
-        [TestCase(3, 2, true, "00.00", false)]
-        [TestCase(3, 2, true, "-0.0", false)]
-        [TestCase(3, 2, true, "+0.00", false)]
-        [TestCase(4, 2, true, "+1.23", true)]
-        [TestCase(3, 2, true, "+1.23", false)]
-        [TestCase(17, 2, true, "0.000", false)]
-        [TestCase(3, 2, true, "-1.23", false)]
-        [TestCase(3, 2, true, "a.sd", false)]
-        [TestCase(3, 2, true, "", false)]
-        [TestCase(3, 2, true, null, false)]
-        public void ValidateNumberCorrect_When_DaraCorrect(int precision, int scale, bool onlyPositive, string value, bool expectedResult)
+		[TestCase(17, 1, true, "0.0", true,
+            TestName = "Is valid number when length of number less than precision and have fractional part")]
+        [TestCase(17, 2, true, "0", true, 
+			TestName = "Is valid number when length of number less than precision and don't have fractional part")]
+        [TestCase(3, 2, true, "00.00", false,
+			TestName = "Is not valid number when multiple zeros in int part and length of number greater than precision")]
+        [TestCase(3, 2, true, "-0.0", false,
+			TestName = "Is not valid number when number is negative with sign and onlyPositive is true")]
+        [TestCase(3, 2, true, "+0.00", false, 
+			TestName = "Is not valid number when number is positive with sign and length of number greater than precision")]
+        [TestCase(4, 2, true, "+1.23", true, 
+			TestName = "Is valid number when number is positive with sign and onlyPositive is true")]
+        [TestCase(3, 2, false, "+1.23", false, 
+			TestName = "Is not valid number when length of number greater than precision")]
+        [TestCase(17, 2, true, "0.000", false, 
+			TestName = "Is not valid number when fracPart greater than scale")]
+        [TestCase(3, 2, true, "-1.23", false, 
+			TestName = "Is not valid number when onlyPositive is true and number is negative")]
+        [TestCase(3, 2, true, "a.sd", false, 
+			TestName = "Is not valid number when number consists of letters")]
+        [TestCase(3, 2, true, "", false, 
+			TestName = "Is not valid number when number is empty")]
+        [TestCase(3, 2, true, null, false, 
+			TestName = "Is not valid number when number is null")]
+        [TestCase(4, 2, false, "10*00", false,
+			TestName = "Is not valid number when invalid separator")]
+        [TestCase(4, 1, false, "1.0.0", false,
+			TestName = "Is not valid number when more than one separator")]
+		[TestCase(7, 3, false, "+1.00", true,
+			TestName = "Is valid number when number is positive and onlyPositive is false")]
+        public void ValidateNumberCorrect_When_DataCorrect(int precision, int scale, bool onlyPositive, string value, bool expectedResult)
         {
             var validator = new NumberValidator(precision, scale, onlyPositive);
             var result = validator.IsValidNumber(value);
             result.Should().Be(expectedResult);
         }
 
-        [Test]
-        [TestCase(-1, 2, true)]
-        [TestCase(1, -2, false)]
-        [TestCase(1, 2, true)]
-        [TestCase(1, 1, false)]
-        public void Should_ThrowArgumentException_When_InitIncorrectData(int precision, int scale, bool onlyPositive)
+        [TestCase(-1, 2, true, 
+			TestName = "Thorw argument exception when precision is not positive number")]
+        [TestCase(1, -2, false, 
+			TestName = "Throw argument exception when scale is negative number")]
+        [TestCase(1, 2, true, 
+			TestName = "Throw argument exception when precision is positive and scale is non-negative and scale greater than precision")]
+        [TestCase(1, 1, false, 
+			TestName = "Throw argument exception when precision is positive and scale is non-negative and equal to each other")]
+        public void Should_ThrowArgumentException_When_IncorrectData(int precision, int scale, bool onlyPositive)
         {
             Action action = () => new NumberValidator(precision, scale, onlyPositive);
             action.Should().Throw<ArgumentException>();
         }
 
-        [Test]
-        [TestCase(1, 0, true)]
-        [TestCase(2, 1, true)]
-        public void Should_DoesNotThrowArgumentException_When_InitCorrectData(int precision, int scale, bool onlyPositive)
+        [TestCase(1, 0, true,
+			TestName = "Don't throw argument exception when precision is positive and scale is zero and precision greater than scale")]
+        [TestCase(2, 1, true, 
+			TestName = "Don't throw argument exception when precision is positive and scale is positive and precision greater than scale")]
+        public void Should_DoesNotThrowArgumentException_When_CorrectData(int precision, int scale, bool onlyPositive)
         {
             Action action = () => new NumberValidator(precision, scale, onlyPositive);
             action.Should().NotThrow();
