@@ -7,39 +7,25 @@ namespace HomeExercises
 {
 	public class NumberValidatorTests
 	{
-		public NumberValidator numberValidator = new NumberValidator(5, 2);
+		private static int precision = 5;
+		private static int scale = 2;
+		private static NumberValidator numberValidator = new NumberValidator(precision, scale);
+		private static string restrictionsMessage = $"Precision: {precision}, Scale: {scale}";
 
-		[Test]
-		public void ShouldThrow_When_Scale_GreaterOrEqualPrecision()
+		[TestCase(1, 1)]
+		[TestCase(1, -1)]
+		[TestCase(0, 1)]
+		public void ShouldThrow_When_IncorrectPrecisionOrScaleRestrictions(int precision, int scale)
 		{
-			Action action = () => new NumberValidator(1, 1);
+			Action action = () => new NumberValidator(precision, scale);
 			action.Should().Throw<ArgumentException>();
 		}
 
-		[Test]
-		public void ShouldThrow_WhenScaleNegative()
+		[TestCase("+1")]
+		[TestCase("-1")]
+		public void ShouldBeValidNumber_WhenOneSign(string value)
 		{
-			Action action = () => new NumberValidator(1, -1);
-			action.Should().Throw<ArgumentException>();
-		}
-
-		[Test]
-		public void ShouldThrow_WhenPrecisionNonPositive()
-		{
-			Action action = () => new NumberValidator(0, 1);
-			action.Should().Throw<ArgumentException>().WithMessage("precision must be a positive number");
-		}
-
-		[Test]
-		public void ShouldBeValidNumber_WhenOnePlusSign()
-		{
-			numberValidator.IsValidNumber("+1").Should().BeTrue();
-		}
-
-		[Test]
-		public void ShouldBeValidNumber_WhenOneMinusSign()
-		{
-			numberValidator.IsValidNumber("-1").Should().BeTrue();
+			numberValidator.IsValidNumber(value).Should().BeTrue();
 		}
 
 		[Test]
@@ -48,46 +34,21 @@ namespace HomeExercises
 			numberValidator.IsValidNumber("+-1").Should().BeFalse();
 		}
 
-		[Test]
-		public void ShouldBeValidNumber_WhenCommaSeparated()
+		[TestCase("1,1")]
+		[TestCase("1.1")]
+		public void ShouldBeValidNumber_WhenSeparated(string value)
 		{
-			numberValidator.IsValidNumber("1,1").Should().BeTrue();
+			numberValidator.IsValidNumber(value).Should().BeTrue();
 		}
 
-		[Test]
-		public void ShouldBeValidNumber_WhenDotSeparated()
+		[TestCase("")]
+		[TestCase(null)]
+		[TestCase("-.0")]
+		[TestCase("+1,")]
+		[TestCase("?1a.2b")]
+		public void ShouldNotBeValidNumber_WhenIncorrectValue(string value)
 		{
-			numberValidator.IsValidNumber("1.1").Should().BeTrue();
-		}
-
-		[Test]
-		public void ShouldNotBeValidNumber_WhenEmpty()
-		{
-			numberValidator.IsValidNumber("").Should().BeFalse();
-		}
-
-		[Test]
-		public void ShouldNotBeValidNumber_WhenNull()
-		{
-			numberValidator.IsValidNumber(null).Should().BeFalse();
-		}
-
-		[Test]
-		public void ShouldNotBeValidNumber_WhenHasNotInt()
-		{
-			numberValidator.IsValidNumber("-.0").Should().BeFalse();
-		}
-
-		[Test]
-		public void ShouldNotBeValidNumber_WhenHasSeparatorAndHasNotFrac()
-		{
-			numberValidator.IsValidNumber("+1,").Should().BeFalse();
-		}
-
-		[Test]
-		public void ShouldNotBeValidNumber_WhenHasNonNumericCharacters()
-		{
-			numberValidator.IsValidNumber("?1a.2b").Should().BeFalse();
+			numberValidator.IsValidNumber(value).Should().BeFalse();
 		}
 
 		[Test]
@@ -96,52 +57,22 @@ namespace HomeExercises
 			new NumberValidator(5, 2, true).IsValidNumber("-1").Should().BeFalse();
 		}
 
-		[Test]
-		public void ShouldBeValidNumber_When_CountIntDigits_EqualPrecision()
+		[TestCase("00000")]
+		[TestCase("000.00")]
+		[TestCase("+123.45")]
+		[TestCase("-12.34")]
+		public void ShouldBeValidNumber_When_CorrectPrecisionAndScale(string value)
 		{
-			numberValidator.IsValidNumber("00000").Should().BeTrue();
+			numberValidator.IsValidNumber(value).Should().BeTrue(restrictionsMessage);
 		}
 
-		[Test]
-		public void ShouldBeValidNumber_When_CountIntDigitsAndFracDigits_EqualPrecision()
+		[TestCase("123456")]
+		[TestCase("1234.56")]
+		[TestCase("12.356")]
+		[TestCase("-123.45")]
+		public void ShouldNotBeValidNumber_When_IncorrectPrecisionOrScale(string value)
 		{
-			numberValidator.IsValidNumber("000.00").Should().BeTrue();
-		}
-
-		[Test]
-		public void ShouldNotBeValidNumber_When_CountIntDigits_GreaterThanPrecision()
-		{
-			numberValidator.IsValidNumber("123456").Should().BeFalse();
-		}
-
-		[Test]
-		public void ShouldNotBeValidNumber_When_CountIntDigitsAndFracDigits_GreaterThanPrecision()
-		{
-			numberValidator.IsValidNumber("1234.56").Should().BeFalse();
-		}
-
-		[Test]
-		public void ShouldNotBeValidNumber_When_FracDigits_GreaterThanScale()
-		{
-			numberValidator.IsValidNumber("12.356").Should().BeFalse();
-		}
-
-		[Test]
-		public void ShouldNotBeValidNumber_When_CountIntDigitsAndFracDigitsAndMinusSign_GreaterThanPrecision()
-		{
-			numberValidator.IsValidNumber("-123.45").Should().BeFalse();
-		}
-
-		[Test]
-		public void ShouldBeValidNumber_When_CountIntDigitsAndFracDigitsAndPlusSign_EqualPrecisionPlusOne()
-		{
-			numberValidator.IsValidNumber("+123.45").Should().BeTrue();
-		}
-
-		[Test]
-		public void ShouldBeValidNumber_When_CountIntDigitsAndFracDigitsAndSign_EqualPrecision()
-		{
-			numberValidator.IsValidNumber("-12.34").Should().BeTrue();
+			numberValidator.IsValidNumber(value).Should().BeFalse(restrictionsMessage);
 		}
 	}
 
