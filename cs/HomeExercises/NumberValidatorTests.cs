@@ -5,6 +5,7 @@ using FluentAssertions.Execution;
 using NUnit.Framework;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics.Contracts;
 
 namespace HomeExercises
 {
@@ -34,6 +35,30 @@ namespace HomeExercises
             .SetName("True_WhenFracPartNotGreaterThanScale")
         };
 
+        private static IEnumerable<TestCaseData> IsValidNumberBigNumbersTests = new[]
+        {
+            new TestCaseData(41, 2, true, $"{Int64.MaxValue}{Int64.MaxValue}").Returns(true)
+            .SetName("True_WhenGivenBigIntPart"),
+            new TestCaseData(41, 40, true, $"1,{Int64.MaxValue}{Int64.MaxValue}").Returns(true)
+            .SetName("True_WhenGivenBigFracPart"),
+            new TestCaseData(81, 80, true, $"{Int64.MaxValue}{Int64.MaxValue},{Int64.MaxValue}{Int64.MaxValue}")
+            .Returns(true).SetName("True_WhenGivenBigFractWithIntPart"),
+            new TestCaseData(1001, 1000, true, $"{1/3}").Returns(true)
+            .SetName("True_WhenGivenEndlessRationalNumber"),
+            new TestCaseData(1001, 1000, true, $"{Math.PI}").Returns(true)
+            .SetName("True_WhenGivenEndlessIrrationalNumber"),
+            new TestCaseData(2, 1, true, "01").Returns(true)
+            .SetName("True_WhenGivenNumberInOtherNumberSystemThan10")
+        };
+
+        private static IEnumerable<TestCaseData> IsValidNumberDiffrentFormsOfNumbersTests = new[]
+        {
+            new TestCaseData(2, 1, true, "01").Returns(true)
+            .SetName("True_WhenGivenNumberInOtherNumberSystemThan10"),
+            new TestCaseData(8, 7, true, "1,23E+10").Returns(false)
+            .SetName("False_WhenGivenNumberInexponentialForm")
+        };
+
         private static IEnumerable<TestCaseData> IsValidNumberPositivityTests = new []
         {
             new TestCaseData(3, 2, true, "-0.00").Returns(false)
@@ -44,14 +69,29 @@ namespace HomeExercises
 
         private static IEnumerable<TestCaseData> IsValidNumberSymbolsTests = new []
         {
+            new TestCaseData(3, 2, true, "1,2").Returns(true).SetName("True_WhenSeparatorIsComma"),
+
+            new TestCaseData(3, 2, true, "1;2").Returns(false).SetName("False_WhenSeparatorIsNotCommaOrDot"),
+            new TestCaseData(3, 2, true, "1.,2").Returns(false).SetName("False_WhenStringContainsMoreThanOneSeparator"),
+            new TestCaseData(3, 2, true, "\n").Returns(false).SetName("False_WhenGivenSpecialCharacter"),
+            new TestCaseData(3, 2, true, ",").Returns(false).SetName("False_WhenOnlySeparatorGiven"),
+            new TestCaseData(3, 2, true, "1a").Returns(false).SetName("False_WhenGivenLetterAfterDigit"),
+            new TestCaseData(3, 2, true, "a1").Returns(false).SetName("False_WhenGivenDigitAfterLetter"),
+            new TestCaseData(3, 2, true, null).Returns(false).SetName("False_WhenGivenNull"),
             new TestCaseData(3, 2, true, "a.sd").Returns(false).SetName("False_WhenGivenNotDigits"),
-            new TestCaseData(17, 2, true, "").Returns(false).SetName("False_WhenEmptyStringGiven")
+            new TestCaseData(3, 2, true, "#").Returns(false).SetName("False_WhenGivenNotDigitSymbol"),
+            new TestCaseData(17, 2, true, "").Returns(false).SetName("False_WhenEmptyStringGiven"),
+            new TestCaseData(17, 2, true, "   ").Returns(false).SetName("False_WhenStringOfSpacesGiven")
         };
 
+        [Pure]
         [TestCaseSource(nameof(IsValidNumberPositivityTests))]
         [TestCaseSource(nameof(IsValidNumberPrecisionTests))]
         [TestCaseSource(nameof(IsValidNumberScaleTests))]
         [TestCaseSource(nameof(IsValidNumberSymbolsTests))]
+        [TestCaseSource(nameof(IsValidNumberDiffrentFormsOfNumbersTests))]
+        [Repeat(5)]
+        [TestCaseSource(nameof(IsValidNumberBigNumbersTests))]
         public bool IsValidNumber_Returns(int precision, int scale, bool onlyPositive, string number) =>
             new NumberValidator(precision, scale, onlyPositive).IsValidNumber(number);
 
@@ -61,12 +101,24 @@ namespace HomeExercises
             new TestCaseData(-1, 2, true).SetName("WhenPercisionNotPositive"),
             new TestCaseData(1, 2, true).SetName("WhenScaleGreaterThanPercision"),
             new TestCaseData(1, -1, true).SetName("WhenScaleNotPositive"),
-            new TestCaseData(1, 1, true).SetName("WhenScaleEqualsPerci  sion")
+            new TestCaseData(1, 1, true).SetName("WhenScaleEqualsPercision")
         };
 
+        [Pure]
         [TestCaseSource(nameof(ConstructorArgumentExceptions))]
         public void Constructor_ThrowsArgumentException(int precision, int scale, bool onlyPositive) =>
             Assert.Throws<ArgumentException>(() => new NumberValidator(precision, scale, onlyPositive));
+
+        [Test]
+        public void ValidatorState_ShouldStayUnchanged()
+        {
+            var validator = new NumberValidator(10, 9, true);
+            var number = "1,2";
+            var resultBeforeChange = validator.IsValidNumber(number);
+            validator.IsValidNumber("00");
+            var resultAfterChange = validator.IsValidNumber(number);
+            resultAfterChange.Should().Be(resultBeforeChange);
+        }
     }
 
     public class NumberValidator
