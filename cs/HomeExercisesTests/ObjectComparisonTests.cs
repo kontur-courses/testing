@@ -28,7 +28,7 @@ namespace HomeExercisesTests
 				.BeEquivalentTo(expectedTsar, options => options
 					.Excluding(info =>
 						info.SelectedMemberInfo.Name.Equals(nameof(Person.Id))
-						&& info.SelectedMemberInfo.DeclaringType.Name.Equals(nameof(Person)))
+						&& info.SelectedMemberInfo.DeclaringType == typeof(Person))
 					.IgnoringCyclicReferences()
 					.AllowingInfiniteRecursion());
 		}
