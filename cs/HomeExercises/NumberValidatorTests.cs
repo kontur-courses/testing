@@ -35,7 +35,7 @@ namespace HomeExercises
             .SetName("True_WhenFracPartNotGreaterThanScale")
         };
 
-        private static IEnumerable<TestCaseData> IsValidNumberBigNumbersTests = new[]
+        private static IEnumerable<TestCaseData> IsValidNumberLongNumbersTests = new[]
         {
             new TestCaseData(41, 2, true, $"{Int64.MaxValue}{Int64.MaxValue}").Returns(true)
             .SetName("True_WhenGivenBigIntPart"),
@@ -47,16 +47,18 @@ namespace HomeExercises
             .SetName("True_WhenGivenEndlessRationalNumber"),
             new TestCaseData(1001, 1000, true, $"{Math.PI}").Returns(true)
             .SetName("True_WhenGivenEndlessIrrationalNumber"),
-            new TestCaseData(2, 1, true, "01").Returns(true)
-            .SetName("True_WhenGivenNumberInOtherNumberSystemThan10")
         };
 
         private static IEnumerable<TestCaseData> IsValidNumberDiffrentFormsOfNumbersTests = new[]
         {
             new TestCaseData(2, 1, true, "01").Returns(true)
-            .SetName("True_WhenGivenNumberInOtherNumberSystemThan10"),
+            .SetName("True_WhenGivenNumberInBinaryForm"),
+            new TestCaseData(2, 1, true, "0001").Returns(false)
+            .SetName("False_WhenGivenNumberInBinaryFormWithLengthGreaterThanPrecision"),
+            new TestCaseData(5, 1, true, "8ABCD").Returns(false)
+            .SetName("False_WhenGivenNumberInHexadecimalFormWithLetters"),
             new TestCaseData(8, 7, true, "1,23E+10").Returns(false)
-            .SetName("False_WhenGivenNumberInexponentialForm")
+            .SetName("False_WhenGivenNumberInExponentialForm")
         };
 
         private static IEnumerable<TestCaseData> IsValidNumberPositivityTests = new []
@@ -84,14 +86,13 @@ namespace HomeExercises
             new TestCaseData(17, 2, true, "   ").Returns(false).SetName("False_WhenStringOfSpacesGiven")
         };
 
-        [Pure]
-        [TestCaseSource(nameof(IsValidNumberPositivityTests))]
-        [TestCaseSource(nameof(IsValidNumberPrecisionTests))]
+        [Repeat(5)]
         [TestCaseSource(nameof(IsValidNumberScaleTests))]
         [TestCaseSource(nameof(IsValidNumberSymbolsTests))]
+        [TestCaseSource(nameof(IsValidNumberPrecisionTests))]
+        [TestCaseSource(nameof(IsValidNumberPositivityTests))]
+        [TestCaseSource(nameof(IsValidNumberLongNumbersTests))]
         [TestCaseSource(nameof(IsValidNumberDiffrentFormsOfNumbersTests))]
-        [Repeat(5)]
-        [TestCaseSource(nameof(IsValidNumberBigNumbersTests))]
         public bool IsValidNumber_Returns(int precision, int scale, bool onlyPositive, string number) =>
             new NumberValidator(precision, scale, onlyPositive).IsValidNumber(number);
 
@@ -104,19 +105,29 @@ namespace HomeExercises
             new TestCaseData(1, 1, true).SetName("WhenScaleEqualsPercision")
         };
 
-        [Pure]
         [TestCaseSource(nameof(ConstructorArgumentExceptions))]
         public void Constructor_ThrowsArgumentException(int precision, int scale, bool onlyPositive) =>
             Assert.Throws<ArgumentException>(() => new NumberValidator(precision, scale, onlyPositive));
+
+        private static IEnumerable<TestCaseData> ConstructorNoExceptions = new[]
+        {
+            new TestCaseData(2, 1, true).SetName("WhenPercisionPositiveAndScaleLessThanPrecision")
+        };
+
+        [TestCaseSource(nameof(ConstructorNoExceptions))]
+        public void Constructor_ShouldNotThrowException(int precision, int scale, bool onlyPositive) =>
+            Assert.DoesNotThrow(() => new NumberValidator(precision, scale, onlyPositive));
 
         [Test]
         public void ValidatorState_ShouldStayUnchanged()
         {
             var validator = new NumberValidator(10, 9, true);
             var number = "1,2";
+
             var resultBeforeChange = validator.IsValidNumber(number);
             validator.IsValidNumber("00");
             var resultAfterChange = validator.IsValidNumber(number);
+
             resultAfterChange.Should().Be(resultBeforeChange);
         }
     }
@@ -140,6 +151,7 @@ namespace HomeExercises
             numberRegex = new Regex(@"^([+-]?)(\d+)([.,](\d+))?$", RegexOptions.IgnoreCase);
         }
 
+        [Pure]
         public bool IsValidNumber(string value)
         {
             // Проверяем соответствие входного значения формату N(m,k), в соответствии с правилом, 
