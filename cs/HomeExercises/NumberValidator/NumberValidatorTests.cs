@@ -24,21 +24,21 @@ namespace HomeExercises.NumberValidator
 			a.Should().NotThrow();
 		}
 		
-		[TestCase(3, 2, true, null, TestName = "value is null")]
-		[TestCase(3, 2, true, "", TestName = "value is empty")]
-		[TestCase(3, 2, true, " ", TestName = "value is space")]
-		[TestCase(3, 2, true, "+1..23", TestName = "value contains two separators")]
-		[TestCase(3, 2, true, "++0", TestName = "value contains two signs")]
-		[TestCase(3, 2, true, "1.2a", TestName = "value contains letters")]
-		[TestCase(3, 2, true, "+", TestName = "value only contains sign")]
-		[TestCase(3, 2, true, "0?0", TestName = "value separated by other symbol than dot or comma")]
-		[TestCase(3, 2, true, " 0", TestName = "value contains spaces before number")]
-		[TestCase(3, 2, true, "0 ", TestName = "value contains spaces after number")]
-		[TestCase(3, 2, true, "0.", TestName = "value hasn't contains numbers after separator")]
-		[TestCase(3, 2, true, ".0", TestName = "value hasn't contains numbers before separator")]
-		[TestCase(17, 2, true, "0.000", TestName = "value's fraction part length is greater than scale")]
+		[TestCase(3, 2, false, null, TestName = "value is null")]
+		[TestCase(3, 2, false, "", TestName = "value is empty")]
+		[TestCase(3, 2, false, " ", TestName = "value is space")]
+		[TestCase(3, 2, false, "+1..23", TestName = "value contains two separators")]
+		[TestCase(3, 2, false, "++0", TestName = "value contains two signs")]
+		[TestCase(3, 2, false, "1.2a", TestName = "value contains letters")]
+		[TestCase(3, 2, false, "+", TestName = "value only contains sign")]
+		[TestCase(3, 2, false, "0?0", TestName = "value separated by other symbol than dot or comma")]
+		[TestCase(3, 2, false, " 0", TestName = "value contains spaces before number")]
+		[TestCase(3, 2, false, "0 ", TestName = "value contains spaces after number")]
+		[TestCase(3, 2, false, "0.", TestName = "value hasn't contains numbers after separator")]
+		[TestCase(3, 2, false, ".0", TestName = "value hasn't contains numbers before separator")]
+		[TestCase(17, 2, false, "0.000", TestName = "value's fraction part length is greater than scale")]
 		[TestCase(5, 2, true, "-0.00", TestName = "negative sign when onlyPositive is true")]
-		[TestCase(3, 2, true, "+0.00", TestName = "intPart and fractPart together is greater than precision")]
+		[TestCase(3, 2, false, "+0.00", TestName = "intPart and fractPart together is greater than precision")]
 		public void IsValidNumber_ReturnsFalse_OnIncorrectArguments(int precision, int scale, bool onlyPositive, string value)
 		{
 			new NumberValidator(precision, scale, onlyPositive)
