@@ -7,55 +7,56 @@ using NUnit.Framework;
 
 namespace HomeExercises
 {
+	[TestFixture]
 	public class NumberValidatorTests
 	{
 		public static TestCaseData[] unsignedPositiveNumberTestCases =
 		{
-			new TestCaseData(1, 0, "0").SetName("unsigned zero"),
-			new TestCaseData(2, 1, "0.0").SetName("unsigned zero with 1 digit after"),
-			new TestCaseData(1, 0, "1").SetName("unsigned 1 digit number"),
-			new TestCaseData(2, 0, "12").SetName("unsigned 2 digit number"),
-			new TestCaseData(2, 1, "1.2").SetName("unsigned 2 digit number with 1 digit after point"),
-			new TestCaseData(3, 2, "1.23").SetName("unsigned 3 digit number with 2 digit after point"),
-			new TestCaseData(3, 1, "12.3").SetName("unsigned 3 digit number with 1 digit after point"),
-			new TestCaseData(4, 2, "12.34").SetName("unsigned 4 digit number with 2 digit after point"),
+			new TestCaseData(1, 0, "0").SetName("When_UnsignedZero"),
+			new TestCaseData(2, 1, "0.0").SetName("When_UnsignedZero_WithOneDigitAfter"),
+			new TestCaseData(1, 0, "1").SetName("When_UnsignedOneDigitNumber"),
+			new TestCaseData(2, 0, "12").SetName("When_UnsignedTwoDigitNumber"),
+			new TestCaseData(2, 1, "1.2").SetName("When_UnsignedTwoDigitNumber_WithOneDigitAfterPoint"),
+			new TestCaseData(3, 2, "1.23").SetName("When_UnsignedThreeDigitNumber_WithTwoDigitsAfterPoint"),
+			new TestCaseData(3, 1, "12.3").SetName("When_UnsignedThreeDigitNumber_WithOneDigitAfterPoint"),
+			new TestCaseData(4, 2, "12.34").SetName("When_UnsignedFourDigitNumber_WithTwoDigitsAfterPoint"),
 		};
 
 		public static TestCaseData[] signedPositiveNumberTestCases =
 		{
-			new TestCaseData(2, 0, "+0").SetName("positive zero"),
-			new TestCaseData(3, 1, "+0.0").SetName("positive zero with 1 digit after"),
-			new TestCaseData(2, 0, "+1").SetName("positive 1 digit number"),
-			new TestCaseData(3, 0, "+12").SetName("positive 2 digit number"),
-			new TestCaseData(3, 1, "+1.2").SetName("positive 2 digit number with 1 digit after point"),
-			new TestCaseData(4, 2, "+1.23").SetName("positive 3 digit number with 2 digit after point"),
-			new TestCaseData(4, 1, "+12.3").SetName("positive 3 digit number with 1 digit after point"),
-			new TestCaseData(5, 2, "+12.34").SetName("positive 4 digit number with 2 digit after point"),
+			new TestCaseData(2, 0, "+0").SetName("When_PositiveZero"),
+			new TestCaseData(3, 1, "+0.0").SetName("When_PositiveZero_WithOneDigitAfter"),
+			new TestCaseData(2, 0, "+1").SetName("When_PositiveOneDigitNumber"),
+			new TestCaseData(3, 0, "+12").SetName("When_PositiveTwoDigitNumber"),
+			new TestCaseData(3, 1, "+1.2").SetName("When_PositiveTwoDigitNumber_WithOneDigitAfterPoint"),
+			new TestCaseData(4, 2, "+1.23").SetName("When_PositiveThreeDigitNumber_WithTwoDigitsAfterPoint"),
+			new TestCaseData(4, 1, "+12.3").SetName("When_PositiveThreeDigitNumber_WithOneDigitAfterPoint"),
+			new TestCaseData(5, 2, "+12.34").SetName("When_PositiveFourDigitNumber_WithTwoDigitsAfterPoint"),
 		};
 
 		public static TestCaseData[] negativeNumberTestCases =
 		{
-			new TestCaseData(2, 0, "-0").SetName("negative zero"),
-			new TestCaseData(3, 1, "-0.0").SetName("negative zero with 1 digit after"),
-			new TestCaseData(2, 0, "-1").SetName("negative 1 digit number"),
-			new TestCaseData(3, 0, "-12").SetName("negative 2 digit number"),
-			new TestCaseData(3, 1, "-1.2").SetName("negative 2 digit number with 1 digit after point"),
-			new TestCaseData(4, 2, "-1.23").SetName("negative 3 digit number with 2 digit after point"),
-			new TestCaseData(4, 1, "-12.3").SetName("negative 3 digit number with 1 digit after point"),
-			new TestCaseData(5, 2, "-12.34").SetName("negative 4 digit number with 2 digit after point"),
+			new TestCaseData(2, 0, "-0").SetName("When_NegativeZero"),
+			new TestCaseData(3, 1, "-0.0").SetName("When_NegativeZero_WithOneDigitAfter"),
+			new TestCaseData(2, 0, "-1").SetName("When_NegativeOneDigitNumber"),
+			new TestCaseData(3, 0, "-12").SetName("When_NegativeTwoDigitNumber"),
+			new TestCaseData(3, 1, "-1.2").SetName("When_NegativeTwoDigitNumber_WithOneDigitAfterPoint"),
+			new TestCaseData(4, 2, "-1.23").SetName("When_NegativeThreeDigitNumber_WithTwoDigitsAfterPoint"),
+			new TestCaseData(4, 1, "-12.3").SetName("When_NegativeThreeDigitNumber_WithOneDigitAfterPoint"),
+			new TestCaseData(5, 2, "-12.34").SetName("When_NegativeFourDigitNumber_WithTwoDigitsAfterPoint"),
 		};
 
 		public static TestCaseData[] wrongCases =
 		{
 			new TestCaseData(1, 0, "-1")
-				.SetName("integer number with \"+\" sign must have precision more than digits count").Returns(false),
+				.SetName("When_NegativeIntegerNumber_HavePrecisionLesserOrEqual_ThanDigitsCount").Returns(false),
 			new TestCaseData(1, 0, "+1")
-				.SetName("integer number with \"-\" sign must have precision more than digits count").Returns(false),
+				.SetName("When_PositiveIntegerNumber_HavePrecisionLesserOrEqual_ThanDigitsCount").Returns(false),
 			new TestCaseData(2, 1, "+1.2")
-				.SetName("number with fractional part with \"+\" sign must have precision more than digits count")
+				.SetName("When_PositiveNumberWithFractionalPart_HavePrecisionLesserOrEqual_ThanDigitsCount")
 				.Returns(false),
 			new TestCaseData(2, 1, "-1.2")
-				.SetName("number with fractional part with \"-\" sign must have precision more than digits count")
+				.SetName("When_NegativeNumberWithFractionalPart_HavePrecisionLesserOrEqual_ThanDigitsCount")
 				.Returns(false),
 		};
 
@@ -77,7 +78,7 @@ namespace HomeExercises
 		}
 
 		[TestCaseSource(nameof(negativeNumberTestCases))]
-		public void ShouldFailWhenNumberNegativeWithOnlyPositive(int precision, int scale, string validatingString)
+		public void IsFailWithOnlyPositiveFlag(int precision, int scale, string validatingString)
 		{
 			new NumberValidator(precision, scale, true)
 				.IsValidNumber(validatingString)
@@ -85,10 +86,10 @@ namespace HomeExercises
 				.BeFalse();
 		}
 
-		[TestCase(3, 2, "a.sd", TestName = "non digit symbols")]
-		[TestCase(2, 1, ".0", TestName = "must have digits before point")]
-		[TestCase(1, 0, "0.", TestName = "must have digits after point (if exist)")]
-		public void WrongFormat(int precision, int scale, string validatingString, bool onlyPositive = true)
+		[TestCase(3, 2, "a.sd", TestName = "WhenContain_NonDigitSymbols")]
+		[TestCase(2, 1, ".0", TestName = "WhenHaveNot_DigitBeforePoint")]
+		[TestCase(1, 0, "0.", TestName = "WhenHaveNot_DigitAfterPointIfExist")]
+		public void IsWrongFormat(int precision, int scale, string validatingString, bool onlyPositive = true)
 		{
 			new NumberValidator(precision, scale, onlyPositive)
 				.IsValidNumber(validatingString)
@@ -96,11 +97,11 @@ namespace HomeExercises
 				.BeFalse();
 		}
 
-		[TestCase(-1, 1, TestName = "negative precision")]
-		[TestCase(1, -1, TestName = "negative scale")]
-		[TestCase(-1, -1, TestName = "negative precision and scale")]
-		[TestCase(1, 1, TestName = "precision equals scale")]
-		[TestCase(1, 2, TestName = "precision less than scale")]
+		[TestCase(-1, 1, TestName = "When_NegativePrecision")]
+		[TestCase(1, -1, TestName = "When_NegativeScale")]
+		[TestCase(-1, -1, TestName = "When_NegativePrecisionAndScale")]
+		[TestCase(1, 1, TestName = "When_PrecisionEqualsScale")]
+		[TestCase(1, 2, TestName = "When_PrecisionLessThanScale")]
 		public void ShouldThrow(int precision, int scale, bool onlyPositive = true)
 		{
 			Assert.Throws<ArgumentException>(() => new NumberValidator(precision, scale, onlyPositive));
