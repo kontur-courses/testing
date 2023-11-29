@@ -1,59 +1,75 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Runtime.CompilerServices;
 using System.Text.RegularExpressions;
+using JetBrains.Annotations;
 using NUnit.Framework;
 
 namespace HomeExercises
 {
-    [TestFixture]
     [TestFixture(TestOf = typeof(NumberValidator))]
     public class NumberValidatorTests
     {
-        private static TestCaseData[] ArgumentExceptionTestCases =
-        {
-            new TestCaseData(-1, 2, true).SetName("WhenPassNegativePrecision"),
-            new TestCaseData(1, -2, true).SetName("WhenPassNegativeScale"),
-            new TestCaseData(2, 2, true).SetName("WhenPrecisionIsEqualToTheScale")
-        };
-
-        [TestCaseSource(nameof(ArgumentExceptionTestCases))]
-        public void NumberValidatorCtor_WhenPassInvalidArguments_ShouldThrowArgumentException(int precision,
-            int scale, bool onlyPositive) =>
-            Assert.Throws<ArgumentException>(() => new NumberValidator(precision, scale, onlyPositive));
-
         [Test]
         public void NumberValidatorCtor_WhenPassValidArguments_ShouldNotThrows() =>
             Assert.DoesNotThrow(() => new NumberValidator(1, 0, true));
 
-        private static TestCaseData[] ArgumentTestCases =
+        private static TestCaseData[] ArgumentExceptionTestCases =
         {
-            new TestCaseData(3,2,true,"a.sd", false).SetName("WhenLettersInsteadOfNumber"),
-            new TestCaseData(3,2,true,"2.!", false).SetName("WhenSymbolsInsteadOfNumber"),
-            new TestCaseData(3,2,true,"2,3", true).SetName("WhenCharactersAreSeparatedByComma"),
-            new TestCaseData(3,2,true,null!, false).SetName("WhenPassNumberIsNull"),
-            new TestCaseData(3,2,true,"2,.3", false).SetName("WhenTwoSeparatorsArePassed"),
-            new TestCaseData(3,2,true,"2 3", false).SetName("WhenSeparatedBySpace"),
-            new TestCaseData(3,2,true,"", false).SetName("WhenPassNumberIsEmpty"),
-            new TestCaseData(3,2,true,"-0.00", false).SetName("WhenIntPartWithNegativeSignMoreThanPrecision"),
-            new TestCaseData(3,2,true,"+1.23", false).SetName("WhenIntPartWithPositiveSignMoreThanPrecision"),
-            new TestCaseData(3,2,true,"0.000", false).SetName("WhenFractionalPartMoreThanScale"),
-            new TestCaseData(3,2,true,"0", true).SetName("WhenFractionalPartIsMissing"),
-            new TestCaseData(3,2,true,"0.0", true).SetName("WhenNumberIsValid")
+            new TestCaseData(-1, 2, true).SetName("NegativePrecision"),
+            new TestCaseData(0, 2, true).SetName("PrecisionEqualToZero"),
+            new TestCaseData(1, -2, true).SetName("NegativeScale"),
+            new TestCaseData(2, 2, true).SetName("PrecisionIsEqualToTheScale"),
+            new TestCaseData(2, 3, true).SetName("ScaleIsMorePrecision")
         };
 
-        private NumberValidator GetCorrectNumberValidator(int precision, int scale, bool onlyPositive) =>
-            new NumberValidator(precision, scale, onlyPositive);
+        [TestCaseSource(nameof(ArgumentExceptionTestCases))]
+        public void NumberValidatorCtor_WhenPassInvalidArguments_ShouldThrowArgumentException(int precision, int scale, bool onlyPositive) =>
+            Assert.Throws<ArgumentException>(() => new NumberValidator(precision, scale, onlyPositive));
+
+        private static TestCaseData[] InvalidArgumentTestCases =
+        {
+            new TestCaseData(3,2,true,"a.sd").Returns(false).SetName("LettersInsteadOfNumber"),
+            new TestCaseData(3,2,true,"2.!").Returns(false).SetName("SymbolsInsteadOfNumber"),
+            new TestCaseData(3,2,true,null!).Returns(false).SetName("PassNumberIsNull"),
+            new TestCaseData(3,2,true,"").Returns(false).SetName("PassNumberIsEmpty"),
+            new TestCaseData(3,2,true,"       ").Returns(false).SetName("OnlySpaceInNumber"),
+            new TestCaseData(3,2,true,"          2").Returns(false).SetName("MultipleSpacesAndOneDigitInNumber"),
+            new TestCaseData(3,2,true,"2,.3").Returns(false).SetName("TwoSeparatorsArePassed"),
+            new TestCaseData(3,2,true,".").Returns(false).SetName("OnlySeparatorArePassed"),
+            new TestCaseData(3,2,true,"2 3").Returns(false).SetName("SeparatedBySpace"),
+            new TestCaseData(3,2,true,"-0.00").Returns(false).SetName("IntPartWithNegativeSignMoreThanPrecision"),
+            new TestCaseData(3,2,true,"+1.23").Returns(false).SetName("IntPartWithPositiveSignMoreThanPrecision"),
+            new TestCaseData(3,2,true,"0.000").Returns(false).SetName("FractionalPartMoreThanScale"),
+            new TestCaseData(3,2,true,"2%3").Returns(false).SetName("PercentSignInTheFormOfSeparator"),
+            new TestCaseData(3,2,true,"2$").Returns(false).SetName("AmpersandInTheFormOfSeparator"),
+            new TestCaseData(3,2,true,"#").Returns(false).SetName("OctothorpeInTheFormOfNumber"),
+            new TestCaseData(3,2,true,"2@3").Returns(false).SetName("CommercialAtSymbolInTheFormOfSeparator"),
+            new TestCaseData(3,2,true,"(2.3)").Returns(false).SetName("NumberInParentheses"),
+            new TestCaseData(3,2,true,"2;3").Returns(false).SetName("SemicolonInTheFormOfSeparator"),
+            new TestCaseData(3,2,true,"2/r").Returns(false).SetName("CarriageReturnInNumber"),
+            new TestCaseData(3,2,true,"/n3").Returns(false).SetName("NewLineInNumber"),
+            new TestCaseData(3,2,true,"/t3.4").Returns(false).SetName("TabInNumber"),
+            new TestCaseData(3,2,true,"3.4/b").Returns(false).SetName("BackSpaceInNumber"),
+            new TestCaseData(3,2,true,"3.47e+10").Returns(false).SetName("NumberInExponentialForm"),
+            new TestCaseData(3,2,true,"10^3").Returns(false).SetName("NumberInAPower"),
+            new TestCaseData(3,2,true,"11101010").Returns(false).SetName("BinaryNumberSystem"),
+            new TestCaseData(3,2,true,"0xEA").Returns(false).SetName("HexadecimalNumberSystem"),
+        };
+
+        private static TestCaseData[] ValidArgumentTestCases =
+        {
+            new TestCaseData(3,2,true,"2,3").Returns(true).SetName("CharactersAreSeparatedByComma"),
+            new TestCaseData(3,2,true,"0").Returns(true).SetName("FractionalPartIsMissing"),
+            new TestCaseData(3,2,true,"0.0").Returns(true).SetName("NumberIsValid"),
+            new TestCaseData(19,2,true,"9223372036854775807").Returns(true).SetName("LargeIntPartInNumber"),
+            new TestCaseData(27,25,true,"3.1415926535897932384626433").Returns(true).SetName("LargeFracPartInNumber"),
+            new TestCaseData(45,25,true,"9223372036854775807.1415926535897932384626433").Returns(true).SetName("LargeNumber")
+        };
 
         [TestOf(nameof(NumberValidator.IsValidNumber))]
-        [TestCaseSource(nameof(ArgumentTestCases))]
-        public void WhenPassInvalidArguments_ShouldReturnFalse(int precision, int scale,
-            bool onlyPositive, string number, bool expectedResult)
-        {
-            var correctValidator = GetCorrectNumberValidator(precision, scale, onlyPositive);
-
-            Assert.AreEqual(expectedResult, correctValidator.IsValidNumber(number));
-        }
+        [TestCaseSource(nameof(InvalidArgumentTestCases))]
+        [TestCaseSource(nameof(ValidArgumentTestCases)), Repeat(2)]
+        public bool TestArgumentValidation_ReturnsCorrectBoolean(int precision, int scale, bool onlyPositive, string number) =>
+            new NumberValidator(precision, scale, onlyPositive).IsValidNumber(number);
     }
 
     public class NumberValidator
@@ -75,6 +91,7 @@ namespace HomeExercises
             numberRegex = new Regex(@"^([+-]?)(\d+)([.,](\d+))?$", RegexOptions.IgnoreCase);
         }
 
+        [Pure]
         public bool IsValidNumber(string value)
         {
             // Проверяем соответствие входного значения формату N(m,k), в соответствии с правилом, 
