@@ -18,15 +18,16 @@ namespace HomeExercises
 			// Перепишите код на использование Fluent Assertions.
 
 			// Cравниваем все свойства, кроме исключенных
-			actualTsar.Should().BeEquivalentTo(expectedTsar,options => options.Excluding(x=>x.Id).Excluding((x=>x.Parent!.Id)));
+			actualTsar.Should().BeEquivalentTo(expectedTsar,
+				options => options.Excluding(x => x.Id).Excluding(x => x.Parent!.Id));
 
 			// Тесты описываются более естественным языком
 			// Сообщения об ошибках более информативны
 			// При добавлении новых полей для сравнения не нужно изменять тест
 
-        }
+		}
 
-        [Test]
+		[Test]
 		[Description("Альтернативное решение. Какие у него недостатки?")]
 		public void CheckCurrentTsar_WithCustomEquality()
 		{
@@ -34,11 +35,11 @@ namespace HomeExercises
 			var expectedTsar = new Person("Ivan IV The Terrible", 54, 170, 70,
 				new Person("Vasili III of Russia", 28, 170, 60, null));
 
-            // Какие недостатки у такого подхода? 
-            //При добавлении свойств нужно изменять метод AreEquals
-            //Неинформативное сообщение об ошибке - не понятно, в чем именно различаются объекты
-            Assert.True(AreEqual(actualTsar, expectedTsar));
-        }
+			// Какие недостатки у такого подхода? 
+			// При добавлении свойств нужно изменять метод AreEquals
+			// Неинформативное сообщение об ошибке - не понятно, в чем именно различаются объекты
+			Assert.True(AreEqual(actualTsar, expectedTsar));
+		}
 
 		private bool AreEqual(Person? actual, Person? expected)
 		{

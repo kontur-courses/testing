@@ -10,45 +10,50 @@ namespace HomeExercises
 {
 	public class NumberValidatorTests
 	{
-		[TestCase(-1,2 ,TestName = "Throw Exception on negative Precision")]
+		[TestCase(-1, 2, TestName = "Throw Exception on negative Precision")]
 		[TestCase(2, -1, TestName = "Throw Exception on negative Scale ")]
-		[TestCase(2, 3,  TestName = "Throw Exception if Scale is greater than Precision ")]
+		[TestCase(2, 3, TestName = "Throw Exception if Scale is greater than Precision ")]
 		[TestCase(1, 1, TestName = "Throw Exception if Scale is equal Precision ")]
-        [TestCase(0, 1, TestName = "Throw Exception on zero Precision ")]
-        public void NumberValidator_IncorrectValues_ThrowException(int precision, int scale)
-        {
-			Action a = () =>  new NumberValidator(precision, scale);
+		[TestCase(0, 1, TestName = "Throw Exception on zero Precision ")]
+		public void NumberValidator_IncorrectValues_ThrowException(int precision, int scale)
+		{
+			Action a = () => new NumberValidator(precision, scale);
 
-	        a.Should().Throw<ArgumentException>();
-        }
+			a.Should().Throw<ArgumentException>();
+		}
 
-        [TestCase(1, 0, TestName = "Don't throw Exception on correct values")]
-        public void NumberValidator_CorrectValue_NotThrowException(int precision, int scale)
-        {
-	        Action a = () => new NumberValidator(precision, scale);
+		[TestCase(1, 0, TestName = "Don't throw Exception on correct values")]
+		public void NumberValidator_CorrectValue_NotThrowException(int precision, int scale)
+		{
+			Action a = () => new NumberValidator(precision, scale);
 
-	        a.Should().NotThrow<ArgumentException>();
-        }
+			a.Should().NotThrow<ArgumentException>();
+		}
 
-        [TestCase(17, 2, "0.0", TestName = "Return True on correct values")]
-        public void NumberValidator_CorrectValue_ShouldReturnTrue(int precision, int scale,string number)
-        {
-	        new NumberValidator(precision, scale,true).IsValidNumber(number).Should().Be(true);
-        }
+		[TestCase(17, 2, true, "0.0", TestName = "Return True on correct values")]
+		[TestCase(5, 2, true, "+12.34", TestName = "Positive float wit sign")]
+		[TestCase(5, 2, false, "-12.34", TestName = "Negative float wit sign")]
+		[TestCase(5, 0, true, "12345", TestName = "Integer")]
+		[TestCase(5, 2, true, "123,45", TestName = "Comma separated float")]
+		public void NumberValidator_CorrectValue_ShouldReturnTrue(int precision, int scale, bool onlyPositive,
+			string number)
+		{
+			new NumberValidator(precision, scale, onlyPositive).IsValidNumber(number).Should().Be(true);
+		}
 
-        [TestCase(3, 2, "a.sd", TestName = "Return False on incorrect number")]
-        [TestCase(3, 2, "", TestName = "Return False on empty string")]
-        [TestCase(3, 2, null, TestName = "Return False on null string")]
-        [TestCase(3, 2, "-1.23", TestName = "Return False on negative number if only positive allowed")]
-        [TestCase(4, 2, "1.111", TestName = "Return False if fraction is longer than Scale")]
-        [TestCase(4, 2, "111.11", TestName = "Return False if number length is greater than Precision")]
-        [TestCase(3, 2, "+1.23", TestName = "Return False if number length with sign is greater than Precision")]
+		[TestCase(3, 2, "a.sd", TestName = "Return False on incorrect number")]
+		[TestCase(3, 2, "", TestName = "Return False on empty string")]
+		[TestCase(3, 2, null, TestName = "Return False on null string")]
+		[TestCase(3, 2, "-1.23", TestName = "Return False on negative number if only positive allowed")]
+		[TestCase(4, 2, "1.111", TestName = "Return False if fraction is longer than Scale")]
+		[TestCase(4, 2, "111.11", TestName = "Return False if number length is greater than Precision")]
+		[TestCase(3, 2, "+1.23", TestName = "Return False if number length with sign is greater than Precision")]
 
-        public void NumberValidator_IncorrectValue_ShouldReturnFalse(int precision, int scale, string number)
-        {
-	        new NumberValidator(precision, scale,true).IsValidNumber(number).Should().Be(false);
-        }
-    }
+		public void NumberValidator_IncorrectValue_ShouldReturnFalse(int precision, int scale, string number)
+		{
+			new NumberValidator(precision, scale, true).IsValidNumber(number).Should().Be(false);
+		}
+	}
 
 	public class NumberValidator
 	{
