@@ -15,16 +15,18 @@ namespace HomeExercises
 			var expectedTsar = new Person("Ivan IV The Terrible", 54, 170, 70,
 				new Person("Vasili III of Russia", 28, 170, 60, null));
 
-			// Перепишите код на использование Fluent Assertions.
-			Assert.AreEqual(actualTsar.Name, expectedTsar.Name);
-			Assert.AreEqual(actualTsar.Age, expectedTsar.Age);
-			Assert.AreEqual(actualTsar.Height, expectedTsar.Height);
-			Assert.AreEqual(actualTsar.Weight, expectedTsar.Weight);
+			/*
+			 *  Данный тест рекурсивно пройдется по всем полям объекта и сравнит их по значению рекурсивно
+			 *  По умолчанию рекурсия проходит на глубину 10, для того чтобы снять ограничение
+			 *  используется опция AllowingInfiniteRecursion, но она может стать бесконечной, если цепь проверки замкнется.
+			 *  Мой способ лучше тем, что в случае добавления новых полей в объект Person, будут проверяться все поля без изменения теста.
+			 *  Изменения нужно будет вносить только в случае если мы хотим убрать какие-то поля из проверки.
+			 */
 
-			Assert.AreEqual(expectedTsar.Parent!.Name, actualTsar.Parent!.Name);
-			Assert.AreEqual(expectedTsar.Parent.Age, actualTsar.Parent.Age);
-			Assert.AreEqual(expectedTsar.Parent.Height, actualTsar.Parent.Height);
-			Assert.AreEqual(expectedTsar.Parent.Parent, actualTsar.Parent.Parent);
+			actualTsar.Should().BeEquivalentTo(expectedTsar, options =>
+				options.Excluding(o => o.SelectedMemberInfo.Name == nameof(Person.Id) &&
+				                       o.SelectedMemberInfo.DeclaringType == typeof(Person))
+					.IgnoringCyclicReferences());
 		}
 
 		[Test]
@@ -34,8 +36,13 @@ namespace HomeExercises
 			var actualTsar = TsarRegistry.GetCurrentTsar();
 			var expectedTsar = new Person("Ivan IV The Terrible", 54, 170, 70,
 				new Person("Vasili III of Russia", 28, 170, 60, null));
-
-			// Какие недостатки у такого подхода? 
+			/*
+			 * Какие недостатки у такого подхода?
+			 * 1. Придется менять метод AreEqual, если в объект добавятся еще поля.
+			 * 2. Рекурсия может стать бесконечной, если в каком-то Person Parent будет равен Person, который уже был в цепи проверки
+			 * 3. Имя теста никак не сигнализирует о том какой особый случай оно проверяет
+			 * 4. Тест никак не показывает в чем проблема, тест просто становится красным
+			 */
 			Assert.True(AreEqual(actualTsar, expectedTsar));
 		}
 
@@ -64,11 +71,11 @@ namespace HomeExercises
 
 	public class Person
 	{
-		public static int IdCounter = 0;
+		public static int IdCounter;
 		public int Age, Height, Weight;
+		public int Id;
 		public string Name;
 		public Person? Parent;
-		public int Id;
 
 		public Person(string name, int age, int height, int weight, Person? parent)
 		{
