@@ -20,13 +20,15 @@ namespace HomeExercisesTests
 			 * 1. Это решение не нужно будет переписывать при добавлении/удалении в класс/из класса Person полей.
 			 * 2. В этом решении наглядно видно, какое именно поле не учитывается при сравнении объектов.
 			 * 3. При падении теста мы увидим, какие именно поля объектов не прошли проверку на равенство.
+			 * 4. Это решение игнорирует циклические ссылки, поэтому этот тест не выбросит StackOverflowException
+			 * при циклических зависимостях.
 			 */
 			actualTsar
 				.Should()
 				.BeEquivalentTo(expectedTsar, options => options
 					.Excluding(info =>
-						info.SelectedMemberPath.Equals(nameof(Person.Id)) ||
-						info.SelectedMemberPath.EndsWith($"{nameof(Person.Parent)}.{nameof(Person.Id)}"))
+						info.SelectedMemberInfo.Name.Equals(nameof(Person.Id))
+						&& info.SelectedMemberInfo.DeclaringType.Name.Equals(nameof(Person)))
 					.IgnoringCyclicReferences()
 					.AllowingInfiniteRecursion());
 		}
@@ -38,7 +40,7 @@ namespace HomeExercisesTests
 			var actualTsar = TsarRegistry.GetCurrentTsar();
 			var expectedTsar = new Person("Ivan IV The Terrible", 54, 170, 70,
 				new Person("Vasili III of Russia", 28, 170, 60, null));
-
+			
 			// Какие недостатки у такого подхода? 
 
 			/*
@@ -46,6 +48,7 @@ namespace HomeExercisesTests
 			 * то тогда придется переписывать метод AreEqual
 			 * 2. Если тест не пройдет, то мы не увидим, какие именно поля у двух объектов не совпали.
 			 * Нам просто выдаст сообщение 'Expected: True, But was: False'
+			 * 3. Если передать зацикленного царя, тест выбросит Stack Overflow Exception.
 			 */
 
 			Assert.True(AreEqual(actualTsar, expectedTsar));
