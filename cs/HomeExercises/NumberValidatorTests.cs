@@ -9,7 +9,16 @@ namespace HomeExercises
 	public class NumberValidatorTests
 	{
 		[Test]
-		public void Constructor_ShouldThrow_WhenPrecisionIsNotPositive()
+		public void Constructor_ShouldThrow_WhenPrecisionNegative()
+		{
+			Action act = () => new NumberValidator(-1);
+			act.Should()
+				.Throw<ArgumentException>()
+				.WithMessage("precision must be a positive number");
+		}
+
+		[Test]
+		public void Constructor_ShouldThrow_WhenPrecisionIsZero()
 		{
 			Action act = () => new NumberValidator(0);
 			act.Should()
@@ -18,7 +27,7 @@ namespace HomeExercises
 		}
 
 		[Test]
-		public void Constructor_ShouldThrow_WhenScaleIsNegative()
+		public void Constructor_ShouldThrow_WhenScaleNegative()
 		{
 			Action act = () => new NumberValidator(3, -1);
 			act.Should()
@@ -27,7 +36,16 @@ namespace HomeExercises
 		}
 
 		[Test]
-		public void Constructor_ShouldThrow_WhenScaleIsGreaterOrEqualPrecision()
+		public void Constructor_ShouldThrow_WhenScaleEqualPrecision()
+		{
+			Action act = () => new NumberValidator(3, 3);
+			act.Should()
+				.Throw<ArgumentException>()
+				.WithMessage("precision must be a non-negative number less or equal than precision");
+		}
+
+		[Test]
+		public void Constructor_ShouldThrow_WhenScaleGreaterPrecision()
 		{
 			Action act = () => new NumberValidator(3, 4);
 			act.Should()
@@ -42,11 +60,10 @@ namespace HomeExercises
 			act.Should().NotThrow<ArgumentException>();
 		}
 
-		[TestCase("0")]
-		[TestCase("00.0")]
-		[TestCase("+2.0")]
-		[TestCase("1111")]
-		public void IsValidNumber_ShouldBeTrue_WhenNumberIsValid(string value)
+
+		[TestCase("1.2")]
+		[TestCase("1,2")]
+		public void IsValidNumber_ShouldBeTrue_WhenValueWithDifferentSeparators(string value)
 		{
 			var validator = new NumberValidator(4, 2, true);
 
@@ -55,15 +72,75 @@ namespace HomeExercises
 			result.Should().BeTrue();
 		}
 
-		[TestCase("")]
-		[TestCase("   _")]
-		[TestCase("4.sd")]
-		[TestCase("-0.0")]
-		[TestCase("0.000")]
-		[TestCase("+-0")]
-		public void IsValidNumber_ShouldBeFalse_WhenNumberIsNotValid(string value)
+		[TestCase("1`4")]
+		[TestCase("1'4")]
+		[TestCase("1_4")]
+		[TestCase("1 000")]
+		public void IsValidNumber_ShouldBeFalse_WhenValueWithUnsupportedSeparators(string value)
+		{
+			var validator = new NumberValidator(10, 2, true);
+
+			var result = validator.IsValidNumber(value);
+
+			result.Should().BeFalse();
+		}
+
+		[TestCase("-0")]
+		[TestCase("-1")]
+		public void IsValidNumber_ShouldBeFalse_WhenOnlyPositive(string value)
 		{
 			var validator = new NumberValidator(4, 2, true);
+
+			var result = validator.IsValidNumber(value);
+
+			result.Should().BeFalse();
+		}
+
+		[TestCase("-0")]
+		[TestCase("-1")]
+		public void IsValidNumber_ShouldBeTrue_WhenNumberIsNegative(string value)
+		{
+			var validator = new NumberValidator(4, 2);
+
+			var result = validator.IsValidNumber(value);
+
+			result.Should().BeTrue();
+		}
+
+		[TestCase(null)]
+		[TestCase("")]
+		public void IsValidNumber_ShouldBeFalse_WhenValueIsNullOrEmpty(string value)
+		{
+			var validator = new NumberValidator(10, 2, true);
+
+			var result = validator.IsValidNumber(value);
+
+			result.Should().BeFalse();
+		}
+
+		[TestCase("1.")]
+		[TestCase(".1")]
+		[TestCase("+-0")]
+		[TestCase("@#$1")]
+		[TestCase("\n1")]
+		[TestCase("abc")]
+		[TestCase("a4")]
+		public void IsValidNumber_ShouldBeFalse_WhenInvalidFormat(string value)
+		{
+			var validator = new NumberValidator(10, 2);
+
+			var result = validator.IsValidNumber(value);
+
+			result.Should().BeFalse();
+		}
+
+		[TestCase("1111")]
+		[TestCase("-111")]
+		[TestCase("-10.0")]
+		[TestCase("0.00")]
+		public void IsValidNumber_ShouldBeFalse_WhenValueTooLong(string value)
+		{
+			var validator = new NumberValidator(3, 1);
 
 			var result = validator.IsValidNumber(value);
 
