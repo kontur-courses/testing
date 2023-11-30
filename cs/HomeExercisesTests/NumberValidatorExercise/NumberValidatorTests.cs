@@ -71,7 +71,7 @@ namespace HomeExercisesTests.NumberValidatorExercise
         [TestCase(4, 2, false, "12.12", TestName = "IsValidNumber Should Be True When Value is Positive And OnlyPositive Is False")]
         [TestCase(4, 2, false, "-1.12", TestName = "IsValidNumber Should Be True When Value is Negative And OnlyPositive Is False")]
         [TestCase(4, 2, true, "0", TestName = "IsValidNumber Should Be True When Value Has No FracPart")]
-        public void TestIsValidNumberValidCases(int precision, int scale, bool onlyPositive, string value)
+        public void IsValidNumberShouldBeTrueWhenValueIsValid(int precision, int scale, bool onlyPositive, string value)
         {
             var numberValidator = new NumberValidator(precision, scale, onlyPositive);
 
