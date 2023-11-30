@@ -3,7 +3,7 @@ using NUnit.Framework;
 
 namespace HomeExercises.tests
 {
-	public class Person_Should
+	public class ObjectComparison_Should
 	{
 		[Test]
 		[Description("Проверка текущего царя")]
@@ -12,13 +12,13 @@ namespace HomeExercises.tests
 		{
 			var actualTsar = TsarRegistry.GetCurrentTsar();
 
-			var expectedTsar = new Person("Ivan IV The Terrible", 54, 170, 70,
-				new Person("Vasili III of Russia", 28, 170, 60, null));
+			var expectedTsar = new ObjectComparison("Ivan IV The Terrible", 54, 170, 70,
+				new ObjectComparison("Vasili III of Russia", 28, 170, 60, null));
 
 			actualTsar.Should().BeEquivalentTo(expectedTsar, options => options
 				.Excluding(tsar =>
-					tsar.SelectedMemberInfo.Name == nameof(Person.Id)
-					&& tsar.SelectedMemberInfo.DeclaringType == typeof(Person)));
+					tsar.SelectedMemberInfo.Name == nameof(ObjectComparison.Id)
+					&& tsar.SelectedMemberInfo.DeclaringType == typeof(ObjectComparison)));
 		}
 
 		[Test]
@@ -26,17 +26,17 @@ namespace HomeExercises.tests
 		public void CheckCurrentTsar_WithCustomEquality()
 		{
 			var actualTsar = TsarRegistry.GetCurrentTsar();
-			var expectedTsar = new Person("Ivan IV The Terrible", 54, 170, 70,
-				new Person("Vasili III of Russia", 28, 170, 60, null));
+			var expectedTsar = new ObjectComparison("Ivan IV The Terrible", 54, 170, 70,
+				new ObjectComparison("Vasili III of Russia", 28, 170, 60, null));
 
 			//Какие недостатки у такого подхода? 
-			//Нужно будет переписывать AreEqual в случае изменения полей Person
+			//Нужно будет переписывать AreEqual в случае изменения полей ObjectComparison
 			//Возможна ошибка при написании метода
 			//Если тест упадет, сообщение об ошибке будет малоинформативным
 			Assert.True(AreEqual(actualTsar, expectedTsar));
 		}
 
-		private bool AreEqual(Person? actual, Person? expected)
+		private bool AreEqual(ObjectComparison? actual, ObjectComparison? expected)
 		{
 			if (actual == expected) return true;
 			if (actual == null || expected == null) return false;
@@ -51,11 +51,11 @@ namespace HomeExercises.tests
 
 	public class TsarRegistry
 	{
-		public static Person GetCurrentTsar()
+		public static ObjectComparison GetCurrentTsar()
 		{
-			return new Person(
+			return new ObjectComparison(
 				"Ivan IV The Terrible", 54, 170, 70,
-				new Person("Vasili III of Russia", 28, 170, 60, null));
+				new ObjectComparison("Vasili III of Russia", 28, 170, 60, null));
 		}
 	}
 }

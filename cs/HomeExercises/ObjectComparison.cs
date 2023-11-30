@@ -1,14 +1,14 @@
 ﻿namespace HomeExercises
 {
-	public class Person
+	public class ObjectComparison
 	{
 		public static int IdCounter = 0;
 		public int Age, Height, Weight;
 		public string Name;
-		public Person? Parent;
+		public ObjectComparison? Parent;
 		public int Id;
 
-		public Person(string name, int age, int height, int weight, Person? parent)
+		public ObjectComparison(string name, int age, int height, int weight, ObjectComparison? parent)
 		{
 			Id = IdCounter++;
 			Name = name;
