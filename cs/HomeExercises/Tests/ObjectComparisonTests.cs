@@ -5,7 +5,7 @@ using System;
 namespace HomeExercises.Tests
 {
     [TestFixture(TestOf = typeof(TsarRegistry))]
-    public class ObjectComparison
+    public class ObjectComparisonTests
     {
         [Test]
         [Description("Проверка текущего царя")]
