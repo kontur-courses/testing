@@ -18,7 +18,9 @@ namespace HomeExercises
 			// Код, который не нужно менять при добавлении новых свойств, при проверке исключаем поле Id
 			actualTsar.Should().BeEquivalentTo(
 				expectedTsar, config => config
-					.Excluding(person => person.SelectedMemberInfo.Name.Equals("Id"))
+					.Excluding(person => 
+						person.SelectedMemberInfo.DeclaringType.Equals(typeof(Person)) &&
+						person.SelectedMemberInfo.Name.Equals(nameof(Person.Id)))
 			);
 
 			/*
