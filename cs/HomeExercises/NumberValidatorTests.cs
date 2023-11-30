@@ -7,11 +7,6 @@ namespace HomeExercises
 {
 	public class NumberValidatorTests
 	{
-		private static int precision = 5;
-		private static int scale = 2;
-		private static NumberValidator numberValidator = new NumberValidator(precision, scale);
-		private static string restrictionsMessage = $"Precision: {precision}, Scale: {scale}";
-
 		[TestCase(1, 1)]
 		[TestCase(1, -1)]
 		[TestCase(0, 1)]
@@ -25,20 +20,20 @@ namespace HomeExercises
 		[TestCase("-1")]
 		public void ShouldBeValidNumber_WhenOneSign(string value)
 		{
-			numberValidator.IsValidNumber(value).Should().BeTrue();
+			new NumberValidator(5, 2).IsValidNumber(value).Should().BeTrue();
 		}
 
 		[Test]
 		public void ShouldNotBeValidNumber_WhenMoreThanOneSign()
 		{
-			numberValidator.IsValidNumber("+-1").Should().BeFalse();
+			new NumberValidator(5, 2).IsValidNumber("+-1").Should().BeFalse();
 		}
 
 		[TestCase("1,1")]
 		[TestCase("1.1")]
 		public void ShouldBeValidNumber_WhenSeparated(string value)
 		{
-			numberValidator.IsValidNumber(value).Should().BeTrue();
+			new NumberValidator(5, 2).IsValidNumber(value).Should().BeTrue();
 		}
 
 		[TestCase("")]
@@ -48,7 +43,7 @@ namespace HomeExercises
 		[TestCase("?1a.2b")]
 		public void ShouldNotBeValidNumber_WhenIncorrectValue(string value)
 		{
-			numberValidator.IsValidNumber(value).Should().BeFalse();
+			new NumberValidator(5, 2).IsValidNumber(value).Should().BeFalse();
 		}
 
 		[Test]
@@ -61,18 +56,22 @@ namespace HomeExercises
 		[TestCase("000.00")]
 		[TestCase("+123.45")]
 		[TestCase("-12.34")]
-		public void ShouldBeValidNumber_When_CorrectPrecisionAndScale(string value)
+		[TestCase("123456", 6, 0)]
+		[TestCase("1.23456", 10, 5)]
+		public void ShouldBeValidNumber_When_CorrectPrecisionAndScale(string value, int precision = 5, int scale = 2)
 		{
-			numberValidator.IsValidNumber(value).Should().BeTrue(restrictionsMessage);
+			new NumberValidator(precision, scale).IsValidNumber(value).Should().BeTrue($"Precision: {precision}, Scale: {scale}");
 		}
 
 		[TestCase("123456")]
 		[TestCase("1234.56")]
 		[TestCase("12.356")]
 		[TestCase("-123.45")]
-		public void ShouldNotBeValidNumber_When_IncorrectPrecisionOrScale(string value)
+		[TestCase("+123.45", 10, 1)]
+		[TestCase("-12.34", 4)]
+		public void ShouldNotBeValidNumber_When_IncorrectPrecisionOrScale(string value, int precision = 5, int scale = 2)
 		{
-			numberValidator.IsValidNumber(value).Should().BeFalse(restrictionsMessage);
+			new NumberValidator(precision, scale).IsValidNumber(value).Should().BeFalse($"Precision: {precision}, Scale: {scale}");
 		}
 	}
 
