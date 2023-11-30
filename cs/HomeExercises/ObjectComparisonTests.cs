@@ -18,7 +18,7 @@ namespace HomeExercises
 			// Код, который не нужно менять при добавлении новых свойств, при проверке исключаем поле Id
 			actualTsar.Should().BeEquivalentTo(
 				expectedTsar, config => config
-					.Excluding(person => person.SelectedMemberPath.EndsWith("Id"))
+					.Excluding(person => person.SelectedMemberInfo.Name.Equals(nameof(Person.Id)))
 			);
 
 			/*
@@ -52,7 +52,7 @@ namespace HomeExercises
 			 * 4. Рекурсия, возможно переполнение стека вызовов
 			 */
 
-			Assert.True(AreEqual(actualTsar, expectedTsar));
+			AreEqual(actualTsar, expectedTsar).Should().BeTrue();
 		}
 
 		private bool AreEqual(Person? actual, Person? expected)

@@ -6,53 +6,64 @@ namespace HomeExercises
 {
 	public class NumberValidatorTests
 	{
-		[Category("throw ArgumentException")]
-		[TestCase(3, 4, TestName = "ScaleGreaterThanPrecision")]
-		[TestCase(10, 10, TestName = "ScaleEqualPrecision")]
-		[TestCase(-1, 2, TestName = "NegativePrecision")]
-		[TestCase(17, -1, TestName = "NegativeScale")]
-		public void Fails_When_BadPrecisionOrScale(int precision, int scale)
+		[TestCaseSource(nameof(ThrowCases))]
+		public void ShouldThrow_ArgumentException(int precision, int scale)
 		{
 			var action = new Func<NumberValidator>(() =>
 				NumberValidator.Create(precision, scale));
 			action.Should().Throw<ArgumentException>();
 		}
+		
+		public static object[] ThrowCases =
+		{
+			new TestCaseData(3, 4).SetName("When_ScaleGreaterThanPrecision"),
+			new TestCaseData(10, 10).SetName("When_ScaleEqualPrecision"),
+			new TestCaseData(-1, 2).SetName("When_NegativePrecision"),
+			new TestCaseData(17, -1).SetName("When_NegativeScale")
+		};
 
-		[Category("invalid data")]
-		[TestCase(17, 2, "ы", TestName = "BadRegex")]
-		[TestCase(17, 2, null, TestName = "NullString")]
-		[TestCase(17, 2, "", TestName = "EmptyString")]
-		public void ShouldReturn_False_When_InvalidData(int precision, int scale, string value)
+		[TestCaseSource(nameof(InvalidDataCases))]
+		public void ShouldReturn_False_On_InvalidData(int precision, int scale, string value, bool onlyPositive = false)
+		{
+			NumberValidator.Create(precision, scale, onlyPositive).IsValidNumber(value).Should().BeFalse();
+		}
+		
+		public static object[] InvalidDataCases =
+		{
+			new TestCaseData(17, 2, "ы", false).SetName("When_BadRegex"),
+			new TestCaseData(17, 2, "", false).SetName("When_EmptyString"),
+			new TestCaseData(17, 2, null!, false).SetName("When_NullString"),
+			new TestCaseData(17, 2, null!, true).SetName("When_MinusValue_And_OnlyPositive")
+		};
+
+		[TestCaseSource(nameof(FalseCases))]
+		public void ShouldReturn_False(int precision, int scale, string value)
 		{
 			NumberValidator.Create(precision, scale).IsValidNumber(value).Should().BeFalse();
 		}
 
-		[Test]
-		public void Return_False_MinusValue_And_OnlyPositive()
+		public static object[] FalseCases =
 		{
-			NumberValidator.Create(17, 2, true).IsValidNumber("-0.0").Should().BeFalse();
-		}
+			new TestCaseData(17, 0, "0.0").SetName("When_FracPartWithZeroScale"),
+			new TestCaseData(17, 2, "0.000").SetName("When_FracPartLongerThenScale"),
+			new TestCaseData(2, 1, "+0.0").SetName("When_SymbolsMoreThenPrecisionWithPlusSign"),
+			new TestCaseData(2, 1, "-0.0").SetName("When_SymbolsMoreThenPrecisionWithMinusSign"),
+			new TestCaseData(4, 3, "0.0000").SetName("When_SymbolsMoreThenPrecisionWithScale"),
+			new TestCaseData(2, 0, "189").SetName("When_SymbolsMoreThenPrecisionWithoutScale")
+		};
 
-		[Category("wrong value")]
-		[TestCase(17, 0, "0.0", TestName = "FracPartWithZeroScale")]
-		[TestCase(17, 2, "0.000", TestName = "FracPartLongerThenScale")]
-		[TestCase(2, 1, "+0.0", TestName = "SymbolsMoreThenPrecisionWithPlusSign")]
-		[TestCase(2, 1, "-0.0", TestName = "SymbolsMoreThenPrecisionWithMinusSign")]
-		[TestCase(4, 3, "0.0000", TestName = "SymbolsMoreThenPrecisionWithScale")]
-		[TestCase(2, 0, "189", TestName = "SymbolsMoreThenPrecisionWithoutScale")]
-		public void ShouldReturn_False_When_IncorrectValue(int precision, int scale, string value)
-		{
-			NumberValidator.Create(precision, scale).IsValidNumber(value).Should().BeFalse();
-		}
-
-		[Category("correct validation")]
-		[TestCase(17, 2, "0.0", TestName = "WithScale")]
-		[TestCase(17, 2, "0", TestName = "WithoutScale")]
-		[TestCase(4, 2, "+1.23", TestName = "WithPlusSign")]
-		[TestCase(5, 3, "-1.234", TestName = "WithMinusSign")]
-		public void ShouldReturn_True_When_CorrectValidation(int precision, int scale, string value)
+		[TestCaseSource(nameof(TrueCases))]
+		public void ShouldReturn_True(int precision, int scale, string value)
 		{
 			NumberValidator.Create(precision, scale).IsValidNumber(value).Should().BeTrue();
 		}
+
+		public static object[] TrueCases =
+		{
+			new TestCaseData(17, 2, "0.0").SetName("When_WithScale"),
+			new TestCaseData(17, 2, "0").SetName("When_WithoutScale"),
+			new TestCaseData(4, 2, "+1.23").SetName("When_WithPlusSign"),
+			new TestCaseData(5, 3, "-1.234").SetName("When_WithMinusSign")
+		};
 	}
 }
