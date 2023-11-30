@@ -19,7 +19,7 @@ namespace HomeExercises
 			actualTsar.Should().BeEquivalentTo(
 				expectedTsar, config => config
 					.Excluding(person => 
-						person.SelectedMemberInfo.DeclaringType.Equals(typeof(Person)) &&
+						person.SelectedMemberInfo.DeclaringType == typeof(Person) &&
 						person.SelectedMemberInfo.Name.Equals(nameof(Person.Id)))
 			);
 
