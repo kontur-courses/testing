@@ -1,13 +1,16 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
         <TargetFramework>net6.0</TargetFramework>
-        <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
-        <RootNamespace>HomeExercises</RootNamespace>
-        <AssemblyName>ObjectComparison</AssemblyName>
-        <Nullable>enable</Nullable>
         <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+        <IsPackable>false</IsPackable>
+        <IsTestProject>true</IsTestProject>
     </PropertyGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\HomeExercises\HomeExercises.csproj"/>
+    </ItemGroup>
 
     <ItemGroup>
         <PackageReference Include="FluentAssertions" Version="5.0.0"/>
