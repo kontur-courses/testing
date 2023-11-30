@@ -23,14 +23,6 @@ namespace HomeExercisesTests.ObjectComparisonExercise
                         info.SelectedMemberInfo.DeclaringType == typeof(Person)
                         && info.SelectedMemberInfo.Name == nameof(Person.Id))
             );
-
-            expectedTsar.Should().BeEquivalentTo(actualTsar, options =>
-                options
-                    .IgnoringCyclicReferences()
-                    .Excluding((IMemberInfo info) =>
-                        info.SelectedMemberInfo.DeclaringType == typeof(Person)
-                        && info.SelectedMemberInfo.Name == nameof(Person.Id))
-            );
         }
 
         [Test]
