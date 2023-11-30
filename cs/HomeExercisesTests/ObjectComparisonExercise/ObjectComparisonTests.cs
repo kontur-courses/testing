@@ -1,12 +1,13 @@
 ﻿using FluentAssertions;
+using FluentAssertions.Equivalency;
+using HomeExercises.ObjectComparisonExercise;
 using NUnit.Framework;
 
-namespace HomeExercises
+namespace HomeExercisesTests.ObjectComparisonExercise
 {
-    public class ObjectComparison
+    public class ObjectComparisonTests
     {
         [Test]
-        [Description("Проверка текущего царя")]
         [Category("ToRefactor")]
         public void CheckCurrentTsar()
         {
@@ -15,14 +16,24 @@ namespace HomeExercises
             var expectedTsar = new Person("Ivan IV The Terrible", 54, 170, 70,
                 new Person("Vasili III of Russia", 28, 170, 60, null));
 
-            // Перепишите код на использование Fluent Assertions.
-            actualTsar.Should().BeEquivalentTo(expectedTsar, options => options.Excluding(p => p.Id).Excluding(p => p.Parent!.Id));
+            actualTsar.Should().BeEquivalentTo(expectedTsar, options =>
+                options
+                    .IgnoringCyclicReferences()
+                    .Excluding((IMemberInfo info) =>
+                        info.SelectedMemberInfo.DeclaringType == typeof(Person)
+                        && info.SelectedMemberInfo.Name == nameof(Person.Id))
+            );
 
-            expectedTsar.Should().BeEquivalentTo(actualTsar, options => options.Excluding(p => p.Id).Excluding(p => p.Parent!.Id));
+            expectedTsar.Should().BeEquivalentTo(actualTsar, options =>
+                options
+                    .IgnoringCyclicReferences()
+                    .Excluding((IMemberInfo info) =>
+                        info.SelectedMemberInfo.DeclaringType == typeof(Person)
+                        && info.SelectedMemberInfo.Name == nameof(Person.Id))
+            );
         }
 
         [Test]
-        [Description("Альтернативное решение. Какие у него недостатки?")]
         public void CheckCurrentTsar_WithCustomEquality()
         {
             var actualTsar = TsarRegistry.GetCurrentTsar();
@@ -47,35 +58,6 @@ namespace HomeExercises
                 && actual.Height == expected.Height
                 && actual.Weight == expected.Weight
                 && AreEqual(actual.Parent, expected.Parent);
-        }
-    }
-
-    public class TsarRegistry
-    {
-        public static Person GetCurrentTsar()
-        {
-            return new Person(
-                "Ivan IV The Terrible", 54, 170, 70,
-                new Person("Vasili III of Russia", 28, 170, 60, null));
-        }
-    }
-
-    public class Person
-    {
-        public static int IdCounter = 0;
-        public int Age, Height, Weight;
-        public string Name;
-        public Person? Parent;
-        public int Id;
-
-        public Person(string name, int age, int height, int weight, Person? parent)
-        {
-            Id = IdCounter++;
-            Name = name;
-            Age = age;
-            Height = height;
-            Weight = weight;
-            Parent = parent;
         }
     }
 }
