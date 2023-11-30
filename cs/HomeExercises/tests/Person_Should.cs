@@ -1,10 +1,9 @@
 ﻿using FluentAssertions;
 using NUnit.Framework;
 
-
 namespace HomeExercises.tests
 {
-	public class ObjectComparsion_Should
+	public class Person_Should
 	{
 		[Test]
 		[Description("Проверка текущего царя")]
