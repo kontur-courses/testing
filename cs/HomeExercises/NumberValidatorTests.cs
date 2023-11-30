@@ -17,10 +17,7 @@ namespace HomeExercises
 		public void NumberValidator_CreateInvalidNumber_ShouldBeTrowException(int precision, int scale,
 			bool onlyPositive)
 		{
-			Action createNumberValidator = () =>
-			{
-				var numberValidator = new NumberValidator(precision, scale, onlyPositive);
-			};
+			Action createNumberValidator = () => new NumberValidator(precision, scale, onlyPositive);
 			createNumberValidator.Should().Throw<ArgumentException>();
 		}
 
@@ -31,10 +28,7 @@ namespace HomeExercises
 		public void NumberValidator_CreateCorrectNumber_ShouldBeNotTrowException(int precision, int scale,
 			bool onlyPositive)
 		{
-			Action createNumberValidator = () =>
-			{
-				var numberValidator = new NumberValidator(precision, scale, onlyPositive);
-			};
+			Action createNumberValidator = () => new NumberValidator(precision, scale, onlyPositive);
 			createNumberValidator.Should().NotThrow();
 		}
 
@@ -134,9 +128,7 @@ public class NumberValidator
 		if (!match.Success)
 			return false;
 
-		// Знак и целая часть
 		var intPart = match.Groups[1].Value.Length + match.Groups[2].Value.Length;
-		// Дробная часть
 		var fracPart = match.Groups[4].Value.Length;
 
 		if (intPart + fracPart > precision || fracPart > scale)
