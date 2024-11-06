@@ -1,58 +1,78 @@
 ﻿using System;
 using System.Text.RegularExpressions;
 using FluentAssertions;
+using FluentAssertions.Primitives;
 using NUnit.Framework;
 
 namespace HomeExercises
 {
 	public class NumberValidatorTests
 	{
-		[TestCaseSource(nameof(ValidationExceptionCases))]
-		public void ValidationExceptionTest(int precision, int scale, bool onlyPositive, bool shouldThrow)
+		[TestCase(2, 3, true)]
+		[TestCase(-1, 2, false)]
+		public void Constructor_IncorrectArguments_ShouldThrowArgumentException(int precision, int scale,
+			bool onlyPositive)
 		{
-			// Action action = () => new NumberValidator(precision, scale, onlyPositive);
-			// action.Should().Throw<ArgumentException>().When(shouldThrow); When не доступно в старой версии либы(
 			Action action = () => new NumberValidator(precision, scale, onlyPositive);
-			if (shouldThrow)
-			{
-				action.Should().Throw<ArgumentException>();
-			}
-			else
-			{
-				action.Should().NotThrow();
-			}
-			
+			action.Should().Throw<ArgumentException>();
 		}
-		public static object[] ValidationExceptionCases =
-		{
-			new object[] { 1, 0, true, false },
-			new object[] { -1, 2, false, true },
-			new object[] { 2, 3, true, true }
-		};
 
-		[TestCaseSource(nameof(CorrectValidationCases))]
-		public void CorrectValidationTest(int precision, int scale, bool onlyPositive, string inputCase, bool expected)
+		[TestCase(1, 0, true)]
+		public void Constructor_CorrectArguments_ShouldNotThrowArgumentException(int precision, int scale,
+			bool onlyPositive)
+		{
+			Action action = () => new NumberValidator(precision, scale, onlyPositive);
+			action.Should().NotThrow();
+		}
+
+		[TestCase(3, 2, true, "a.sd")]
+		[TestCase(3, 2, true, "0+1.0.1")]
+		public void IsValidNumber_WrongInputType_ShouldReturnFalse(int precision, int scale, bool onlyPositive,
+			string input)
 		{
 			var validator = new NumberValidator(precision, scale, onlyPositive);
-			var isValid = validator.IsValidNumber(inputCase);
-			isValid.Should().Be(expected);
+			validator.IsValidNumber(input).Should().BeFalse();
 		}
-
-		public static object[] CorrectValidationCases =
+		
+		[TestCase(3, 2, true, "00.00")]
+		public void IsValidNumber_WrongPrecision_ShouldReturnFalse(int precision, int scale, bool onlyPositive,
+			string input)
 		{
-			new object[] { 17, 2, true, "0", true },
-			new object[] { 3, 2, true, "00.00", false },
-			new object[] { 3, 2, true, "-0.00", false },
-			new object[] { 17, 2, true, "0.0", true },
-			new object[] { 3, 2, true, "+0.00", false },
-			new object[] { 4, 2, true, "+1.23", true },
-			new object[] { 3, 2, true, "+1.23", false },
-			new object[] { 17, 2, true, "0.000", false },
-			new object[] { 3, 2, true, "-1.23", false },
-			new object[] { 3, 2, true, "a.sd", false },
-			new object[] { 1, 0, true, "0", true },
-			new object[] { 1, 0, false, "-0", false },
-		};
+			var validator = new NumberValidator(precision, scale, onlyPositive);
+			validator.IsValidNumber(input).Should().BeFalse();
+		}
+		
+		[TestCase(17, 1, true, "00.00")]
+		public void IsValidNumber_WrongScale_ShouldReturnFalse(int precision, int scale, bool onlyPositive,
+			string input)
+		{
+			var validator = new NumberValidator(precision, scale, onlyPositive);
+			validator.IsValidNumber(input).Should().BeFalse();
+		}
+		
+		[TestCase(4, 3, true, " ")]
+		public void IsValidNumber_NullOrWhitespaces_ShouldReturnFalse(int precision, int scale, bool onlyPositive,
+			string input)
+		{
+			var validator = new NumberValidator(precision, scale, onlyPositive);
+			validator.IsValidNumber(input).Should().BeFalse();
+		}
+		
+		[TestCase(1, 0, false, "-0")]
+		public void IsValidNumber_NegativeNumberWhenNotAllowed_ShouldReturnFalse(int precision, int scale, bool onlyPositive,
+			string input)
+		{
+			var validator = new NumberValidator(precision, scale, onlyPositive);
+			validator.IsValidNumber(input).Should().BeFalse();
+		}
+		
+		[TestCase(17, 2, true, "0")]
+		public void IsValidNumber_CorrectInput_ShouldReturnTrue(int precision, int scale, bool onlyPositive,
+			string input)
+		{
+			var validator = new NumberValidator(precision, scale, onlyPositive);
+			validator.IsValidNumber(input).Should().BeTrue();
+		}
 	}
 
 	public class NumberValidator

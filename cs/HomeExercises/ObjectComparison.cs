@@ -1,4 +1,7 @@
-﻿using FluentAssertions;
+﻿using System;
+using System.Linq;
+using System.Runtime.Serialization.Formatters;
+using FluentAssertions;
 using NUnit.Framework;
 
 namespace HomeExercises
@@ -16,8 +19,10 @@ namespace HomeExercises
 				new Person("Vasili III of Russia", 28, 170, 60, null));
 
 			// Перепишите код на использование Fluent Assertions.
-			actualTsar.Should().BeEquivalentTo(expectedTsar,
-				options => options.Excluding(person => person.Id).Excluding(person => person.Parent!.Id));
+			actualTsar.Should().BeEquivalentTo(expectedTsar, options => options
+				.Excluding(predicate: info =>
+					info.SelectedMemberInfo.Name == nameof(Person.Id)
+				));
 		}
 
 		[Test]
