@@ -10,21 +10,18 @@ namespace HomeExercises
 		[Category("ToRefactor")]
 		public void CheckCurrentTsar()
 		{
+			// Это решение более читаемо за счет FluentAPI.
+			// При неудачном тестировании в отличии от CheckCurrentTsar_WithCustomEquality предоставляет подробную информацию.
+			// При изменении Person потребуется только немного изменить expectedTsar.
+
+
 			var actualTsar = TsarRegistry.GetCurrentTsar();
 
 			var expectedTsar = new Person("Ivan IV The Terrible", 54, 170, 70,
 				new Person("Vasili III of Russia", 28, 170, 60, null));
 
-			// Перепишите код на использование Fluent Assertions.
-			Assert.AreEqual(actualTsar.Name, expectedTsar.Name);
-			Assert.AreEqual(actualTsar.Age, expectedTsar.Age);
-			Assert.AreEqual(actualTsar.Height, expectedTsar.Height);
-			Assert.AreEqual(actualTsar.Weight, expectedTsar.Weight);
-
-			Assert.AreEqual(expectedTsar.Parent!.Name, actualTsar.Parent!.Name);
-			Assert.AreEqual(expectedTsar.Parent.Age, actualTsar.Parent.Age);
-			Assert.AreEqual(expectedTsar.Parent.Height, actualTsar.Parent.Height);
-			Assert.AreEqual(expectedTsar.Parent.Parent, actualTsar.Parent.Parent);
+			expectedTsar.Should().BeEquivalentTo(actualTsar,
+				options => options.Excluding(p => p.SelectedMemberInfo.Name == nameof(Person.Id)));
 		}
 
 		[Test]
@@ -35,7 +32,11 @@ namespace HomeExercises
 			var expectedTsar = new Person("Ivan IV The Terrible", 54, 170, 70,
 				new Person("Vasili III of Russia", 28, 170, 60, null));
 
-			// Какие недостатки у такого подхода? 
+			// Какие недостатки у такого подхода?
+			// Плохо читаем
+			// Из-за рекурсивного вызова в AreEqual возможно переполнение стека
+			// Не предоставляет детальную информацию при неудачном тестировании
+			// При изменении Person потребует изменений в методе AreEqual
 			Assert.True(AreEqual(actualTsar, expectedTsar));
 		}
 
