@@ -1,32 +1,82 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Text.RegularExpressions;
-using FluentAssertions;
 using NUnit.Framework;
 
 namespace HomeExercises
 {
 	public class NumberValidatorTests
 	{
-		[Test]
-		public void Test()
-		{
-			Assert.Throws<ArgumentException>(() => new NumberValidator(-1, 2, true));
-			Assert.DoesNotThrow(() => new NumberValidator(1, 0, true));
-			Assert.Throws<ArgumentException>(() => new NumberValidator(-1, 2, false));
-			Assert.DoesNotThrow(() => new NumberValidator(1, 0, true));
+		private static NumberValidator _numberValidatorOnlyPositiv = new NumberValidator(4, 2, true);
+		private static NumberValidator _numberValidatorAllValues = new NumberValidator(4, 2);
 
-			Assert.IsTrue(new NumberValidator(17, 2, true).IsValidNumber("0.0"));
-			Assert.IsTrue(new NumberValidator(17, 2, true).IsValidNumber("0"));
-			Assert.IsTrue(new NumberValidator(17, 2, true).IsValidNumber("0.0"));
-			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("00.00"));
-			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("-0.00"));
-			Assert.IsTrue(new NumberValidator(17, 2, true).IsValidNumber("0.0"));
-			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("+0.00"));
-			Assert.IsTrue(new NumberValidator(4, 2, true).IsValidNumber("+1.23"));
-			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("+1.23"));
-			Assert.IsFalse(new NumberValidator(17, 2, true).IsValidNumber("0.000"));
-			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("-1.23"));
-			Assert.IsFalse(new NumberValidator(3, 2, true).IsValidNumber("a.sd"));
+		[TestCase(-1, 2, true, TestName = "When_Precision_Is_Not_Positive")]
+		[TestCase(1, -2, true, TestName = "When_Scale_Is_Negative(")]
+		[TestCase(12, 14, true, TestName = "When_Scale_More_Than_Precision")]
+		public void NumberValidator_Should_Throw_ArgumentException(int precision, int scale, bool onlyPositive)
+		{
+			Assert.Throws<ArgumentException>(() => new NumberValidator(precision, scale, onlyPositive));
+		}
+
+		[TestCaseSource(nameof(IsValidNumberShouldReturnFalse))]
+		[TestCaseSource(nameof(IsValidNumberShouldReturnFalse))]
+		public bool IsValidNumber_Should_Return(NumberValidator numberValidator, string value)
+		{
+			return numberValidator.IsValidNumber(value);
+		}
+
+		private static IEnumerable<TestCaseData> IsValidNumberShouldReturnFalse()
+		{
+			yield return new TestCaseData(_numberValidatorAllValues, null)
+				.SetName("False_When_Value_Is_Null")
+				.Returns(false);
+
+			yield return new TestCaseData(_numberValidatorAllValues, "")
+				.SetName("False_When_Value_Is_Empty")
+				.Returns(false);
+
+			yield return new TestCaseData(_numberValidatorAllValues, "ab.c")
+				.SetName("False_When_Value_Is_Not_Match_Regex")
+				.Returns(false);
+
+			yield return new TestCaseData(_numberValidatorAllValues, "000.00")
+				.SetName("False_When_Value_Length_More_Than_Precision")
+				.Returns(false);
+
+			yield return new TestCaseData(_numberValidatorOnlyPositiv, "-0.0")
+				.SetName("False_When_OnlyPositive_Is_True_And_Value_Is_Negative")
+				.Returns(false);
+
+			yield return new TestCaseData(_numberValidatorAllValues, "+00.00")
+				.SetName("False_When_Value_Starts_With_Sign_And_Numbers_Length_Is_Equal_To_Precision")
+				.Returns(false);
+
+			yield return new TestCaseData(_numberValidatorAllValues, " +00.00")
+				.SetName("False_When_Value_Has_Symbols_Before_Number")
+				.Returns(false);
+
+			yield return new TestCaseData(_numberValidatorAllValues, "+00.00 ")
+				.SetName("False_When_Value_Has_Symbols_After_Number")
+				.Returns(false);
+		}
+
+		private static IEnumerable<TestCaseData> IsValidNumberShouldReturnTrue()
+		{
+			yield return new TestCaseData(_numberValidatorAllValues, "+0.0")
+				.SetName("True_When_Value_Starts_With_Plus")
+				.Returns(true);
+
+			yield return new TestCaseData(_numberValidatorAllValues, "0.0")
+				.SetName("True_When_Value_Is_Positive")
+				.Returns(true);
+
+			yield return new TestCaseData(_numberValidatorAllValues, "0,0")
+				.SetName("True_When_IntPart_And_FracPart_Separate_By_Comma")
+				.Returns(true);
+
+			yield return new TestCaseData(_numberValidatorAllValues, "0!0")
+				.SetName("True_When_IntPart_And_FracPart_Separate_By_Another_Symbol_As_Comma_Or_Dot")
+				.Returns(false);
 		}
 	}
 
