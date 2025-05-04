@@ -3,7 +3,7 @@
 ## Сравнение объектов
 
 Изучите тест в классе ObjectComparison.
-Затем изучите [документацию FluentAssertions](http://fluentassertions.com/documentation.html). 
+Затем изучите [документацию FluentAssertions](http://fluentassertions.com/documentation.html).
 
 Перепишите тест с использованием наиболее подходящего метода FluentAssertions так чтобы:
 
@@ -17,7 +17,7 @@
 
 Изучите код теста в классе NumberValidatorTests.
 
-Перепишите тест так, чтобы 
+Перепишите тест так, чтобы
 
 * найти и удалить повторяющиеся проверки,
 * найти недостающие проверки,
